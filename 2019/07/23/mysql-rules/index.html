@@ -1,0 +1,1059 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/blog/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/blog/css/main.css?v=7.1.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/blog/images/apple-touch-icon-next.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/blog/images/favicon-32x32-next.png?v=7.1.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/blog/images/favicon-16x16-next.png?v=7.1.0">
+
+
+  <link rel="mask-icon" href="/blog/images/logo.svg?v=7.1.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/blog/',
+    scheme: 'Gemini',
+    version: '7.1.0',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="来源《58到家》 规范 - 运维保障的基石，殊不知这些都是在大量的失败经验中总结而来 规范存在意义 保证线上数据库 schema 规范 减少出问题概率 方便自动化管理 规范需要长期坚持，对开发和 DBA 是一个双赢的事情  军规 表存储引擎必须使用 InnoDB   解读：支持事务、行级锁、并发性能更好、CPU及内存缓存页优化使得资源利用率更高   表字符集默认使用使用 utf8，必要时使用 ut">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL · 开发设计规范">
+<meta property="og:url" content="https://huiraoo.github.io/blog/2019/07/23/mysql-rules/index.html">
+<meta property="og:site_name" content="Rao&#39;s Blog">
+<meta property="og:description" content="来源《58到家》 规范 - 运维保障的基石，殊不知这些都是在大量的失败经验中总结而来 规范存在意义 保证线上数据库 schema 规范 减少出问题概率 方便自动化管理 规范需要长期坚持，对开发和 DBA 是一个双赢的事情  军规 表存储引擎必须使用 InnoDB   解读：支持事务、行级锁、并发性能更好、CPU及内存缓存页优化使得资源利用率更高   表字符集默认使用使用 utf8，必要时使用 ut">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-07-25T10:24:02.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MySQL · 开发设计规范">
+<meta name="twitter:description" content="来源《58到家》 规范 - 运维保障的基石，殊不知这些都是在大量的失败经验中总结而来 规范存在意义 保证线上数据库 schema 规范 减少出问题概率 方便自动化管理 规范需要长期坚持，对开发和 DBA 是一个双赢的事情  军规 表存储引擎必须使用 InnoDB   解读：支持事务、行级锁、并发性能更好、CPU及内存缓存页优化使得资源利用率更高   表字符集默认使用使用 utf8，必要时使用 ut">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://huiraoo.github.io/blog/2019/07/23/mysql-rules/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>MySQL · 开发设计规范 | Rao's Blog</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/blog/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Rao's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/blog/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/23/mysql-rules/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">MySQL · 开发设计规范
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-23 13:58:36" itemprop="dateCreated datePublished" datetime="2019-07-23T13:58:36+08:00">2019-07-23</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-25 18:24:02" itemprop="dateModified" datetime="2019-07-25T18:24:02+08:00">2019-07-25</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>来源《58到家》</p>
+<p>规范 - 运维保障的基石，殊不知这些都是在大量的失败经验中总结而来</p>
+<h3 id="规范存在意义"><a href="#规范存在意义" class="headerlink" title="规范存在意义"></a>规范存在意义</h3><ul>
+<li>保证线上数据库 schema 规范</li>
+<li>减少出问题概率</li>
+<li>方便自动化管理</li>
+<li>规范需要长期坚持，对开发和 DBA 是一个双赢的事情</li>
+</ul>
+<h2 id="军规"><a href="#军规" class="headerlink" title="军规"></a>军规</h2><ul>
+<li>表存储引擎必须使用 InnoDB</li>
+</ul>
+<blockquote>
+<p>解读：支持事务、行级锁、并发性能更好、CPU及内存缓存页优化使得资源利用率更高</p>
+</blockquote>
+<ul>
+<li>表字符集默认使用使用 utf8，必要时使用 utf8mb4</li>
+</ul>
+<blockquote>
+<p>解读：通用，无乱码风险，汉字3字节，英文1字节。utf8mb4 是 utf8 的超集，存储4字节，如需存储表情符号时使用它。</p>
+</blockquote>
+<ul>
+<li>数据表、数据字段必须加入中文注释</li>
+</ul>
+<blockquote>
+<p>解读：N年后谁TM知道这些字段是干嘛的</p>
+</blockquote>
+<ul>
+<li>禁止使用存储过程、视图、触发器、Event</li>
+</ul>
+<blockquote>
+<p>解读：（1）对数据库性能影响较大，能让服务层干的事情，不要交到数据库层。（2）调试、排错、迁移都比较困难，扩展性较差。</p>
+</blockquote>
+<ul>
+<li>禁止存储大文件或者大照片</li>
+</ul>
+<blockquote>
+<p>解读：可以将大文件和照片存储在对象存储系统，数据库中存储路径</p>
+</blockquote>
+<ul>
+<li>测试、开发、线上数据库环境必须隔离</li>
+</ul>
+<h2 id="基础规范"><a href="#基础规范" class="headerlink" title="基础规范"></a>基础规范</h2><h3 id="命名规范"><a href="#命名规范" class="headerlink" title="命名规范"></a>命名规范</h3><ul>
+<li>库名、表名、字段名、索引名必须小写，采用下划线分割</li>
+<li>库名、表名、列名必须见名知义，长度不超过32字符</li>
+<li>库备份以bak为前缀，以日期为后缀</li>
+<li>从库以-s为后缀</li>
+</ul>
+<h3 id="库表规范"><a href="#库表规范" class="headerlink" title="库表规范"></a>库表规范</h3><ul>
+<li>单实例表数目必须小于2000，单表列数目必须小于30</li>
+</ul>
+<ul>
+<li>表必须有主键，推荐使用unsigned的自增主键</li>
+</ul>
+<blockquote>
+<p>a）主键递增，数据行写入可以提高插入性能，可以避免page分裂，减少表碎片提升空间和内存的使用。</p>
+<p>b） 删除无主键的表，如果是row模式的主从架构，从库会夯住。</p>
+</blockquote>
+<ul>
+<li>禁止使用外键</li>
+</ul>
+<blockquote>
+<p>解读：外键会导致表与表之间耦合，update与delete操作都会涉及相关联的表，十分影响sql 的性能，甚至会造成死锁。高并发情况下容易造成数据库性能，大数据高并发业务场景数据库使用以性能优先</p>
+</blockquote>
+<ul>
+<li>必须把字段定义为 NOT NULL 并且提供默认值</li>
+</ul>
+<blockquote>
+<p>浪费存储空间，因为InnoDB需要有额外一个字节存储</p>
+<p>表内默认值Null过多会影响优化器选择执行计划</p>
+</blockquote>
+<ul>
+<li>禁止使用 TEXT、BLOB 类型</li>
+</ul>
+<blockquote>
+<p>解读：会浪费更多的磁盘和内存空间，非必要的大量的大字段查询会淘汰掉热数据，导致内存命中率急剧降低，影响数据库性能</p>
+</blockquote>
+<ul>
+<li>字段类型在满足需求条件下越小越好，使用UNSIGNED存储非负整数 ，实际使用时候存储负数场景不多</li>
+<li>使用 TIMESTAMP 存储时间</li>
+<li>使用 DECIMAL 存储精确浮点数，用float有的时候会有问题</li>
+</ul>
+<h3 id="SQL规范"><a href="#SQL规范" class="headerlink" title="SQL规范"></a>SQL规范</h3><p>避免使用大表的JOIN，MySQL优化器对join优化策略过于简单</p>
+<p>避免在数据库中进行数学运算和其他大量计算任务</p>
+<p>UPDATE、DELETE语句不使用LIMIT ，容易造成主从不一致</p>
+<h3 id="索引规范"><a href="#索引规范" class="headerlink" title="索引规范"></a>索引规范</h3><ul>
+<li>单表索引建议控制在不超过5个</li>
+</ul>
+<blockquote>
+<p>加速读的同时也引入了很多额外的写入和锁，降低写入能力</p>
+</blockquote>
+<ul>
+<li>禁止在更新十分频繁、区分度不高的属性上建立索引</li>
+</ul>
+<blockquote>
+<p>解读：</p>
+<p>a）更新会变更B+树，更新频繁的字段建立索引会大大降低数据库性能</p>
+<p>b）“性别”这种区分度不大的属性，建立索引是没有什么意义的，不能有效过滤数据，性能与全表扫描类似</p>
+</blockquote>
+<ul>
+<li>建立组合索引，必须把区分度高的字段放在前面</li>
+</ul>
+<blockquote>
+<p>解读：能够更加有效的过滤数据</p>
+</blockquote>
+<ul>
+<li>禁止负向查询，以及%开头的模糊查询</li>
+</ul>
+<blockquote>
+<p>解读：</p>
+<p>a）负向查询条件：NOT、!=、&lt;&gt;、!&lt;、!&gt;、NOT IN、NOT LIKE等，会导致全表扫描</p>
+<p>b）%开头的模糊查询，会导致全表扫描</p>
+</blockquote>
+<ul>
+<li>禁止大表使用JOIN查询，禁止大表使用子查询</li>
+</ul>
+<blockquote>
+<p>解读：会产生临时表，消耗较多内存与CPU，极大影响数据库性能</p>
+</blockquote>
+<ul>
+<li>避免索引的隐式转换</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">remark varchar(50) NOT Null*</span><br><span class="line"></span><br><span class="line">MySQL&gt;SELECT id, gift_code FROM gift WHERE deal_id = 640 AND remark=115127; </span><br><span class="line">1 row in set (0.14 sec)*</span><br><span class="line"></span><br><span class="line">MySQL&gt;SELECT id, gift_code FROM pool_gift WHEREdeal_id = 640 AND remark=‘115127’; </span><br><span class="line">1 row in set (0.005 sec)*</span><br><span class="line"></span><br><span class="line">字段定义为varchar，但传入的值是个int，就会导致全表扫描，要求程序端要做好类型检查</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>DML和order by和group by字段要建立合适的索引</p>
+</li>
+<li><p>避免冗余索引</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">idx_abc(a,b,c)</span><br><span class="line">idx_a(a) 冗余</span><br><span class="line">idx_ab(a,b) 冗余</span><br></pre></td></tr></table></figure>
+
+<h3 id="数据库规范已制定好，如何保证开发人员必须按照规范来开发？"><a href="#数据库规范已制定好，如何保证开发人员必须按照规范来开发？" class="headerlink" title="数据库规范已制定好，如何保证开发人员必须按照规范来开发？"></a>数据库规范已制定好，如何保证开发人员必须按照规范来开发？</h3>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/blog/2019/07/23/mysql-principle/" rel="next" title="MySQL · 基本原理">
+                <i class="fa fa-chevron-left"></i> MySQL · 基本原理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2019/07/24/mysql-backup/" rel="prev" title="MySQL · 备份恢复">
+                MySQL · 备份恢复 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/blog/images/logo.jpg" alt="Hui Rao">
+            
+              <p class="site-author-name" itemprop="name">Hui Rao</p>
+              <div class="site-description motion-element" itemprop="description">最好的成长是分享</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/blog/archives/">
+                
+                    <span class="site-state-item-count">36</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/blog/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">7</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/blog/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/huiraoo" title="GitHub &rarr; https://github.com/huiraoo" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="mailto:huirao@outlook.com" title="E-Mail &rarr; mailto:huirao@outlook.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#规范存在意义"><span class="nav-number">1.</span> <span class="nav-text">规范存在意义</span></a></li></ol><li class="nav-item nav-level-2"><a class="nav-link" href="#军规"><span class="nav-number"></span> <span class="nav-text">军规</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基础规范"><span class="nav-number"></span> <span class="nav-text">基础规范</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#命名规范"><span class="nav-number">1.</span> <span class="nav-text">命名规范</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#库表规范"><span class="nav-number">2.</span> <span class="nav-text">库表规范</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL规范"><span class="nav-number">3.</span> <span class="nav-text">SQL规范</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引规范"><span class="nav-number">4.</span> <span class="nav-text">索引规范</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库规范已制定好，如何保证开发人员必须按照规范来开发？"><span class="nav-number">5.</span> <span class="nav-text">数据库规范已制定好，如何保证开发人员必须按照规范来开发？</span></a></li></ol></li></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Hui Rao</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.1.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/blog/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/blog/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/blog/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/blog/js/utils.js?v=7.1.0"></script>
+
+  <script src="/blog/js/motion.js?v=7.1.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/blog/js/affix.js?v=7.1.0"></script>
+
+  <script src="/blog/js/schemes/pisces.js?v=7.1.0"></script>
+
+
+
+
+  
+  <script src="/blog/js/scrollspy.js?v=7.1.0"></script>
+<script src="/blog/js/post-details.js?v=7.1.0"></script>
+
+
+
+  
+
+
+  <script src="/blog/js/next-boot.js?v=7.1.0"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
