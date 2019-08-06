@@ -323,6 +323,581 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/08/linux-ssh/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/08/linux-ssh/" class="post-title-link" itemprop="url">Linux · 配置互信</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-08 17:55:43" itemprop="dateCreated datePublished" datetime="2019-07-08T17:55:43+08:00">2019-07-08</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-24 10:54:48" itemprop="dateModified" datetime="2019-07-24T10:54:48+08:00">2019-07-24</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="服务器初始化"><a href="#服务器初始化" class="headerlink" title="服务器初始化"></a>服务器初始化</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span>/bin/bash</span><br><span class="line"></span><br><span class="line">if [ $(id -u) != "0" ]; then</span><br><span class="line">errorLog "错误：请用root账户运行此脚本"</span><br><span class="line">exit 1</span><br><span class="line">fi</span><br><span class="line">echo "提升权限..."</span><br><span class="line">if [[ ! `cat /etc/sudoers | grep -v grep | grep haieradmin` ]] ; then</span><br><span class="line">    echo "需要提升权限。。。"</span><br><span class="line">    sed -i '/## Allow root to run any commands anywhere / a\haieradmin ALL=(ALL) NOPASSWD:ALL' /etc/sudoers</span><br><span class="line">    if [[ ! `cat /etc/sudoers | grep -v grep | grep haieradmin` ]] ; then</span><br><span class="line">        echo "权限提升失败..."</span><br><span class="line">    else</span><br><span class="line">        echo "权限提升成功..."</span><br><span class="line">    fi</span><br><span class="line">else</span><br><span class="line">    echo "haieradmin已经是sudoers"</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">echo "开启22端口访问..."</span><br><span class="line">firewall-cmd --permanent --zone=public --add-port=22/tcp</span><br><span class="line">firewall-cmd --reload</span><br><span class="line"></span><br><span class="line">echo "删除hosts.deny..."</span><br><span class="line">sed -i 's/sshd:all/ /g' /etc/hosts.deny</span><br><span class="line"></span><br><span class="line">echo "追加hosts.allow..."</span><br><span class="line">if [[ `cat /etc/hosts.allow | grep -v 10.138.*.*` ]]; then</span><br><span class="line">    echo "追加10.138.*.*"</span><br><span class="line">    echo "sshd:10.138.*.*" &gt;&gt; /etc/hosts.allow</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
+<h3 id="设置步骤"><a href="#设置步骤" class="headerlink" title="设置步骤"></a>设置步骤</h3><blockquote>
+<p><strong>Step1</strong>：客户端，执行 ssh-keygen 命令，生成公匙和私匙，如果没有特殊需要的话，输完这个命令后直接连按回车，就会自动把文件生成到 ~/.ssh/ 文件夹中了。</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">[root@CSB-service-2 ~]# ssh-keygen</span><br><span class="line">Generating public/private rsa key pair.</span><br><span class="line">Enter file in which to save the key (/root/.ssh/id_rsa): </span><br><span class="line">/root/.ssh/id_rsa already exists.</span><br><span class="line">Overwrite (y/n)? y</span><br><span class="line">Enter passphrase (empty for no passphrase): </span><br><span class="line">Enter same passphrase again: </span><br><span class="line">Your identification has been saved in /root/.ssh/id_rsa.</span><br><span class="line">Your public key has been saved in /root/.ssh/id_rsa.pub.</span><br><span class="line">The key fingerprint is:</span><br><span class="line">SHA256:4qHMkrfb8bchDuoYV1DjGFy3JYzegeCidBa5yRvmBAU root@CSB-service-2</span><br><span class="line">The key's randomart image is:</span><br><span class="line">+---[RSA 2048]----+</span><br><span class="line">| Eo++o++o .      |</span><br><span class="line">| . oo=ooo+       |</span><br><span class="line">| .+o*.....       |</span><br><span class="line">|..oO .. .        |</span><br><span class="line">|. + o + S        |</span><br><span class="line">|   * + o         |</span><br><span class="line">|  + * + . .      |</span><br><span class="line">|   * + = ...     |</span><br><span class="line">|  ..=.. o...     |</span><br><span class="line">+----[SHA256]-----+</span><br><span class="line">You have mail in /var/spool/mail/root</span><br><span class="line"></span><br><span class="line">[root@CSB-service-2 ~]# cat ~/.ssh/id_rsa.pub</span><br><span class="line">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCp7KnYj1baMhQn4FPfV6YiMogWw5cu57kfGoZYMdp8KNyJ5zmqz7UZUfmURYeoiMQB7v8oY3zVq13X8Gmmw/rzROS/vR/mqSbbnSruHh+x42oVtjZz67/UtFLTO1DT/+YmT+XkrkuI2Cx6CxWFQgThLXMNStYif3Rl0+aKC7Gb0hlPwoNT+UPHMLAW7Y2x+R7I8Tdvt75jSI4TANq8QzG+/Iy9tZiG80VC2KbgGdTkDLDZrIoftfVWihm4Ec29uJocpbxMRNpMTb7yn12ySWbY7mJ2fpqGAh+s1toF94ASPfg4Hlv6Y6lx2QumePKKIGQh1bWEOirxKljUbVfqD6NF root@hlhtapp29</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>Step2</strong>：服务端，把客户端 ~/.ssh/id_rsa.pub 内容追加到服务端目标用户 ~/.ssh/authorized_keys 文件中。</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@hlht_db3 ~]# cat ~/.ssh/authorized_keys</span><br><span class="line">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7ILcc8EhBJd33hu3ktosfLDQzuq1Aoeou5qllTnuhXvIm0rU7yhC/bAZgR3N5Vh9UZsqUmUoXh65oKX/zM0075Cz4y837SFWLgZiICx4EvfVp7s5q5Z5yj6NsLPsKDGYdZj+B76QiCyrAcwPBwNAPeH1TZcqOzgrww4gOrsP0OLtx4grt8FyBGNbIBfd1vQNC3r5JiR9jClfWdXl9CgBsd5xdGrHP88J4YU/Z36VeYl0AwUapVO2uD9kTpuzUrL7EOkYxDAz4oyzD4wZYcOWGbeYzDj0KdeLVrcU8QVuN/is4kQnfHXlDlruJyH287fYH8G/9RykcRbSRXgynee+v root@CSB-service-2</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>Step3</strong>：服务端，修改 /etc/ssh/sshd_config 文件</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span><span class="string">）StrictModes</span> <span class="string">`yes`</span> <span class="string">，去掉注释，并改为</span> <span class="string">`no`，</span></span><br><span class="line"><span class="number">2</span><span class="string">）RSAAuthentication</span> <span class="string">`yes`，去掉注释</span></span><br><span class="line"><span class="number">3</span><span class="string">）PubkeyAuthentication</span> <span class="string">`yes，去掉注释</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h3><blockquote>
+<p>问题：CentOS 7.3 配置 SSH 免密码登录后仍要输入密码的解决方法？</p>
+</blockquote>
+<blockquote>
+<p>原因分析：</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> tail /var/log/secure -n 20</span><br><span class="line">Authentication refused: bad ownership or modes for directory /home/haieradmin</span><br></pre></td></tr></table></figure>
+
+<p>sshd 为了安全，对属主的目录和文件权限有所要求，如果权限不对，则ssh的免密码登陆不生效。</p>
+<ul>
+<li>用户目录权限为 755 或者 700，不能是 77x</li>
+<li>.ssh 目录权限为 755 或者 700</li>
+<li>rsa_id.pub 及 authorized_keys 权限一般为 644</li>
+<li>rsa_id 权限必须为 600</li>
+</ul>
+<blockquote>
+<p>解决办法：检测目录权限，把不符合要求的按要求设置权限即可</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/08/TiDB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/08/TiDB/" class="post-title-link" itemprop="url">TiDB · 单机部署</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-08 10:54:05" itemprop="dateCreated datePublished" datetime="2019-07-08T10:54:05+08:00">2019-07-08</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-19 08:59:00" itemprop="dateModified" datetime="2019-07-19T08:59:00+08:00">2019-07-19</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/TiDB/" itemprop="url" rel="index"><span itemprop="name">TiDB</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="单机部署"><a href="#单机部署" class="headerlink" title="单机部署"></a>单机部署</h3><blockquote>
+<p><strong>安装依赖包</strong></p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install libtool zlib-devel autoconf readline-devel readline libuuid-devel zlib-devel automake libuuid readline-devel readline ncurses-devel.x86_64 ncurses.x86_64 gcc-c++ vim wget net-tools svn libstdc++.so.6 glibc.i686 unzip make lrzsz libtool zlib-devel autoconf readline-devel readline libuuid-devel zlib-devel automake libuuid readline-devel readline ncurses-devel.x86_64 ncurses.x86_64 gcc-c++ vim wget net-tools svn libstdc++.so.6 libcurl-dev libcurl-devel expat-devel perl-ExtUtils-CBuilder perl-ExtUtils-MakeMaker zip git gcc openssl-devel libnl3-devel net-snmp-devel libnfnetlink-devel zlib zlib-devel openssl openssl-devel tree lrzsz tree net-tools nmap vim bash-completion lsof dos2unix nc telnet ntp wget rng-tools psmisc screen pcre pcre-devel</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>安装 TiDB</strong></p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/</span><br><span class="line">wget http://download.pingcap.org/tidb-latest-linux-amd64.tar.gz</span><br><span class="line">tar -xzf tidb-latest-linux-amd64.tar.gz  /usr/local</span><br><span class="line">mkdir -p /data/tidb</span><br><span class="line">cd /usr/local/tidb-latest-linux-amd64</span><br><span class="line">ln -s /usr/local/tidb-latest-linux-amd64/bin/pd-tso-bench /usr/bin</span><br><span class="line">ln -s /usr/local/tidb-latest-linux-amd64/bin/tikv-server /usr/bin/</span><br><span class="line">ln -s /usr/local/tidb-latest-linux-amd64/bin/tidb-server /usr/bin/</span><br><span class="line">ln -s /usr/local/tidb-latest-linux-amd64/bin/pd-server /usr/bin/</span><br><span class="line">ln -s /usr/local/tidb-latest-linux-amd64/bin/pd-ctl /usr/bin/</span><br></pre></td></tr></table></figure>
+
+<h5 id="启动-PD"><a href="#启动-PD" class="headerlink" title="启动 PD"></a><strong>启动 PD</strong></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd bin</span><br><span class="line">./pd-server -data-dir=/data/tidb/pd -log-file=/data/tidb/log/pd.log -name=pd1 &amp;</span><br></pre></td></tr></table></figure>
+
+<h5 id="启动-TiKV"><a href="#启动-TiKV" class="headerlink" title="启动 TiKV"></a><strong>启动 TiKV</strong></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./tikv-server --pd="127.0.0.1:2379" --data-dir=/data/tidb/tikv --log-file=/data/tidb/log/tikv.log &amp;</span><br></pre></td></tr></table></figure>
+
+<h5 id="连接-TiDB"><a href="#连接-TiDB" class="headerlink" title="连接 TiDB"></a><strong>连接 TiDB</strong></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> mysql -h 127.0.0.1 -P 4000 -u root</span><br><span class="line"></span><br><span class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</span><br><span class="line">Your MySQL connection id is 12</span><br><span class="line">Server version: 5.7.25-TiDB-v3.0.0-rc.1-290-g21d2590ac MySQL Community Server (Apache License 2.0)</span><br><span class="line"></span><br><span class="line">Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.</span><br><span class="line"></span><br><span class="line">Oracle is a registered trademark of Oracle Corporation and/or its</span><br><span class="line">affiliates. Other names may be trademarks of their respective</span><br><span class="line">owners.</span><br><span class="line"></span><br><span class="line">Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.</span><br><span class="line"></span><br><span class="line"><span class="meta">mysql&gt;</span> show databases;</span><br><span class="line">+--------------------+</span><br><span class="line">| Database           |</span><br><span class="line">+--------------------+</span><br><span class="line">| INFORMATION_SCHEMA |</span><br><span class="line">| PERFORMANCE_SCHEMA |</span><br><span class="line">| mysql              |</span><br><span class="line">| test               |</span><br><span class="line">+--------------------+</span><br><span class="line">4 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<h5 id="修改root密码"><a href="#修改root密码" class="headerlink" title="修改root密码"></a><strong>修改root密码</strong></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span> use mysql; </span><br><span class="line"><span class="meta">mysql&gt;</span> update user set password=PASSWORD("Changeme_123") where User='root';</span><br><span class="line"><span class="meta">mysql&gt;</span> flush privileges;</span><br></pre></td></tr></table></figure>
+
+<h5 id="设置远程可访问"><a href="#设置远程可访问" class="headerlink" title="设置远程可访问"></a><strong>设置远程可访问</strong></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span> grant all privileges on *.* to 'root'@'%' identified by 'Changeme_123';</span><br><span class="line"><span class="meta">mysql&gt;</span> flush privileges;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/05/mysql-sql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/05/mysql-sql/" class="post-title-link" itemprop="url">MySQL · SQL</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-05 17:39:23" itemprop="dateCreated datePublished" datetime="2019-07-05T17:39:23+08:00">2019-07-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-08-06 11:40:11" itemprop="dateModified" datetime="2019-08-06T11:40:11+08:00">2019-08-06</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="SQL基础"><a href="#SQL基础" class="headerlink" title="SQL基础"></a>SQL基础</h2><h3 id="查询库表信息"><a href="#查询库表信息" class="headerlink" title="查询库表信息"></a>查询库表信息</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">查询所有库数据/索引空间大小：</span><br><span class="line">SELECT table_schema, CONCAT(</span><br><span class="line">TRUNCATE(SUM(data_length)/1024/1024,2),&apos;MB&apos;) AS data_size, CONCAT(</span><br><span class="line">TRUNCATE(SUM(index_length)/1024/1024,2),&apos;MB&apos;) AS index_size</span><br><span class="line">FROM information_schema.tables</span><br><span class="line">GROUP BY table_schema</span><br><span class="line">ORDER BY SUM(data_length) DESC;</span><br></pre></td></tr></table></figure>
+
+<h3 id="主从相关"><a href="#主从相关" class="headerlink" title="主从相关"></a>主从相关</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">取消主从关系：</span><br><span class="line">stop slave;</span><br><span class="line">reset slave all;</span><br></pre></td></tr></table></figure>
+
+<h3 id="索引相关"><a href="#索引相关" class="headerlink" title="索引相关"></a>索引相关</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">添加主键:</span><br><span class="line">alter table test_tb  add id int(10) primary key AUTO_INCREMENT;</span><br></pre></td></tr></table></figure>
+
+<h3 id="增删改查"><a href="#增删改查" class="headerlink" title="增删改查"></a>增删改查</h3><h3 id="用户权限"><a href="#用户权限" class="headerlink" title="用户权限"></a>用户权限</h3><h2 id="SQL进阶"><a href="#SQL进阶" class="headerlink" title="SQL进阶"></a>SQL进阶</h2>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/05/mysql-toolkit/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1683,7 +2258,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-24 14:39:50" itemprop="dateModified" datetime="2019-07-24T14:39:50+08:00">2019-07-24</time>
+                <time title="修改时间：2019-08-06 11:39:48" itemprop="dateModified" datetime="2019-08-06T11:39:48+08:00">2019-08-06</time>
               
             
           </span>
@@ -2082,7 +2657,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">37</span>
+                    <span class="site-state-item-count">40</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2170,7 +2745,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">20</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">22</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

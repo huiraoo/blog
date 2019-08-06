@@ -323,6 +323,810 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/18/mysql-duplicate/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/18/mysql-duplicate/" class="post-title-link" itemprop="url">MySQL · 复制</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-18 17:03:56" itemprop="dateCreated datePublished" datetime="2019-07-18T17:03:56+08:00">2019-07-18</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-08-06 10:33:06" itemprop="dateModified" datetime="2019-08-06T10:33:06+08:00">2019-08-06</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>MySQL 内建的复制功能是构建基于大规模、高性能应用的基础，同时也是高可用性、可扩展性、灾难恢复、备份以及数据仓库等工作的基础。</p>
+<p><strong>复制能解决什么问题？</strong></p>
+<p>复制解决的基本问题：是让一台服务器的数据与其他服务器保持同步。其他扩展功能：</p>
+<ul>
+<li>数据分布：复制的开销很小，通常不会对带宽造成很大的压力，可以通过远程复制来构建不同的数据中心。</li>
+<li>负载均衡：通过复制可以将读操作分布到多个服务器上，读写分离。</li>
+<li>备份：对备份来说，复制是一项很有意义的技术补充，但复制既不是备份也不能够取代备份。</li>
+<li>高可用性和故障切换：复制能避免 MySQL 单点失败，设计良好的故障切换系统能显著地缩短宕机时间。</li>
+</ul>
+<h2 id="复制原理"><a href="#复制原理" class="headerlink" title="复制原理"></a>复制原理</h2><p><img src="/blog/.io//1.png" alt></p>
+<p>（1）主库把数据更改记录到二进制日志（<em>Binary Log</em>）。</p>
+<p>（2）备库将主库的日志复制到自己的中继日志（<em>Relay Log</em>）。</p>
+<p>（3）备库读取中继日志中的事件，将其重放到备库数据之上。</p>
+<p>这种架构有一个缺陷：在主库上并发运行的查询在备库只能串行化执行，因为只有一个 SQL 线程来重放中继日志中的事件，这是很多工作负载的性能瓶颈所在。</p>
+<h3 id="复制方式"><a href="#复制方式" class="headerlink" title="复制方式"></a>复制方式</h3><p>MySQL支持两种复制方式：基于行的复制（MySQL 5.1版本支持）和基于语句的复制（MySQL 3.23版本支持），这两种复制方式都是通过在主库上记录二进制日志、在备库重放日志的方式来实现异步的数据复制。</p>
+<p>MySQL 复制大部分是向后兼容的，对于小版本号的升级，通常也是兼容的。</p>
+<h3 id="复制文件"><a href="#复制文件" class="headerlink" title="复制文件"></a>复制文件</h3><p><code>mysql-bin.index</code>：二进制日志的索引文件，开启二进制日志时就会产生，该文件记录磁盘上的二进制日志文件，每一行包含了二进制文件的文件名。MySQL 依赖这个文件，除非在这个文件里有记录，否则识别不了二进制日志文件。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@ptdsmapp04 mysql]# cat mysql-bin.index</span><br><span class="line">/data/mysql/mysql-bin.000014</span><br><span class="line">/data/mysql/mysql-bin.000015</span><br><span class="line">/data/mysql/mysql-bin.000016</span><br></pre></td></tr></table></figure>
+
+<p><code>relay-log.index</code>：中继日志的索引文件，和 mysql-bin.index 作用类似。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@ptdsmapp04 mysql]# cat relay-log.index</span><br><span class="line">./relay-log.000016</span><br><span class="line">./relay-log.000017</span><br></pre></td></tr></table></figure>
+
+<p><code>master.info</code>：这个文件用于保存备库连接到主库所需要的信息，格式为纯文本（每行一个值）。此文件不能删除，否则备库在重启后无法连接到主库。这个文件以文本的方式记录了复制用户的密码，所以要注意此文件的权限控制。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">[root@ptdsmapp04 mysql]# cat master.info </span><br><span class="line">25</span><br><span class="line">mysql-binlog.000234</span><br><span class="line">933317366</span><br><span class="line">10.133.0.51</span><br><span class="line">repl</span><br><span class="line">Changeme_123</span><br><span class="line">3306</span><br><span class="line">60</span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line">30.000</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line">e1db90f2-fce1-11e8-86d2-005056b1d631</span><br><span class="line">86400</span><br><span class="line"></span><br><span class="line">0</span><br></pre></td></tr></table></figure>
+
+<p><code>relay-log.info</code>：这个文件包含了当前备库复制的二进制日志和中继日志坐标，同样也不能删除这个文件，否则在备库重启后将无法从哪个位置开始复制，可能会导致重放已经执行过的语句。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@ptdsmapp04 mysql]# cat relay-log.info </span><br><span class="line">7</span><br><span class="line">./relay-log.000017</span><br><span class="line">933317585</span><br><span class="line">mysql-binlog.000234</span><br><span class="line">933317366</span><br><span class="line">0</span><br><span class="line">0</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置复制"><a href="#配置复制" class="headerlink" title="配置复制"></a>配置复制</h2><p>分为三步：</p>
+<ul>
+<li>每台服务器上创建复制用户</li>
+<li>配置主库和备库</li>
+<li>通知备库连接到主库并从主库复制数据</li>
+</ul>
+<h3 id="创建复制用户"><a href="#创建复制用户" class="headerlink" title="创建复制用户"></a>创建复制用户</h3><p>主库和备库都创建该用户：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GRANT</span> <span class="keyword">REPLICATION</span> <span class="keyword">SLAVE</span>, <span class="keyword">REPLICATION</span> <span class="keyword">CLIENT</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'repl'</span>@<span class="string">'x.x.x.%'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="string">'Changeme_123'</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="配置主库和备库"><a href="#配置主库和备库" class="headerlink" title="配置主库和备库"></a>配置主库和备库</h3><blockquote>
+<p>主库 <code>my.cnf</code> 文件</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">server_id</span>         <span class="string">=</span> <span class="number">10</span></span><br><span class="line"><span class="string">log_bin</span>           <span class="string">=</span> <span class="string">mysql-bin</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>备库 <code>my.cnf</code> 文件</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">server_id</span>         <span class="string">=</span> <span class="number">20</span></span><br><span class="line"><span class="string">log_bin</span>           <span class="string">=</span> <span class="string">mysql-bin</span></span><br><span class="line"><span class="string">sync_binlog</span>       <span class="string">=</span> <span class="number">0</span></span><br><span class="line"><span class="string">relay_log</span>         <span class="string">=</span> <span class="string">relay-log</span></span><br><span class="line"><span class="string">read_only</span>         <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">log_slave_updates</span> <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">innodb_flush_log_at_trx_commit</span> <span class="string">=</span> <span class="number">2</span></span><br><span class="line"><span class="string">skip_slave_start</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>Tips</strong>：修改配置文件，需要重启 mysqld 服务生效</p>
+<h3 id="同步主备数据并启动复制"><a href="#同步主备数据并启动复制" class="headerlink" title="同步主备数据并启动复制"></a>同步主备数据并启动复制</h3><p>（1）克隆数据到备库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">主库全局只读锁：</span><br><span class="line">flush tables with read lock;</span><br><span class="line"></span><br><span class="line">备份主库：</span><br><span class="line">mysqldump -uroot -pHaier@123 -A --triggers --routines --events --single-transaction --master-data=2 &gt; master.sql</span><br><span class="line"></span><br><span class="line">传到从库：</span><br><span class="line">scp master.sql haieradmin@x.x.x.x:/tmp</span><br><span class="line"></span><br><span class="line">从库导入数据：</span><br><span class="line">mysql -uroot -p&apos;xx&apos; &lt; master.sql</span><br></pre></td></tr></table></figure>
+
+<p>（2）配置复制关系</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">CHANGE MASTER TO</span><br><span class="line">MASTER_HOST=&apos;10.133.0.51&apos;,</span><br><span class="line">MASTER_USER=&apos;repl&apos;,</span><br><span class="line">MASTER_PASSWORD=&apos;Changeme_123&apos;,</span><br><span class="line">MASTER_PORT=3306,</span><br><span class="line">MASTER_LOG_FILE=&apos;mysql-binlog.000232&apos;,</span><br><span class="line">MASTER_LOG_POS=3108253;</span><br></pre></td></tr></table></figure>
+
+<p>（3）启动复制</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">start slave;</span><br><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.133.0.51</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-binlog.000234</span><br><span class="line">          Read_Master_Log_Pos: 744390811</span><br><span class="line">               Relay_Log_File: relay-log.000017</span><br><span class="line">                Relay_Log_Pos: 744391030</span><br><span class="line">        Relay_Master_Log_File: mysql-binlog.000234</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">                            ...</span><br><span class="line">                 Skip_Counter: 0</span><br><span class="line">          Exec_Master_Log_Pos: 744390811</span><br><span class="line">                            ...</span><br><span class="line">        Seconds_Behind_Master: 0</span><br></pre></td></tr></table></figure>
+
+<p>（4）检查复制线程</p>
+<p>主库上可以看到由备库 I/O 线程向主库发起的连接：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show processlist\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">     Id: 1257405</span><br><span class="line">   User: repl</span><br><span class="line">   Host: 10.133.0.52:46102</span><br><span class="line">     db: NULL</span><br><span class="line">Command: Binlog Dump</span><br><span class="line">   Time: 79824</span><br><span class="line">  State: Master has sent all binlog to slave; waiting for more updates</span><br><span class="line">   Info: NULL</span><br></pre></td></tr></table></figure>
+
+<p>备库上也可以看到两个线程，一个是 I/O 线程，一个是 SQL 线程：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show processlist\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">     Id: 55</span><br><span class="line">   User: system user</span><br><span class="line">   Host: </span><br><span class="line">     db: NULL</span><br><span class="line">Command: Connect</span><br><span class="line">   Time: 79927</span><br><span class="line">  State: Waiting for master to send event</span><br><span class="line">   Info: NULL</span><br><span class="line">*************************** 2. row ***************************</span><br><span class="line">     Id: 56</span><br><span class="line">   User: system user</span><br><span class="line">   Host: </span><br><span class="line">     db: NULL</span><br><span class="line">Command: Connect</span><br><span class="line">   Time: 3681</span><br><span class="line">  State: Slave has read all relay log; waiting for more updates</span><br><span class="line">   Info: NULL</span><br></pre></td></tr></table></figure>
+
+<p>（5）主库解锁</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">unlock tables;</span><br></pre></td></tr></table></figure>
+
+<h2 id="复制拓扑"><a href="#复制拓扑" class="headerlink" title="复制拓扑"></a>复制拓扑</h2><h2 id="参数详解"><a href="#参数详解" class="headerlink" title="参数详解"></a>参数详解</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.133.0.51</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-binlog.000234</span><br><span class="line">          Read_Master_Log_Pos: 744390811</span><br><span class="line">               Relay_Log_File: relay-log.000017</span><br><span class="line">                Relay_Log_Pos: 744391030</span><br><span class="line">        Relay_Master_Log_File: mysql-binlog.000234</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">              Replicate_Do_DB: </span><br><span class="line">          Replicate_Ignore_DB: </span><br><span class="line">           Replicate_Do_Table: </span><br><span class="line">       Replicate_Ignore_Table: </span><br><span class="line">      Replicate_Wild_Do_Table: </span><br><span class="line">  Replicate_Wild_Ignore_Table: </span><br><span class="line">                   Last_Errno: 0</span><br><span class="line">                   Last_Error:</span><br><span class="line">                 Skip_Counter: 0</span><br><span class="line">          Exec_Master_Log_Pos: 744390811</span><br><span class="line">          ...</span><br><span class="line">        Seconds_Behind_Master: 0</span><br></pre></td></tr></table></figure>
+
+<p><strong>Slave_IO_Running：Yes</strong>，从库 I/O 线程负责请求和接收主库传递的 bin-log 信息</p>
+<p><strong>Slave_SQL_Running：Yes</strong>，从库 SQL 线程负责重放 relay-log 信息</p>
+<p><code>Master_Log_File</code>：当前主库的 bin-log 日志文件名</p>
+<p><code>Read_Master_Log_Pos</code>：正在读取主库当前 bin-log 中 position 位置</p>
+<p><code>Exec_Master_Log_Pos</code>：执行到主库 bin-log 中 position 位置</p>
+<p><code>Relay_Log_File</code>：</p>
+<p><code>Relay_Log_Pos</code>：</p>
+<p><code>Relay_Master_Log_File</code>：</p>
+<p><code>Seconds_Behind_Master</code>：</p>
+<p>Master_Log_File = Relay_Master_Log_File，Read_Master_Log_Pos = Exec_Master_Log_Pos：说明从库无延迟</p>
+<h3 id="主从延时问题"><a href="#主从延时问题" class="headerlink" title="主从延时问题"></a>主从延时问题</h3><p>原因：一般都会做读写分离，其实从库压力反而比主库大／从库读写压力大非常容易导致延时。</p>
+<p>解决方案：</p>
+<ul>
+<li>首先定位延时瓶颈</li>
+<li>如果是IO压力，可以通过升级硬件解决，比如替换SSD等</li>
+<li>如果IO和CPU都不是瓶颈，非常有可能是SQL单线程问题，解决方案可以考虑刚才提到的并行复制方案</li>
+<li>如果还有问题，可以考虑sharding拆分方案</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/17/mysql-install/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/17/mysql-install/" class="post-title-link" itemprop="url">MySQL · 安装部署</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-17 16:52:38" itemprop="dateCreated datePublished" datetime="2019-07-17T16:52:38+08:00">2019-07-17</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-29 14:58:34" itemprop="dateModified" datetime="2019-07-29T14:58:34+08:00">2019-07-29</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>安装之前，请先 <a href="https://huiraoo.github.io/blog/2019/07/08/linux-ssh/">配置互信</a>！</p>
+<h2 id="MySQL-5-7"><a href="#MySQL-5-7" class="headerlink" title="MySQL 5.7"></a>MySQL 5.7</h2><p>（1）下载软件包</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">groupadd mysql</span><br><span class="line">useradd -g mysql mysql -s /sbin/nologin</span><br><span class="line"></span><br><span class="line">scp mysql-5.7.23-el7-x86_64.tar.gz root@x.x.x.x:/usr/local/src/</span><br><span class="line">tar -zxvf mysql-5.7.23-el7-x86_64.tar.gz -C /usr/local/</span><br><span class="line">ln -s /usr/local/mysql-5.7.23-el7-x86_64 /usr/local/mysql</span><br></pre></td></tr></table></figure>
+
+<p>（2）编辑配置文件 my.cnf</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">port                      = 3306</span><br><span class="line">socket                    = /data/mysql/mysql.sock</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">port                      = 3306</span><br><span class="line">socket                    = /data/mysql/mysql.sock</span><br><span class="line">pid_file                  = /data/mysql/mysql.pid</span><br><span class="line">basedir                   = /usr/local/mysql</span><br><span class="line">datadir                   = /data/mysql</span><br><span class="line">character_set_server      = utf8</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> LOG</span><br><span class="line">slow_query_log            = 1</span><br><span class="line">long_query_time           = 5</span><br><span class="line">log_error                 = /data/mysql/error.log</span><br><span class="line">slow_query_log_file       = /data/mysql/slow.log</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> INNODB</span><br><span class="line">innodb_data_home_dir      = /data/mysql</span><br><span class="line">innodb_buffer_pool_size   = 10240M</span><br><span class="line">innodb_log_file_size      = 1G</span><br><span class="line">innodb_data_file_path     = ibdata1:1G:autoextend</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> OTHER</span><br><span class="line">max_connections           = 3000</span><br><span class="line">interactive_timeout       = 600</span><br><span class="line">wait_timeout              = 600</span><br><span class="line">lower_case_table_names    = 1</span><br><span class="line">log_timestamps            = SYSTEM</span><br><span class="line">explicit_defaults_for_timestamp = 1</span><br><span class="line">skip-ssl</span><br><span class="line">skip-name-resolve</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> REPLICATION</span><br><span class="line">server-id                 = 3306100</span><br><span class="line">log-bin                   = /data/mysql/mysql-bin</span><br><span class="line">sync_binlog               = 0</span><br><span class="line">max_binlog_size           = 1024M</span><br><span class="line">binlog-format             = row</span><br><span class="line">expire_logs_days          = 15</span><br></pre></td></tr></table></figure>
+
+<p>（3）创建数据目录</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /data/mysql</span><br><span class="line">chown mysql:mysql -R /usr/local/mysql</span><br><span class="line">chown mysql:mysql -R /data/mysql</span><br></pre></td></tr></table></figure>
+
+<p>（4）初始化</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/mysql/bin/mysqld --defaults-file=/etc/my.cnf --basedir=/usr/local/mysql --datadir=/data/mysql --user=mysql --initialize</span><br></pre></td></tr></table></figure>
+
+<p>（5）启动 mysql</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql 2&gt;&amp;1 &gt; /dev/null &amp;</span><br></pre></td></tr></table></figure>
+
+<p>（6）开启防火墙端口</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-port=3306/tcp --permanent</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<p>（7）设置开机自启动</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/mysql/bin</span><br><span class="line">cp mysql mysqladmin mysqlbinlog mysqld mysqld_safe mysqldump /usr/bin/</span><br><span class="line"></span><br><span class="line">vi /usr/local/mysql/support-files/mysql.server</span><br><span class="line">`mysqld_pid_file_path`=/data/mysql/mysql.pid</span><br><span class="line"></span><br><span class="line">cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld</span><br><span class="line">chmod +x /etc/init.d/mysqld</span><br><span class="line">chkconfig --add mysqld</span><br><span class="line">chkconfig mysqld on</span><br><span class="line">chkconfig --list</span><br></pre></td></tr></table></figure>
+
+<p>（8）设置用户</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">cat /data/mysql/error.log | grep password</span><br><span class="line"></span><br><span class="line">root：</span><br><span class="line">SET PASSWORD = 'Haier@123';</span><br><span class="line">ALTER USER 'root'@'localhost' PASSWORD EXPIRE NEVER;</span><br><span class="line"></span><br><span class="line">sre：</span><br><span class="line">CREATE USER 'sre'@'%' IDENTIFIED BY PASSWORD '*66CC8D8F94978869E17ABDA6FD2E1A5D817E619E';</span><br><span class="line">GRANT all privileges on *.* to 'sre'@'%' WITH GRANT OPTION;</span><br><span class="line"></span><br><span class="line">hdm：</span><br><span class="line">CREATE USER 'hdm'@'%' IDENTIFIED BY PASSWORD '*14533888C6CA3952B3957903FF7E69469C7E3A2B';</span><br><span class="line">GRANT SELECT, SHOW DATABASES, PROCESS, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO 'hdm'@'%';</span><br><span class="line"></span><br><span class="line">flush privileges;</span><br><span class="line">select user,host,authentication_string from mysql.user;</span><br></pre></td></tr></table></figure>
+
+<h2 id="MySQL-5-6"><a href="#MySQL-5-6" class="headerlink" title="MySQL 5.6"></a>MySQL 5.6</h2><p>（1）下载软件包</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">groupadd mysql</span><br><span class="line">useradd -g mysql mysql -s /sbin/nologin</span><br><span class="line"></span><br><span class="line">tar -zxvf mysql-5.6.27-el7-x86_64.tar.gz -C /usr/local/</span><br><span class="line">ln -s mysql-5.6.27-el7-x86_64 mysql</span><br></pre></td></tr></table></figure>
+
+<p>（2）编辑配置文件 my.cnf</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">port                      = 3306</span><br><span class="line">socket                    = /data/mysql/mysql.sock</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">port                      = 3306</span><br><span class="line">socket                    = /data/mysql/mysql.sock</span><br><span class="line">pid_file                  = /data/mysql/mysql.pid</span><br><span class="line">basedir                   = /usr/local/mysql</span><br><span class="line">datadir                   = /data/mysql</span><br><span class="line">character_set_server      = utf8</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> LOG</span><br><span class="line">slow_query_log            = 1</span><br><span class="line">long_query_time           = 5</span><br><span class="line">log_error                 = /data/mysql/error.log</span><br><span class="line">slow_query_log_file       = /data/mysql/slow.log</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> INNODB</span><br><span class="line">innodb_data_home_dir      = /data/mysql</span><br><span class="line">innodb_buffer_pool_size   = 10240M</span><br><span class="line">innodb_log_file_size      = 1G</span><br><span class="line">innodb_data_file_path     = ibdata1:1G:autoextend</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> OTHER</span><br><span class="line">max_connections           = 3000</span><br><span class="line">interactive_timeout       = 600</span><br><span class="line">wait_timeout              = 600</span><br><span class="line">lower_case_table_names    = 1</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> REPLICATION</span><br><span class="line">server-id                 = 3306100</span><br><span class="line">log-bin                   = /data/mysql/mysql-bin</span><br><span class="line">sync_binlog               = 0</span><br><span class="line">max_binlog_size           = 1024M</span><br><span class="line">binlog-format             = row</span><br><span class="line">expire_logs_days          = 15</span><br></pre></td></tr></table></figure>
+
+<p>（3）创建数据目录</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /data/mysql</span><br><span class="line">chown mysql:mysql -R /usr/local/mysql</span><br><span class="line">chown mysql:mysql -R /data/mysql</span><br></pre></td></tr></table></figure>
+
+<p>（4）初始化</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/mysql/scripts/mysql_install_db  --basedir=/usr/local/mysql --defaults-file=/etc/my.cnf --user=mysql</span><br></pre></td></tr></table></figure>
+
+<p>（5）启动</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql 2&gt;&amp;1 &gt; /dev/null &amp;</span><br></pre></td></tr></table></figure>
+
+<p>（6）开启防火墙端口</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-port=3306/tcp --permanent</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<p>（7）设置开机自启动</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/mysql/bin</span><br><span class="line">cp mysql mysqladmin mysqlbinlog mysqld mysqld_safe mysqldump /usr/bin/</span><br><span class="line"></span><br><span class="line">vi /usr/local/mysql/support-files/mysql.server</span><br><span class="line">`mysqld_pid_file_path`=/data/mysql/mysql.pid</span><br><span class="line"></span><br><span class="line">cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld</span><br><span class="line">chmod +x /etc/init.d/mysqld</span><br><span class="line">chkconfig --add mysqld</span><br><span class="line">chkconfig mysqld on</span><br></pre></td></tr></table></figure>
+
+<p>（8）重置 root 密码</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mysql</span><br><span class="line">update mysql.user set password=password('Haier@123') where user='root';</span><br><span class="line">delete from mysql.user where user!='root' or host!='localhost';</span><br><span class="line">flush privileges;</span><br><span class="line">select user,host,password from mysql.user;</span><br></pre></td></tr></table></figure>
+
+<h2 id="主从配置"><a href="#主从配置" class="headerlink" title="主从配置"></a>主从配置</h2><p>（1）创建复制用户（主从）</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GRANT</span> <span class="keyword">REPLICATION</span> <span class="keyword">SLAVE</span>, <span class="keyword">REPLICATION</span> <span class="keyword">CLIENT</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'repl'</span>@<span class="string">'x.x.x.%'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="string">'Changeme_123'</span>;</span><br></pre></td></tr></table></figure>
+
+<p>（2）修改主从配置</p>
+<blockquote>
+<p>主库 <code>my.cnf</code> 文件</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">server_id</span>         <span class="string">=</span> <span class="number">3306100</span></span><br><span class="line"><span class="string">log_bin</span>           <span class="string">=</span> <span class="string">mysql-bin</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>备库 <code>my.cnf</code> 文件</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">server_id</span>         <span class="string">=</span> <span class="number">3306101</span></span><br><span class="line"><span class="string">log_bin</span>           <span class="string">=</span> <span class="string">mysql-bin</span></span><br><span class="line"><span class="string">relay_log</span>         <span class="string">=</span> <span class="string">relay-log</span></span><br><span class="line"><span class="string">read_only</span>         <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">log_slave_updates</span> <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">innodb_flush_log_at_trx_commit</span> <span class="string">=</span> <span class="number">2</span></span><br><span class="line"><span class="string">skip_slave_start</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>Tips</strong>：修改配置，需要重启 mysqld 服务生效</p>
+<p>（3）配置复制链路</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show master status;</span><br><span class="line">+------------------+----------+--------------+------------------+-------------------+</span><br><span class="line">| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |</span><br><span class="line">+------------------+----------+--------------+------------------+-------------------+</span><br><span class="line">| mysql-bin.000002 |     3778 |              |                  |                   |</span><br><span class="line">+------------------+----------+--------------+------------------+-------------------+</span><br><span class="line"></span><br><span class="line">CHANGE MASTER TO</span><br><span class="line">MASTER_HOST=&apos;10.133.0.51&apos;,</span><br><span class="line">MASTER_USER=&apos;repl&apos;,</span><br><span class="line">MASTER_PASSWORD=&apos;Changeme_123&apos;,</span><br><span class="line">MASTER_PORT=3306,</span><br><span class="line">MASTER_LOG_FILE=&apos;mysql-bin.000002&apos;,</span><br><span class="line">MASTER_LOG_POS=3778;</span><br><span class="line"></span><br><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.138.98.179</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-bin.000002</span><br><span class="line">          Read_Master_Log_Pos: 3778</span><br><span class="line">               Relay_Log_File: relay-log.000002</span><br><span class="line">                Relay_Log_Pos: 1621</span><br><span class="line">        Relay_Master_Log_File: mysql-bin.000002</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/16/nginx/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/16/nginx/" class="post-title-link" itemprop="url">Nginx</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-16 18:11:56" itemprop="dateCreated datePublished" datetime="2019-07-16T18:11:56+08:00">2019-07-16</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-08-06 11:43:36" itemprop="dateModified" datetime="2019-08-06T11:43:36+08:00">2019-08-06</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Nginx/" itemprop="url" rel="index"><span itemprop="name">Nginx</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p><a href="http://nginx.org/" target="_blank" rel="noopener"><strong>Nginx</strong></a>：是一款自由的、开源的、高性能的 HTTP 服务器和反向代理服务器，同时也是一个 IMAP、POP3、SMTP 代理服务器，它可以作为一个 HTTP 服务器进行网站的发布处理，另外也可以作为反向代理进行负载均衡的实现。</p>
+<p><strong>代理</strong>：代理就是一个代表、一个渠道。涉及到两个角色，一个是被代理角色，一个是目标角色，被代理角色通过这个代理访问目标角色完成一些任务的过程称为代理操作过程。如同生活中的专卖店，客人到 adidas 专卖店买了一双鞋，这个专卖店就是代理，被代理角色就是 adidas 厂家，目标角色就是用户。</p>
+<h3 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h3><p>在如今的网络环境下，我们如果由于技术需要要去访问国外的某些网站，此时你会发现位于国外的某网站我们通过浏览器是没有办法访问的，此时大家可能都会用一个操作翻墙进行访问，翻墙的方式主要是找到一个可以访问国外网站的代理服务器，我们将请求发送给代理服务器，代理服务器去访问国外的网站，然后将访问到的数据传递给我们，这种代理模式称为正向代理。</p>
+<p>正向代理最大的特点是客户端非常明确要访问的服务器地址，服务器只清楚请求来自哪个代理服务器，而不清楚来自哪个具体的客户端，正向代理模式屏蔽或者隐藏了真实客户端信息。</p>
+<p><img src="/blog/.io//positive.png" alt></p>
+<p>客户端必须设置正向代理服务器，当然前提是要知道正向代理服务器的 IP 地址，还有代理程序的端口。</p>
+<p><img src="/blog/.io//positive2.png" alt></p>
+<p><strong>总结来说</strong>：正向代理，”它代理的是客户端，代客户端发出请求”，是一个位于客户端和原始服务器（origin server）之间的服务器，为了从原始服务器取得内容，客户端向代理发送一个请求并指定目标（原始服务器），然后代理向原始服务器转交请求并将获得的内容返回给客户端，客户端必须要进行一些特别的设置才能使用正向代理。</p>
+<p>正向代理的用途：</p>
+<ul>
+<li>访问原来无法访问的资源，如 Google</li>
+<li>可以做缓存，加速访问资源</li>
+<li>对客户端访问授权，上网进行认证</li>
+<li>代理可以记录用户访问记录（上网行为管理），对外隐藏用户信息</li>
+</ul>
+<h3 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h3><p>多个客户端给服务器发送的请求，Nginx 服务器接收到之后，按照一定的规则分发给了后端的业务处理服务器进行处理了。此时，请求的来源也就是客户端是明确的，但是请求具体由哪台服务器处理的并不明确了，Nginx 扮演的就是一个反向代理角色。客户端是无感知代理的存在的，反向代理对外都是透明的，访问者并不知道自己访问的是一个代理。因为客户端不需要任何配置就可以访问。</p>
+<p>反向代理，”它代理的是服务端，代服务端接收请求”，主要用于服务器集群分布式部署的情况下，反向代理隐藏了服务器的信息。</p>
+<p><img src="/blog/.io//negative.png" alt></p>
+<p>反向代理的作用：</p>
+<ul>
+<li>保证内网的安全，通常将反向代理作为公网访问地址，Web服务器是内网</li>
+<li>负载均衡，通过反向代理服务器来优化网站的负载</li>
+</ul>
+<p><strong>项目场景</strong>：通常情况下，我们在实际项目操作时，正向代理和反向代理很有可能会存在在一个应用场景中，正向代理代理客户端的请求去访问目标服务器，目标服务器是一个反向单利服务器，反向代理了多台真实的业务处理服务器。具体的拓扑图如下：</p>
+<p><img src="/blog/.io//project.png" alt></p>
+<p>二者之间的区别：</p>
+<p><img src="/blog/.io//difference.png" alt></p>
+<p>在正向代理中，Proxy 和 Client 同属于一个 LAN（图中方框内），隐藏了客户端信息；</p>
+<p>在反向代理中，Proxy 和 Server 同属于一个LAN（图中方框内），隐藏了服务端信息；</p>
+<p>实际上，Proxy 在两种代理中做的事情都是替服务器代为收发请求和响应，不过从结构上看正好左右互换了一下，所以把后出现的那种代理方式称为反向代理了。</p>
+<h3 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h3><p>这里提到的客户端发送的、Nginx反向代理服务器接收到的请求数量，就是我们说的负载量。请求数量按照一定的规则进行分发到不同的服务器处理的规则，就是一种均衡规则。所以，将服务器接收到的请求按照规则分发的过程，称为负载均衡。</p>
+<p>负载均衡在实际项目操作过程中，有硬件负载均衡和软件负载均衡两种，硬件负载均衡也称为硬负载，如F5负载均衡，相对造价昂贵成本较高，但是数据的稳定性安全性等等有非常好的保障，如中国移动中国联通这样的公司才会选择硬负载进行操作；更多的公司考虑到成本原因，会选择使用软件负载均衡，软件负载均衡是利用现有的技术结合主机硬件实现的一种消息队列分发机制。</p>
+<p><img src="/blog/.io//slb.png" alt></p>
+<h3 id="几种-web-服务器对比"><a href="#几种-web-服务器对比" class="headerlink" title="几种 web 服务器对比"></a>几种 web 服务器对比</h3><table>
+<thead>
+<tr>
+<th><strong>对比项 \ 服务器</strong></th>
+<th><strong>Apache</strong></th>
+<th><strong>Nginx</strong></th>
+<th><strong>Lighttpd</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Proxy代理</td>
+<td>非常好</td>
+<td>非常好</td>
+<td>一般</td>
+</tr>
+<tr>
+<td>Rewriter</td>
+<td>好</td>
+<td>非常好</td>
+<td>一般</td>
+</tr>
+<tr>
+<td>Fcgi</td>
+<td>不好</td>
+<td>好</td>
+<td>非常好</td>
+</tr>
+<tr>
+<td>热部署</td>
+<td>不支持</td>
+<td>支持</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>系统压力</td>
+<td>很大</td>
+<td>很小</td>
+<td>比较小</td>
+</tr>
+<tr>
+<td>稳定性</td>
+<td>好</td>
+<td>非常好</td>
+<td>不好</td>
+</tr>
+<tr>
+<td>安全性</td>
+<td>好</td>
+<td>一般</td>
+<td>一般</td>
+</tr>
+<tr>
+<td>静态文件处理</td>
+<td>一般</td>
+<td>非常好</td>
+<td>好</td>
+</tr>
+<tr>
+<td>反向代理</td>
+<td>一般</td>
+<td>非常好</td>
+<td>一般</td>
+</tr>
+</tbody></table>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><blockquote>
+<p>yum方式安装</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm</span><br><span class="line">yum install -y nginx</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>安装路径</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">whereis nginx</span><br><span class="line">nginx: /usr/sbin/nginx /usr/lib64/nginx /etc/nginx /usr/share/nginx /usr/share/man/man8/nginx.8.gz</span><br><span class="line"></span><br><span class="line">(1) Nginx配置路径：/etc/nginx/nginx.conf</span><br><span class="line">(2) PID目录：/var/run/nginx.pid</span><br><span class="line">(3) 错误日志：/var/log/nginx/error.log</span><br><span class="line">(4) 访问日志：/var/log/nginx/access.log</span><br><span class="line">(5) 默认站点目录：/usr/share/nginx/html</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">        listen       80;</span><br><span class="line">        server_name  zentao.smocer.top;</span><br><span class="line"></span><br><span class="line">        access_log  /var/log/nginx/zentao.access.log;</span><br><span class="line"></span><br><span class="line">        location / &#123;</span><br><span class="line">          try_files /_not_exists_ @backend;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        location @backend &#123;</span><br><span class="line">           proxy_set_header X-Forwarded-For $remote_addr;</span><br><span class="line">           proxy_set_header Host            $http_host;</span><br><span class="line">           proxy_set_header X-Forwarded-Proto $scheme;</span><br><span class="line">           </span><br><span class="line">        proxy_pass http://10.133.0.53:8080;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><blockquote>
+<p>启动</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>测试 Nginx 配置</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -t</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>重启</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -s reload</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>查询进程</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef | grep nginx</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>停止服务</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -s stop</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/16/zentao/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1026,7 +1830,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-23 13:50:42" itemprop="dateModified" datetime="2019-07-23T13:50:42+08:00">2019-07-23</time>
+                <time title="修改时间：2019-08-06 11:28:44" itemprop="dateModified" datetime="2019-08-06T11:28:44+08:00">2019-08-06</time>
               
             
           </span>
@@ -1080,7 +1884,7 @@
       
         
           
-            <h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>数据库：物理操作系统或其他形式文件类型的集合。在mysql下数据库文件可以是frm，myd，myi，ibd结尾的文件。</p>
+            <h1 id="MySQL-基础"><a href="#MySQL-基础" class="headerlink" title="MySQL 基础"></a>MySQL 基础</h1><h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>数据库：物理操作系统或其他形式文件类型的集合。在mysql下数据库文件可以是frm，myd，myi，ibd结尾的文件。</p>
 <p>数据库实例：由数据库后台进程/线程以及一个共享内存区组成。数据库实例才是真正用来操作数据库文件的。<br>mysql数据库：是单进程多线程的程序，与sql server比较类似。也就是说，Mysql数据库实例在系统上的表现就是一个进程</p>
 <p>数据库应用主要有两类：OLAP（联机分析处理）和OLTP（联机事务处理）</p>
 <p>OLAP的主要特点是:</p>
@@ -1762,581 +2566,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/08/linux-ssh/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/08/linux-ssh/" class="post-title-link" itemprop="url">Linux · 配置互信</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-08 17:55:43" itemprop="dateCreated datePublished" datetime="2019-07-08T17:55:43+08:00">2019-07-08</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-07-24 10:54:48" itemprop="dateModified" datetime="2019-07-24T10:54:48+08:00">2019-07-24</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="服务器初始化"><a href="#服务器初始化" class="headerlink" title="服务器初始化"></a>服务器初始化</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span>/bin/bash</span><br><span class="line"></span><br><span class="line">if [ $(id -u) != "0" ]; then</span><br><span class="line">errorLog "错误：请用root账户运行此脚本"</span><br><span class="line">exit 1</span><br><span class="line">fi</span><br><span class="line">echo "提升权限..."</span><br><span class="line">if [[ ! `cat /etc/sudoers | grep -v grep | grep haieradmin` ]] ; then</span><br><span class="line">    echo "需要提升权限。。。"</span><br><span class="line">    sed -i '/## Allow root to run any commands anywhere / a\haieradmin ALL=(ALL) NOPASSWD:ALL' /etc/sudoers</span><br><span class="line">    if [[ ! `cat /etc/sudoers | grep -v grep | grep haieradmin` ]] ; then</span><br><span class="line">        echo "权限提升失败..."</span><br><span class="line">    else</span><br><span class="line">        echo "权限提升成功..."</span><br><span class="line">    fi</span><br><span class="line">else</span><br><span class="line">    echo "haieradmin已经是sudoers"</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">echo "开启22端口访问..."</span><br><span class="line">firewall-cmd --permanent --zone=public --add-port=22/tcp</span><br><span class="line">firewall-cmd --reload</span><br><span class="line"></span><br><span class="line">echo "删除hosts.deny..."</span><br><span class="line">sed -i 's/sshd:all/ /g' /etc/hosts.deny</span><br><span class="line"></span><br><span class="line">echo "追加hosts.allow..."</span><br><span class="line">if [[ `cat /etc/hosts.allow | grep -v 10.138.*.*` ]]; then</span><br><span class="line">    echo "追加10.138.*.*"</span><br><span class="line">    echo "sshd:10.138.*.*" &gt;&gt; /etc/hosts.allow</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
-
-<h3 id="设置步骤"><a href="#设置步骤" class="headerlink" title="设置步骤"></a>设置步骤</h3><blockquote>
-<p><strong>Step1</strong>：客户端，执行 ssh-keygen 命令，生成公匙和私匙，如果没有特殊需要的话，输完这个命令后直接连按回车，就会自动把文件生成到 ~/.ssh/ 文件夹中了。</p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">[root@CSB-service-2 ~]# ssh-keygen</span><br><span class="line">Generating public/private rsa key pair.</span><br><span class="line">Enter file in which to save the key (/root/.ssh/id_rsa): </span><br><span class="line">/root/.ssh/id_rsa already exists.</span><br><span class="line">Overwrite (y/n)? y</span><br><span class="line">Enter passphrase (empty for no passphrase): </span><br><span class="line">Enter same passphrase again: </span><br><span class="line">Your identification has been saved in /root/.ssh/id_rsa.</span><br><span class="line">Your public key has been saved in /root/.ssh/id_rsa.pub.</span><br><span class="line">The key fingerprint is:</span><br><span class="line">SHA256:4qHMkrfb8bchDuoYV1DjGFy3JYzegeCidBa5yRvmBAU root@CSB-service-2</span><br><span class="line">The key's randomart image is:</span><br><span class="line">+---[RSA 2048]----+</span><br><span class="line">| Eo++o++o .      |</span><br><span class="line">| . oo=ooo+       |</span><br><span class="line">| .+o*.....       |</span><br><span class="line">|..oO .. .        |</span><br><span class="line">|. + o + S        |</span><br><span class="line">|   * + o         |</span><br><span class="line">|  + * + . .      |</span><br><span class="line">|   * + = ...     |</span><br><span class="line">|  ..=.. o...     |</span><br><span class="line">+----[SHA256]-----+</span><br><span class="line">You have mail in /var/spool/mail/root</span><br><span class="line"></span><br><span class="line">[root@CSB-service-2 ~]# cat ~/.ssh/id_rsa.pub</span><br><span class="line">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCp7KnYj1baMhQn4FPfV6YiMogWw5cu57kfGoZYMdp8KNyJ5zmqz7UZUfmURYeoiMQB7v8oY3zVq13X8Gmmw/rzROS/vR/mqSbbnSruHh+x42oVtjZz67/UtFLTO1DT/+YmT+XkrkuI2Cx6CxWFQgThLXMNStYif3Rl0+aKC7Gb0hlPwoNT+UPHMLAW7Y2x+R7I8Tdvt75jSI4TANq8QzG+/Iy9tZiG80VC2KbgGdTkDLDZrIoftfVWihm4Ec29uJocpbxMRNpMTb7yn12ySWbY7mJ2fpqGAh+s1toF94ASPfg4Hlv6Y6lx2QumePKKIGQh1bWEOirxKljUbVfqD6NF root@hlhtapp29</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p><strong>Step2</strong>：服务端，把客户端 ~/.ssh/id_rsa.pub 内容追加到服务端目标用户 ~/.ssh/authorized_keys 文件中。</p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@hlht_db3 ~]# cat ~/.ssh/authorized_keys</span><br><span class="line">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC7ILcc8EhBJd33hu3ktosfLDQzuq1Aoeou5qllTnuhXvIm0rU7yhC/bAZgR3N5Vh9UZsqUmUoXh65oKX/zM0075Cz4y837SFWLgZiICx4EvfVp7s5q5Z5yj6NsLPsKDGYdZj+B76QiCyrAcwPBwNAPeH1TZcqOzgrww4gOrsP0OLtx4grt8FyBGNbIBfd1vQNC3r5JiR9jClfWdXl9CgBsd5xdGrHP88J4YU/Z36VeYl0AwUapVO2uD9kTpuzUrL7EOkYxDAz4oyzD4wZYcOWGbeYzDj0KdeLVrcU8QVuN/is4kQnfHXlDlruJyH287fYH8G/9RykcRbSRXgynee+v root@CSB-service-2</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p><strong>Step3</strong>：服务端，修改 /etc/ssh/sshd_config 文件</p>
-</blockquote>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span><span class="string">）StrictModes</span> <span class="string">`yes`</span> <span class="string">，去掉注释，并改为</span> <span class="string">`no`，</span></span><br><span class="line"><span class="number">2</span><span class="string">）RSAAuthentication</span> <span class="string">`yes`，去掉注释</span></span><br><span class="line"><span class="number">3</span><span class="string">）PubkeyAuthentication</span> <span class="string">`yes，去掉注释</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h3><blockquote>
-<p>问题：CentOS 7.3 配置 SSH 免密码登录后仍要输入密码的解决方法？</p>
-</blockquote>
-<blockquote>
-<p>原因分析：</p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> tail /var/log/secure -n 20</span><br><span class="line">Authentication refused: bad ownership or modes for directory /home/haieradmin</span><br></pre></td></tr></table></figure>
-
-<p>sshd 为了安全，对属主的目录和文件权限有所要求，如果权限不对，则ssh的免密码登陆不生效。</p>
-<ul>
-<li>用户目录权限为 755 或者 700，不能是 77x</li>
-<li>.ssh 目录权限为 755 或者 700</li>
-<li>rsa_id.pub 及 authorized_keys 权限一般为 644</li>
-<li>rsa_id 权限必须为 600</li>
-</ul>
-<blockquote>
-<p>解决办法：检测目录权限，把不符合要求的按要求设置权限即可</p>
-</blockquote>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/08/TiDB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/08/TiDB/" class="post-title-link" itemprop="url">TiDB · 单机部署</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-08 10:54:05" itemprop="dateCreated datePublished" datetime="2019-07-08T10:54:05+08:00">2019-07-08</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-07-19 08:59:00" itemprop="dateModified" datetime="2019-07-19T08:59:00+08:00">2019-07-19</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/TiDB/" itemprop="url" rel="index"><span itemprop="name">TiDB</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="单机部署"><a href="#单机部署" class="headerlink" title="单机部署"></a>单机部署</h3><blockquote>
-<p><strong>安装依赖包</strong></p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install libtool zlib-devel autoconf readline-devel readline libuuid-devel zlib-devel automake libuuid readline-devel readline ncurses-devel.x86_64 ncurses.x86_64 gcc-c++ vim wget net-tools svn libstdc++.so.6 glibc.i686 unzip make lrzsz libtool zlib-devel autoconf readline-devel readline libuuid-devel zlib-devel automake libuuid readline-devel readline ncurses-devel.x86_64 ncurses.x86_64 gcc-c++ vim wget net-tools svn libstdc++.so.6 libcurl-dev libcurl-devel expat-devel perl-ExtUtils-CBuilder perl-ExtUtils-MakeMaker zip git gcc openssl-devel libnl3-devel net-snmp-devel libnfnetlink-devel zlib zlib-devel openssl openssl-devel tree lrzsz tree net-tools nmap vim bash-completion lsof dos2unix nc telnet ntp wget rng-tools psmisc screen pcre pcre-devel</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p><strong>安装 TiDB</strong></p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/</span><br><span class="line">wget http://download.pingcap.org/tidb-latest-linux-amd64.tar.gz</span><br><span class="line">tar -xzf tidb-latest-linux-amd64.tar.gz  /usr/local</span><br><span class="line">mkdir -p /data/tidb</span><br><span class="line">cd /usr/local/tidb-latest-linux-amd64</span><br><span class="line">ln -s /usr/local/tidb-latest-linux-amd64/bin/pd-tso-bench /usr/bin</span><br><span class="line">ln -s /usr/local/tidb-latest-linux-amd64/bin/tikv-server /usr/bin/</span><br><span class="line">ln -s /usr/local/tidb-latest-linux-amd64/bin/tidb-server /usr/bin/</span><br><span class="line">ln -s /usr/local/tidb-latest-linux-amd64/bin/pd-server /usr/bin/</span><br><span class="line">ln -s /usr/local/tidb-latest-linux-amd64/bin/pd-ctl /usr/bin/</span><br></pre></td></tr></table></figure>
-
-<h5 id="启动-PD"><a href="#启动-PD" class="headerlink" title="启动 PD"></a><strong>启动 PD</strong></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd bin</span><br><span class="line">./pd-server -data-dir=/data/tidb/pd -log-file=/data/tidb/log/pd.log -name=pd1 &amp;</span><br></pre></td></tr></table></figure>
-
-<h5 id="启动-TiKV"><a href="#启动-TiKV" class="headerlink" title="启动 TiKV"></a><strong>启动 TiKV</strong></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./tikv-server --pd="127.0.0.1:2379" --data-dir=/data/tidb/tikv --log-file=/data/tidb/log/tikv.log &amp;</span><br></pre></td></tr></table></figure>
-
-<h5 id="连接-TiDB"><a href="#连接-TiDB" class="headerlink" title="连接 TiDB"></a><strong>连接 TiDB</strong></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> mysql -h 127.0.0.1 -P 4000 -u root</span><br><span class="line"></span><br><span class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</span><br><span class="line">Your MySQL connection id is 12</span><br><span class="line">Server version: 5.7.25-TiDB-v3.0.0-rc.1-290-g21d2590ac MySQL Community Server (Apache License 2.0)</span><br><span class="line"></span><br><span class="line">Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.</span><br><span class="line"></span><br><span class="line">Oracle is a registered trademark of Oracle Corporation and/or its</span><br><span class="line">affiliates. Other names may be trademarks of their respective</span><br><span class="line">owners.</span><br><span class="line"></span><br><span class="line">Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.</span><br><span class="line"></span><br><span class="line"><span class="meta">mysql&gt;</span> show databases;</span><br><span class="line">+--------------------+</span><br><span class="line">| Database           |</span><br><span class="line">+--------------------+</span><br><span class="line">| INFORMATION_SCHEMA |</span><br><span class="line">| PERFORMANCE_SCHEMA |</span><br><span class="line">| mysql              |</span><br><span class="line">| test               |</span><br><span class="line">+--------------------+</span><br><span class="line">4 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
-
-<h5 id="修改root密码"><a href="#修改root密码" class="headerlink" title="修改root密码"></a><strong>修改root密码</strong></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span> use mysql; </span><br><span class="line"><span class="meta">mysql&gt;</span> update user set password=PASSWORD("Changeme_123") where User='root';</span><br><span class="line"><span class="meta">mysql&gt;</span> flush privileges;</span><br></pre></td></tr></table></figure>
-
-<h5 id="设置远程可访问"><a href="#设置远程可访问" class="headerlink" title="设置远程可访问"></a><strong>设置远程可访问</strong></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span> grant all privileges on *.* to 'root'@'%' identified by 'Changeme_123';</span><br><span class="line"><span class="meta">mysql&gt;</span> flush privileges;</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/05/mysql-sql/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/05/mysql-sql/" class="post-title-link" itemprop="url">MySQL · SQL基础</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-05 17:39:23" itemprop="dateCreated datePublished" datetime="2019-07-05T17:39:23+08:00">2019-07-05</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-07-31 11:40:06" itemprop="dateModified" datetime="2019-07-31T11:40:06+08:00">2019-07-31</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="查询库表信息"><a href="#查询库表信息" class="headerlink" title="查询库表信息"></a>查询库表信息</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">查询所有库数据/索引空间大小：</span><br><span class="line">SELECT table_schema, CONCAT(</span><br><span class="line">TRUNCATE(SUM(data_length)/1024/1024,2),&apos;MB&apos;) AS data_size, CONCAT(</span><br><span class="line">TRUNCATE(SUM(index_length)/1024/1024,2),&apos;MB&apos;) AS index_size</span><br><span class="line">FROM information_schema.tables</span><br><span class="line">GROUP BY table_schema</span><br><span class="line">ORDER BY SUM(data_length) DESC;</span><br></pre></td></tr></table></figure>
-
-<h3 id="主从相关"><a href="#主从相关" class="headerlink" title="主从相关"></a>主从相关</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">取消主从关系：</span><br><span class="line">stop slave;</span><br><span class="line">reset slave all;</span><br></pre></td></tr></table></figure>
-
-<h3 id="索引相关"><a href="#索引相关" class="headerlink" title="索引相关"></a>索引相关</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">添加主键:</span><br><span class="line">alter table test_tb  add id int(10) primary key AUTO_INCREMENT;</span><br></pre></td></tr></table></figure>
-
-<h3 id="增删改查"><a href="#增删改查" class="headerlink" title="增删改查"></a>增删改查</h3><h3 id="用户权限"><a href="#用户权限" class="headerlink" title="用户权限"></a>用户权限</h3>
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2385,7 +2614,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">37</span>
+                    <span class="site-state-item-count">40</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2473,7 +2702,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">20</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">22</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
