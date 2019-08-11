@@ -103,10 +103,12 @@
 <meta property="og:site_name" content="Rao&#39;s Blog">
 <meta property="og:description" content="DBA 的职责  设计与定义数据库系统 监控数据库系统的运行 线上数据操作与维护 数据安全性保障 数据库系统性能调优  实际情况  数据库设计：执行研发哥哥提交的建库/建表/建索引语句，提出质疑时，被通知今天要上线 监控：研发哥哥把数据库玩挂掉的时候，被质问为什么没有报警 线上操作：执行研发哥哥提交的增删查改语句，提出质疑时，被催促业务需求紧急 安全性：研发哥哥发现执行错了，被要求回滚数据，还被质">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-07-25T10:09:12.000Z">
+<meta property="og:image" content="http://ww1.sinaimg.cn/large/006tNc79ly1g5scu8gs8cj30kq0f0dha.jpg">
+<meta property="og:updated_time" content="2019-08-08T09:14:54.011Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL · DBA">
 <meta name="twitter:description" content="DBA 的职责  设计与定义数据库系统 监控数据库系统的运行 线上数据操作与维护 数据安全性保障 数据库系统性能调优  实际情况  数据库设计：执行研发哥哥提交的建库/建表/建索引语句，提出质疑时，被通知今天要上线 监控：研发哥哥把数据库玩挂掉的时候，被质问为什么没有报警 线上操作：执行研发哥哥提交的增删查改语句，提出质疑时，被催促业务需求紧急 安全性：研发哥哥发现执行错了，被要求回滚数据，还被质">
+<meta name="twitter:image" content="http://ww1.sinaimg.cn/large/006tNc79ly1g5scu8gs8cj30kq0f0dha.jpg">
 
 
 
@@ -366,12 +368,24 @@
                 
               
 
-              <time title="创建时间：2019-07-25 17:18:59 / 修改时间：18:09:12" itemprop="dateCreated datePublished" datetime="2019-07-25T17:18:59+08:00">2019-07-25</time>
+              <time title="创建时间：2019-07-25 17:18:59" itemprop="dateCreated datePublished" datetime="2019-07-25T17:18:59+08:00">2019-07-25</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-08-08 17:14:54" itemprop="dateModified" datetime="2019-08-08T17:14:54+08:00">2019-08-08</time>
               
             
           </span>
@@ -499,6 +513,56 @@
 <li>针对主要矛盾进行优化：（1）索引添加（2）SQL优化（3）缓存增加（4）架构优化</li>
 <li>观念的改变：由“工单型DBA”转变为“业务伙伴DBA”</li>
 </ul>
+<p><img src="http://ww1.sinaimg.cn/large/006tNc79ly1g5scu8gs8cj30kq0f0dha.jpg" alt="img"></p>
+<h3 id="MySQL数据库生命周期管理"><a href="#MySQL数据库生命周期管理" class="headerlink" title="MySQL数据库生命周期管理"></a>MySQL数据库生命周期管理</h3><h4 id="数据库表设计"><a href="#数据库表设计" class="headerlink" title="数据库表设计"></a>数据库表设计</h4><p>开发尽快完成功能实现和交付</p>
+<h4 id="数据库部署"><a href="#数据库部署" class="headerlink" title="数据库部署"></a>数据库部署</h4><h4 id="性能监控"><a href="#性能监控" class="headerlink" title="性能监控"></a>性能监控</h4><p>关键指标</p>
+<p>QPS：Queries Per Second：每秒查询数，一台数据库每秒能够处理的查询次数</p>
+<p>TPS：Transactions Per Second：每秒处理事务数</p>
+<p><code>show status</code>查看运行状态</p>
+<ul>
+<li>Uptime：服务器已经运行的实际，单位秒</li>
+<li>Questions：已经发送给数据库查询数</li>
+<li>Com_select：查询次数，实际操作数据库的</li>
+<li>Com_insert：插入次数</li>
+<li>Com_delete：删除次数</li>
+<li>Com_update：更新次数</li>
+<li>Com_commit：事务次数</li>
+<li>Com_rollback：回滚次数</li>
+</ul>
+<p>计算 QPS：</p>
+<p>计算出QPS：</p>
+<p><strong>QPS = Questions / Uptime</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span> show global status like 'Questions';</span><br><span class="line"><span class="meta">mysql&gt;</span> show global status like 'Uptime';</span><br></pre></td></tr></table></figure>
+
+<p><strong>TPS = (Com_commit + Com_rollback) / Uptime</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span> show global status like 'Com_commit';</span><br><span class="line"><span class="meta">mysql&gt;</span> show global status like 'Com_rollback';</span><br><span class="line"><span class="meta">mysql&gt;</span> show global status like 'Uptime';</span><br></pre></td></tr></table></figure>
+
+<h4 id="性能分析"><a href="#性能分析" class="headerlink" title="性能分析"></a>性能分析</h4><h4 id="性能调优"><a href="#性能调优" class="headerlink" title="性能调优"></a>性能调优</h4><h4 id="数据库备份"><a href="#数据库备份" class="headerlink" title="数据库备份"></a>数据库备份</h4><h4 id="数据库修复"><a href="#数据库修复" class="headerlink" title="数据库修复"></a>数据库修复</h4><p>有时候MySQL服务器突然断电、异常关闭，会导致表损坏，无法读取表数据。这时就可以用到MySQL自带的两个工具进行修复，myisamchk 和 mysqlcheck。</p>
+<p>myisamchk：只能修复myisam表，需要停止数据库。</p>
+<p>mysqlcheck：myisam和innodb表都可以用，不需要停止数据库，如修复单个表，可在数据库后面添加表名，以空格分割。</p>
+<p>常用参数：</p>
+<ul>
+<li>-a –all-databases 检查所有的库</li>
+<li>-r –repair 修复表</li>
+<li>-c –check 检查表，默认选项</li>
+<li>-a –analyze 分析表</li>
+<li>-o –optimize 优化表</li>
+<li>-q –quik 最快检查或修复表</li>
+<li>-F –fast 只检查没有正常关闭的表</li>
+</ul>
+<p>快速修复weibo数据库:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqlcheck -r -q -uroot -p123 weibo</span><br></pre></td></tr></table></figure>
+
+<p>查看 CPU / 内存 / IO性能</p>
+<p>top</p>
+<p>iostat</p>
+<p>参数 -m 是以 M 单位显示，默认 K。</p>
+<ul>
+<li>%util：当达到100%时，说明I/O很忙。</li>
+<li>await：请求在队列中等待时间，直接影响read时间。</li>
+<li>I/O极限：IOPS（r/s+w/s）,一般在1200左右。（IOPS，每秒进行读写（I/O）操作次数）</li>
+<li>I/O带宽：在顺序读写模式下SAS硬盘理论值在300M/s左右，SSD硬盘理论值在600M/s左右。</li>
+</ul>
 
       
     </div>
@@ -585,8 +649,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -603,7 +676,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">40</span>
+                    <span class="site-state-item-count">43</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -750,6 +823,23 @@
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL数据库生命周期管理"><span class="nav-number">1.</span> <span class="nav-text">MySQL数据库生命周期管理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#数据库表设计"><span class="nav-number">1.1.</span> <span class="nav-text">数据库表设计</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据库部署"><span class="nav-number">1.2.</span> <span class="nav-text">数据库部署</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#性能监控"><span class="nav-number">1.3.</span> <span class="nav-text">性能监控</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#性能分析"><span class="nav-number">1.4.</span> <span class="nav-text">性能分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#性能调优"><span class="nav-number">1.5.</span> <span class="nav-text">性能调优</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据库备份"><span class="nav-number">1.6.</span> <span class="nav-text">数据库备份</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据库修复"><span class="nav-number">1.7.</span> <span class="nav-text">数据库修复</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       
