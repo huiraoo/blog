@@ -323,6 +323,301 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/23/mysql-rules/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/23/mysql-rules/" class="post-title-link" itemprop="url">MySQL · 规范</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-23 13:58:36" itemprop="dateCreated datePublished" datetime="2019-07-23T13:58:36+08:00">2019-07-23</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-08-11 10:08:34" itemprop="dateModified" datetime="2019-08-11T10:08:34+08:00">2019-08-11</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="开发规范"><a href="#开发规范" class="headerlink" title="开发规范"></a>开发规范</h2><h3 id="库表规范"><a href="#库表规范" class="headerlink" title="库表规范"></a>库表规范</h3><h3 id="SQL规范"><a href="#SQL规范" class="headerlink" title="SQL规范"></a>SQL规范</h3><h3 id="索引规范"><a href="#索引规范" class="headerlink" title="索引规范"></a>索引规范</h3><h2 id="运维规范"><a href="#运维规范" class="headerlink" title="运维规范"></a>运维规范</h2><h2 id="安全规范"><a href="#安全规范" class="headerlink" title="安全规范"></a>安全规范</h2><h2 id="军规"><a href="#军规" class="headerlink" title="军规"></a>军规</h2><ul>
+<li>表存储引擎必须使用 InnoDB</li>
+</ul>
+<blockquote>
+<p>解读：支持事务、行级锁、并发性能更好、CPU及内存缓存页优化使得资源利用率更高</p>
+</blockquote>
+<ul>
+<li>表字符集默认使用使用 utf8，必要时使用 utf8mb4</li>
+</ul>
+<blockquote>
+<p>解读：通用，无乱码风险，汉字3字节，英文1字节。utf8mb4 是 utf8 的超集，存储4字节，如需存储表情符号时使用它。</p>
+</blockquote>
+<ul>
+<li>数据表、数据字段必须加入中文注释</li>
+</ul>
+<blockquote>
+<p>解读：N年后谁TM知道这些字段是干嘛的</p>
+</blockquote>
+<ul>
+<li>禁止使用存储过程、视图、触发器、Event</li>
+</ul>
+<blockquote>
+<p>解读：（1）对数据库性能影响较大，能让服务层干的事情，不要交到数据库层。（2）调试、排错、迁移都比较困难，扩展性较差。</p>
+</blockquote>
+<ul>
+<li>禁止存储大文件或者大照片</li>
+</ul>
+<blockquote>
+<p>解读：可以将大文件和照片存储在对象存储系统，数据库中存储路径</p>
+</blockquote>
+<ul>
+<li>测试、开发、线上数据库环境必须隔离</li>
+</ul>
+<h2 id="基础规范"><a href="#基础规范" class="headerlink" title="基础规范"></a>基础规范</h2><h3 id="命名规范"><a href="#命名规范" class="headerlink" title="命名规范"></a>命名规范</h3><ul>
+<li>库名、表名、字段名、索引名必须小写，采用下划线分割</li>
+<li>库名、表名、列名必须见名知义，长度不超过32字符</li>
+<li>库备份以bak为前缀，以日期为后缀</li>
+<li>从库以-s为后缀</li>
+</ul>
+<h3 id="库表规范-1"><a href="#库表规范-1" class="headerlink" title="库表规范"></a>库表规范</h3><ul>
+<li>单实例表数目必须小于2000，单表列数目必须小于30</li>
+</ul>
+<ul>
+<li>表必须有主键，推荐使用unsigned的自增主键</li>
+</ul>
+<blockquote>
+<p>a）主键递增，数据行写入可以提高插入性能，可以避免page分裂，减少表碎片提升空间和内存的使用。</p>
+<p>b） 删除无主键的表，如果是row模式的主从架构，从库会夯住。</p>
+</blockquote>
+<ul>
+<li>禁止使用外键</li>
+</ul>
+<blockquote>
+<p>解读：外键会导致表与表之间耦合，update与delete操作都会涉及相关联的表，十分影响sql 的性能，甚至会造成死锁。高并发情况下容易造成数据库性能，大数据高并发业务场景数据库使用以性能优先</p>
+</blockquote>
+<ul>
+<li>必须把字段定义为 NOT NULL 并且提供默认值</li>
+</ul>
+<blockquote>
+<p>浪费存储空间，因为InnoDB需要有额外一个字节存储</p>
+<p>表内默认值Null过多会影响优化器选择执行计划</p>
+</blockquote>
+<ul>
+<li>禁止使用 TEXT、BLOB 类型</li>
+</ul>
+<blockquote>
+<p>解读：会浪费更多的磁盘和内存空间，非必要的大量的大字段查询会淘汰掉热数据，导致内存命中率急剧降低，影响数据库性能</p>
+</blockquote>
+<ul>
+<li>字段类型在满足需求条件下越小越好，使用UNSIGNED存储非负整数 ，实际使用时候存储负数场景不多</li>
+<li>使用 TIMESTAMP 存储时间</li>
+<li>使用 DECIMAL 存储精确浮点数，用float有的时候会有问题</li>
+</ul>
+<h3 id="SQL规范-1"><a href="#SQL规范-1" class="headerlink" title="SQL规范"></a>SQL规范</h3><p>避免使用大表的JOIN，MySQL优化器对join优化策略过于简单</p>
+<p>避免在数据库中进行数学运算和其他大量计算任务</p>
+<p>UPDATE、DELETE语句不使用LIMIT ，容易造成主从不一致</p>
+<h3 id="索引规范-1"><a href="#索引规范-1" class="headerlink" title="索引规范"></a>索引规范</h3><ul>
+<li>单表索引建议控制在不超过5个</li>
+</ul>
+<blockquote>
+<p>加速读的同时也引入了很多额外的写入和锁，降低写入能力</p>
+</blockquote>
+<ul>
+<li>禁止在更新十分频繁、区分度不高的属性上建立索引</li>
+</ul>
+<blockquote>
+<p>解读：</p>
+<p>a）更新会变更B+树，更新频繁的字段建立索引会大大降低数据库性能</p>
+<p>b）“性别”这种区分度不大的属性，建立索引是没有什么意义的，不能有效过滤数据，性能与全表扫描类似</p>
+</blockquote>
+<ul>
+<li>建立组合索引，必须把区分度高的字段放在前面</li>
+</ul>
+<blockquote>
+<p>解读：能够更加有效的过滤数据</p>
+</blockquote>
+<ul>
+<li>禁止负向查询，以及%开头的模糊查询</li>
+</ul>
+<blockquote>
+<p>解读：</p>
+<p>a）负向查询条件：NOT、!=、&lt;&gt;、!&lt;、!&gt;、NOT IN、NOT LIKE等，会导致全表扫描</p>
+<p>b）%开头的模糊查询，会导致全表扫描</p>
+</blockquote>
+<ul>
+<li>禁止大表使用JOIN查询，禁止大表使用子查询</li>
+</ul>
+<blockquote>
+<p>解读：会产生临时表，消耗较多内存与CPU，极大影响数据库性能</p>
+</blockquote>
+<ul>
+<li>避免索引的隐式转换</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">remark varchar(50) NOT Null*</span><br><span class="line"></span><br><span class="line">MySQL&gt;SELECT id, gift_code FROM gift WHERE deal_id = 640 AND remark=115127; </span><br><span class="line">1 row in set (0.14 sec)*</span><br><span class="line"></span><br><span class="line">MySQL&gt;SELECT id, gift_code FROM pool_gift WHEREdeal_id = 640 AND remark=‘115127’; </span><br><span class="line">1 row in set (0.005 sec)*</span><br><span class="line"></span><br><span class="line">字段定义为varchar，但传入的值是个int，就会导致全表扫描，要求程序端要做好类型检查</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>DML和order by和group by字段要建立合适的索引</p>
+</li>
+<li><p>避免冗余索引</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">idx_abc(a,b,c)</span><br><span class="line">idx_a(a) 冗余</span><br><span class="line">idx_ab(a,b) 冗余</span><br></pre></td></tr></table></figure>
+
+<h3 id="数据库规范已制定好，如何保证开发人员必须按照规范来开发？"><a href="#数据库规范已制定好，如何保证开发人员必须按照规范来开发？" class="headerlink" title="数据库规范已制定好，如何保证开发人员必须按照规范来开发？"></a>数据库规范已制定好，如何保证开发人员必须按照规范来开发？</h3>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/23/mysql-principle/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2583,247 +2878,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/12/mysql-cookbook/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/12/mysql-cookbook/" class="post-title-link" itemprop="url">MySQL · 核心知识体系</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-12 15:25:39" itemprop="dateCreated datePublished" datetime="2019-07-12T15:25:39+08:00">2019-07-12</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-08-11 10:13:53" itemprop="dateModified" datetime="2019-08-11T10:13:53+08:00">2019-08-11</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="数据库基础"><a href="#数据库基础" class="headerlink" title="数据库基础"></a>数据库基础</h2><h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>OLTP、OLAP、事务、库、表、行、列、主键、外键</p>
-<p><strong>数据库</strong>：物理操作系统或其他形式文件类型的集合。在mysql下数据库文件可以是 frm，myd，myi，ibd 结尾的文件。</p>
-<p><strong>数据库实例</strong>：由数据库后台进程/线程以及一个共享内存区组成。数据库实例才是真正用来操作数据库文件的。<br>mysql数据库：是单进程多线程的程序，与sql server比较类似。也就是说，Mysql数据库实例在系统上的表现就是一个进程</p>
-<p>数据库应用主要有两类：<strong>OLAP</strong>（联机分析处理）和 <strong>OLTP</strong>（联机事务处理）</p>
-<p>OLAP的主要特点是:</p>
-<ul>
-<li>实时性要求不高</li>
-<li>数据量大</li>
-<li>并发量小</li>
-</ul>
-<p>OLTP的主要特点是:</p>
-<ul>
-<li>实时性要求高</li>
-<li>数据量小</li>
-<li>高并发</li>
-<li>要求满足ACID</li>
-</ul>
-<h3 id="DBMS-vs-NoSQL-vs-NewSQL"><a href="#DBMS-vs-NoSQL-vs-NewSQL" class="headerlink" title="DBMS vs NoSQL vs NewSQL"></a>DBMS vs NoSQL vs NewSQL</h3><h3 id="MySQL基础"><a href="#MySQL基础" class="headerlink" title="MySQL基础"></a>MySQL基础</h3><h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><h4 id="主流分支版本"><a href="#主流分支版本" class="headerlink" title="主流分支版本"></a>主流分支版本</h4><p>官方版本</p>
-<p>Percona Server</p>
-<p>MariaDB</p>
-<h2 id="核心知识点"><a href="#核心知识点" class="headerlink" title="核心知识点"></a>核心知识点</h2><h3 id="体系结构"><a href="#体系结构" class="headerlink" title="体系结构"></a>体系结构</h3><h3 id="InnoDB存储引擎"><a href="#InnoDB存储引擎" class="headerlink" title="InnoDB存储引擎"></a>InnoDB存储引擎</h3><p><img src="http://ww4.sinaimg.cn/large/006tNc79ly1g5tdauxzpzj313i0u0qag.jpg" alt></p>
-<h3 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h3><p>什么是索引？</p>
-<p>B+Tree索引和Hash索引区别？</p>
-<ul>
-<li>哈希索引适合等值查询，但是无法进行范围查询；</li>
-<li>哈希索引没办法利用索引完成排序 ；</li>
-<li>哈希索引不支持多列联合索引的最左匹配规则；</li>
-<li>如果有大量重复键值的情况下，哈希索引的效率会很低，因为存在哈希碰撞问题。</li>
-</ul>
-<p>最左前缀匹配原则</p>
-<p>查询优化器</p>
-<p>一条SQL语句的查询，可以有不同的执行方案，至于最终选择哪种方案，需要通过优化器进行选择，选择执行成本最低的方案。</p>
-<p>在一条单表查询语句真正执行之前，MySQL的查询优化器会找出执行该语句所有可能使用的方案，对比之后找出成本最低的方案。 </p>
-<p>这个成本最低的方案就是所谓的执行计划。优化过程大致如下：</p>
-<ul>
-<li>根据搜索条件，找出所有可能使用的索引；</li>
-<li>计算全表扫描的代价；</li>
-<li>计算使用不同索引执行查询的代价；</li>
-<li>对比各种执行方案的代价，找出成本最低的那一个。</li>
-</ul>
-<h3 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h3><h3 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h3><h3 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h3><h3 id="SQL"><a href="#SQL" class="headerlink" title="SQL"></a>SQL</h3><p>视图</p>
-<p>存储过程</p>
-<p>触发器</p>
-<p>事件</p>
-<p>函数</p>
-<p>分区</p>
-<h2 id="运维实践"><a href="#运维实践" class="headerlink" title="运维实践"></a>运维实践</h2><h3 id="安装部署"><a href="#安装部署" class="headerlink" title="安装部署"></a>安装部署</h3><p>安装</p>
-<p>升级</p>
-<h3 id="监控告警"><a href="#监控告警" class="headerlink" title="监控告警"></a>监控告警</h3><p>监控指标、定制告警</p>
-<h3 id="备份恢复"><a href="#备份恢复" class="headerlink" title="备份恢复"></a>备份恢复</h3><h3 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h3><h3 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h3><p>慢查询、配置优化、SQL优化、索引优化、分库分表</p>
-<h3 id="高可用"><a href="#高可用" class="headerlink" title="高可用"></a>高可用</h3><p>读写分离</p>
-<p>同城双活</p>
-<p>两地三中心架构</p>
-<h3 id="安全"><a href="#安全" class="headerlink" title="安全"></a>安全</h3><h2 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h2><p><strong>工具</strong></p>
-<p><strong>阅读源码</strong></p>
-<p><strong>数据库设计</strong></p>
-<p><strong>自动化运维</strong></p>
-<p>主键</p>
-<p>外键：外键为某个表中的一列，它包含另一个表的主键值，定义了两个表之间的关系。</p>
-<p>优点：更有效的存储和处理数据，具有很强的可伸缩性（能够适应不断增加的工作量而不失败）。</p>
-<p>代价：数据存储在多个表中，如何快速检索出数据？（联结）</p>
-<p>唯一键</p>
-<p>行</p>
-<p>列</p>
-<p>函数</p>
-<p>优点：很高效地完成一些数据处理类任务。</p>
-<p>缺点：不同DBMS之间函数定义区别大，可移植性差。函数没有SQL的可移植性强。</p>
-<p>如果决定使用函数，就需要做好注释</p>
-<p>子查询：难以阅读和调试，需要格式化SQL</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2872,7 +2926,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">43</span>
+                    <span class="site-state-item-count">44</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
