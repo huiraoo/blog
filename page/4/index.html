@@ -816,7 +816,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/blog/2019/07/11/mysql-tuning/" class="post-title-link" itemprop="url">MySQL · 性能调优</a>
+                <a href="/blog/2019/07/11/mysql-tuning/" class="post-title-link" itemprop="url">MySQL · 调优实战</a>
               
             
           </h1>
@@ -858,7 +858,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-11 10:09:20" itemprop="dateModified" datetime="2019-08-11T10:09:20+08:00">2019-08-11</time>
+                <time title="修改时间：2019-08-16 18:29:42" itemprop="dateModified" datetime="2019-08-16T18:29:42+08:00">2019-08-16</time>
               
             
           </span>
@@ -912,17 +912,22 @@
       
         
           
-            <h2 id="一条-SQL-的执行过程"><a href="#一条-SQL-的执行过程" class="headerlink" title="一条 SQL 的执行过程"></a>一条 SQL 的执行过程</h2><h2 id="Explain-详解"><a href="#Explain-详解" class="headerlink" title="Explain 详解"></a>Explain 详解</h2><h2 id="一次惊险的问题追踪"><a href="#一次惊险的问题追踪" class="headerlink" title="一次惊险的问题追踪"></a>一次惊险的问题追踪</h2><p>背景简述：</p>
-<ul>
-<li>领域：供应链</li>
-<li>项目：全球采购成本管理系统（DBS）</li>
-<li>项目经理：王宏敏、许锋</li>
-<li>供应商开发：曹贺军（北京方位捷讯科技有限公司）</li>
-</ul>
-<p>过程回溯：</p>
-<p>根因追踪：</p>
-<p>解决方案：</p>
-<h2 id="问题类型"><a href="#问题类型" class="headerlink" title="问题类型"></a>问题类型</h2><p>全表扫描</p>
+            <h2 id="一条-SQL-的执行过程"><a href="#一条-SQL-的执行过程" class="headerlink" title="一条 SQL 的执行过程"></a>一条 SQL 的执行过程</h2><p><img src="http://ww4.sinaimg.cn/large/006tNc79ly1g5te8biz9hj30ne0fj404.jpg" alt="img"></p>
+<p><img src="http://ww1.sinaimg.cn/large/006tNc79ly1g61nat9jo2j31400u0tpc.jpg" alt="img"></p>
+<blockquote>
+<p><strong>连接器</strong>：一条 SQL 语句从客户端传过来首先会创建一个连接，用 <code>username</code> 和 <code>password</code> 认证身份。连接完成后如果没有其他操作便处于 <code>Sleep</code> 状态，默认<code>8h</code> 自动断开空闲连接。</p>
+</blockquote>
+<p><strong>长连接</strong>：是一些驱动框架、ORM工具的特性，持续使用同一个连接处理请求，高并发业务推荐使用长连接，维持长连接需要消耗内存。</p>
+<p><strong>短连接</strong>：一个连接仅执行几次后便断开，然后重新建立连接。基本步骤：连接 -&gt; 数据传输 -&gt; 关闭连接，网速慢的情况下，连接开销很大；繁忙系统中，也可能造成端口不够用。</p>
+<p><strong>连接池</strong>：是一些网络代理服务或应用服务器的特性，被所有连接的客户端共享使用，连接池可以加速连接，也可以减少连接，降低服务器负载。</p>
+<p><strong>线程池</strong>：MySQL每个连接都分配一个单独的线程，线程的创建和销毁都有一定的开销，当线程过多都处于活跃状态，会导致频繁的上下文切换，从而造成巨大的开销，大量短查询的业务场景推荐使用线程池。</p>
+<blockquote>
+<p><strong>查询缓存</strong>：建立连接后先去查询缓存，由 <code>query_cache_type</code> 和 <code>query_cache_size</code> 两个参数控制。现在基本不用缓存，因为只要有对该表数据更新，表上的所有缓存都会清空然后重新创建缓存。查询缓存适合有大量相同查询的应用，不适合有大量数据更新的应用，MySQL 8.0 直接将查询缓存功能删掉了。</p>
+</blockquote>
+<p><strong>分析器</strong>：经过缓存器后来到分析器</p>
+<p><strong>优化器</strong>：</p>
+<p><strong>执行器</strong>：</p>
+<h2 id="Explain-详解"><a href="#Explain-详解" class="headerlink" title="Explain 详解"></a>Explain 详解</h2><h2 id="问题类型"><a href="#问题类型" class="headerlink" title="问题类型"></a>问题类型</h2><p>全表扫描</p>
 <p>隐式转换</p>
 <p>改善SQL开发质量，防患于未然（适当干预）</p>
 <h2 id="SQL调优"><a href="#SQL调优" class="headerlink" title="SQL调优"></a>SQL调优</h2><p>INSERT 性能：MySQL 用单条 INSERT 语句处理多个插入比使用多条 INSERT 语句快。</p>
