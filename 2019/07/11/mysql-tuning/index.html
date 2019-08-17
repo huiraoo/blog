@@ -106,7 +106,7 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://ww4.sinaimg.cn/large/006tNc79ly1g5te8biz9hj30ne0fj404.jpg">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/006tNc79ly1g61nat9jo2j31400u0tpc.jpg">
-<meta property="og:updated_time" content="2019-08-16T10:29:42.631Z">
+<meta property="og:updated_time" content="2019-08-17T01:11:43.220Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL · 调优实战">
 <meta name="twitter:description" content="一条 SQL 的执行过程   连接器：一条 SQL 语句从客户端传过来首先会创建一个连接，用 username 和 password 认证身份。连接完成后如果没有其他操作便处于 Sleep 状态，默认8h 自动断开空闲连接。  长连接：是一些驱动框架、ORM工具的特性，持续使用同一个连接处理请求，高并发业务推荐使用长连接，维持长连接需要消耗内存。 短连接：一个连接仅执行几次后便断开，然后重新建立连">
@@ -387,7 +387,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-16 18:29:42" itemprop="dateModified" datetime="2019-08-16T18:29:42+08:00">2019-08-16</time>
+                <time title="修改时间：2019-08-17 09:11:43" itemprop="dateModified" datetime="2019-08-17T09:11:43+08:00">2019-08-17</time>
               
             
           </span>
@@ -458,9 +458,15 @@
 <blockquote>
 <p><strong>查询缓存</strong>：建立连接后先去查询缓存，由 <code>query_cache_type</code> 和 <code>query_cache_size</code> 两个参数控制。现在基本不用缓存，因为只要有对该表数据更新，表上的所有缓存都会清空然后重新创建缓存。查询缓存适合有大量相同查询的应用，不适合有大量数据更新的应用，MySQL 8.0 直接将查询缓存功能删掉了。</p>
 </blockquote>
-<p><strong>分析器</strong>：经过缓存器后来到分析器</p>
-<p><strong>优化器</strong>：</p>
-<p><strong>执行器</strong>：</p>
+<blockquote>
+<p><strong>分析器</strong>：先做词法分析，分析SQL语句中的关键字，然后做语法分析，判断是否有语法错误。</p>
+</blockquote>
+<blockquote>
+<p><strong>优化器</strong>：在表中有多个索引的时候，由优化器决定使用哪个索引，或者多表关联（join）的时候决定连接顺序，选择效率高的方案。</p>
+</blockquote>
+<blockquote>
+<p><strong>执行器</strong>：开始执行之前，先验证是否有读写权限，没有则返回权限错误，有的话打开表调用指定的存储引擎接口获取执行结果集，返回给客户端。</p>
+</blockquote>
 <h2 id="Explain-详解"><a href="#Explain-详解" class="headerlink" title="Explain 详解"></a>Explain 详解</h2><h2 id="问题类型"><a href="#问题类型" class="headerlink" title="问题类型"></a>问题类型</h2><p>全表扫描</p>
 <p>隐式转换</p>
 <p>改善SQL开发质量，防患于未然（适当干预）</p>
