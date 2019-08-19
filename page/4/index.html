@@ -323,6 +323,462 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/15/mysql-questions/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/15/mysql-questions/" class="post-title-link" itemprop="url">MySQL · 案例集锦</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-15 09:42:42" itemprop="dateCreated datePublished" datetime="2019-07-15T09:42:42+08:00">2019-07-15</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-08-19 15:46:22" itemprop="dateModified" datetime="2019-08-19T15:46:22+08:00">2019-08-19</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="mysqldump-备份从库失败"><a href="#mysqldump-备份从库失败" class="headerlink" title="mysqldump 备份从库失败"></a>mysqldump 备份从库失败</h2><h3 id="现象描述"><a href="#现象描述" class="headerlink" title="现象描述"></a>现象描述</h3><p>据备份供应商反映，昨天晚上 22:00， <code>XX系统</code> MySQL 数据库备份失败，请求协助检查备份失败原因。</p>
+<h3 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h3><p>（1）检查从库两个线程 <code>Slave_IO_Running</code> 和 <code>Slave_SQL_Running</code> 均是 <strong>Yes</strong>，说明主从复制链路正常，但是 <code>Seconds_Behind_Master</code> 不断增大，主从数据延迟且有不断扩大的趋势。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.133.0.51</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-binlog.000232</span><br><span class="line">          Read_Master_Log_Pos: 3108253</span><br><span class="line">               Relay_Log_File: relay-log.000004</span><br><span class="line">                Relay_Log_Pos: 169851605</span><br><span class="line">        Relay_Master_Log_File: mysql-binlog.000229</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">              Replicate_Do_DB: </span><br><span class="line">          Replicate_Ignore_DB: </span><br><span class="line">           Replicate_Do_Table: </span><br><span class="line">       Replicate_Ignore_Table: </span><br><span class="line">      Replicate_Wild_Do_Table: </span><br><span class="line">  Replicate_Wild_Ignore_Table: </span><br><span class="line">                   Last_Errno: 0</span><br><span class="line">                   Last_Error: </span><br><span class="line">                 Skip_Counter: 0</span><br><span class="line">          Exec_Master_Log_Pos: 169851386</span><br><span class="line">              Relay_Log_Space: 3270427001</span><br><span class="line">              Until_Condition: None</span><br><span class="line">               Until_Log_File: </span><br><span class="line">                Until_Log_Pos: 0</span><br><span class="line">           Master_SSL_Allowed: No</span><br><span class="line">           Master_SSL_CA_File: </span><br><span class="line">           Master_SSL_CA_Path: </span><br><span class="line">              Master_SSL_Cert: </span><br><span class="line">            Master_SSL_Cipher: </span><br><span class="line">               Master_SSL_Key: </span><br><span class="line">        Seconds_Behind_Master: 42302</span><br><span class="line">Master_SSL_Verify_Server_Cert: No</span><br><span class="line">              ....</span><br><span class="line">       </span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p>（2）检查当前数据库线程状态，未发现有明显异常。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show processlist;</span><br><span class="line">+-------+-------------+-------------------+--------------------+---------+--------+----------------------------------+--------------------------------+</span><br><span class="line">| Id    | User        | Host              | db                 | Command | Time   | State                            | Info                           |</span><br><span class="line">+-------+-------------+-------------------+--------------------+---------+--------+----------------------------------+--------------------------------+</span><br><span class="line">|     1 | system user |                   | NULL               | Connect | 172777 | Waiting for master to send event | NULL                           |</span><br><span class="line">|     2 | system user |                   | NULL               | Connect | 678456 | Reading event from the relay log | NULL                           |</span><br><span class="line">|  4345 | cvbak       | localhost         | NULL               | Query   | 130546 | Waiting for table flush          | FLUSH /*!40101 LOCAL */ TABLES |</span><br><span class="line">| 17662 | root        | localhost         | NULL               | Query   |      0 | starting                         | show processlist               |</span><br><span class="line">| 17671 | hdm         | 10.133.0.52:37170 | information_schema | Sleep   |      1 |                                  | NULL                           |</span><br><span class="line">+-------+-------------+-------------------+--------------------+---------+--------+----------------------------------+--------------------------------+</span><br></pre></td></tr></table></figure>
+
+<p>（3）检查当前正在操作的表，发现表 <code>odsepg_zrfc_zco_zzfymx_sw</code> 一直卡着没动</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show open tables where In_use=1;</span><br><span class="line">+<span class="comment">----------+---------------------------+--------+-------------+</span></span><br><span class="line">| Database | Table                     | In_use | Name_locked |</span><br><span class="line">+<span class="comment">----------+---------------------------+--------+-------------+</span></span><br><span class="line">| tdmetl   | odsepg_zrfc_zco_zzfymx_sw |      1 |           0 |</span><br><span class="line">+<span class="comment">----------+---------------------------+--------+-------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p>（4）根据 <code>Relay_Log_Pos</code> 解析 <code>relay-log.000004</code>，查看当时正在执行的操作是 <code>Delete_rows</code>，操作的表是 <code>tdmetl</code>.<code>odsepg_zrfc_zco_zzfymx_sw</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqlbinlog -vvv --base64-output=decode-rows relay-log.000004 --start-position=169851605 | more</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># at 169851605</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169851451 CRC32 0x6683bf99 	Anonymous_GTID	last_committed=1831	sequence_number=1832	rbr_</span></span><br><span class="line"><span class="string">only=yes</span></span><br><span class="line"><span class="string">/*!50718</span> <span class="string">SET</span> <span class="string">TRANSACTION</span> <span class="string">ISOLATION</span> <span class="string">LEVEL</span> <span class="string">READ</span> <span class="string">COMMITTED*//*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@SESSION.GTID_NEXT=</span> <span class="string">'ANONYMOUS'</span><span class="string">/*!*/;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># at 169851670</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169851525 CRC32 0x9d910e5d 	Query	thread_id=1254417	exec_time=0	error_code=0</span></span><br><span class="line"><span class="string">SET</span> <span class="string">TIMESTAMP=1563393778/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.pseudo_thread_id=1254417/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.foreign_key_checks=1,</span> <span class="string">@@session.sql_auto_is_null=0,</span> <span class="string">@@session.unique_checks=1,</span> <span class="string">@@session.autocommit=1/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.sql_mode=1436549128/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.auto_increment_increment=1,</span> <span class="string">@@session.auto_increment_offset=1/*!*/;</span></span><br><span class="line"><span class="string">/*!\C</span> <span class="string">utf8</span> <span class="string">*//*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.character_set_client=33,@@session.collation_connection=33,@@session.collation_server=33/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.lc_time_names=0/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.collation_database=DEFAULT/*!*/;</span></span><br><span class="line"><span class="string">BEGIN</span></span><br><span class="line"><span class="string">/*!*/;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># at 169851744</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169851626 CRC32 0x6b8bbd2d 	Table_map: `tdmetl`.`odsepg_zrfc_zco_zzfymx_sw` mapped to number 170</span></span><br><span class="line"><span class="number">018</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># at 169851845</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169859832 CRC32 0x338e105a 	Delete_rows: table id 170018</span></span><br></pre></td></tr></table></figure>
+
+<p>（5）再检查该表的结构，发现无主键，由此定位出根本原因是：对无主键的表进行删除或者更新，导致从库夯住。</p>
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><p>执行下列 SQL，为该表添加主键</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">'xxxx'</span> <span class="keyword">ADD</span> <span class="keyword">id</span> <span class="built_in">int</span>(<span class="number">10</span>) <span class="keyword">UNSIGNED</span> primary <span class="keyword">key</span> AUTO_INCREMENT;</span><br></pre></td></tr></table></figure>
+
+<h3 id="建议"><a href="#建议" class="headerlink" title="建议"></a>建议</h3><ul>
+<li>避免无 where 条件的 delete 或 update 操作大表，如果需要全表删除，使用 truncate 操作。</li>
+<li>在 binlog row 模式下表结构最好能有主键。</li>
+</ul>
+<h2 id="主从复制中断告警"><a href="#主从复制中断告警" class="headerlink" title="主从复制中断告警"></a>主从复制中断告警</h2><h3 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h3><p>监控检测到xx主从复制中断，并发送了告警邮件，经检查 <code>Slave_SQL_Running</code> 为 <strong>No</strong></p>
+<h3 id="原因分析-1"><a href="#原因分析-1" class="headerlink" title="原因分析"></a>原因分析</h3><p>原因一般都很明显，记录在 <code>Last_Error</code>，根据报错原因选择合适地解决方法，最常用的解决办法是跳过这一条正在执行的 SQL。</p>
+<h3 id="解决方法-1"><a href="#解决方法-1" class="headerlink" title="解决方法"></a>解决方法</h3><p>（1）登陆 <code>10.133.0.53</code></p>
+<p>（2）执行下面操作</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-slave-restart -h 'x.x.x.x' -u'xx' -p'xx' -P 3306</span><br></pre></td></tr></table></figure>
+
+<h2 id="从库数据延迟"><a href="#从库数据延迟" class="headerlink" title="从库数据延迟"></a>从库数据延迟</h2><h4 id="风险"><a href="#风险" class="headerlink" title="风险"></a>风险</h4><ul>
+<li>备库复制夯住，会导致备份失败（flush tables with read lock 900s 超时）</li>
+<li>以 Slave 为基准进行的备份，数据不是最新的有延迟</li>
+<li>异常情况下，主从HA无法切换，HA需要检查数据的一致性，延迟时主备不一致</li>
+</ul>
+<h4 id="Slave-延迟场景-amp-解决方法"><a href="#Slave-延迟场景-amp-解决方法" class="headerlink" title="Slave 延迟场景 &amp; 解决方法"></a>Slave 延迟场景 &amp; 解决方法</h4><h5 id="无主键、无索引或索引区分度不高"><a href="#无主键、无索引或索引区分度不高" class="headerlink" title="无主键、无索引或索引区分度不高"></a>无主键、无索引或索引区分度不高</h5><p><strong>现象</strong>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">a.</span> <span class="string">show</span> <span class="string">slave</span> <span class="string">status，</span> <span class="string">显示position一直没有变</span></span><br><span class="line"><span class="string">b.</span> <span class="string">show</span> <span class="string">open</span> <span class="string">tables</span> <span class="string">where</span> <span class="string">In_use=1，</span> <span class="string">显示某个表一直是in_use为</span> <span class="number">1</span></span><br><span class="line"><span class="string">c.</span> <span class="string">show</span> <span class="string">create</span> <span class="string">table，查看表结构可以看到无主键，或者无任何索引，或者索引区分度很差</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>解决方法</strong>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">a.</span> <span class="string">找到表区分度比较高的几个字段,</span> <span class="string">可以使用这个方法判断：</span></span><br><span class="line"><span class="string">select</span> <span class="string">count(*)</span> <span class="string">from</span> <span class="string">xx;</span></span><br><span class="line"><span class="string">select</span> <span class="string">count(*)</span> <span class="string">from</span> <span class="string">(select</span> <span class="string">distinct</span> <span class="string">xx</span> <span class="string">from</span> <span class="string">xxx)</span> <span class="string">t;</span></span><br><span class="line"><span class="string">如果2个查询count(*)的结果差不多，说明可以对这些字段加索引</span></span><br><span class="line"></span><br><span class="line"><span class="string">b.</span> <span class="string">备库</span> <span class="string">stop</span> <span class="string">slave;</span></span><br><span class="line"><span class="string">可能会执行比较久，因为需要回滚事务。</span></span><br><span class="line"></span><br><span class="line"><span class="string">c.</span> <span class="string">备库</span></span><br><span class="line"><span class="string">set</span> <span class="string">sql_log_bin=0;</span></span><br><span class="line"><span class="string">alter</span> <span class="string">table</span> <span class="string">xx</span> <span class="string">add</span> <span class="string">key</span> <span class="string">xx(xx);</span></span><br><span class="line"><span class="string">alter</span> <span class="string">table</span> <span class="string">'xxxx'</span> <span class="string">add</span> <span class="string">id</span> <span class="string">int(10)</span> <span class="string">unsigned</span> <span class="string">primary</span> <span class="string">key</span> <span class="string">AUTO_INCREMENT;</span></span><br><span class="line"></span><br><span class="line"><span class="string">d.</span> <span class="string">备库</span> <span class="string">start</span> <span class="string">slave</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="主库上有大事务，导致从库延时"><a href="#主库上有大事务，导致从库延时" class="headerlink" title="主库上有大事务，导致从库延时"></a>主库上有大事务，导致从库延时</h5><p><strong>现象</strong>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">解析binlog文件，发现一直打印的是Write_rows</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>解决方法</strong>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">事前防范：与开发沟通，增加缓存，异步写入数据库,减少业务直接对db的大事务写入</span></span><br><span class="line"><span class="string">事中补救：调整数据库中io相关的参数比如innodb_flush_log_at_trx_commit和sync_binlog，或者打开并行复制功能</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="主库写入频繁，从库压力跟不上导致延时"><a href="#主库写入频繁，从库压力跟不上导致延时" class="headerlink" title="主库写入频繁，从库压力跟不上导致延时"></a>主库写入频繁，从库压力跟不上导致延时</h5><p><strong>现象</strong>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">此类原因的主要现象是数据库的IUD操作非常多，slave由于sql_thread单线程的原因追不上主库。</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>解决方法</strong>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">a.</span> <span class="string">升级从库的硬件配置，比如ssd,fio</span></span><br><span class="line"><span class="string">b.</span> <span class="string">使用@丁奇的预热工具</span> <span class="bullet">-relay</span> <span class="string">fetch</span></span><br><span class="line"><span class="string">在备库sql线程执行更新之前，预先将相应的数据加载到内存中,并不能提高sql_thread线程执行sql的能力，</span> <span class="string">也不能加快io_thread线程读取日志的速度。</span></span><br><span class="line"><span class="string">c.</span> <span class="string">使用多线程复制</span> <span class="string">阿里MySQL团队实现的方案</span> <span class="bullet">--</span> <span class="string">基于行的并行复制。</span></span><br><span class="line"><span class="string">该方案允许对同一张表进行修改的两个事务并行执行，只要这两个事务修改了表中的不同的行。</span></span><br><span class="line"><span class="string">这个方案可以达到事务间更高的并发度，但是局限是必须使用Row格式的binlog。</span></span><br><span class="line"><span class="string">因为只有使用Row格式的binlog才可以知道一个事务所修改的行的范围，而使用Statement格式的binlog只能知道修改的表对象。</span></span><br></pre></td></tr></table></figure>
+
+<h5 id="大量myisam表，在备份时导致slave延时"><a href="#大量myisam表，在备份时导致slave延时" class="headerlink" title="大量myisam表，在备份时导致slave延时"></a>大量myisam表，在备份时导致slave延时</h5><p><strong>现象</strong>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">由于xtrabackup工具备份到最后会执行flash tables with read lock，对数据库进行锁表以便进行一致性备份，然后对于myisam锁表，会阻碍salve_sql_thread滞运行进而导致夯住</span><br></pre></td></tr></table></figure>
+
+<p><strong>解决方法</strong>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">修改表结构为innodb存储引擎的表</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="表碎片问题"><a href="#表碎片问题" class="headerlink" title="表碎片问题"></a>表碎片问题</h2><p>MySQL 的碎片是 MySQL 运维过程中比较常见的问题，碎片的存在十分影响数据库的性能。</p>
+<h4 id="判断方法"><a href="#判断方法" class="headerlink" title="判断方法"></a>判断方法</h4><p>MySQL 的碎片是否产生，通过查看</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show table status from table_name\G;</span><br></pre></td></tr></table></figure>
+
+<p>这个命令中 Data_free 字段，如果该字段不为 0，则产生了数据碎片。</p>
+<h4 id="产生原因"><a href="#产生原因" class="headerlink" title="产生原因"></a>产生原因</h4><p><strong>1. 经常进行 delete 操作</strong></p>
+<p>经常进行 delete 操作，产生空白空间，如果进行新的插入操作，MySQL将尝试利用这些留空的区域，但仍然无法将其彻底占用，久而久之就产生了碎片；</p>
+<p><strong>2. update 更新</strong></p>
+<p>update 更新可变长度的字段(例如 varchar 类型)，将长的字符串更新成短的。之前存储的内容长，后来存储是短的，即使后来插入新数据，那么有一些空白区域还是没能有效利用的。</p>
+<h4 id="产生影响"><a href="#产生影响" class="headerlink" title="产生影响"></a>产生影响</h4><ol>
+<li><p>由于碎片空间是不连续的，导致这些空间不能充分被利用；</p>
+</li>
+<li><p>由于碎片的存在，导致数据库的磁盘 I/O 操作变成离散随机读写，加重了磁盘 I/O 的负担。</p>
+</li>
+</ol>
+<h4 id="清理办法"><a href="#清理办法" class="headerlink" title="清理办法"></a>清理办法</h4><ul>
+<li><p>MyISAM：optimize table 表名；（OPTIMIZE 可以整理数据文件,并重排索引）</p>
+</li>
+<li><p>InnoDB：</p>
+<p>（1）ALTER TABLE tablename ENGINE=InnoDB；(重建表存储引擎，重新组织数据) </p>
+<p>（2）进行一次数据的导入导出</p>
+</li>
+</ul>
+<p><strong>碎片清理的性能对比：</strong><br>引用我之前一个生产库的数据，对比一下清理前后的差异。</p>
+<p>SQL执行速度：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select count(*) from test.twitter_11;</span><br></pre></td></tr></table></figure>
+
+<p>修改前：1 row in set (7.37 sec)</p>
+<p>修改后：1 row in set (1.28 sec)</p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>通过对比，可以看到碎片清理前后，节省了很多空间，SQL执行效率更快。所以，<strong>在日常运维工作中，应对碎片进行定期清理，保证数据库有稳定的性能。</strong></p>
+<h2 id="创建触发器，报错提示-‘1419’"><a href="#创建触发器，报错提示-‘1419’" class="headerlink" title="创建触发器，报错提示 ‘1419’"></a>创建触发器，报错提示 ‘1419’</h2><figure class="highlight shell"><figcaption><span>l</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ERROR 1419 (HY000): You do not have the SUPER privilege and</span><br><span class="line">binary logging is enabled (you *might* want to use the less safe log_bin_trust_routine_creators variable)</span><br></pre></td></tr></table></figure>
+
+<p>有些操作要禁止掉对 SUPER 权限的要求，要处理可以设置 <code>log_bin_trust_routine_creators</code> 全局系统变量为1。默认地，这个变量值为0，可以通过如下在服务端进行修改：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SET GLOBAL log_bin_trust_routine_creators = 1;</span><br></pre></td></tr></table></figure>
+
+<p>也可以在启动服务器之时用 <code>--log-bin-trust-routine-creators</code> 选项来设置允许这个变量。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/12/mysql-ops/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/12/mysql-ops/" class="post-title-link" itemprop="url">MySQL · 运维篇</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-12 15:28:54" itemprop="dateCreated datePublished" datetime="2019-07-12T15:28:54+08:00">2019-07-12</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-08-19 10:46:36" itemprop="dateModified" datetime="2019-08-19T10:46:36+08:00">2019-08-19</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="运维体系变迁"><a href="#运维体系变迁" class="headerlink" title="运维体系变迁"></a>运维体系变迁</h2><p><img src="http://ww3.sinaimg.cn/large/006tNc79ly1g64slqzr2ij30nx0d5agy.jpg" alt="img"></p>
+<p>监控告警：<a href="http://pmm.ilearning.fun/" target="_blank" rel="noopener">http://pmm.ilearning.fun</a></p>
+<p>解决的是服务可用性问题（目标：99.99%）</p>
+<p>– 资源隔离？</p>
+<p>– 能力建设？</p>
+<p>聚焦业务，基础能力建设交给云服务供应商</p>
+<p>安装、启动、关闭</p>
+<p>监控告警</p>
+<p>用户授权</p>
+<p>备份恢复</p>
+<p>主从复制</p>
+<p>MHA：高可用方案</p>
+<p>mysqlbinlog</p>
+<p>是否需要产品化？</p>
+<p>阿里云：CloudDBA、HDM、DBS、DMS</p>
+<p>华为云：DBM、DDM</p>
+<p>运维体系建设？</p>
+<p>百万级规模服务器运维体系如何设计？</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/12/mysql-cookbook/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -858,7 +1314,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-19 09:31:45" itemprop="dateModified" datetime="2019-08-19T09:31:45+08:00">2019-08-19</time>
+                <time title="修改时间：2019-08-19 18:19:08" itemprop="dateModified" datetime="2019-08-19T18:19:08+08:00">2019-08-19</time>
               
             
           </span>
@@ -912,27 +1368,140 @@
       
         
           
-            <h2 id="一条-SQL-的执行过程"><a href="#一条-SQL-的执行过程" class="headerlink" title="一条 SQL 的执行过程"></a>一条 SQL 的执行过程</h2><p><img src="http://ww1.sinaimg.cn/large/006tNc79ly1g61nat9jo2j31400u0tpc.jpg" alt="img"></p>
+            <h2 id="一条SQL的执行过程"><a href="#一条SQL的执行过程" class="headerlink" title="一条SQL的执行过程"></a>一条SQL的执行过程</h2><p>如下图所示，当向 MySQL 发送一个请求的时候，MySQL 到底做了什么：</p>
+<p><img src="http://ww2.sinaimg.cn/large/006tNc79ly1g64xrbwlygj30k004b0sp.jpg" alt="img"></p>
+<p>（1）<strong>连接器</strong>：客户端发送一条 SQL 查询到 MySQL 服务器（<strong>权限验证</strong>，<strong>管理连接</strong>）。</p>
+<p>（2）<strong>查询缓存</strong>：MySQL 服务器先检查查询缓存，如果命中缓存，立刻返回存储在缓存中的结果，否则执行下一个阶段（<strong>命中返回</strong>，<strong>未命中更新缓存</strong>）。</p>
+<p>（3）<strong>解析器</strong>：服务器端经过 SQL 解析、预处理（<strong>词法分析</strong>，<strong>语法分析</strong>）。</p>
+<p>（4）<strong>优化器</strong>：再由优化器生成执行计划（<strong>选择索引</strong>，<strong>生成执行计划</strong>）。</p>
+<p>（4）<strong>执行器</strong>：根据执行计划，调用存储引擎的 API 接口，执行查询并将结果返回给客户端（<strong>操作引擎</strong>，<strong>返回结果</strong>）。</p>
+<p><img src="http://ww1.sinaimg.cn/large/006tNc79ly1g64togewmoj30m80ieq5a.jpg" alt="img"></p>
+<p><img src="http://ww1.sinaimg.cn/large/006tNc79ly1g61nat9jo2j31400u0tpc.jpg" alt="img"></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">举例：</span><br><span class="line">select * from user where id = 1</span><br></pre></td></tr></table></figure>
 
-<p><strong>连接器</strong>：负责与客户端建立连接、获取权限、管理连接。一条 SQL 语句从客户端传过来首先会创建一个连接，用 <code>username</code> 和 <code>password</code> 认证身份，连接完成后如果没有其他操作便处于 <code>Sleep</code> 状态，默认 <code>8h</code> 自动断开空闲连接。</p>
+<h3 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h3><p>负责与客户端建立连接、获取权限、管理连接。一条 SQL 语句从客户端传过来首先会创建一个连接，用 <code>username</code> 和 <code>password</code> 认证身份，连接完成后如果没有其他操作便处于 <code>Sleep</code> 状态，默认 <code>8h</code> 自动断开空闲连接。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">连接命令：</span><br><span class="line">mysql -h$ip -P$port -u$user -p</span><br><span class="line"></span><br><span class="line">环节：</span><br><span class="line">1）TCP握手，建立连接</span><br><span class="line">2）认证身份</span><br><span class="line">3）获取权限</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">长连接：是一些驱动框架、ORM工具的特性，持续使用同一个连接处理请求，高并发业务推荐使用长连接，维持长连接需要消耗内存。</span><br><span class="line"></span><br><span class="line">短连接：一个连接仅执行几次后便断开，然后重新建立连接。基本步骤：连接 -&gt; 数据传输 -&gt; 关闭连接，网速慢的情况下，连接开销很大；繁忙系统中，也可能造成端口不够用。</span><br><span class="line"></span><br><span class="line">连接池：是一些网络代理服务或应用服务器的特性，被所有连接的客户端共享使用，连接池可以加速连接，也可以减少连接，降低服务器负载。</span><br><span class="line"></span><br><span class="line">线程池：MySQL每个连接都分配一个单独的线程，线程的创建和销毁都有一定的开销，当线程过多都处于活跃状态，会导致频繁的上下文切换，从而造成巨大的开销，大量短查询的业务场景推荐使用线程池。</span><br></pre></td></tr></table></figure>
+<p><strong>长连接</strong>：是一些驱动框架、ORM工具的特性，持续使用同一个连接处理请求，高并发业务推荐使用长连接，维持长连接需要消耗内存。</p>
+<p><strong>短连接</strong>：一个连接仅执行几次后便断开，然后重新建立连接。基本步骤：连接 -&gt; 数据传输 -&gt; 关闭连接，网速慢的情况下，连接开销很大；繁忙系统中，也可能造成端口不够用。</p>
+<p><strong>连接池</strong>：是一些网络代理服务或应用服务器的特性，被所有连接的客户端共享使用，连接池可以加速连接，也可以减少连接，降低服务器负载。</p>
+<p><strong>线程池</strong>：MySQL每个连接都分配一个单独的线程，线程的创建和销毁都有一定的开销，当线程过多都处于活跃状态，会导致频繁的上下文切换，从而造成巨大的开销，大量短查询的业务场景推荐使用线程池。</p>
+<h3 id="查询缓存"><a href="#查询缓存" class="headerlink" title="查询缓存"></a>查询缓存</h3><p>建立连接后，MySQL 在执行查询时会先对查询缓存进行查询，之前执行过的语句会以 key-value 形式被直接缓存在内存当中， key 是语句，value 是查询结果，查询后有 2 种结果：</p>
+<ul>
+<li>查询缓存命中：直接返回结果（效率很高）</li>
+<li>查询缓存未命中： 继续直行后面的阶段，执行完成后，执行结果会被存入查询缓存中</li>
+</ul>
+<p>查询缓存默认是关闭的，由 <code>query_cache_type</code> 和 <code>query_cache_size</code> 两个参数控制。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">query_cache_type：否打开查询缓存，可以设置为 OFF、ON 和 DEMAND，DEMAND 表示只有在查询语句中明确写明 SQL_CACHE 的语句才会放入查询缓存</span><br><span class="line">query_cache_size：查询缓存使用的总内存空间</span><br></pre></td></tr></table></figure>
 
-<p><strong>查询缓存</strong>：建立连接后先去查询缓存，由 <code>query_cache_type</code> 和 <code>query_cache_size</code> 两个参数控制。现在基本不用缓存，因为只要有对该表数据更新，表上的所有缓存都会清空然后重新创建缓存。查询缓存适合有大量相同查询的应用，不适合有大量数据更新的应用，MySQL 8.0 直接将查询缓存功能删掉了。</p>
-<p>MySQL 在执行查询时会先对查询缓存进行查询，之前执行过的语句会以 key-value 形式，被直接缓存在内存当中， key 是语句，value 是查询结果，查询后有 2 种结果：</p>
-<p>1）查询缓存命中：直接返回结果（效率很高）。</p>
-<p>2）查询缓存未命中： 继续直行后面的阶段，执行完成后，执行结果会被存入查询缓存中。</p>
-<p><strong>分析器</strong>：先做词法分析，分析SQL语句中的关键字，然后做语法分析，判断是否有语法错误。</p>
-<p><strong>优化器</strong>：在表中有多个索引的时候，由优化器决定使用哪个索引，或者多表关联（join）的时候决定连接顺序，选择效率高的方案。</p>
-<p><strong>执行器</strong>：开始执行之前，先验证是否有读写权限，没有则返回权限错误，有的话打开表调用指定的存储引擎接口获取执行结果集，返回给客户端。</p>
-<h2 id="Explain-详解"><a href="#Explain-详解" class="headerlink" title="Explain 详解"></a>Explain 详解</h2><h2 id="问题类型"><a href="#问题类型" class="headerlink" title="问题类型"></a>问题类型</h2><p>全表扫描</p>
-<p>隐式转换</p>
-<p>改善SQL开发质量，防患于未然（适当干预）</p>
+<blockquote>
+<p>备注：生产环境不推荐使用查询缓存，因为只要有对表数据更新，表上的所有缓存都会清空然后重新创建缓存。查询缓存适合有大量相同查询的应用，不适合有大量数据更新的应用，MySQL 8.0 直接将查询缓存功能删掉了，可以使用 <code>select SQL_CACHE * from user where id = 1</code> 按需查询。</p>
+</blockquote>
+<h3 id="分析器"><a href="#分析器" class="headerlink" title="分析器"></a>分析器</h3><p>先做词法分析，分析 SQL 语句中的关键字，并生成对应的解析树，然后做语法分析，判断是否有语法错误。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT x FROM x WHERE</span><br></pre></td></tr></table></figure>
+
+<h3 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h3><p>在表中有多个索引的时候，由优化器决定使用哪个索引，或者多表关联（join）的时候决定连接顺序，选择效率高的方案，生成执行计划。</p>
+<p>优化器有两类：基于规则的优化器 (Rule-Based Optimizer，<strong>RBO</strong>) 和基于代价的优化器 (Cost-Based Optimizer，<strong>CBO</strong>)</p>
+<p>基于代价的优化器，是根据优化规则对关系表达式进行转换，这里的转换是说一个关系表达式经过优化规则后会生成另外一个关系表达式，同时原有表达式也会保留，经过一系列转换后会生成多个执行计划，然后CBO会根据统计信息和代价模型(Cost Model)计算每个执行计划的Cost，从中挑选Cost最小的执行计划。由上可知，CBO中有两个依赖：统计信息和代价模型，统计信息的准确与否、代价模型的合理与否都会影响CBO选择最优计划。</p>
+<h3 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a>执行器</h3><p>开始执行之前，先验证是否有读写权限，没有则返回权限错误，有的话打开表调用指定的存储引擎 API 接口获取执行结果集，返回给客户端。</p>
+<h2 id="Explain"><a href="#Explain" class="headerlink" title="Explain"></a>Explain</h2><h3 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h3><p>在MySQL中，当数据量增长的特别大的时候就需要用到索引来优化SQL语句，使用 <code>Explain</code> 来查看 SQL 语句的执行计划，是优化 SQL 最有效地的一种手段。</p>
+<h3 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h3><p><strong>语法</strong>：<code>explain + SQL</code></p>
+<p><strong>示例</strong>：<code>explain select * from customer</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; EXPLAIN SELECT * FROM customer;</span><br><span class="line">+----+-------------+----------+------+---------------+------+---------+------+--------+-----</span><br><span class="line">| id | select_type | table    | type | possible_keys | key  | key_len | ref  | rows   | Extra |</span><br><span class="line">+----+-------------+----------+------+---------------+------+---------+------+--------+-----</span><br><span class="line">|  1 | SIMPLE      | customer | ALL  | NULL          | NULL | NULL    | NULL | 936161 |       |</span><br><span class="line">+----+-------------+----------+------+---------------+------+---------+------+--------+-----</span><br><span class="line">1 row in set</span><br></pre></td></tr></table></figure>
+
+<h3 id="参数介绍"><a href="#参数介绍" class="headerlink" title="参数介绍"></a>参数介绍</h3><blockquote>
+<p><code>id</code>：SELECT 标识符，SQL 执行顺序的标识</p>
+</blockquote>
+<ul>
+<li>id 相同，执行顺序由上至下。</li>
+<li>id 不同，如果是子查询，id 的序号会递增，id 值越大优先级越高，越先被执行。</li>
+<li>id 有相同也有不同，id 值越大，优先级越高，越先执行；id 相同，则认为是一组，从上往下顺序执行。</li>
+</ul>
+<blockquote>
+<p><code>select_type</code>：查询类型，主要用于区别普通查询、联合查询、子查询等的复杂查询</p>
+</blockquote>
+<ul>
+<li><strong>SIMPLE</strong>：简单的 select 查询，查询中不包含子查询或者 UNION 联合查询。</li>
+<li><strong>PRIMARY</strong>：查询中若包含任何复杂的子部分，最外层查询则被标记为 PRIMARY。</li>
+<li><strong>SUBQUERY</strong>：在 SELECT 或 WHERE 列表中包含了子查询。</li>
+<li><strong>DERIVED</strong>：在 FROM 列表中包含的子查询被标记为 DERIVED（衍生），MySQL 会递归执行这些子查询，把结果放在临时表里。</li>
+<li><strong>UNION</strong>：若第二个 SELECT 出现在 UNION 之后，则被标记为 UNION；若 UNION 包含在 FROM 字句的查询中，外层 SELECT 将被标记为 DERIVED。</li>
+<li><strong>UNION RESULT</strong>：两种 UNION 语句的合并。</li>
+</ul>
+<blockquote>
+<p><code>table</code>：查询涉及的表或者衍生表</p>
+</blockquote>
+<blockquote>
+<p><code>type</code>：显示连接使用的类型，常见的有7种，从最好到最差排序：<em>system &gt; const &gt; eq_ref &gt; ref &gt; range &gt; index &gt; ALL</em>（<strong>全表扫描</strong>），一般来说 <strong>至少达到 range 级别，最好达到 ref</strong></p>
+</blockquote>
+<ul>
+<li><p><strong>system</strong>：表只有一行记录，这是 const 类型的特例，只能用于 myisam 和 memory 表，可以忽略不计。</p>
+</li>
+<li><p><strong>const</strong>：表示通过索引一次就找到了，const 用于 primary key 或者 unique 索引，因为只匹配一行数据，所以很快，如将主键置于 where 列表中，MySQL 就能将该查询转换为一个常量。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from (select * from t1 where id =1) d1;</span><br><span class="line">+----+-------------+------------+--------+---------------+---------+---------+------+----</span><br><span class="line">| id | select_type | table      | type   | possible_keys | key     | key_len | ref  | rows | Extra |</span><br><span class="line">+----+-------------+------------+--------+---------------+---------+---------+------+----</span><br><span class="line">|  1 | PRIMARY     | &lt;derived2&gt; | system | NULL          | NULL    | NULL    | NULL |    1 |       |</span><br><span class="line">|  2 | DERIVED     | t1         | const  | PRIMARY       | PRIMARY | 4       |      |    1 |       |</span><br><span class="line">+----+-------------+------------+--------+---------------+---------+---------+------+----</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>eq_ref</strong>：唯一性索引扫描，对于每个索引键，表中只有一条记录与之匹配，常见于主键或唯一索引扫描。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from t1,t2 where t1.id = t2.id;</span><br><span class="line">+----+-------------+-------+--------+---------------+---------+---------+---------------</span><br><span class="line">| id | select_type | table | type   | possible_keys | key     | key_len | ref           | rows | Extra |</span><br><span class="line">+----+-------------+-------+--------+---------------+---------+---------+---------------</span><br><span class="line">|  1 | SIMPLE      | t1    | ALL    | PRIMARY       | NULL    | NULL    | NULL          |    5 |       |</span><br><span class="line">|  1 | SIMPLE      | t2    | eq_ref | PRIMARY       | PRIMARY | 4       | test_db.t1.id |    1 |       |</span><br><span class="line">+----+-------------+-------+--------+---------------+---------+---------+---------------</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>ref</strong>：非唯一索引或者主键扫描，或者使用了<strong>最左前缀规则</strong>索引的查询，它返回匹配某个单独值的所有行，然而它可能会找到多个符合条件的行，所以它应该属于查找和扫描的混合体。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create index idx_name on t1(name);</span><br><span class="line">mysql&gt; explain select * from t1 where name =&apos;Tim&apos;;</span><br><span class="line">+----+-------------+-------+------+---------------+------+---------+-------+------+------</span><br><span class="line">| id | select_type | table | type | possible_keys | key  | key_len | ref   | rows | Extra       |</span><br><span class="line">+----+-------------+-------+------+---------------+------+---------+-------+------+------</span><br><span class="line">|  1 | SIMPLE      | t1    | ref  | idx_name          | idx_name  | 92      | const |    1 | Using where |</span><br><span class="line">+----+-------------+-------+------+---------------+------+---------+-------+------+------</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>range</strong>：只检索给定范围的行，使用一个索引来选择行。key 列显示使用了哪个索引，一般就是在你的 where语句中出现了 between、&lt;&gt;、in 等查询。这种范围扫描索引比全表扫描要好，因为它只需要开始于索引的某一点，而结束于另一点，不用扫描全部索引。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from t1 where id between 2 and 5;</span><br><span class="line">+----+-------------+-------+-------+---------------+---------+---------+------+------+---</span><br><span class="line">| id | select_type | table | type  | possible_keys | key     | key_len | ref  | rows | Extra       |</span><br><span class="line">+----+-------------+-------+-------+---------------+---------+---------+------+------+---</span><br><span class="line">|  1 | SIMPLE      | t1    | range | PRIMARY       | PRIMARY | 4       | NULL |    3 | Using where |</span><br><span class="line">+----+-------------+-------+-------+---------------+---------+---------+------+------+---</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>index</strong>：表示全索引扫描 (full index scan)，index 与 ALL 区别为 index 类型只扫描所有的索引不扫描数据，通常比 ALL 快，因为索引文件通常比数据文件小。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select id from t1;</span><br><span class="line">+----+-------------+-------+-------+---------------+---------+---------+------+------+---</span><br><span class="line">| id | select_type | table | type  | possible_keys | key     | key_len | ref  | rows | Extra       |</span><br><span class="line">+----+-------------+-------+-------+---------------+---------+---------+------+------+---</span><br><span class="line">|  1 | SIMPLE      | t1    | index | NULL          | PRIMARY | 4       | NULL |    6 | Using index |</span><br><span class="line">+----+-------------+-------+-------+---------------+---------+---------+------+------+---</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>ALL</strong>：表示全表扫描，这个类型的查询是性能最差的查询之一。通常来说，查询不应该出现 ALL 类型的查询, 因为这样的查询在数据量大的情况下，对数据库的性能是巨大的灾难。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from t2 where other_column = &apos;&apos;;</span><br><span class="line">+----+-------------+-------+------+---------------+------+---------+------+------+-------</span><br><span class="line">| id | select_type | table | type | possible_keys | key  | key_len | ref  | rows | Extra       |</span><br><span class="line">+----+-------------+-------+------+---------------+------+---------+------+------+-------</span><br><span class="line">|  1 | SIMPLE      | t2    | ALL  | NULL          | NULL | NULL    | NULL |    5 | Using where |</span><br><span class="line">+----+-------------+-------+------+---------------+------+---------+------+------+-------</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<blockquote>
+<p><code>possible_keys</code>：显示可能应用在这张表中的索引。查询涉及到的字段上若存在索引，则该索引将被列出，但不一定被查询实际使用。</p>
+</blockquote>
+<blockquote>
+<p><code>key</code>：实际使用的索引。如果为NULL，则没有使用索引，key 参数可以作为使用了索引的判断标准。</p>
+</blockquote>
+<blockquote>
+<p><code>key_len</code>：使用的索引的长度。key_len 显示的值为索引字段的最大可能长度，并非实际使用长度。在不损失精确性的情况下，长度越短越好。</p>
+</blockquote>
+<blockquote>
+<p><code>ref</code>：显示索引的哪一列被使用了，如果可能的话是一个常数，哪些列或常量被用于查找索引列上的值。</p>
+</blockquote>
+<blockquote>
+<p><code>rows</code>：根据表统计信息及索引选用情况，大致估算出找到所需的记录所需要读取的行数，当然越小越好。</p>
+</blockquote>
+<blockquote>
+<p><code>Extra</code>：附加信息，提供了与操作有关联的信息。</p>
+</blockquote>
+<ul>
+<li><strong>Using filesort</strong>：看到这个的时候，查询就需要优化了。说明 MySQL 会对数据使用一个外部的索引排序，而不是按照表内的索引顺序进行读取。MySQL 中无法利用索引完成的排序操作称之为文件排序，MySQL 需要进行额外的步骤来发现如何对返回的行排序。它根据连接类型以及存储排序键值和匹配条件的全部行的行指针来排序全部行。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select other_column from t1 where other_column = &apos;A&apos; order by other_column3;</span><br><span class="line">+----+-------------+-------+------+---------------+------+---------+-------+------+---------</span><br><span class="line">| id | select_type | table | type | possible_keys | key  | key_len | ref   | rows | Extra                       |</span><br><span class="line">+----+-------------+-------+------+---------------+------+---------+-------+------+---------</span><br><span class="line">|  1 | SIMPLE      | t1    | ref  | idx           | idx  | 92      | const |    1 | Using where; Using filesort |</span><br><span class="line">+----+-------------+-------+------+---------------+------+---------+-------+------+---------</span><br></pre></td></tr></table></figure>
+
+<p>优化案例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create index u_idx2 on t1(other_column,other_column2,other_column3);</span><br><span class="line">mysql&gt; explain select other_column from t1 where other_column = &apos;A&apos; order by other_column2,other_column3;</span><br><span class="line">+----+-------------+-------+------+---------------+--------+---------+-------+------+-------</span><br><span class="line">| id | select_type | table | type | possible_keys | key    | key_len | ref   | rows | Extra       |</span><br><span class="line">+----+-------------+-------+------+---------------+--------+---------+-------+------+-------</span><br><span class="line">|  1 | SIMPLE      | t1    | ref  | idx,u_idx2    | u_idx2 | 92      | const |    1 | Using where |</span><br><span class="line">+----+-------------+-------+------+---------------+--------+---------+-------+------+-------</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>Using index</strong>：列数据是从仅仅使用了索引中的信息而没有读取实际的行的表返回的，这发生在对表的全部的请求列都是同一个索引的部分的时候。表示相应的 select 操作中使用了覆盖索引（Coverindex ing），避免访问了表的数据航，效果理想！如果同时出现 using where，表示索引被用来执行索引键值的查找；如果没有同时出现using where，表示索引用来读取数据而非执行查找动作。</li>
+</ul>
+<p><strong>覆盖索引</strong>： 就是 select 的数据列只用从索引中就能够取得，不必读取数据行，MySQL 可以利用索引返回 select 列表中的字段，而不必根据索引再次读取数据文件，换句话说查询列要被所建的索引覆盖。注意的是，如果要使用覆盖索引，一定要注意 select 列表中只读取出需要的列，而不是 select *，因为如果将所有字段一起做索引会导致索引文件过大，降低查询性能。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select other_column from t1 where other_column in (&apos;A&apos;,&apos;B&apos;,&apos;C&apos;) group by other_column,other_column2;</span><br><span class="line">+----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span><br><span class="line">| id | select_type | table | type  | possible_keys | key    | key_len | ref  | rows | Extra                    |</span><br><span class="line">+----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span><br><span class="line">|  1 | SIMPLE      | t1    | range | idx,u_idx2    | u_idx2 | 92      | NULL |    3 | Using where; Using index |</span><br><span class="line">+----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select other_column,other_column2,other_column3 from t1;</span><br><span class="line">+----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span><br><span class="line">| id | select_type | table | type  | possible_keys | key    | key_len | ref  | rows | Extra       |</span><br><span class="line">+----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span><br><span class="line">|  1 | SIMPLE      | t1    | index | NULL          | u_idx2 | 276     | NULL |    6 | Using index |</span><br><span class="line">+----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>Using temporary</strong>：看到这个，查询需要优化了。MySQL 需要创建一个临时表来存储结果，这通常发生在对不同的列集进行 ORDER BY 上和 GROUP BY 上，拖慢 SQL查询。</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select other_column from t1 where other_column in (&apos;A&apos;,&apos;B&apos;,&apos;C&apos;) group by other_column3;</span><br><span class="line">+----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span><br><span class="line">| id | select_type | table | type  | possible_keys | key    | key_len | ref  | rows | Extra                                                     |</span><br><span class="line">+----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span><br><span class="line">|  1 | SIMPLE      | t1    | range | idx,u_idx2    | u_idx2 | 92      | NULL |    3 | Using where; Using index; Using temporary; Using filesort |</span><br><span class="line">+----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span><br></pre></td></tr></table></figure>
+
+<p>优化案例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select other_column from t1 where other_column in (&apos;A&apos;,&apos;B&apos;,&apos;C&apos;) group by other_column,other_column2;</span><br><span class="line">+----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span><br><span class="line">| id | select_type | table | type  | possible_keys | key    | key_len | ref  | rows | Extra                    |</span><br><span class="line">+----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span><br><span class="line">|  1 | SIMPLE      | t1    | range | idx,u_idx2    | u_idx2 | 92      | NULL |    3 | Using where; Using index |</span><br><span class="line">+----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span><br></pre></td></tr></table></figure>
+
 <h2 id="SQL调优"><a href="#SQL调优" class="headerlink" title="SQL调优"></a>SQL调优</h2><p>INSERT 性能：MySQL 用单条 INSERT 语句处理多个插入比使用多条 INSERT 语句快。</p>
 <p>从表中删除所有行，不要使用 DELETE ，建议使用 TRUNCATE TABLE 语句。TRUNCATE 实际是删除原来的表并重新创建一个表，而不是逐行删除表中的数据。</p>
-<h2 id="架构调优"><a href="#架构调优" class="headerlink" title="架构调优"></a>架构调优</h2><h2 id="参数调优"><a href="#参数调优" class="headerlink" title="参数调优"></a>参数调优</h2>
+<h2 id="索引调优"><a href="#索引调优" class="headerlink" title="索引调优"></a>索引调优</h2><h2 id="参数调优"><a href="#参数调优" class="headerlink" title="参数调优"></a>参数调优</h2>
           
         
       
@@ -1008,7 +1577,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/blog/2019/07/10/Front-Learning/" class="post-title-link" itemprop="url">初涉前端</a>
+                <a href="/blog/2019/07/10/Front-Learning/" class="post-title-link" itemprop="url">前端学习笔记</a>
               
             
           </h1>
@@ -1050,7 +1619,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-11 10:10:20" itemprop="dateModified" datetime="2019-08-11T10:10:20+08:00">2019-08-11</time>
+                <time title="修改时间：2019-08-19 10:34:15" itemprop="dateModified" datetime="2019-08-19T10:34:15+08:00">2019-08-19</time>
               
             
           </span>
@@ -2145,404 +2714,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/04/IELTS/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/04/IELTS/" class="post-title-link" itemprop="url">备考雅思</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-04 14:56:41" itemprop="dateCreated datePublished" datetime="2019-07-04T14:56:41+08:00">2019-07-04</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-08-11 10:09:48" itemprop="dateModified" datetime="2019-08-11T10:09:48+08:00">2019-08-11</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/其他/" itemprop="url" rel="index"><span itemprop="name">其他</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="相关信息"><a href="#相关信息" class="headerlink" title="相关信息"></a>相关信息</h2><p><a href="https://ielts.etest.net.cn" target="_blank" rel="noopener">报名入口</a></p>
-<p>考试时间：2019年10月19日 <a href="https://ielts.etest.net.cn/showTestCenterInfo?id=5B19A0CFF31C65E2E0530746C80AB4DA" target="_blank" rel="noopener">青岛中国海洋大学继续教育学院</a></p>
-<p>考试费用：￥2020</p>
-<p>转考费用：￥420</p>
-<h2 id="备考资料"><a href="#备考资料" class="headerlink" title="备考资料"></a>备考资料</h2><p>《剑桥雅思官方真题》</p>
-<p>《剑桥雅思真题精讲》</p>
-<p>《7天搞定雅思高频核心词》</p>
-<p>《雅思词汇真经》</p>
-<p>《顾家北手把手教你雅思写作》</p>
-<p>《雅思王听力真题语料库》</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/06/18/mysql-innodb_buffer_pool_size/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/06/18/mysql-innodb_buffer_pool_size/" class="post-title-link" itemprop="url">MySQL · 配置参数 · innodb_buffer_pool_size</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-06-18 14:09:04" itemprop="dateCreated datePublished" datetime="2019-06-18T14:09:04+08:00">2019-06-18</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-08-06 13:59:29" itemprop="dateModified" datetime="2019-08-06T13:59:29+08:00">2019-08-06</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>计算机使用大部分内存来提升对经常访问数据的性能，这就是我们所知的缓存。缓存是系统一个非常重要的组成部分，因为访问硬盘的数据可能会慢到 100 到 100000 倍，这取决访问的数据量。<a href="https://baike.baidu.com/item/myisam" target="_blank" rel="noopener">MyISAM</a> 使用的是操作系统的文件系统缓存，来缓存那些经常被查询的数据。<a href="https://baike.baidu.com/item/innodb" target="_blank" rel="noopener">InnoDB</a> 不依赖操作系统的缓存，自己在 <a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-buffer-pool-resize.html" target="_blank" rel="noopener">InnoDB Buffer Pool</a> 处理缓存。</p>
-<h2 id="参数定义"><a href="#参数定义" class="headerlink" title="参数定义"></a>参数定义</h2><p><strong>innodb_buffer_pool_size</strong> ，该参数定义 InnoDB 存储引擎的表数据和索引数据的最大内存缓冲区，同时提供为数据块和索引块做缓存。</p>
-<p>其主要作用：</p>
-<ul>
-<li>数据缓存 – InnoDB 数据页面</li>
-<li>索引缓存 – 索引数据</li>
-<li>缓冲数据 – 更改的数据（通常称为脏页）在被刷新到硬盘之前先存放到缓冲</li>
-<li>内部结构 – 如自适应哈希索引、行锁等</li>
-</ul>
-<p>InnoDB Buffer Pool 缓存命中率，计算公式：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">InnoDB Buffer Pool 脏页比率，计算公式：Innodb_buffer_pool_pages_dirty / Innodb_buffer_pool_pages_data * 100%</span><br><span class="line">InnoDB Buffer Pool 使用率，计算公式：innodb_buffer_pool_pages_data / ( innodb_buffer_pool_pages_data + innodb_buffer_pool_pages_free ) * 100%</span><br></pre></td></tr></table></figure>
-
-<h2 id="参数设置"><a href="#参数设置" class="headerlink" title="参数设置"></a>参数设置</h2><p>InnoDB Buffer Pool 缓存了表数据和二级索引在内存中，提高数据库效率，因此设置 innodb_buffer_pool_size 到合理数值对实例性能影响很大。当设置偏小，会导致数据库大量直接对磁盘的访问，查询效率低。设置过大，会导致实例占用内存太多，容易发生 OOM。</p>
-<blockquote>
-<p><strong>独立服务器</strong></p>
-</blockquote>
-<p>如果仅 MySQL 服务独享服务器资源，推荐设置 innodb_buffer_pool_size 为服务器总可用内存的 80%。</p>
-<p>设置 80% 的原因，是因为其它也需要内存：</p>
-<ul>
-<li>单次查询至少需要几K（甚至几M）的内存</li>
-<li>各种其它内部的 MySQL 结构和缓存</li>
-<li>InnoDB 有一些结构是不用缓冲池的内存的（字典缓存，文件系统，锁系统和页哈希表等）</li>
-<li>有一些 MySQL 文件是在 OS 缓存里的（Binary 日志，Relay 日志，InnoDB 事务日志等）</li>
-<li>操作系统消耗内存</li>
-</ul>
-<blockquote>
-<p><strong>共享服务器</strong></p>
-</blockquote>
-<p>如果 MySQL 服务与其它应用共享资源，那么上面 80% 的经验就不那么适用了。具体设置多少，需要根据服务器内存大小和应用消耗进行调整。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">innodb_buffer_pool_reads：表示InnoDB缓冲池无法满足的请求数，需要从磁盘中读取。</span></span><br><span class="line"><span class="string">innodb_buffer_pool_read_requests：表示从内存中读取逻辑的请求数。</span></span><br><span class="line"></span><br><span class="line"><span class="string">InnoDB</span> <span class="string">Buffer</span> <span class="string">Pool读缓存命中率，计算公式：(Innodb_buffer_pool_read_requests</span> <span class="bullet">-</span> <span class="string">Innodb_buffer_pool_reads)</span> <span class="string">/</span> <span class="string">Innodb_buffer_pool_read_requests</span> <span class="string">*</span> <span class="number">100</span><span class="string">%</span></span><br><span class="line"><span class="string">此值低于99%，则可以考虑增加</span> <span class="string">innodb_buffer_pool_size</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="参数修改"><a href="#参数修改" class="headerlink" title="参数修改"></a>参数修改</h2><p>MySQL 5.7 版本之后，可以在线修改</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql &gt; set global innodb_buffer_pool_size = size_in_bytes;</span><br><span class="line">mysql &gt; show variables like &quot;innodb_buffer_pool_size&quot;;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">注意:</span></span><br><span class="line"><span class="number">1</span><span class="string">)</span> <span class="string">innodb_buffer_pool_size</span> <span class="string">在线修改时，用户的请求将会阻塞，需要在业务低峰期和没有大事务操作时候进行</span></span><br><span class="line"><span class="number">2</span><span class="string">)</span> <span class="string">同时要修改配置文件</span> <span class="string">my.cnf，防止重启后恢复到原来的值</span></span><br></pre></td></tr></table></figure>
-
-<p>MySQL 5.7 版本之前，需要修改 <code>my.cnf</code> 配置文件，然后重启 MySQL 服务</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[mysqld]</span></span><br><span class="line"><span class="string">innodb_buffer_pool_size</span>  <span class="string">=</span> <span class="number">20480</span><span class="string">M</span></span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p><strong>参考</strong></p>
-</blockquote>
-<p><a href="http://mysql.taobao.org/monthly/2018/03/06/" target="_blank" rel="noopener">http://mysql.taobao.org/monthly/2018/03/06/</a></p>
-<p><a href="https://www.centos.bz/2016/11/innodb_buffer_pool_size-set-the-right-size/" target="_blank" rel="noopener">https://www.centos.bz/2016/11/innodb_buffer_pool_size-set-the-right-size/</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2591,7 +2762,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">44</span>
+                    <span class="site-state-item-count">46</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2683,7 +2854,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">22</span>
+                      
+                    
+                    <span class="site-state-item-count">23</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
