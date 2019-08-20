@@ -1314,7 +1314,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-20 11:17:08" itemprop="dateModified" datetime="2019-08-20T11:17:08+08:00">2019-08-20</time>
+                <time title="修改时间：2019-08-20 11:25:13" itemprop="dateModified" datetime="2019-08-20T11:25:13+08:00">2019-08-20</time>
               
             
           </span>
@@ -1383,7 +1383,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">举例：</span><br><span class="line">select * from user where id = 1</span><br></pre></td></tr></table></figure>
 
 <h3 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h3><p>负责与客户端建立连接、验证权限、管理连接。一条 SQL 语句从客户端传过来首先会创建一个连接，用 <code>username</code> 和 <code>password</code> 认证身份，连接完成后如果没有其他操作便处于 <code>Sleep</code> 状态，默认 <code>8h</code> 自动断开空闲连接。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">连接命令：</span><br><span class="line">mysql -h$ip -P$port -u$user -p</span><br><span class="line"></span><br><span class="line">环节：</span><br><span class="line">1）TCP握手，建立连接</span><br><span class="line">2）认证身份</span><br><span class="line">3）获取权限</span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">连接命令：</span></span><br><span class="line"><span class="string">mysql</span> <span class="bullet">-h$ip</span> <span class="bullet">-P$port</span> <span class="bullet">-u$user</span> <span class="bullet">-p</span></span><br><span class="line"></span><br><span class="line"><span class="string">环节：</span></span><br><span class="line"><span class="number">1</span><span class="string">）TCP握手，建立连接</span></span><br><span class="line"><span class="number">2</span><span class="string">）认证身份</span></span><br><span class="line"><span class="number">3</span><span class="string">）获取权限</span></span><br></pre></td></tr></table></figure>
 
 <p><strong>长连接</strong>：持续使用同一个连接处理请求，维持长连接需要消耗内存。</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">基本步骤：建立连接</span> <span class="bullet">-&gt;</span> <span class="string">数据传输...（保持连接）…</span> <span class="string">数据传输</span> <span class="bullet">-&gt;</span> <span class="string">关闭连接</span></span><br><span class="line"><span class="string">优点：省去较多TCP建立和关闭的操作，减少浪费，节约时间</span></span><br><span class="line"><span class="string">适合场景：操作频繁，点对点的通讯，且连接数不能太多。例如：数据库的连接用长连接</span></span><br></pre></td></tr></table></figure>
@@ -1399,13 +1399,13 @@
 <li>查询缓存未命中： 继续执行，执行完成后，结果会被存入查询缓存中</li>
 </ul>
 <p>查询缓存默认是关闭的，由 <code>query_cache_type</code> 和 <code>query_cache_size</code> 两个参数控制：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">query_cache_type：否打开查询缓存，可以设置为OFF、ON和DEMAND，DEMAND表示只有在查询语句中明确写明SQL_CACHE的语句才会放入查询缓存</span><br><span class="line">query_cache_size：查询缓存使用的总内存空间</span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">query_cache_type：否打开查询缓存，可以设置为OFF、ON和DEMAND，DEMAND表示只有在查询语句中明确写明SQL_CACHE的语句才会放入查询缓存</span></span><br><span class="line"><span class="string">query_cache_size：查询缓存使用的总内存空间</span></span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p>备注：<strong>生产环境不推荐使用查询缓存</strong>，因为只要有对表数据更新，表上的所有缓存都会清空然后重新创建缓存。查询缓存适合有大量相同查询的应用，不适合有大量数据更新的应用，MySQL 8.0 直接将查询缓存功能删掉了，可以使用 <code>select SQL_CACHE * from user where id = 1</code> 按需使用查询缓存。</p>
 </blockquote>
 <h3 id="分析器"><a href="#分析器" class="headerlink" title="分析器"></a>分析器</h3><p>先做词法分析，分析 SQL 语句中的关键字，生成对应的解析树，然后做语法分析，判断是否有语法错误。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SELECT &apos;xx&apos; FROM &apos;xx&apos; WHERE &apos;xx&apos;</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="string">'xx'</span> <span class="keyword">FROM</span> <span class="string">'xx'</span> <span class="keyword">WHERE</span> <span class="string">'xx'</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h3><p>在表中有多个索引的时候，由优化器决定使用哪个索引，或者多表关联（join）的时候决定连接顺序，<strong>选择效率高、代价小的方案，生成执行计划</strong>。</p>
 <p>优化器有两类：基于规则的优化器 (Rule-Based Optimizer，<strong>RBO</strong>) 和基于代价的优化器 (Cost-Based Optimizer，<strong>CBO</strong>)。基于代价的优化器，是根据优化规则对关系表达式进行转换，这里的转换是说一个关系表达式经过优化规则后会生成另外一个关系表达式，同时原有表达式也会保留，经过一系列转换后会生成多个执行计划，然后 CBO 会根据统计信息和代价模型 (Cost Model) 计算每个执行计划的 Cost，从中挑选 Cost 最小的执行计划。由上可知，CBO 中有两个依赖：统计信息和代价模型，统计信息的准确与否、代价模型的合理与否都会影响 CBO 选择最优计划。</p>
