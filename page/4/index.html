@@ -1314,7 +1314,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-20 10:31:13" itemprop="dateModified" datetime="2019-08-20T10:31:13+08:00">2019-08-20</time>
+                <time title="修改时间：2019-08-20 11:17:08" itemprop="dateModified" datetime="2019-08-20T11:17:08+08:00">2019-08-20</time>
               
             
           </span>
@@ -1386,13 +1386,11 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">连接命令：</span><br><span class="line">mysql -h$ip -P$port -u$user -p</span><br><span class="line"></span><br><span class="line">环节：</span><br><span class="line">1）TCP握手，建立连接</span><br><span class="line">2）认证身份</span><br><span class="line">3）获取权限</span><br></pre></td></tr></table></figure>
 
 <p><strong>长连接</strong>：持续使用同一个连接处理请求，维持长连接需要消耗内存。</p>
-<p>基本步骤：建立连接 -&gt; 数据传输…（保持连接）… 数据传输 -&gt; 关闭连接</p>
-<p>优点：省去较多TCP建立和关闭的操作，减少浪费，节约时间。</p>
-<p>适合场景：操作频繁，点对点的通讯，且连接数不能太多。例如：数据库的连接用长连接。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">基本步骤：建立连接</span> <span class="bullet">-&gt;</span> <span class="string">数据传输...（保持连接）…</span> <span class="string">数据传输</span> <span class="bullet">-&gt;</span> <span class="string">关闭连接</span></span><br><span class="line"><span class="string">优点：省去较多TCP建立和关闭的操作，减少浪费，节约时间</span></span><br><span class="line"><span class="string">适合场景：操作频繁，点对点的通讯，且连接数不能太多。例如：数据库的连接用长连接</span></span><br></pre></td></tr></table></figure>
+
 <p><strong>短连接</strong>：一个连接仅执行几次后便断开，然后重新建立连接。</p>
-<p>基本步骤：建立连接 -&gt; 数据传输 -&gt; 关闭连接</p>
-<p>优点：管理起来比较简单，存在的连接都是有用的连接，不需要额外的控制手段。</p>
-<p>适合场景：并发量大，但每个用户无需频繁操作情况下需用短连接好。例如：web 网站。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">基本步骤：建立连接</span> <span class="bullet">-&gt;</span> <span class="string">数据传输</span> <span class="bullet">-&gt;</span> <span class="string">关闭连接</span></span><br><span class="line"><span class="string">优点：管理起来比较简单，存在的连接都是有用的连接，不需要额外的控制手段</span></span><br><span class="line"><span class="string">适合场景：并发量大，但每个用户无需频繁操作情况下需用短连接好。例如：web</span> <span class="string">网站</span></span><br></pre></td></tr></table></figure>
+
 <p><strong>连接池</strong>：是一些网络代理服务或应用服务器的特性，被所有连接的客户端共享使用，连接池可以加速连接，也可以减少连接，降低服务器负载。</p>
 <p><strong>线程池</strong>：MySQL 每个连接都分配一个单独的线程，线程的创建和销毁都有一定的开销，当线程过多都处于活跃状态，会导致频繁的上下文切换，从而造成巨大的开销，大量短查询的业务场景推荐使用线程池。</p>
 <h3 id="查询缓存"><a href="#查询缓存" class="headerlink" title="查询缓存"></a>查询缓存</h3><p>建立连接后，MySQL 在执行查询时会先对查询缓存进行查询，之前执行过的语句会以 <code>key-value</code> 形式被直接缓存在内存当中， <code>key</code> 是语句、<code>value</code> 是查询结果，查询后有 2 种结果：</p>
@@ -1417,9 +1415,8 @@
 <p><strong>示例</strong>：<code>explain select * from customer</code></p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from customer;</span><br><span class="line">+----+-------------+----------+------+---------------+------+---------+------+--------+</span><br><span class="line">| id | select_type | table    | type | possible_keys | key  | key_len | ref  | rows   | </span><br><span class="line">+----+-------------+----------+------+---------------+------+---------+------+--------+</span><br><span class="line">|  1 | SIMPLE      | customer | ALL  | NULL          | NULL | NULL    | NULL | 936161 |       </span><br><span class="line">+----+-------------+----------+------+---------------+------+---------+------+--------+</span><br><span class="line">1 row in set</span><br></pre></td></tr></table></figure>
 
-<h3 id="参数介绍"><a href="#参数介绍" class="headerlink" title="参数介绍"></a>参数介绍</h3><blockquote>
-<p><code>id</code>：SELECT 标识符，SQL 执行顺序的标识</p>
-</blockquote>
+<h3 id="参数介绍"><a href="#参数介绍" class="headerlink" title="参数介绍"></a>参数介绍</h3><h4 id="id"><a href="#id" class="headerlink" title="id"></a>id</h4><p><strong>含义</strong>：SELECT 标识符，SQL 执行顺序的标识。</p>
+<p><strong>三种情况</strong>：</p>
 <ul>
 <li><p>id 相同，执行顺序由上至下。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select t2.* from t1,t2,t3 where t1.id = t2.id and t1.id = t3.id and t1.other_column = &apos;&apos;;</span><br><span class="line">+----+-------------+-------+--------+---------------+---------+---------+---------------+------+-------------+</span><br><span class="line">| id | select_type | table | type   | possible_keys | key     | key_len | ref           | rows | Extra       |</span><br><span class="line">+----+-------------+-------+--------+---------------+---------+---------+---------------+------+-------------+</span><br><span class="line">| 1  | SIMPLE      | t1    | ALL    | PRIMARY       | NULL    | NULL    | NULL          | 5    | Using where |</span><br><span class="line">| 1  | SIMPLE      | t2    | eq_ref | PRIMARY       | PRIMARY | 4       | test_db.t1.id | 1    |             |</span><br><span class="line">| 1  | SIMPLE      | t3    | eq_ref | PRIMARY       | PRIMARY | 4       | test_db.t1.id | 1    | Using index |</span><br><span class="line">+----+-------------+-------+--------+---------------+---------+---------+---------------+------+-------------+</span><br></pre></td></tr></table></figure>
@@ -1432,71 +1429,79 @@
 
 </li>
 </ul>
-<blockquote>
-<p><code>select_type</code>：查询类型，主要用于区别普通查询、联合查询、子查询等复杂查询</p>
-</blockquote>
-<p><strong>SIMPLE</strong>：简单的 <code>select</code> 查询，查询中不包含子查询或者 <code>union</code> 联合查询。</p>
-<p><strong>PRIMARY</strong>：查询中若包含任何复杂的子部分，最外层查询则被标记为 <code>PRIMARY</code>。</p>
-<p><strong>SUBQUERY</strong>：在 <code>select</code>或 <code>where</code> 列表中包含了子查询。</p>
-<p><strong>DERIVED</strong>：在 <code>from</code> 列表中包含的子查询被标记为 <code>DERIVED</code>（衍生），MySQL 会递归执行这些子查询，把结果放在临时表里。</p>
-<p><strong>UNION</strong>：若第二个 <code>select</code> 出现在 <code>union</code> 之后，则被标记为 <code>union</code>；若 <code>union</code> 包含在 <code>from</code> 字句的查询中，外层 <code>select</code> 将被标记为 <code>DERIVED</code>。</p>
-<p><strong>UNION RESULT</strong>：两种 <code>union</code> 语句的合并。</p>
-<blockquote>
-<p><code>table</code>：查询涉及的表或者衍生表</p>
-</blockquote>
-<blockquote>
-<p><code>type</code>：显示连接使用的类型，常见的有7种，从最好到最差排序：<strong>system &gt; const &gt; eq_ref &gt; ref &gt; range &gt; index &gt; all</strong>（<strong>全表扫描</strong>），一般来说 <strong>至少达到 range 级别，最好达到 ref</strong></p>
-</blockquote>
-<p><strong>system</strong>：表只有一行记录，这是 <code>const</code> 类型的特例，只能用于 <code>myisam</code> 和 <code>memory</code> 表，可以忽略不计。</p>
-<p><strong>const</strong>：表示通过索引一次就找到了，<code>const</code> 用于 <code>primary key</code> 或者 <code>unique</code> 索引，因为只匹配一行数据，所以很快，如将主键置于 <code>where</code> 列表中，MySQL 就能将该查询转换为一个常量。</p>
+<h4 id="select-type"><a href="#select-type" class="headerlink" title="select_type"></a>select_type</h4><p><strong>含义</strong>：查询类型，主要用于区别普通查询、联合查询、子查询等复杂查询。</p>
+<p><strong>六种类型</strong>：</p>
+<ul>
+<li><strong>SIMPLE</strong>：简单的 <code>select</code> 查询，查询中不包含子查询或者 <code>union</code> 联合查询。</li>
+<li><strong>PRIMARY</strong>：查询中若包含任何复杂的子部分，最外层查询则被标记为 <code>PRIMARY</code>。</li>
+<li><strong>SUBQUERY</strong>：在 <code>select</code>或 <code>where</code> 列表中包含了子查询。</li>
+<li><strong>DERIVED</strong>：在 <code>from</code> 列表中包含的子查询被标记为 <code>DERIVED</code>（衍生），MySQL 会递归执行这些子查询，把结果放在临时表里。</li>
+<li><strong>UNION</strong>：若第二个 <code>select</code> 出现在 <code>union</code> 之后，则被标记为 <code>union</code>；若 <code>union</code> 包含在 <code>from</code> 字句的查询中，外层 <code>select</code> 将被标记为 <code>DERIVED</code>。</li>
+<li><strong>UNION RESULT</strong>：两种 <code>union</code> 语句的合并。</li>
+</ul>
+<h4 id="table"><a href="#table" class="headerlink" title="table"></a>table</h4><p><strong>含义</strong>：查询涉及的表或者衍生表。</p>
+<h4 id="type"><a href="#type" class="headerlink" title="type"></a>type</h4><p><strong>含义</strong>：显示连接使用的类型。常见的有7种，从最好到最差排序：<strong>system &gt; const &gt; eq_ref &gt; ref &gt; range &gt; index &gt; all</strong>（<strong>全表扫描</strong>），一般来说 <strong>至少达到 range 级别，最好达到 ref</strong>。</p>
+<p><strong>七种类型</strong>：</p>
+<ul>
+<li><p><strong>system</strong>：表只有一行记录，这是 <code>const</code> 类型的特例，只能用于 <code>myisam</code> 和 <code>memory</code> 表，可以忽略不计。</p>
+</li>
+<li><p><strong>const</strong>：表示通过索引一次就找到了，<code>const</code> 用于 <code>primary key</code> 或者 <code>unique</code> 索引，因为只匹配一行数据，所以很快，如将主键置于 <code>where</code> 列表中，MySQL 就能将该查询转换为一个常量。</p>
+</li>
+</ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from (select * from t1 where id =1) d1;</span><br><span class="line">+----+-------------+------------+--------+---------------+---------+---------+------+----</span><br><span class="line">| id | select_type | table      | type   | possible_keys | key     | key_len | ref  | rows | Extra |</span><br><span class="line">+----+-------------+------------+--------+---------------+---------+---------+------+----</span><br><span class="line">|  1 | PRIMARY     | &lt;derived2&gt; | system | NULL          | NULL    | NULL    | NULL |    1 |       |</span><br><span class="line">|  2 | DERIVED     | t1         | const  | PRIMARY       | PRIMARY | 4       |      |    1 |       |</span><br><span class="line">+----+-------------+------------+--------+---------------+---------+---------+------+----</span><br></pre></td></tr></table></figure>
 
-<p><strong>eq_ref</strong>：唯一性索引扫描，对于每个索引键，表中只有一条记录与之匹配，常见于主键或唯一索引扫描。</p>
+<ul>
+<li><strong>eq_ref</strong>：唯一性索引扫描，对于每个索引键，表中只有一条记录与之匹配，常见于主键或唯一索引扫描。</li>
+</ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from t1,t2 where t1.id = t2.id;</span><br><span class="line">+----+-------------+-------+--------+---------------+---------+---------+---------------</span><br><span class="line">| id | select_type | table | type   | possible_keys | key     | key_len | ref           | rows | Extra |</span><br><span class="line">+----+-------------+-------+--------+---------------+---------+---------+---------------</span><br><span class="line">|  1 | SIMPLE      | t1    | ALL    | PRIMARY       | NULL    | NULL    | NULL          |    5 |       |</span><br><span class="line">|  1 | SIMPLE      | t2    | eq_ref | PRIMARY       | PRIMARY | 4       | test_db.t1.id |    1 |       |</span><br><span class="line">+----+-------------+-------+--------+---------------+---------+---------+---------------</span><br></pre></td></tr></table></figure>
 
-<p><strong>ref</strong>：非唯一索引或者主键扫描，或者使用了<strong>最左前缀规则</strong>索引的查询，它返回匹配某个单独值的所有行，然而它可能会找到多个符合条件的行，所以它应该属于查找和扫描的混合体。</p>
+<ul>
+<li><strong>ref</strong>：非唯一索引或者主键扫描，或者使用了<strong>最左前缀规则</strong>索引的查询，它返回匹配某个单独值的所有行，然而它可能会找到多个符合条件的行，所以它应该属于查找和扫描的混合体。</li>
+</ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create index idx_name on t1(name);</span><br><span class="line">mysql&gt; explain select * from t1 where name =&apos;Tim&apos;;</span><br><span class="line">+----+-------------+-------+------+---------------+------+---------+-------+------+------</span><br><span class="line">| id | select_type | table | type | possible_keys | key  | key_len | ref   | rows | Extra       |</span><br><span class="line">+----+-------------+-------+------+---------------+------+---------+-------+------+------</span><br><span class="line">|  1 | SIMPLE      | t1    | ref  | idx_name          | idx_name  | 92      | const |    1 | Using where |</span><br><span class="line">+----+-------------+-------+------+---------------+------+---------+-------+------+------</span><br></pre></td></tr></table></figure>
 
-<p><strong>range</strong>：只检索给定范围的行，使用一个索引来选择行。<code>key</code>列显示使用了哪个索引，一般就是在你的 <code>where</code>语句中出现了 <code>between</code>、<code>&lt;&gt;</code>、<code>in</code> 等查询。这种范围扫描索引比全表扫描要好，因为它只需要开始于索引的某一点，而结束于另一点，不用扫描全部索引。</p>
+<ul>
+<li><strong>range</strong>：只检索给定范围的行，使用一个索引来选择行。<code>key</code>列显示使用了哪个索引，一般就是在你的 <code>where</code>语句中出现了 <code>between</code>、<code>&lt;&gt;</code>、<code>in</code> 等查询。这种范围扫描索引比全表扫描要好，因为它只需要开始于索引的某一点，而结束于另一点，不用扫描全部索引。</li>
+</ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from t1 where id between 2 and 5;</span><br><span class="line">+----+-------------+-------+-------+---------------+---------+---------+------+------+---</span><br><span class="line">| id | select_type | table | type  | possible_keys | key     | key_len | ref  | rows | Extra       |</span><br><span class="line">+----+-------------+-------+-------+---------------+---------+---------+------+------+---</span><br><span class="line">|  1 | SIMPLE      | t1    | range | PRIMARY       | PRIMARY | 4       | NULL |    3 | Using where |</span><br><span class="line">+----+-------------+-------+-------+---------------+---------+---------+------+------+---</span><br></pre></td></tr></table></figure>
 
-<p><strong>index</strong>：表示全索引扫描 (full index scan)，<code>index</code> 与 <code>all</code> 区别为 <code>index</code> 类型只扫描所有的索引不扫描数据，通常比 <code>all</code> 快，因为索引文件通常比数据文件小。</p>
+<ul>
+<li><strong>index</strong>：表示全索引扫描 (full index scan)，<code>index</code> 与 <code>all</code> 区别为 <code>index</code> 类型只扫描所有的索引不扫描数据，通常比 <code>all</code> 快，因为索引文件通常比数据文件小。</li>
+</ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select id from t1;</span><br><span class="line">+----+-------------+-------+-------+---------------+---------+---------+------+------+---</span><br><span class="line">| id | select_type | table | type  | possible_keys | key     | key_len | ref  | rows | Extra       |</span><br><span class="line">+----+-------------+-------+-------+---------------+---------+---------+------+------+---</span><br><span class="line">|  1 | SIMPLE      | t1    | index | NULL          | PRIMARY | 4       | NULL |    6 | Using index |</span><br><span class="line">+----+-------------+-------+-------+---------------+---------+---------+------+------+---</span><br></pre></td></tr></table></figure>
 
-<p><strong>all</strong>：表示全表扫描，这个类型的查询是性能最差的查询之一。通常来说，查询不应该出现 <code>all</code> 类型的查询, 因为这样的查询在数据量大的情况下，对数据库的性能是巨大的灾难。</p>
+<ul>
+<li><strong>all</strong>：表示全表扫描，这个类型的查询是性能最差的查询之一。通常来说，查询不应该出现 <code>all</code> 类型的查询, 因为这样的查询在数据量大的情况下，对数据库的性能是巨大的灾难。</li>
+</ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from t2 where other_column = &apos;&apos;;</span><br><span class="line">+----+-------------+-------+------+---------------+------+---------+------+------+-------</span><br><span class="line">| id | select_type | table | type | possible_keys | key  | key_len | ref  | rows | Extra       |</span><br><span class="line">+----+-------------+-------+------+---------------+------+---------+------+------+-------</span><br><span class="line">|  1 | SIMPLE      | t2    | ALL  | NULL          | NULL | NULL    | NULL |    5 | Using where |</span><br><span class="line">+----+-------------+-------+------+---------------+------+---------+------+------+-------</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p><code>possible_keys</code>：显示可能应用在这张表中的索引。查询涉及到的字段上若存在索引，则该索引将被列出，但不一定被查询实际使用。</p>
-</blockquote>
-<blockquote>
-<p><code>key</code>：实际使用的索引。如果为 <code>NULL</code>，则没有使用索引，<code>key</code> 参数可以作为使用了索引的判断标准。</p>
-</blockquote>
-<blockquote>
-<p><code>key_len</code>：使用的索引的长度。<code>key_len</code> 显示的值为索引字段的最大可能长度，并非实际使用长度。在不损失精确性的情况下，长度越短越好。</p>
-</blockquote>
-<blockquote>
-<p><code>ref</code>：显示索引的哪一列被使用了，如果可能的话是一个常数，哪些列或常量被用于查找索引列上的值。</p>
-</blockquote>
-<blockquote>
-<p><code>rows</code>：根据表统计信息及索引选用情况，大致估算出找到所需的记录所需要读取的行数，当然越小越好。</p>
-</blockquote>
-<blockquote>
-<p><code>Extra</code>：附加信息，提供了与操作有关联的信息。</p>
-</blockquote>
-<p><strong>Using filesort</strong>：看到这个的时候，查询就需要优化了。说明 MySQL 会对数据使用一个外部的索引排序，而不是按照表内的索引顺序进行读取。MySQL 中无法利用索引完成的排序操作称之为文件排序，MySQL 需要进行额外的步骤来发现如何对返回的行排序。它根据连接类型以及存储排序键值和匹配条件的全部行的行指针来排序全部行。</p>
+<h4 id="possible-keys"><a href="#possible-keys" class="headerlink" title="possible_keys"></a>possible_keys</h4><p><strong>含义</strong>：显示可能应用在这张表中的索引。查询涉及到的字段上若存在索引，则该索引将被列出，但不一定被查询实际使用。</p>
+<h4 id="key"><a href="#key" class="headerlink" title="key"></a>key</h4><p><strong>含义</strong>：实际使用的索引。如果为 <code>NULL</code>，则没有使用索引，<code>key</code> 参数可以作为使用了索引的判断标准。</p>
+<h4 id="key-len"><a href="#key-len" class="headerlink" title="key_len"></a>key_len</h4><p><strong>含义</strong>：使用的索引的长度。<code>key_len</code> 显示的值为索引字段的最大可能长度，并非实际使用长度。在不损失精确性的情况下，长度越短越好。</p>
+<h4 id="ref"><a href="#ref" class="headerlink" title="ref"></a>ref</h4><p><strong>含义</strong>：显示索引的哪一列被使用了，如果可能的话是一个常数，哪些列或常量被用于查找索引列上的值。</p>
+<h4 id="rows"><a href="#rows" class="headerlink" title="rows"></a>rows</h4><p><strong>含义</strong>：根据表统计信息及索引选用情况，大致估算出找到所需的记录所需要读取的行数，当然越小越好。</p>
+<h4 id="Extra"><a href="#Extra" class="headerlink" title="Extra"></a>Extra</h4><p><strong>含义</strong>：附加信息，提供了与操作有关联的信息。</p>
+<p><strong>三种类型</strong>：</p>
+<ul>
+<li><strong>Using filesort</strong>：看到这个的时候，查询就需要优化了。说明 MySQL 会对数据使用一个外部的索引排序，而不是按照表内的索引顺序进行读取。MySQL 中无法利用索引完成的排序操作称之为文件排序，MySQL 需要进行额外的步骤来发现如何对返回的行排序。它根据连接类型以及存储排序键值和匹配条件的全部行的行指针来排序全部行。</li>
+</ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select other_column from t1 where other_column = &apos;A&apos; order by other_column3;</span><br><span class="line">+----+-------------+-------+------+---------------+------+---------+-------+------+---------</span><br><span class="line">| id | select_type | table | type | possible_keys | key  | key_len | ref   | rows | Extra                       |</span><br><span class="line">+----+-------------+-------+------+---------------+------+---------+-------+------+---------</span><br><span class="line">|  1 | SIMPLE      | t1    | ref  | idx           | idx  | 92      | const |    1 | Using where; Using filesort |</span><br><span class="line">+----+-------------+-------+------+---------------+------+---------+-------+------+---------</span><br></pre></td></tr></table></figure>
 
 <p>优化案例：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create index u_idx2 on t1(other_column,other_column2,other_column3);</span><br><span class="line">mysql&gt; explain select other_column from t1 where other_column = &apos;A&apos; order by other_column2,other_column3;</span><br><span class="line">+----+-------------+-------+------+---------------+--------+---------+-------+------+-------</span><br><span class="line">| id | select_type | table | type | possible_keys | key    | key_len | ref   | rows | Extra       |</span><br><span class="line">+----+-------------+-------+------+---------------+--------+---------+-------+------+-------</span><br><span class="line">|  1 | SIMPLE      | t1    | ref  | idx,u_idx2    | u_idx2 | 92      | const |    1 | Using where |</span><br><span class="line">+----+-------------+-------+------+---------------+--------+---------+-------+------+-------</span><br></pre></td></tr></table></figure>
 
-<p><strong>Using index</strong>：列数据是从仅仅使用了索引中的信息而没有读取实际的行的表返回的，这发生在对表的全部的请求列都是同一个索引的部分的时候。表示相应的 <code>select</code> 操作中使用了覆盖索引，避免访问了表的数据航，效果理想！如果同时出现 <code>using where</code>，表示索引被用来执行索引键值的查找；如果没有同时出现 <code>using where</code>，表示索引用来读取数据而非执行查找动作。</p>
+<ul>
+<li><p><strong>Using index</strong>：列数据是从仅仅使用了索引中的信息而没有读取实际的行的表返回的，这发生在对表的全部的请求列都是同一个索引的部分的时候。表示相应的 <code>select</code> 操作中使用了覆盖索引，避免访问了表的数据航，效果理想！如果同时出现 <code>using where</code>，表示索引被用来执行索引键值的查找；如果没有同时出现 <code>using where</code>，表示索引用来读取数据而非执行查找动作。</p>
 <p><strong>覆盖索引</strong>： 就是 <code>select</code> 的数据列只用从索引中就能够取得，不必读取数据行，MySQL 可以利用索引返回 <code>select</code> 列表中的字段，而不必根据索引再次读取数据文件，换句话说查询列要被所建的索引覆盖。注意的是，如果要使用覆盖索引，一定要注意 <code>select</code> 列表中只读取出需要的列，而不是 <code>select *</code>，因为如果将所有字段一起做索引会导致索引文件过大，降低查询性能。</p>
+</li>
+</ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select other_column from t1 where other_column in (&apos;A&apos;,&apos;B&apos;,&apos;C&apos;) group by other_column,other_column2;</span><br><span class="line">+----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span><br><span class="line">| id | select_type | table | type  | possible_keys | key    | key_len | ref  | rows | Extra                    |</span><br><span class="line">+----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span><br><span class="line">|  1 | SIMPLE      | t1    | range | idx,u_idx2    | u_idx2 | 92      | NULL |    3 | Using where; Using index |</span><br><span class="line">+----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select other_column,other_column2,other_column3 from t1;</span><br><span class="line">+----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span><br><span class="line">| id | select_type | table | type  | possible_keys | key    | key_len | ref  | rows | Extra       |</span><br><span class="line">+----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span><br><span class="line">|  1 | SIMPLE      | t1    | index | NULL          | u_idx2 | 276     | NULL |    6 | Using index |</span><br><span class="line">+----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span><br></pre></td></tr></table></figure>
 
-<p><strong>Using temporary</strong>：看到这个，查询需要优化了。MySQL 需要创建一个临时表来存储结果，这通常发生在对不同的列集进行 <code>ORDER BY</code> 上和 <code>GROUP BY</code> 上，拖慢 SQL查询。</p>
+<ul>
+<li><strong>Using temporary</strong>：看到这个，查询需要优化了。MySQL 需要创建一个临时表来存储结果，这通常发生在对不同的列集进行 <code>ORDER BY</code> 上和 <code>GROUP BY</code> 上，拖慢 SQL查询。</li>
+</ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select other_column from t1 where other_column in (&apos;A&apos;,&apos;B&apos;,&apos;C&apos;) group by other_column3;</span><br><span class="line">+----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span><br><span class="line">| id | select_type | table | type  | possible_keys | key    | key_len | ref  | rows | Extra                                                     |</span><br><span class="line">+----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span><br><span class="line">|  1 | SIMPLE      | t1    | range | idx,u_idx2    | u_idx2 | 92      | NULL |    3 | Using where; Using index; Using temporary; Using filesort |</span><br><span class="line">+----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span><br></pre></td></tr></table></figure>
 
 <p>优化案例：</p>
