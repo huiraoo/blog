@@ -868,7 +868,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-22 09:48:44" itemprop="dateModified" datetime="2019-08-22T09:48:44+08:00">2019-08-22</time>
+                <time title="修改时间：2019-08-22 10:24:43" itemprop="dateModified" datetime="2019-08-22T10:24:43+08:00">2019-08-22</time>
               
             
           </span>
@@ -922,7 +922,7 @@
       
         
           
-            <h2 id="从库备份失败"><a href="#从库备份失败" class="headerlink" title="从库备份失败"></a>从库备份失败</h2><h3 id="现象描述"><a href="#现象描述" class="headerlink" title="现象描述"></a>现象描述</h3><p>据备份供应商反映，昨天晚上 22:00， XX系统 MySQL 备份从库失败，使用的备份工具是 <code>mysqldump</code>，请求协助检查备份失败原因。</p>
+            <h2 id="从库备份失败"><a href="#从库备份失败" class="headerlink" title="从库备份失败"></a>从库备份失败</h2><h3 id="现象描述"><a href="#现象描述" class="headerlink" title="现象描述"></a>现象描述</h3><p>据备份供应商反映，昨天晚上 22:00XX系统，从库备份失败，使用的备份工具是 <code>mysqldump</code>，请求协助定位备份失败原因。</p>
 <h3 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h3><p>（1）检查从库两个线程 <code>Slave_IO_Running</code> 和 <code>Slave_SQL_Running</code> 均是 <strong>Yes</strong>，说明主从复制链路正常，但是 <code>Seconds_Behind_Master</code> 不断增大，且主从数据延迟有不断扩大的趋势。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.133.0.51</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-binlog.000232</span><br><span class="line">          Read_Master_Log_Pos: 3108253</span><br><span class="line">               Relay_Log_File: relay-log.000004</span><br><span class="line">                Relay_Log_Pos: 169851605</span><br><span class="line">        Relay_Master_Log_File: mysql-binlog.000229</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">              Replicate_Do_DB: </span><br><span class="line">          Replicate_Ignore_DB: </span><br><span class="line">           Replicate_Do_Table: </span><br><span class="line">       Replicate_Ignore_Table: </span><br><span class="line">      Replicate_Wild_Do_Table: </span><br><span class="line">  Replicate_Wild_Ignore_Table: </span><br><span class="line">                   Last_Errno: 0</span><br><span class="line">                   Last_Error: </span><br><span class="line">                 Skip_Counter: 0</span><br><span class="line">          Exec_Master_Log_Pos: 169851386</span><br><span class="line">              Relay_Log_Space: 3270427001</span><br><span class="line">              Until_Condition: None</span><br><span class="line">               Until_Log_File: </span><br><span class="line">                Until_Log_Pos: 0</span><br><span class="line">           Master_SSL_Allowed: No</span><br><span class="line">           Master_SSL_CA_File: </span><br><span class="line">           Master_SSL_CA_Path: </span><br><span class="line">              Master_SSL_Cert: </span><br><span class="line">            Master_SSL_Cipher: </span><br><span class="line">               Master_SSL_Key: </span><br><span class="line">        Seconds_Behind_Master: 42302</span><br><span class="line">Master_SSL_Verify_Server_Cert: No</span><br><span class="line">              ....</span><br><span class="line">       </span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
 
@@ -937,17 +937,18 @@
 
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># at 169851605</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169851451 CRC32 0x6683bf99 	Anonymous_GTID	last_committed=1831	sequence_number=1832	rbr_</span></span><br><span class="line"><span class="string">only=yes</span></span><br><span class="line"><span class="string">/*!50718</span> <span class="string">SET</span> <span class="string">TRANSACTION</span> <span class="string">ISOLATION</span> <span class="string">LEVEL</span> <span class="string">READ</span> <span class="string">COMMITTED*//*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@SESSION.GTID_NEXT=</span> <span class="string">'ANONYMOUS'</span><span class="string">/*!*/;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># at 169851670</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169851525 CRC32 0x9d910e5d 	Query	thread_id=1254417	exec_time=0	error_code=0</span></span><br><span class="line"><span class="string">SET</span> <span class="string">TIMESTAMP=1563393778/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.pseudo_thread_id=1254417/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.foreign_key_checks=1,</span> <span class="string">@@session.sql_auto_is_null=0,</span> <span class="string">@@session.unique_checks=1,</span> <span class="string">@@session.autocommit=1/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.sql_mode=1436549128/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.auto_increment_increment=1,</span> <span class="string">@@session.auto_increment_offset=1/*!*/;</span></span><br><span class="line"><span class="string">/*!\C</span> <span class="string">utf8</span> <span class="string">*//*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.character_set_client=33,@@session.collation_connection=33,@@session.collation_server=33/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.lc_time_names=0/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.collation_database=DEFAULT/*!*/;</span></span><br><span class="line"><span class="string">BEGIN</span></span><br><span class="line"><span class="string">/*!*/;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># at 169851744</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169851626 CRC32 0x6b8bbd2d 	Table_map: `tdmetl`.`odsepg_zrfc_zco_zzfymx_sw` mapped to number 170</span></span><br><span class="line"><span class="number">018</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># at 169851845</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169859832 CRC32 0x338e105a 	Delete_rows: table id 170018</span></span><br></pre></td></tr></table></figure>
 
-<p>（5）检查表结构，发现该<strong>表数据量很大且无主键</strong>。由此基本确定其问题根本原因是：对无主键的表进行删除或者更新，导致从库夯住，该表数据量：77961221条。</p>
+<p>（5）检查表结构，发现该表数据量很大且无主键。由此基本确定其问题根本原因：<strong>对无主键的表进行删除或者更新，导致从库夯住</strong>。该表数据量：77961221条。</p>
 <p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g6873jkiw5j30yf0gigpp.jpg" alt="image-20190822092437992"></p>
-<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><p>执行下列 SQL，为该表添加自增主键</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">'xxxx'</span> <span class="keyword">ADD</span> <span class="keyword">id</span> <span class="built_in">int</span>(<span class="number">10</span>) <span class="keyword">UNSIGNED</span> primary <span class="keyword">key</span> AUTO_INCREMENT;</span><br></pre></td></tr></table></figure>
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><p>（1）表添加自增主键。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">'xxxx'</span> <span class="keyword">ADD</span> <span class="keyword">id</span> <span class="built_in">bigint</span>(<span class="number">10</span>) <span class="keyword">UNSIGNED</span> primary <span class="keyword">key</span> AUTO_INCREMENT;</span><br></pre></td></tr></table></figure>
 
+<p>（2）大表删除使用 <code>truncate</code> 命令。</p>
 <h3 id="建议"><a href="#建议" class="headerlink" title="建议"></a>建议</h3><ul>
 <li>避免无 <code>where</code> 条件的 <code>delete</code> 或 <code>update</code> 操作大表，如果需要全表删除，使用 <code>truncate</code> 操作。</li>
 <li>在 <code>binlog row</code> 模式下表结构最好能有主键。</li>
 </ul>
-<h2 id="主从复制中断"><a href="#主从复制中断" class="headerlink" title="主从复制中断"></a>主从复制中断</h2><h3 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h3><p>监控检测到xx系统主从复制中断，并发送了告警邮件，经检查 <code>Slave_SQL_Running</code> 为 <strong>No</strong></p>
-<h3 id="原因分析-1"><a href="#原因分析-1" class="headerlink" title="原因分析"></a>原因分析</h3><p>原因一般都很明显，记录在 <code>Last_Error</code>，根据报错原因选择合适地解决方法，最常用的解决办法是跳过这一条正在执行的 SQL。</p>
+<h2 id="主从复制中断"><a href="#主从复制中断" class="headerlink" title="主从复制中断"></a>主从复制中断</h2><h3 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h3><p>监控系统检测到xx项目主从复制中断，并发送了告警邮件</p>
+<h3 id="原因分析-1"><a href="#原因分析-1" class="headerlink" title="原因分析"></a>原因分析</h3><p>经检查 <code>Slave_SQL_Running</code> 为 <strong>No</strong>，原因一般都很明显，记录在 <code>Last_Error</code>，根据报错原因选择合适地解决方法，最常用的解决办法是跳过这一条正在执行的 SQL。</p>
 <h3 id="解决方法-1"><a href="#解决方法-1" class="headerlink" title="解决方法"></a>解决方法</h3><p>（1）登陆 <code>10.133.0.53</code></p>
 <p>（2）执行下面操作</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-slave-restart -h 'x.x.x.x' -u'xx' -p'xx' -P 3306</span><br></pre></td></tr></table></figure>
@@ -985,41 +986,40 @@
 <p><strong>解决方法</strong>：</p>
 <p>修改表结构为 <code>InnoDB</code> 存储引擎的表</p>
 <h2 id="表碎片问题"><a href="#表碎片问题" class="headerlink" title="表碎片问题"></a>表碎片问题</h2><p>表碎片是 MySQL 运维过程中比较常见的问题，碎片的存在十分影响数据库的性能。</p>
-<h4 id="判断方法"><a href="#判断方法" class="headerlink" title="判断方法"></a>判断方法</h4><p>MySQL 的碎片是否产生，通过查看</p>
+<h3 id="判断方法"><a href="#判断方法" class="headerlink" title="判断方法"></a>判断方法</h3><p>MySQL 的碎片是否产生，通过查看</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show table status from table_name\G;</span><br></pre></td></tr></table></figure>
 
-<p>这个命令中 Data_free 字段，如果该字段不为 0，则产生了数据碎片。</p>
-<h4 id="产生原因"><a href="#产生原因" class="headerlink" title="产生原因"></a>产生原因</h4><p><strong>1. 经常进行 delete 操作</strong></p>
+<p>这个命令中 <code>Data_free</code> 字段，如果该字段不为 0，则产生了数据碎片。</p>
+<h3 id="产生原因"><a href="#产生原因" class="headerlink" title="产生原因"></a>产生原因</h3><p><strong>1. 经常进行 delete 操作</strong></p>
 <p>经常进行 delete 操作，产生空白空间，如果进行新的插入操作，MySQL将尝试利用这些留空的区域，但仍然无法将其彻底占用，久而久之就产生了碎片；</p>
 <p><strong>2. update 更新</strong></p>
 <p>update 更新可变长度的字段(例如 varchar 类型)，将长的字符串更新成短的。之前存储的内容长，后来存储是短的，即使后来插入新数据，那么有一些空白区域还是没能有效利用的。</p>
-<h4 id="产生影响"><a href="#产生影响" class="headerlink" title="产生影响"></a>产生影响</h4><ol>
+<h3 id="产生影响"><a href="#产生影响" class="headerlink" title="产生影响"></a>产生影响</h3><ol>
 <li><p>由于碎片空间是不连续的，导致这些空间不能充分被利用；</p>
 </li>
 <li><p>由于碎片的存在，导致数据库的磁盘 I/O 操作变成离散随机读写，加重了磁盘 I/O 的负担。</p>
 </li>
 </ol>
-<h4 id="清理办法"><a href="#清理办法" class="headerlink" title="清理办法"></a>清理办法</h4><ul>
+<h3 id="清理办法"><a href="#清理办法" class="headerlink" title="清理办法"></a>清理办法</h3><ul>
 <li><p>MyISAM：optimize table 表名；（OPTIMIZE 可以整理数据文件,并重排索引）</p>
 </li>
 <li><p>InnoDB：</p>
-<p>（1）ALTER TABLE tablename ENGINE=InnoDB；(重建表存储引擎，重新组织数据) </p>
+<p>（1）LTER TABLE tablename ENGINE=InnoDB；(重建表存储引擎，重新组织数据) </p>
 <p>（2）进行一次数据的导入导出</p>
 </li>
 </ul>
-<p><strong>碎片清理的性能对比：</strong><br>引用我之前一个生产库的数据，对比一下清理前后的差异。</p>
+<p><strong>碎片清理的性能对比：</strong></p>
+<p>引用我之前一个生产库的数据，对比一下清理前后的差异。</p>
 <p>SQL执行速度：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select count(*) from test.twitter_11;</span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">select</span> <span class="string">count(*)</span> <span class="string">from</span> <span class="string">test.twitter_11;</span></span><br><span class="line"></span><br><span class="line"><span class="string">修改前：1</span> <span class="string">row</span> <span class="string">in</span> <span class="string">set</span> <span class="string">(7.37</span> <span class="string">sec)</span></span><br><span class="line"><span class="string">修改后：1</span> <span class="string">row</span> <span class="string">in</span> <span class="string">set</span> <span class="string">(1.28</span> <span class="string">sec)</span></span><br></pre></td></tr></table></figure>
 
-<p>修改前：1 row in set (7.37 sec)</p>
-<p>修改后：1 row in set (1.28 sec)</p>
-<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>通过对比，可以看到碎片清理前后，节省了很多空间，SQL执行效率更快。所以，<strong>在日常运维工作中，应对碎片进行定期清理，保证数据库有稳定的性能。</strong></p>
-<h2 id="创建触发器，报错提示-‘1419’"><a href="#创建触发器，报错提示-‘1419’" class="headerlink" title="创建触发器，报错提示 ‘1419’"></a>创建触发器，报错提示 ‘1419’</h2><figure class="highlight shell"><figcaption><span>l</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ERROR 1419 (HY000): You do not have the SUPER privilege and</span><br><span class="line">binary logging is enabled (you *might* want to use the less safe log_bin_trust_routine_creators variable)</span><br></pre></td></tr></table></figure>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>通过对比，可以看到碎片清理前后，节省了很多空间，SQL执行效率更快。所以，<strong>在日常运维工作中，应对碎片进行定期清理，保证数据库有稳定的性能。</strong></p>
+<h2 id="创建触发器，报错提示-‘1419’"><a href="#创建触发器，报错提示-‘1419’" class="headerlink" title="创建触发器，报错提示 ‘1419’"></a>创建触发器，报错提示 ‘1419’</h2><h3 id="问题现象-1"><a href="#问题现象-1" class="headerlink" title="问题现象"></a>问题现象</h3><figure class="highlight shell"><figcaption><span>l</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ERROR 1419 (HY000): You do not have the SUPER privilege and</span><br><span class="line">binary logging is enabled (you *might* want to use the less safe log_bin_trust_routine_creators variable)</span><br></pre></td></tr></table></figure>
 
-<p>有些操作要禁止掉对 SUPER 权限的要求，要处理可以设置 <code>log_bin_trust_routine_creators</code> 全局系统变量为1。默认地，这个变量值为0，可以通过如下在服务端进行修改：</p>
+<h3 id="原因分析-2"><a href="#原因分析-2" class="headerlink" title="原因分析"></a>原因分析</h3><p>有些操作要禁止掉对 SUPER 权限的要求，要处理可以设置 <code>log_bin_trust_routine_creators</code> 全局系统变量为 <code>1</code>，默认地，这个变量值为 <code>0</code>。</p>
+<h3 id="解决方法-2"><a href="#解决方法-2" class="headerlink" title="解决方法"></a>解决方法</h3><p>直接在数据库进行修改，也可以在启动服务器之时用 <code>--log-bin-trust-routine-creators</code> 选项来设置允许这个变量。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SET GLOBAL log_bin_trust_routine_creators = 1;</span><br></pre></td></tr></table></figure>
 
-<p>也可以在启动服务器之时用 <code>--log-bin-trust-routine-creators</code> 选项来设置允许这个变量。</p>
 
           
         
@@ -1801,7 +1801,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-20 13:22:15" itemprop="dateModified" datetime="2019-08-20T13:22:15+08:00">2019-08-20</time>
+                <time title="修改时间：2019-08-21 18:26:35" itemprop="dateModified" datetime="2019-08-21T18:26:35+08:00">2019-08-21</time>
               
             
           </span>
