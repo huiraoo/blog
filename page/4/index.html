@@ -868,7 +868,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-22 10:57:42" itemprop="dateModified" datetime="2019-08-22T10:57:42+08:00">2019-08-22</time>
+                <time title="修改时间：2019-08-22 11:02:54" itemprop="dateModified" datetime="2019-08-22T11:02:54+08:00">2019-08-22</time>
               
             
           </span>
@@ -961,52 +961,52 @@
 <h4 id="场景-amp-解决方法"><a href="#场景-amp-解决方法" class="headerlink" title="场景 &amp; 解决方法"></a>场景 &amp; 解决方法</h4><ul>
 <li>无主键、无索引或索引区分度不高</li>
 </ul>
-<p>现象：</p>
+<p><strong>现象</strong>：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">a.</span> <span class="string">show</span> <span class="string">slave</span> <span class="string">status，</span> <span class="string">显示position一直没有变</span></span><br><span class="line"><span class="string">b.</span> <span class="string">show</span> <span class="string">open</span> <span class="string">tables</span> <span class="string">where</span> <span class="string">In_use=1，</span> <span class="string">显示某个表一直是in_use为</span> <span class="number">1</span></span><br><span class="line"><span class="string">c.</span> <span class="string">show</span> <span class="string">create</span> <span class="string">table，查看表结构可以看到无主键，或者无任何索引，或者索引区分度很差</span></span><br></pre></td></tr></table></figure>
 
-<p>解决方法：</p>
+<p><strong>解决方法</strong>：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">a.</span> <span class="string">找到表区分度比较高的几个字段,</span> <span class="string">可以使用这个方法判断：</span></span><br><span class="line"><span class="string">select</span> <span class="string">count(*)</span> <span class="string">from</span> <span class="string">xx;</span></span><br><span class="line"><span class="string">select</span> <span class="string">count(*)</span> <span class="string">from</span> <span class="string">(select</span> <span class="string">distinct</span> <span class="string">xx</span> <span class="string">from</span> <span class="string">xxx)</span> <span class="string">t;</span></span><br><span class="line"><span class="string">如果2个查询count(*)的结果差不多，说明可以对这些字段加索引</span></span><br><span class="line"></span><br><span class="line"><span class="string">b.</span> <span class="string">备库</span> <span class="string">stop</span> <span class="string">slave;</span></span><br><span class="line"><span class="string">可能会执行比较久，因为需要回滚事务。</span></span><br><span class="line"></span><br><span class="line"><span class="string">c.</span> <span class="string">备库</span></span><br><span class="line"><span class="string">set</span> <span class="string">sql_log_bin=0;</span></span><br><span class="line"><span class="string">alter</span> <span class="string">table</span> <span class="string">xx</span> <span class="string">add</span> <span class="string">key</span> <span class="string">xx(xx);</span></span><br><span class="line"><span class="string">alter</span> <span class="string">table</span> <span class="string">'xxxx'</span> <span class="string">add</span> <span class="string">id</span> <span class="string">int(10)</span> <span class="string">unsigned</span> <span class="string">primary</span> <span class="string">key</span> <span class="string">AUTO_INCREMENT;</span></span><br><span class="line"></span><br><span class="line"><span class="string">d.</span> <span class="string">备库</span> <span class="string">start</span> <span class="string">slave</span></span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>主库上有大事务，导致从库延时</li>
 </ul>
-<p>现象：</p>
+<p><strong>现象</strong>：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">解析binlog文件，发现一直打印的是Write_rows</span></span><br></pre></td></tr></table></figure>
 
-<p>解决方法：</p>
+<p><strong>解决方法</strong>：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">事前防范：与开发沟通，增加缓存，异步写入数据库,减少业务直接对db的大事务写入</span></span><br><span class="line"><span class="string">事中补救：调整数据库中io相关的参数比如innodb_flush_log_at_trx_commit和sync_binlog，或者打开并行复制功能</span></span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>库写入频繁，从库压力跟不上导致延时</li>
 </ul>
-<p>现象：</p>
+<p><strong>现象</strong>：</p>
 <p>此类原因的主要现象是数据库的 <code>IUD</code> 操作非常多，<code>slave</code> 由于 <code>sql_thread</code> 单线程的原因追不上主库。</p>
-<p>解决方法：</p>
+<p><strong>解决方法</strong>：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">a.</span> <span class="string">升级从库的硬件配置，比如</span> <span class="string">ssd,fio</span></span><br><span class="line"><span class="string">b.</span> <span class="string">使用@丁奇的预热工具</span> <span class="bullet">-relay</span> <span class="string">fetch</span></span><br><span class="line"><span class="string">在备库sql线程执行更新之前，预先将相应的数据加载到内存中,并不能提高sql_thread线程执行sql的能力，</span> <span class="string">也不能加快io_thread线程读取日志的速度。</span></span><br><span class="line"><span class="string">c.</span> <span class="string">使用多线程复制</span> <span class="string">阿里MySQL团队实现的方案</span> <span class="bullet">--</span> <span class="string">基于行的并行复制。</span></span><br><span class="line"><span class="string">该方案允许对同一张表进行修改的两个事务并行执行，只要这两个事务修改了表中的不同的行。</span></span><br><span class="line"><span class="string">这个方案可以达到事务间更高的并发度，但是局限是必须使用Row格式的binlog。</span></span><br><span class="line"><span class="string">因为只有使用Row格式的binlog才可以知道一个事务所修改的行的范围，而使用Statement格式的binlog只能知道修改的表对象。</span></span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>大量 <code>myisam</code> 表，在备份时导致 <code>slave</code> 延时</li>
 </ul>
-<p>现象：</p>
+<p><strong>现象</strong>：</p>
 <p>由于 <code>xtrabackup</code> 工具备份到最后会执行 <code>flash tables with read lock</code>，对数据库进行锁表以便进行一致性备份，然后对于 <code>myisam</code> 锁表，会阻碍 <code>salve_sql_thread</code> 运行进而导致夯住。</p>
-<p>解决方法：</p>
+<p><strong>解决方法</strong>：</p>
 <p>修改表结构为 <code>InnoDB</code> 存储引擎的表</p>
-<h2 id="表碎片问题"><a href="#表碎片问题" class="headerlink" title="表碎片问题"></a>表碎片问题</h2><p>表碎片是 MySQL 运维过程中比较常见的问题，碎片的存在十分影响数据库的性能。</p>
-<h3 id="判断方法"><a href="#判断方法" class="headerlink" title="判断方法"></a>判断方法</h3><p>MySQL 的碎片是否产生，通过查看</p>
+<h3 id="表碎片问题"><a href="#表碎片问题" class="headerlink" title="表碎片问题"></a>表碎片问题</h3><p>表碎片是 MySQL 运维过程中比较常见的问题，碎片的存在十分影响数据库的性能。</p>
+<h4 id="判断方法"><a href="#判断方法" class="headerlink" title="判断方法"></a>判断方法</h4><p>MySQL 的碎片是否产生，通过查看</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show table status from table_name\G;</span><br></pre></td></tr></table></figure>
 
 <p>这个命令中 <code>Data_free</code> 字段，如果该字段不为 0，则产生了数据碎片。</p>
-<h3 id="产生原因"><a href="#产生原因" class="headerlink" title="产生原因"></a>产生原因</h3><p><strong>1. 经常进行 delete 操作</strong></p>
+<h4 id="产生原因"><a href="#产生原因" class="headerlink" title="产生原因"></a>产生原因</h4><p><strong>1. 经常进行 delete 操作</strong></p>
 <p>经常进行 delete 操作，产生空白空间，如果进行新的插入操作，MySQL 将尝试利用这些留空的区域，但仍然无法将其彻底占用，久而久之就产生了碎片；</p>
 <p><strong>2. update 更新</strong></p>
 <p>update 更新可变长度的字段(例如 varchar 类型)，将长的字符串更新成短的。之前存储的内容长，后来存储是短的，即使后来插入新数据，那么有一些空白区域还是没能有效利用的。</p>
-<h3 id="产生影响"><a href="#产生影响" class="headerlink" title="产生影响"></a>产生影响</h3><ol>
+<h4 id="产生影响"><a href="#产生影响" class="headerlink" title="产生影响"></a>产生影响</h4><ol>
 <li><p>由于碎片空间是不连续的，导致这些空间不能充分被利用；</p>
 </li>
 <li><p>由于碎片的存在，导致数据库的磁盘 I/O 操作变成离散随机读写，加重了磁盘 I/O 的负担。</p>
 </li>
 </ol>
-<h3 id="清理办法"><a href="#清理办法" class="headerlink" title="清理办法"></a>清理办法</h3><ul>
+<h4 id="清理办法"><a href="#清理办法" class="headerlink" title="清理办法"></a>清理办法</h4><ul>
 <li><p>MyISAM：optimize table 表名；（OPTIMIZE 可以整理数据文件,并重排索引）</p>
 </li>
 <li><p>InnoDB：</p>
@@ -1020,10 +1020,10 @@
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">select</span> <span class="string">count(*)</span> <span class="string">from</span> <span class="string">test.twitter_11;</span></span><br><span class="line"></span><br><span class="line"><span class="string">修改前：1</span> <span class="string">row</span> <span class="string">in</span> <span class="string">set</span> <span class="string">(7.37</span> <span class="string">sec)</span></span><br><span class="line"><span class="string">修改后：1</span> <span class="string">row</span> <span class="string">in</span> <span class="string">set</span> <span class="string">(1.28</span> <span class="string">sec)</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>通过对比，可以看到碎片清理前后，节省了很多空间，SQL执行效率更快。所以，<strong>在日常运维工作中，应对碎片进行定期清理，保证数据库有稳定的性能。</strong></p>
-<h2 id="创建触发器，报错提示-‘1419’"><a href="#创建触发器，报错提示-‘1419’" class="headerlink" title="创建触发器，报错提示 ‘1419’"></a>创建触发器，报错提示 ‘1419’</h2><h3 id="问题现象-1"><a href="#问题现象-1" class="headerlink" title="问题现象"></a>问题现象</h3><figure class="highlight shell"><figcaption><span>l</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ERROR 1419 (HY000): You do not have the SUPER privilege and</span><br><span class="line">binary logging is enabled (you *might* want to use the less safe log_bin_trust_routine_creators variable)</span><br></pre></td></tr></table></figure>
+<h3 id="创建触发器，报错提示-‘1419’"><a href="#创建触发器，报错提示-‘1419’" class="headerlink" title="创建触发器，报错提示 ‘1419’"></a>创建触发器，报错提示 ‘1419’</h3><h4 id="问题现象-1"><a href="#问题现象-1" class="headerlink" title="问题现象"></a>问题现象</h4><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">ERROR</span> <span class="number">1419</span> <span class="string">(HY000):</span> <span class="string">You</span> <span class="string">do</span> <span class="string">not</span> <span class="string">have</span> <span class="string">the</span> <span class="string">SUPER</span> <span class="string">privilege</span> <span class="string">and</span></span><br><span class="line"><span class="string">binary</span> <span class="string">logging</span> <span class="string">is</span> <span class="string">enabled</span> <span class="string">(you</span> <span class="string">*might*</span> <span class="string">want</span> <span class="string">to</span> <span class="string">use</span> <span class="string">the</span> <span class="string">less</span> <span class="string">safe</span> <span class="string">log_bin_trust_routine_creators</span> <span class="string">variable)</span></span><br></pre></td></tr></table></figure>
 
-<h3 id="原因分析-2"><a href="#原因分析-2" class="headerlink" title="原因分析"></a>原因分析</h3><p>有些操作要禁止掉对 SUPER 权限的要求，要处理可以设置 <code>log_bin_trust_routine_creators</code> 全局系统变量为 <code>1</code>，默认地，这个变量值为 <code>0</code>。</p>
-<h3 id="解决方法-2"><a href="#解决方法-2" class="headerlink" title="解决方法"></a>解决方法</h3><p>直接在数据库进行修改，也可以在启动服务器之时用 <code>--log-bin-trust-routine-creators</code> 选项来设置允许这个变量。</p>
+<h4 id="原因分析-2"><a href="#原因分析-2" class="headerlink" title="原因分析"></a>原因分析</h4><p>有些操作要禁止掉对 SUPER 权限的要求，要处理可以设置 <code>log_bin_trust_routine_creators</code> 全局系统变量为 <code>1</code>，默认地，这个变量值为 <code>0</code>。</p>
+<h4 id="解决方法-2"><a href="#解决方法-2" class="headerlink" title="解决方法"></a>解决方法</h4><p>直接在数据库进行修改，也可以在启动服务器之时用 <code>--log-bin-trust-routine-creators</code> 选项来设置允许这个变量。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SET GLOBAL log_bin_trust_routine_creators = 1;</span><br></pre></td></tr></table></figure>
 
 
