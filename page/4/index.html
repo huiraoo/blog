@@ -1807,7 +1807,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-21 18:26:35" itemprop="dateModified" datetime="2019-08-21T18:26:35+08:00">2019-08-21</time>
+                <time title="修改时间：2019-08-24 14:55:11" itemprop="dateModified" datetime="2019-08-24T14:55:11+08:00">2019-08-24</time>
               
             
           </span>
@@ -1861,16 +1861,24 @@
       
         
           
-            <h2 id="一条SQL的执行过程"><a href="#一条SQL的执行过程" class="headerlink" title="一条SQL的执行过程"></a>一条SQL的执行过程</h2><p>如下图所示，当向 MySQL 发送一个请求的时候，MySQL 到底做了什么？</p>
+            <h2 id="SQL是怎样执行的-？"><a href="#SQL是怎样执行的-？" class="headerlink" title="SQL是怎样执行的 ？"></a>SQL是怎样执行的 ？</h2><p>MySQL 是典型的 C/S 架构，即 Client/Server 架构，服务器端程序使用的 mysqld。整体的 MySQL 流程如下图所示：</p>
+<p><img src="http://ww3.sinaimg.cn/large/006y8mN6ly1g6ap6gn423j30p00dc40x.jpg" alt="img"></p>
+<p>MySQL 由三层组成：</p>
+<p>1）连接层：客户端和服务器端建立连接，客户端发送 SQL 至服务器端；</p>
+<p>2）SQL 层：对 SQL 语句进行查询处理；</p>
+<p>3）存储引擎层：与数据库文件打交道，负责数据的存储和读取。</p>
+<p>SQL层的结构：</p>
+<p><img src="http://ww4.sinaimg.cn/large/006y8mN6ly1g6ap89hkyyj30bs0gm3z0.jpg" alt="img"></p>
 <p><img src="http://ww2.sinaimg.cn/large/006tNc79ly1g64xrbwlygj30k004b0sp.jpg" alt="img"></p>
 <ul>
-<li><strong>连接器</strong>：客户端发送一条 SQL 查询到 MySQL 服务器（<strong>权限验证</strong>，<strong>管理连接</strong>）</li>
-<li><strong>查询缓存</strong>：先检查查询缓存，如果命中缓存，立刻返回存储在缓存中的结果，否则继续执行（<strong>命中返回</strong>，<strong>未命中更新缓存</strong>）</li>
-<li><strong>解析器</strong>：服务器端经过 SQL 解析、预处理（<strong>词法分析</strong>，<strong>语法分析</strong>）</li>
-<li><strong>优化器</strong>：由优化器生成执行计划（<strong>选择索引</strong>，<strong>生成执行计划</strong>）</li>
-<li><strong>执行器</strong>：根据执行计划，调用存储引擎的 API 接口，执行查询并将结果返回给客户端（<strong>操作引擎</strong>，<strong>返回结果</strong>）</li>
+<li><strong>连接器</strong>：客户端与 Server 建立连接，并发送 SQL 至 Server（<strong>建立连接</strong>，<strong>用户验证</strong>，<strong>管理连接</strong>）</li>
+<li><strong>查询缓存</strong>：Server 如果在查询缓存中发现了这条 SQL 语句，就会直接将结果返回给客户端；如果没有，就进入到解析器阶段。需要说明的是，因为查询缓存往往效率不高，所以在 MySQL8.0 之后就抛弃了这个功能。（<strong>命中返回</strong>，<strong>未命中更新缓存</strong>）</li>
+<li><strong>解析器</strong>：对 SQL 语句进行语法分析、语义分析（<strong>语法分析</strong>，<strong>语义分析</strong>）</li>
+<li><strong>优化器</strong>：在优化器中会确定 SQL 语句的执行路径，比如是根据全表检索，还是根据索引来检索等（<strong>选择索引</strong>，<strong>生成执行计划</strong>）</li>
+<li><strong>执行器</strong>：在执行之前需要判断该用户是否具备权限，如果具备权限就执行 SQL 查询并返回结果。（<strong>验证权限</strong>，<strong>返回结果</strong>）</li>
 </ul>
 <p><img src="http://ww1.sinaimg.cn/large/006tNc79ly1g61nat9jo2j31400u0tpc.jpg" alt="img"></p>
+<p>SQL 语句在 MySQL 中的流程是：SQL 语句 → 缓存查询 → 解析器 → 优化器 → 执行器</p>
 <p>详细执行过程：</p>
 <p><img src="http://ww1.sinaimg.cn/large/006tNc79ly1g64togewmoj30m80ieq5a.jpg" alt="img"></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">举例：</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> <span class="keyword">id</span> = <span class="number">1</span></span><br></pre></td></tr></table></figure>
@@ -1903,6 +1911,16 @@
 <h3 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h3><p>在表中有多个索引的时候，由优化器决定使用哪个索引，或者多表关联（join）的时候决定连接顺序，<strong>选择效率高、代价小的方案，生成执行计划</strong>。</p>
 <p>优化器有两类：基于规则的优化器 (Rule-Based Optimizer，<strong>RBO</strong>) 和基于代价的优化器 (Cost-Based Optimizer，<strong>CBO</strong>)。基于代价的优化器，是根据优化规则对关系表达式进行转换，这里的转换是说一个关系表达式经过优化规则后会生成另外一个关系表达式，同时原有表达式也会保留，经过一系列转换后会生成多个执行计划，然后 CBO 会根据统计信息和代价模型 (Cost Model) 计算每个执行计划的 Cost，从中挑选 Cost 最小的执行计划。由上可知，CBO 中有两个依赖：统计信息和代价模型，统计信息的准确与否、代价模型的合理与否都会影响 CBO 选择最优计划。</p>
 <h3 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a>执行器</h3><p>开始执行之前，先验证是否有读写权限，没有则返回权限错误，有的话调用存储引擎 API 接口获取执行结果集，返回给客户端。</p>
+<h2 id="SQL-语句的执行时间分析"><a href="#SQL-语句的执行时间分析" class="headerlink" title="SQL 语句的执行时间分析"></a>SQL 语句的执行时间分析</h2><p>工具：通过 MySQL <strong>profiling</strong> 来分析资源使用情况。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select @@profiling;</span><br></pre></td></tr></table></figure>
+
+<p>profiling = 0 代表关闭，我们需要把 profiling 打开，即设置为 1：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; set profiling=1;</span><br></pre></td></tr></table></figure>
+
+<p>执行任何一个查询：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from students;</span><br><span class="line">mysql&gt; show profile；</span><br><span class="line">mysql&gt; show profile for query 2;  # 查询指定的 Query ID</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g6apont0v2j30y50u04lx.jpg" alt="img"></p>
 <h2 id="Explain"><a href="#Explain" class="headerlink" title="Explain"></a>Explain</h2><h3 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h3><p>在 MySQL 中，当数据量增长的特别大的时候就需要用到索引来优化 SQL 语句，使用 <code>Explain</code> 来查看 SQL 语句的执行计划，是优化 SQL 最有效地的一种手段。</p>
 <h3 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h3><p><strong>语法</strong>：<code>explain + SQL</code></p>
 <p><strong>示例</strong>：<code>explain select * from customer</code></p>
