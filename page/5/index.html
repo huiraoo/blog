@@ -323,6 +323,196 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/08/TiDB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/08/TiDB/" class="post-title-link" itemprop="url">TiDB · 单机部署</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-08 10:54:05" itemprop="dateCreated datePublished" datetime="2019-07-08T10:54:05+08:00">2019-07-08</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-07-19 08:59:00" itemprop="dateModified" datetime="2019-07-19T08:59:00+08:00">2019-07-19</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/TiDB/" itemprop="url" rel="index"><span itemprop="name">TiDB</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="单机部署"><a href="#单机部署" class="headerlink" title="单机部署"></a>单机部署</h3><blockquote>
+<p><strong>安装依赖包</strong></p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install libtool zlib-devel autoconf readline-devel readline libuuid-devel zlib-devel automake libuuid readline-devel readline ncurses-devel.x86_64 ncurses.x86_64 gcc-c++ vim wget net-tools svn libstdc++.so.6 glibc.i686 unzip make lrzsz libtool zlib-devel autoconf readline-devel readline libuuid-devel zlib-devel automake libuuid readline-devel readline ncurses-devel.x86_64 ncurses.x86_64 gcc-c++ vim wget net-tools svn libstdc++.so.6 libcurl-dev libcurl-devel expat-devel perl-ExtUtils-CBuilder perl-ExtUtils-MakeMaker zip git gcc openssl-devel libnl3-devel net-snmp-devel libnfnetlink-devel zlib zlib-devel openssl openssl-devel tree lrzsz tree net-tools nmap vim bash-completion lsof dos2unix nc telnet ntp wget rng-tools psmisc screen pcre pcre-devel</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>安装 TiDB</strong></p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/</span><br><span class="line">wget http://download.pingcap.org/tidb-latest-linux-amd64.tar.gz</span><br><span class="line">tar -xzf tidb-latest-linux-amd64.tar.gz  /usr/local</span><br><span class="line">mkdir -p /data/tidb</span><br><span class="line">cd /usr/local/tidb-latest-linux-amd64</span><br><span class="line">ln -s /usr/local/tidb-latest-linux-amd64/bin/pd-tso-bench /usr/bin</span><br><span class="line">ln -s /usr/local/tidb-latest-linux-amd64/bin/tikv-server /usr/bin/</span><br><span class="line">ln -s /usr/local/tidb-latest-linux-amd64/bin/tidb-server /usr/bin/</span><br><span class="line">ln -s /usr/local/tidb-latest-linux-amd64/bin/pd-server /usr/bin/</span><br><span class="line">ln -s /usr/local/tidb-latest-linux-amd64/bin/pd-ctl /usr/bin/</span><br></pre></td></tr></table></figure>
+
+<h5 id="启动-PD"><a href="#启动-PD" class="headerlink" title="启动 PD"></a><strong>启动 PD</strong></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd bin</span><br><span class="line">./pd-server -data-dir=/data/tidb/pd -log-file=/data/tidb/log/pd.log -name=pd1 &amp;</span><br></pre></td></tr></table></figure>
+
+<h5 id="启动-TiKV"><a href="#启动-TiKV" class="headerlink" title="启动 TiKV"></a><strong>启动 TiKV</strong></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./tikv-server --pd="127.0.0.1:2379" --data-dir=/data/tidb/tikv --log-file=/data/tidb/log/tikv.log &amp;</span><br></pre></td></tr></table></figure>
+
+<h5 id="连接-TiDB"><a href="#连接-TiDB" class="headerlink" title="连接 TiDB"></a><strong>连接 TiDB</strong></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> mysql -h 127.0.0.1 -P 4000 -u root</span><br><span class="line"></span><br><span class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</span><br><span class="line">Your MySQL connection id is 12</span><br><span class="line">Server version: 5.7.25-TiDB-v3.0.0-rc.1-290-g21d2590ac MySQL Community Server (Apache License 2.0)</span><br><span class="line"></span><br><span class="line">Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.</span><br><span class="line"></span><br><span class="line">Oracle is a registered trademark of Oracle Corporation and/or its</span><br><span class="line">affiliates. Other names may be trademarks of their respective</span><br><span class="line">owners.</span><br><span class="line"></span><br><span class="line">Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.</span><br><span class="line"></span><br><span class="line"><span class="meta">mysql&gt;</span> show databases;</span><br><span class="line">+--------------------+</span><br><span class="line">| Database           |</span><br><span class="line">+--------------------+</span><br><span class="line">| INFORMATION_SCHEMA |</span><br><span class="line">| PERFORMANCE_SCHEMA |</span><br><span class="line">| mysql              |</span><br><span class="line">| test               |</span><br><span class="line">+--------------------+</span><br><span class="line">4 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+
+<h5 id="修改root密码"><a href="#修改root密码" class="headerlink" title="修改root密码"></a><strong>修改root密码</strong></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span> use mysql; </span><br><span class="line"><span class="meta">mysql&gt;</span> update user set password=PASSWORD("Changeme_123") where User='root';</span><br><span class="line"><span class="meta">mysql&gt;</span> flush privileges;</span><br></pre></td></tr></table></figure>
+
+<h5 id="设置远程可访问"><a href="#设置远程可访问" class="headerlink" title="设置远程可访问"></a><strong>设置远程可访问</strong></h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span> grant all privileges on *.* to 'root'@'%' identified by 'Changeme_123';</span><br><span class="line"><span class="meta">mysql&gt;</span> flush privileges;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/05/mysql-sql/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1611,7 +1801,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-16 16:55:31" itemprop="dateModified" datetime="2019-08-16T16:55:31+08:00">2019-08-16</time>
+                <time title="修改时间：2019-08-26 14:13:34" itemprop="dateModified" datetime="2019-08-26T14:13:34+08:00">2019-08-26</time>
               
             
           </span>
@@ -1674,7 +1864,7 @@
 <li>支持了 MySQL 复制拓扑图结构构造。</li>
 </ul>
 <p>Demo官网：<a href="http://pmmdemo.percona.com" target="_blank" rel="noopener">http://pmmdemo.percona.com</a></p>
-<h2 id="PMM架构"><a href="#PMM架构" class="headerlink" title="PMM架构"></a>PMM架构</h2><p><img src="/blog/.io//pmm.png" alt="PMM架构"></p>
+<h2 id="PMM架构"><a href="#PMM架构" class="headerlink" title="PMM架构"></a>PMM架构</h2><p><img src="http://ww3.sinaimg.cn/large/006y8mN6ly1g6d1wox10rj30et0d2jta.jpg" alt="PMM架构"></p>
 <h3 id="PMM-Client"><a href="#PMM-Client" class="headerlink" title="PMM Client"></a>PMM Client</h3><p><code>pmm-mysql-queries-0</code>：是一个管理 qan 代理的服务，它从 mysql 收集性能数据，然后通过 QAN API 发送到PMM Server。</p>
 <p><code>pmm-mongodb-queries-0</code>：是一个管理 qan 代理的服务，它从 mongodb 收集性能数据，然后通过 QAN API 发送到 PMM Server。</p>
 <p><a href="https://github.com/percona/pmm-admin" target="_blank" rel="noopener">pmm-admin</a>：用于管理 PMM Client 的命令行工具，例如：添加、删除要监视的数据库实例。</p>
@@ -1691,26 +1881,26 @@
 <p><a href="http://grafana.org/" target="_blank" rel="noopener">Grafana</a>： 这是一个第三方 Dashboard 和图形构建器，用于可视化 Prometheus 中聚合的数据，以 Web 方式呈现。</p>
 <p><a href="https://github.com/percona/grafana-dashboards" target="_blank" rel="noopener">Percona Dashboards</a>：是由 Percona 开发的一组用于 Grafana 的仪表板。上述的2个 Web 页面都能从 PMM Landing Page直接连结。</p>
 <h2 id="PMM安装"><a href="#PMM安装" class="headerlink" title="PMM安装"></a>PMM安装</h2><h3 id="安装-PMM-Server"><a href="#安装-PMM-Server" class="headerlink" title="安装 PMM Server"></a>安装 PMM Server</h3><p>1）<strong>安装docker</strong></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> yum -y install docker</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> yum -y install docker</span><br></pre></td></tr></table></figure>
 
 <p>2）<strong>运行docker</strong></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> systemctl start docker</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> systemctl <span class="built_in">enable</span> docker</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> systemctl start docker</span><br><span class="line"><span class="meta">$</span> systemctl enable docker</span><br></pre></td></tr></table></figure>
 
 <p>3）<strong>下载容器镜像</strong></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker pull percona/pmm-server:latest</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> docker pull percona/pmm-server:latest</span><br></pre></td></tr></table></figure>
 
 <p>4）<strong>创建数据卷容器</strong></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker create \</span></span><br><span class="line">-v /opt/prometheus/data \</span><br><span class="line">-v /opt/consul-data \</span><br><span class="line">-v /var/lib/mysql \</span><br><span class="line">-v /var/lib/grafana \</span><br><span class="line">--name pmm-data \</span><br><span class="line">percona/pmm-server:latest /bin/true</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> docker create \</span><br><span class="line">-v /opt/prometheus/data \</span><br><span class="line">-v /opt/consul-data \</span><br><span class="line">-v /var/lib/mysql \</span><br><span class="line">-v /var/lib/grafana \</span><br><span class="line">--name pmm-data \</span><br><span class="line">percona/pmm-server:latest /bin/true</span><br></pre></td></tr></table></figure>
 
 <p>5）<strong>运行PMM Server</strong></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker run -d \</span></span><br><span class="line">-p 80:80 \</span><br><span class="line">--volumes-from pmm-data \</span><br><span class="line">--name pmm-server \</span><br><span class="line">--restart always \</span><br><span class="line">percona/pmm-server:latest</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> docker run -d \</span><br><span class="line">-p 80:80 \</span><br><span class="line">--volumes-from pmm-data \</span><br><span class="line">--name pmm-server \</span><br><span class="line">--restart always \</span><br><span class="line">percona/pmm-server:latest</span><br></pre></td></tr></table></figure>
 
 <p>6）<strong>验证</strong></p>
 <p>通过登录 <a href="http://10.133.0.52/" target="_blank" rel="noopener">http://10.133.0.52</a>，查看是否正常显示 web 界面，也可以通过如下方式：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> curl http://10.133.0.52/ping</span></span><br><span class="line">&#123;'version': '1.8.0'&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> curl http://10.133.0.52/ping</span><br><span class="line">&#123;'version': '1.8.0'&#125;</span><br></pre></td></tr></table></figure>
 
 <p>其他命令：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> docker <span class="built_in">exec</span> -it xx /bin/bash</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> docker ps -a</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> docker stop pmm-server &amp;&amp; docker rm pmm-server (停止 pmm-server)</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> docker exec -it xx /bin/bash</span><br><span class="line"><span class="meta">$</span> docker ps -a</span><br><span class="line"><span class="meta">$</span> docker stop pmm-server &amp;&amp; docker rm pmm-server (停止 pmm-server)</span><br></pre></td></tr></table></figure>
 
 <table>
 <thead>
@@ -1741,19 +1931,19 @@
 </tr>
 </tbody></table>
 <h3 id="安装-PMM-Client"><a href="#安装-PMM-Client" class="headerlink" title="安装 PMM Client"></a>安装 PMM Client</h3><p>1）确保PMM Server主机可访问</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> ping 10.133.0.52</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> ping 10.133.0.52</span><br></pre></td></tr></table></figure>
 
 <p>2）安装Client包（22M）</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> yum install -y https://repo.percona.com/yum/percona-release-latest.noarch.rpm</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> yum install -y pmm-client</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> yum install -y https://repo.percona.com/yum/percona-release-latest.noarch.rpm</span><br><span class="line"><span class="meta">$</span> yum install -y pmm-client</span><br></pre></td></tr></table></figure>
 
 <p>3）连接 PMM Client 到 PMM Server</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pmm-admin config --server 10.133.0.52</span></span><br><span class="line">OK, PMM server is alive.</span><br><span class="line">PMM Server      | 10.133.0.52 </span><br><span class="line">Client Name     | cmp15</span><br><span class="line">Client Address  | 10.138.228.236</span><br><span class="line"><span class="meta">$</span><span class="bash"> pmm-admin config --server 10.133.0.52:8080 （适用于非80端口）</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> pmm-admin config --server 10.133.0.52</span><br><span class="line">OK, PMM server is alive.</span><br><span class="line">PMM Server      | 10.133.0.52 </span><br><span class="line">Client Name     | cmp15</span><br><span class="line">Client Address  | 10.138.228.236</span><br><span class="line"><span class="meta">$</span> pmm-admin config --server 10.133.0.52:8080 （适用于非80端口）</span><br></pre></td></tr></table></figure>
 
 <h3 id="卸载-PMM-Client"><a href="#卸载-PMM-Client" class="headerlink" title="卸载 PMM Client"></a>卸载 PMM Client</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">yum remove pmm-client</span><br><span class="line"></span><br><span class="line">[root@dbs-mysql-m ~]# pmm-admin remove linux:metrics</span><br><span class="line">OK, removed system GPCMS-DB-M from monitoring.</span><br></pre></td></tr></table></figure>
 
-<h2 id="添加监控"><a href="#添加监控" class="headerlink" title="添加监控"></a>添加监控</h2><h3 id="监控-Linux"><a href="#监控-Linux" class="headerlink" title="监控 Linux"></a>监控 Linux</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pmm-admin add linux:metrics</span></span><br></pre></td></tr></table></figure>
+<h2 id="添加监控"><a href="#添加监控" class="headerlink" title="添加监控"></a>添加监控</h2><h3 id="监控-Linux"><a href="#监控-Linux" class="headerlink" title="监控 Linux"></a>监控 Linux</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> pmm-admin add linux:metrics</span><br></pre></td></tr></table></figure>
 
-<h3 id="监控-MySQL"><a href="#监控-MySQL" class="headerlink" title="监控 MySQL"></a>监控 MySQL</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> pmm-admin add mysql --socket /data/mysql3306/mysql.sock --user root --password Haier@123</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> pmm-admin list</span></span><br></pre></td></tr></table></figure>
+<h3 id="监控-MySQL"><a href="#监控-MySQL" class="headerlink" title="监控 MySQL"></a>监控 MySQL</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> pmm-admin add mysql --socket /data/mysql3306/mysql.sock --user root --password Haier@123</span><br><span class="line"><span class="meta">$</span> pmm-admin list</span><br></pre></td></tr></table></figure>
 
 <p><strong>Prometheus</strong>：<a href="http://pmm.ilearning.fun/prometheus/targets" target="_blank" rel="noopener">http://pmm.ilearning.fun/prometheus/targets</a></p>
 <p><strong>PMM</strong>：<a href="http://pmm.ilearning.fun" target="_blank" rel="noopener">http://pmm.ilearning.fun</a></p>
@@ -2288,7 +2478,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">48</span>
+                    <span class="site-state-item-count">49</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
