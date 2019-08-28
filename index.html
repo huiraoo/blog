@@ -861,7 +861,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-28 21:41:49" itemprop="dateModified" datetime="2019-08-28T21:41:49+08:00">2019-08-28</time>
+                <time title="修改时间：2019-08-28 22:38:39" itemprop="dateModified" datetime="2019-08-28T22:38:39+08:00">2019-08-28</time>
               
             
           </span>
@@ -897,29 +897,17 @@
       
         
           
-            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>为了托管已上线 <code>MySQL</code> 系统，建立完善的监控体系，主要有以下三个目的：</p>
-<ul>
-<li><strong>告警</strong>：当系统出现或者即将出现故障时，监控系统需要迅速反应并通知管理员，从而能够对问题进行快速的处理或者提前预防问题的发生，避免出现对业务的影响。</li>
-<li><strong>故障分析与定位</strong>：当问题发生后，需要对问题进行调查和处理。通过对不同监控监控以及历史数据的分析，能够找到并解决根源问题。</li>
-<li><strong>数据可视化</strong>：通过可视化仪表盘能够直接获取系统的运行状态、资源使用情况、以及服务运行状态等直观的信息。</li>
-</ul>
-<h2 id="Prometheus-基础"><a href="#Prometheus-基础" class="headerlink" title="Prometheus 基础"></a>Prometheus 基础</h2><p><a href="https://prometheus.io/" target="_blank" rel="noopener"><strong>Prometheus</strong></a> 是一个开源的完整监控解决方案，其对传统监控系统的测试和告警模型进行了彻底的颠覆，形成了基于中央化的规则计算、统一分析和告警的新模型，基于 <code>Golang</code> 编写。</p>
-<h3 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h3><p><strong>易于管理</strong></p>
-<p><code>Prometheus</code> 基于 <code>Pull</code> 模型的架构方式，可以在任何地方（本地电脑，开发环境，测试环境）搭建我们的监控系统。对于一些复杂的情况，还可以使用 <code>Prometheus</code> 服务发现 (<code>Service Discovery</code>) 的能力动态管理监控目标。</p>
+            <h2 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h2><p><a href="https://prometheus.io/" target="_blank" rel="noopener"><strong>Prometheus</strong></a> 是一个开源的完整监控解决方案，其对传统监控系统的测试和告警模型进行了彻底的颠覆，形成了基于中央化的规则计算、统一分析和告警的新模型，基于 <code>Golang</code> 编写。</p>
+<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><p><strong>易于管理</strong></p>
+<p><code>Prometheus</code> 基于 <code>Pull</code> 模型的架构方式，可以在任何地方（本地电脑，开发环境，测试环境）搭建我们的监控系统。对于一些复杂的情况，还可以使用 <code>Prometheus</code> 服务发现 (<code>Service Discovery</code>) 能力动态管理监控目标。</p>
 <p><strong>强大的数据模型</strong></p>
 <p>所有采集的监控数据均以指标 <code>metric</code> 的形式保存在内置的时间序列数据库当中 <code>TSDB</code>。所有的样本除了基本的指标名称以外，还包含一组用于描述该样本特征的标签。</p>
 <p>如下所示：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">http_request_status&#123;code='200',content_path='/api/path',</span> <span class="string">environment='produment'&#125;</span> <span class="string">=&gt;</span> <span class="string">[value1@timestamp1,value2@timestamp2...]</span></span><br><span class="line"><span class="string">http_request_status&#123;code='200',content_path='/api/path2',</span> <span class="string">environment='produment'&#125;</span> <span class="string">=&gt;</span> <span class="string">[value1@timestamp1,value2@timestamp2...]</span></span><br></pre></td></tr></table></figure>
 
-<p>每一条时间序列由指标名称 <code>Metrics Name</code> 以及一组标签 <code>Labels</code> 唯一标识。每条时间序列按照时间的先后顺序存储一系列的样本值。表示维度的标签可能来源于你的监控对象的状态，比如 <code>code=404</code> 或者 <code>content_path=/api/path</code>。也可能来源于的你的环境定义，比如 <code>environment=produment</code> 。基于这些 <code>Labels</code> 我们可以方便地对监控数据进行聚合、过滤、裁剪。</p>
+<p>每一条时间序列由指标名称 <code>Metrics Name</code> 以及一组标签 <code>Labels</code> 唯一标识。每条时间序列按照时间的先后顺序存储一系列的样本值。表示维度的标签可能来源于你的监控对象的状态，比如 <code>code=404</code> 或者 <code>content_path=/api/path</code>。基于这些 <code>Labels</code> ，我们可以方便地对监控数据进行聚合、过滤、裁剪。</p>
 <p><strong>强大的查询语言 PromSQL</strong></p>
 <p><code>Prometheus</code> 内置了一个强大的数据查询语言 <code>PromQL</code>。 通过 <code>PromQL</code> 可以实现对监控数据的查询、聚合。同时 <code>PromQL</code> 也被应用于数据可视化(如 <code>Grafana</code> )以及告警当中。</p>
-<p>通过 <code>PromQL</code> 可以轻松回答类似于以下问题：</p>
-<ul>
-<li>在过去一段时间中 95% 应用延迟时间的分布范围？</li>
-<li>预测在 4 小时后，磁盘空间占用大致会是什么情况？</li>
-<li>CPU占用率前 5 位的服务有哪些？</li>
-</ul>
 <p><strong>高效</strong></p>
 <p>对于监控系统而言，大量的监控任务必然导致有大量的数据产生。而<code>Prometheus</code> 可以高效地处理这些数据，对于单一 <code>Prometheus Server</code> 实例而言它可以处理：</p>
 <ul>
@@ -929,7 +917,7 @@
 <p><strong>易于集成</strong></p>
 <p><code>Prometheus</code> 社区还提供了大量第三方实现的监控数据采集支持：<code>MySQL</code>、<code>Consul</code>、<code>Redis</code> 等等。</p>
 <p><strong>可视化</strong></p>
-<p><code>Prometheus Server</code> 中自带了一个 <code>Prometheus UI</code>，通过这个 UI 可以方便地直接对数据进行查询，并且支持直接以图形化的形式展示数据。最新的 <code>Grafana</code> 可视化工具也已经提供了完整的 <code>Prometheus</code> 支持，基于 <code>Grafana</code> 可以创建更加精美的监控图标。基于 <code>Prometheus</code> 提供的 API 还可以实现自己的监控可视化 UI。</p>
+<p><code>Prometheus Server</code> 中自带了一个 <code>Prometheus UI</code>，通过这个 UI 可以方便地直接对数据进行查询，并且支持直接以图形化的形式展示数据。开源第三方可视化工具 <code>Grafana</code> 也已经提供了完整的 <code>Prometheus</code> 支持，基于 <code>Grafana</code> 可以创建更加精美的监控图标。</p>
 <p><strong>缺点</strong>：相比于 <a href="https://www.zabbix.com/" target="_blank" rel="noopener"><strong>zabbix</strong></a>，更加消耗资源</p>
 <h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><p><img src="http://ww3.sinaimg.cn/large/006y8mN6ly1g6d2tdrnvxj311j0mjjtq.jpg" alt="Prometheus architecture"></p>
 <p><strong>Prometheus Server</strong>：是 <code>Prometheus</code> 组件中的核心部分，负责实现对监控数据的获取、存储以及查询。</p>
@@ -938,7 +926,7 @@
 <li><code>Prometheus Server</code> 需要对采集到的监控数据进行存储，它本身就是一个时序数据库，将采集到的监控数据按照时间序列的方式存储在本地磁盘当中。</li>
 <li><code>Prometheus Server</code> 对外提供了自定义的 <code>PromQL</code> 语言，实现对数据的查询以及分析。</li>
 </ul>
-<p><strong>Exporters</strong>：负责将监控数据采集的端点通过 <code>HTTP</code> 服务的形式暴露给 <code>Prometheus Server</code>，<code>Prometheus Server</code> 通过访问该 <code>exporter</code> 提供的 <code>Endpoint</code> 端点，即可获取到需要采集的监控数据。一般来说可以将<code>exporter</code> 分为 2 类：</p>
+<p><strong>exporters</strong>：负责将监控数据采集的端点通过 <code>HTTP</code> 服务的形式暴露给 <code>Prometheus Server</code>，<code>Prometheus Server</code> 通过访问该 <code>exporter</code> 提供的 <code>Endpoint</code> 端点，即可获取到需要采集的监控数据。一般来说可以将<code>exporter</code> 分为 2 类：</p>
 <ul>
 <li><p>直接采集：这一类 <code>exporter</code> 直接内置了对 <code>Prometheus</code> 监控的支持，例如：<code>Kubernetes</code>。</p>
 </li>
@@ -949,14 +937,14 @@
 <p><strong>Alertmanager</strong>：在 <code>Prometheus Server</code> 中支持基于 <code>PromQL</code> 创建告警规则，如果满足 <code>PromQL</code> 定义的规则，则会产生一条告警，而告警的后续处理流程则由 <code>AlertManager</code> 进行管理。在 <code>AlertManager</code> 中我们可以与邮件，<code>Slack</code> 等等内置的通知方式进行集成，也可以通过 <code>Webhook</code> 自定义告警处理方式。<code>AlertManager</code> 即 <code>Prometheus</code> 体系中的告警处理中心。</p>
 <p><strong>Web UI</strong>：数据可视化，主要使用第三方工具 <a href="https://grafana.com/" target="_blank" rel="noopener"><strong>Grafana</strong></a> 来实现。</p>
 <h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><h4 id="Prometheus-Server"><a href="#Prometheus-Server" class="headerlink" title="Prometheus Server"></a>Prometheus Server</h4><p><strong>二进制包方式安装</strong></p>
-<p>（1）下载最新版本的 <code>Prometheus Sevrer</code> <a href="https://prometheus.io/download/" target="_blank" rel="noopener"><strong>软件包</strong></a>。</p>
-<p>（2）解压并将 <code>Prometheus</code> 相关的命令，添加到系统环境变量路径。</p>
+<p>（1）下载最新版本 <a href="https://prometheus.io/download/" target="_blank" rel="noopener"><strong>软件包</strong></a></p>
+<p>（2）解压</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">wget</span> <span class="attr">https://github.com/prometheus/prometheus/releases/download/v2.12.0/prometheus-2.12.0.linux-amd64.tar.gz</span></span><br><span class="line"><span class="string">tar</span> <span class="bullet">-xzf</span> <span class="string">prometheus-2.12.0.linux-amd64.tar.gz</span></span><br><span class="line"><span class="string">cd</span> <span class="string">prometheus-2.12.0.linux-amd64</span></span><br></pre></td></tr></table></figure>
 
 <p>（3）配置文件 <code>promethes.yml</code>，修改 <code>job_name</code>。</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># my global config</span></span><br><span class="line"><span class="attr">global:</span></span><br><span class="line"><span class="attr">  scrape_interval:</span>     <span class="number">15</span><span class="string">s</span> <span class="comment"># Set the scrape interval to every 15 seconds. Default is every 1 minute.</span></span><br><span class="line"><span class="attr">  evaluation_interval:</span> <span class="number">15</span><span class="string">s</span> <span class="comment"># Evaluate rules every 15 seconds. The default is every 1 minute.</span></span><br><span class="line">  <span class="comment"># scrape_timeout is set to the global default (10s).</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Alertmanager configuration</span></span><br><span class="line"><span class="attr">alerting:</span></span><br><span class="line"><span class="attr">  alertmanagers:</span></span><br><span class="line"><span class="attr">  - static_configs:</span></span><br><span class="line"><span class="attr">    - targets:</span></span><br><span class="line">      <span class="comment"># - alertmanager:9093</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Load rules once and periodically evaluate them according to the global 'evaluation_interval'.</span></span><br><span class="line"><span class="attr">rule_files:</span></span><br><span class="line">  <span class="comment"># - "first_rules.yml"</span></span><br><span class="line">  <span class="comment"># - "second_rules.yml"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># A scrape configuration containing exactly one endpoint to scrape:</span></span><br><span class="line"><span class="comment"># Here it's Prometheus itself.</span></span><br><span class="line"><span class="attr">scrape_configs:</span></span><br><span class="line">  <span class="comment"># The job name is added as a label `job=&lt;job_name&gt;` to any timeseries scraped from this config.</span></span><br><span class="line"><span class="attr">  - job_name:</span> <span class="string">'prometheus'</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># metrics_path defaults to '/metrics'</span></span><br><span class="line">    <span class="comment"># scheme defaults to 'http'.</span></span><br><span class="line"></span><br><span class="line"><span class="attr">    static_configs:</span></span><br><span class="line"><span class="attr">    - targets:</span> <span class="string">['localhost:9090']</span></span><br></pre></td></tr></table></figure>
 
-<p>（4）创建数据存储目录，<code>Promtheus</code> 作为一个时间序列数据库，其采集的数据会以文件的形似存储在本地中，默认的存储路径为 <code>data/</code>，用户也可以通过参数 <code>--storage.tsdb.path=&quot;data/&quot;</code> 修改本地数据存储的路径。</p>
+<p>（4）创建数据存储目录，默认的存储路径为 <code>data/</code>，用户也可以通过参数 <code>--storage.tsdb.path=&quot;data/&quot;</code> 修改本地数据存储的路径。</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">mkdir</span> <span class="bullet">-p</span> <span class="string">data</span></span><br></pre></td></tr></table></figure>
 
 <p>（5）启动 <code>prometheus</code> 服务，<a href="http://10.133.0.53:9090/" target="_blank" rel="noopener"><strong>http://10.133.0.53:9090</strong></a></p>
@@ -991,16 +979,15 @@
 <li>go_*：<code>node_exporter</code> 中 <code>go</code> 相关指标</li>
 <li>process_*：<code>node_exporter</code> 自身进程相关运行指标</li>
 </ul>
-<h4 id="mysqld-exporter"><a href="#mysqld-exporter" class="headerlink" title="mysqld_exporter"></a>mysqld_exporter</h4><p>下载<a href="https://prometheus.io/download/" target="_blank" rel="noopener"><strong>二进制包</strong></a></p>
+<h4 id="mysqld-exporter"><a href="#mysqld-exporter" class="headerlink" title="mysqld_exporter"></a>mysqld_exporter</h4><p>（1）下载<a href="https://prometheus.io/download/" target="_blank" rel="noopener"><strong>二进制包</strong></a></p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">wget</span> <span class="attr">https://github.com/prometheus/mysqld_exporter/releases/download/v0.12.1/mysqld_exporter-0.12.1.linux-amd64.tar.gz</span></span><br><span class="line"><span class="string">tar</span> <span class="bullet">-xzf</span> <span class="string">mysqld_exporter-0.12.1.linux-amd64.tar.gz</span></span><br><span class="line"><span class="string">cd</span> <span class="string">mysqld_exporter-0.12.1.linux-amd64</span></span><br></pre></td></tr></table></figure>
 
-<p>编辑 <code>.my.cnf</code></p>
+<p>（2）编辑 <code>.my.cnf</code></p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[client]</span></span><br><span class="line"><span class="string">user=hdm</span></span><br><span class="line"><span class="string">password=Hdm@123!</span></span><br><span class="line"><span class="string">host=10.133.0.53</span></span><br><span class="line"><span class="string">port=3306</span></span><br></pre></td></tr></table></figure>
 
-<p>启动 <code>mysqld_exporter</code>，默认端口是 <code>9104</code>，可以看到采集到的 MySQL <a href="http://10.133.0.53:9104/metrics" target="_blank" rel="noopener"><strong>Metrics</strong></a>。</p>
+<p>（3）启动 <code>mysqld_exporter</code>，默认端口是 <code>9104</code>，可以看到采集到的 MySQL <a href="http://10.133.0.53:9104/metrics" target="_blank" rel="noopener"><strong>Metrics</strong></a>。</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">./mysqld_exporter</span> <span class="bullet">--config.my-cnf=/data/mysqld_exporter-0.12.1.linux-amd64/.my.cnf</span></span><br></pre></td></tr></table></figure>
 
-<p><a href="http://10.133.0.53:9104/" target="_blank" rel="noopener">http://10.133.0.53:9104</a></p>
 <h3 id="数据收集"><a href="#数据收集" class="headerlink" title="数据收集"></a>数据收集</h3><p>为了能够让 <code>Prometheus Server</code> 能够从当前 <code>node_exporter</code> 获取到监控数据，这里需要修改 <code>Prometheus</code> 配置文件，编辑 <code>prometheus.yml</code> 并在 <code>scrape_configs</code> 节点下添加以下内容：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">scrape_configs:</span></span><br><span class="line"><span class="attr">  - job_name:</span> <span class="string">'prometheus'</span></span><br><span class="line"><span class="attr">    static_configs:</span></span><br><span class="line"><span class="attr">      - targets:</span> <span class="string">['localhost:9090']</span></span><br><span class="line">  <span class="comment"># 采集node exporter监控数据</span></span><br><span class="line"><span class="attr">  - job_name:</span> <span class="string">'node'</span></span><br><span class="line"><span class="attr">    static_configs:</span></span><br><span class="line"><span class="attr">      - targets:</span> <span class="string">['localhost:9100']</span></span><br></pre></td></tr></table></figure>
 
@@ -1014,7 +1001,7 @@
 <p>时序的标签可以使 <code>Prometheus</code> 的数据更加丰富，能够区分具体不同的实例，例如 <code>http_requests_total{method=&quot;POST&quot;}</code> 可以表示所有 <code>Http</code> 中的 <code>POST</code> 请求。标签名称由 <code>ASCII</code> 字符，数字，以及下划线组成， 其中 <code>__</code> 开头属于 <code>Prometheus</code> 保留，标签的值可以是任何 <code>Unicode</code> 字符，支持中文。</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&lt;metric</span> <span class="string">name&gt;&#123;&lt;label</span> <span class="string">name&gt;=&lt;label</span> <span class="string">value&gt;,</span> <span class="string">...&#125;</span></span><br></pre></td></tr></table></figure>
 
-<h3 id="Grafana-数据可视化"><a href="#Grafana-数据可视化" class="headerlink" title="Grafana 数据可视化"></a>Grafana 数据可视化</h3><p><code>Prometheus UI</code> 提供了快速验证 <code>PromQL</code> 以及临时可视化支持的能力，而在大多数场景下引入监控系统通常还需要构建可以长期使用的监控数据可视化面板（ <a href="https://grafana.com/grafana/dashboards" target="_blank" rel="noopener"><strong>Dashboard</strong></a> ）。这时用户可以考虑使用第三方的可视化工具如<code>Grafana</code>，<a href="https://grafana.com/" target="_blank" rel="noopener"><strong>Grafana</strong></a> 是一个开源的可视化平台，并且提供了对 <code>Prometheus</code> 的完整支持。</p>
+<h3 id="数据可视化"><a href="#数据可视化" class="headerlink" title="数据可视化"></a>数据可视化</h3><p><code>Prometheus UI</code> 提供了快速验证 <code>PromQL</code> 以及临时可视化支持的能力，而在大多数场景下引入监控系统通常还需要构建可以长期使用的监控数据可视化面板（ <a href="https://grafana.com/grafana/dashboards" target="_blank" rel="noopener"><strong>Dashboard</strong></a> ）。这时用户可以考虑使用第三方的可视化工具如<code>Grafana</code>，<a href="https://grafana.com/" target="_blank" rel="noopener"><strong>Grafana</strong></a> 是一个开源的可视化平台，并且提供了对 <code>Prometheus</code> 的完整支持。</p>
 <p>安装 <code>Grafana</code>（使用向导：安装 -&gt; 添加数据源 -&gt; 创建 Dashboard -&gt; 邀请成员 -&gt; 安装应用和插件）</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">docker方式：</span></span><br><span class="line"><span class="string">docker</span> <span class="string">run</span> <span class="bullet">-d</span> <span class="bullet">-p</span> <span class="number">3000</span><span class="string">:3000</span> <span class="string">grafana/grafana</span></span><br><span class="line"></span><br><span class="line"><span class="string">二进制包方式：</span></span><br><span class="line"><span class="string">wget</span> <span class="attr">https://dl.grafana.com/oss/release/grafana-6.3.3.linux-amd64.tar.gz</span></span><br><span class="line"><span class="string">tar</span> <span class="bullet">-zxvf</span> <span class="string">grafana-6.3.3.linux-amd64.tar.gz</span></span><br><span class="line"></span><br><span class="line"><span class="string">rpm方式：</span></span><br><span class="line"><span class="string">wget</span> <span class="attr">https://dl.grafana.com/oss/release/grafana-6.3.3-1.x86_64.rpm</span> </span><br><span class="line"><span class="string">sudo</span> <span class="string">yum</span> <span class="string">localinstall</span> <span class="string">grafana-6.3.3-1.x86_64.rpm</span> </span><br><span class="line"></span><br><span class="line"><span class="string">Pie</span> <span class="string">Chart插件：</span></span><br><span class="line"><span class="string">grafana-cli</span> <span class="string">plugins</span> <span class="string">install</span> <span class="string">grafana-piechart-panel</span></span><br></pre></td></tr></table></figure>
 
@@ -1058,7 +1045,10 @@
 <p>指标名称（metric name）：反映监控样本的含义。</p>
 <p>标签（label）：反映当前样本的特征维度。</p>
 <p>指标类型：Counter（计数器）、Gauge（仪表盘）、Histogram（直方图）、Summary（摘要）</p>
-<h4 id="Counter：只增不减的计数器"><a href="#Counter：只增不减的计数器" class="headerlink" title="Counter：只增不减的计数器"></a>Counter：只增不减的计数器</h4><h4 id="Gauge：可增可减的仪表盘"><a href="#Gauge：可增可减的仪表盘" class="headerlink" title="Gauge：可增可减的仪表盘"></a>Gauge：可增可减的仪表盘</h4><h4 id="使用-Histogram-和-Summary-分析数据分布情况"><a href="#使用-Histogram-和-Summary-分析数据分布情况" class="headerlink" title="使用 Histogram 和 Summary 分析数据分布情况"></a>使用 Histogram 和 Summary 分析数据分布情况</h4><h2 id="Prometheus-告警"><a href="#Prometheus-告警" class="headerlink" title="Prometheus 告警"></a>Prometheus 告警</h2>
+<p>Counter：只增不减的计数器</p>
+<p>Gauge：可增可减的仪表盘</p>
+<p>使用 Histogram 和 Summary 分析数据分布情况</p>
+<h2 id="告警"><a href="#告警" class="headerlink" title="告警"></a>告警</h2>
           
         
       
