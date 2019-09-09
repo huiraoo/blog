@@ -323,6 +323,297 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/09/Access-HDM/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/09/Access-HDM/" class="post-title-link" itemprop="url">MySQL实例接入阿里云HDM</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-09 15:32:04 / 修改时间：15:51:43" itemprop="dateCreated datePublished" datetime="2019-09-09T15:32:04+08:00">2019-09-09</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>由于内网限制，需要通过搭建代理服务器 <a href="http://www.squid-cache.org/" target="_blank" rel="noopener"><strong>Squid</strong></a> 进行访问。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-09-073606.jpg" alt="squid"></p>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p><strong>搭建代理服务器</strong></p>
+<blockquote>
+<p>青岛代理服务器地址：<code>10.133.0.53:3128</code></p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装 squid</span></span><br><span class="line"><span class="string">yum</span> <span class="bullet">-y</span> <span class="string">install</span> <span class="string">squid</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置开启自启动</span></span><br><span class="line"><span class="string">systemctl</span> <span class="string">enable</span> <span class="string">squid.service</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置 squid</span></span><br><span class="line"><span class="string">vim</span> <span class="string">/etc/squid/squid.conf</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动 squid</span></span><br><span class="line"><span class="string">systemctl</span> <span class="string">start</span> <span class="string">squid.service</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>接入 HDM</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 增加代理</span></span><br><span class="line"><span class="string">echo</span>  <span class="string">"</span></span><br><span class="line"><span class="string">http_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">https_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">ssl_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">tls_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">ftp_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">tcp_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">export http_proxy</span></span><br><span class="line"><span class="string">export https_proxy</span></span><br><span class="line"><span class="string">export ssl_proxy</span></span><br><span class="line"><span class="string">export ftp_proxy</span></span><br><span class="line"><span class="string">export tcp_proxy</span></span><br><span class="line"><span class="string">export tls_proxy"</span> <span class="string">&gt;&gt;</span> <span class="string">/etc/profile</span> <span class="string">;</span>  <span class="string">source</span> <span class="string">/etc/profile</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改wget代理配置文件</span></span><br><span class="line"><span class="string">echo</span> <span class="string">"</span></span><br><span class="line"><span class="string">https_proxy=http://10.133.0.53:3128/</span></span><br><span class="line"><span class="string">http_proxy=http://10.133.0.53:3128/</span></span><br><span class="line"><span class="string">ftp_proxy=http://10.133.0.53:3128/"</span> <span class="string">&gt;&gt;</span> <span class="string">/etc/wgetrc</span> <span class="string">;</span>  <span class="string">source</span> <span class="string">/etc/wgetrc</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载install-dbgateway</span></span><br><span class="line"><span class="string">sudo</span> <span class="string">wget</span> <span class="bullet">-O</span> <span class="string">install-dbgateway</span> <span class="attr">http://hdm-dbgateway-cn-hangzhou.oss-cn-hangzhou.aliyuncs.com/DBGateway/install-dbgateway</span> <span class="string">&amp;&amp;</span> <span class="string">sudo</span> <span class="string">/bin/bash</span> <span class="string">install-dbgateway</span> <span class="bullet">--id</span> <span class="string">idc_zqSS2oMpeyKubndD</span> <span class="bullet">--token</span> <span class="number">3E24</span><span class="string">C01713C83B7328F9A2F4C411078DC820E63FAFBC058F6635FAC5B0B4B7F2</span> <span class="bullet">--endpoint</span> <span class="string">master-hdm-cn-hangzhou.aliyuncs.com</span> <span class="bullet">--region</span> <span class="string">default</span> <span class="bullet">--native</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改install-dbgateway</span></span><br><span class="line"><span class="string">注释以下代码</span></span><br><span class="line"><span class="string">curl</span> <span class="bullet">-v</span> <span class="bullet">--connect-timeout</span> <span class="number">3</span> <span class="bullet">--silent</span> <span class="string">$&#123;endpoint&#125;:80</span> <span class="bullet">--output</span> <span class="bullet">-</span></span><br><span class="line"><span class="string">if</span> <span class="string">[</span> <span class="string">$?</span> <span class="string">!=</span> <span class="number">0</span> <span class="bullet">-a</span> <span class="string">$?</span> <span class="string">!=</span> <span class="number">52</span> <span class="string">];</span> <span class="string">then</span></span><br><span class="line">       <span class="string">echo</span> <span class="string">"Error! Can not connect to $&#123;endpoint&#125;:80, please check your network environment."</span></span><br><span class="line">       <span class="string">exit</span> <span class="number">1</span></span><br><span class="line"><span class="string">fi</span></span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/07/Ansible/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/07/Ansible/" class="post-title-link" itemprop="url">Ansible</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-07 16:07:25" itemprop="dateCreated datePublished" datetime="2019-09-07T16:07:25+08:00">2019-09-07</time>
+            
+
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/04/DataCenter/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -510,12 +801,24 @@
                 
               
 
-              <time title="创建时间：2019-09-02 09:46:59 / 修改时间：18:12:31" itemprop="dateCreated datePublished" datetime="2019-09-02T09:46:59+08:00">2019-09-02</time>
+              <time title="创建时间：2019-09-02 09:46:59" itemprop="dateCreated datePublished" datetime="2019-09-02T09:46:59+08:00">2019-09-02</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-09-09 11:56:32" itemprop="dateModified" datetime="2019-09-09T11:56:32+08:00">2019-09-09</time>
               
             
           </span>
@@ -558,10 +861,37 @@
 <li>道理为王论：流程规定该由谁负责就是谁负责。</li>
 </ul>
 <p>为帮助大家走出沟通误区，提升合作效率，巩固合作关系，看清对方“被影响”的本质，掌握“影响”他人的原则和方法，成为优秀的影响者，有能力驾驭“挑战的”沟通。</p>
-<p><strong>分享主题</strong>：沟通影响技术</p>
+<p><strong>分享主题</strong>：《沟通影响技术》</p>
 <p><strong>分享时间</strong>：2019.09.05  09:00~17:00</p>
 <p><strong>分享地点</strong>：海尔大学 B201</p>
 <p><strong>分享老师</strong>：王辰阳</p>
+<p><strong>学习收获</strong>：</p>
+<ol>
+<li><p>自我介绍时，是拉近人与人距离最重要时机，期望达到的状态是 ‘’不让人讨厌’’。王老师在介绍自己的时候，我觉得达到了这种目的，值得参考。他首先写了三个关键字：</p>
+<p>1）北（工）大，5年</p>
+<p>2）西门子，10年</p>
+<p>3）竞越，15年</p>
+<p>用幽默、戏谑的语气介绍了下自己，并着重说明这3个关键词之间的关系，简明扼要地完成自我介绍。</p>
+</li>
+<li><p>咨询意见态度时，将第一人称改为第三人称，客观说实话。</p>
+<p>示例：你爱我吗 ？你觉得我怎么样 ？</p>
+<p>修改为：你觉得赵薇怎么样 ？你觉得他有什么优缺点 ？</p>
+</li>
+</ol>
+<p><strong>培训主题</strong>：<strong>2020</strong>未来合伙人业务面试官培训</p>
+<p><strong>培训时间</strong>：2019年8月20日（下周二） 14:00-17:00</p>
+<p><strong>地点</strong>：创牌一楼会议室A区A09</p>
+<p><strong>招聘面试基本含义</strong>：测评及面试的基本概念和历史，面试的基本态度及仪表要求，面试中常见的误差，面试对于企业的公关价值及意义。</p>
+<p><strong>面谈的操作方法及技巧</strong>：BEI（行为事件访谈）需要注意的事项，如何识别虚假的BEI（谎言识别）及事件访谈技巧。</p>
+<p>BEI行为事件面试法最核心的概念即”人过去表现出来的行为方式是人未来行为最可靠的预测指标”，从招聘”最优秀的人”转变落地为招聘”最适合的人”。</p>
+<p><strong>面试的方法和技巧</strong>：不同情景下的常见面试方法概览（校园招聘&amp; 社会招聘 &amp; 内部竞聘 ），结构化面试的概念及六种问题类型，如何追问和识别虚假回答。</p>
+<p><strong>基于岗位胜任力模型的面试评价</strong>：胜任特征的概念及由来，岗位胜任力模型与人才甄选的关系，面试选拔的依据和标准，常见的维度及行为观测点。</p>
+<p><strong>如何阅读简历并进行有效提问</strong>：从简历中寻找与面试相关的几类信息，依靠简历面试的步骤，标准化面试招聘流程建议，面试的评分要点及技巧重申。</p>
+<p><strong>学习收获</strong>：</p>
+<ol>
+<li>你最近读什么书 ？是一个好问题的切入点，通过书展开了解知识广度和深度。</li>
+<li>在确认某件事情的真实性时，可以提问 “请举一个例子？”</li>
+</ol>
 
           
         
@@ -1148,7 +1478,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-30 14:46:32" itemprop="dateModified" datetime="2019-08-30T14:46:32+08:00">2019-08-30</time>
+                <time title="修改时间：2019-09-07 17:15:59" itemprop="dateModified" datetime="2019-09-07T17:15:59+08:00">2019-09-07</time>
               
             
           </span>
@@ -1196,9 +1526,11 @@
 <h2 id="备份恢复巡检"><a href="#备份恢复巡检" class="headerlink" title="备份恢复巡检"></a>备份恢复巡检</h2><p><strong>背景</strong>：100+ 上线项目系统（<code>MySQL</code>、<code>Oracle</code>、<code>Server SQL</code>、小型机、etc. ）之前未做备份恢复演练，也有部分上线系统未备份，存在巨大的数据安全风险，全量排查消除隐患。</p>
 <p><strong>技术栈</strong>：[<a href="https://www.commvault.com.cn/" target="_blank" rel="noopener"><strong>Commvault</strong></a>] [<a href="https://www.percona.com/software/mysql-database/percona-xtrabackup" target="_blank" rel="noopener"><strong>Percona XtraBackup</strong></a>]</p>
 <h2 id="用户体验优化"><a href="#用户体验优化" class="headerlink" title="用户体验优化"></a>用户体验优化</h2><p><strong>背景</strong>：数据库 <code>slowlog</code> 发布每周报告，需要从管理视角驱动质量提升，展现技术平台的价值。</p>
-<p><strong>技术栈</strong>：[<a href="https://www.aliyun.com/product/hdm" target="_blank" rel="noopener"><strong>HDM</strong></a>]    </p>
+<p><strong>技术栈</strong>：[<a href="https://www.aliyun.com/product/hdm" target="_blank" rel="noopener"><strong>HDM</strong></a>] </p>
 <h2 id="堡垒机"><a href="#堡垒机" class="headerlink" title="堡垒机"></a>堡垒机</h2><p><strong>背景</strong>：核心功能是用于实现对运维操作人员的<strong>权限控制</strong>与<strong>操作行为审计</strong>。<a href="http://www.openskill.cn/article/260" target="_blank" rel="noopener"><strong>工作原理</strong></a></p>
 <p><strong>技术栈</strong>：[<a href="http://www.jumpserver.org" target="_blank" rel="noopener"><strong>Jumpserver</strong></a>]</p>
+<h2 id="异地灾备中心"><a href="#异地灾备中心" class="headerlink" title="异地灾备中心"></a>异地灾备中心</h2><p><strong>背景</strong>：为解决本地机房发生重大灾难，数据不可恢复，特在红岛建立的灾备数据中心。</p>
+<p><strong>技术栈</strong>：</p>
 
           
         
@@ -1699,396 +2031,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/21/mysql-lock/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/08/21/mysql-lock/" class="post-title-link" itemprop="url">MySQL · 锁机制</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-21 16:33:53" itemprop="dateCreated datePublished" datetime="2019-08-21T16:33:53+08:00">2019-08-21</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-08-28 21:41:49" itemprop="dateModified" datetime="2019-08-28T21:41:49+08:00">2019-08-28</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>锁：是计算机协调多个进程或线程并发访问某一资源的机制。</p>
-<p>概述</p>
-<p>相对其他数据库而言，MySQL 的锁机制比较简单，其最显著的特点是不同的存储引擎支持不同的锁机制。MyISAM 和 MEMORY 存储引擎采用的是表级锁（table-level locking）；InnoDB 存储引擎既支持行级锁（row-level locking），也支持表级锁，但默认情况下是采用行级锁。</p>
-<p>①：表级锁：开销小，加锁快；不会出现死锁；锁定粒度大，发生锁冲突的概率最高,并发度最低。  </p>
-<p>②：行级锁：开销大，加锁慢；会出现死锁；锁定粒度最小，发生锁冲突的概率最低,并发度也最高。</p>
-<p>从上述特点可见，很难笼统地说哪种锁更好，只能就具体应用的特点来说哪种锁更合适！仅从锁的角度来说：表级锁更适合于以查询为主，只有少量按索引条件更新数据的应用，如 Web 应用；而行级锁则更适合于有大量按索引条件并发更新少量不同数据，同时又有并发查询的应用，如一些在线事务处理（OLTP）系统。由于 BDB 已经被 InnoDB 取代，即将成为历史（所以现在基本都在使用 InnoDB 存储引擎）。</p>
-<p>查看表锁争用情况：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show status like 'table%';</span><br><span class="line">+<span class="comment">----------------------------+-------+</span></span><br><span class="line">| Variable_name              | Value |</span><br><span class="line">+<span class="comment">----------------------------+-------+</span></span><br><span class="line">| Table_locks_immediate      | 4     |</span><br><span class="line">| Table_locks_waited         | 0     |</span><br><span class="line">| Table_open_cache_hits      | 4     |</span><br><span class="line">| Table_open_cache_misses    | 8     |</span><br><span class="line">| Table_open_cache_overflows | 0     |</span><br><span class="line">+<span class="comment">----------------------------+-------+</span></span><br><span class="line">5 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-
-<p>如果 Table_locks_waited 的值比较高，则说明存在着较严重的表级锁争用情况。</p>
-<p>表级锁的两种模式：</p>
-<ul>
-<li><p>表共享读锁（Table Read Lock）</p>
-</li>
-<li><p>表独占写锁（Table Write Lock）</p>
-</li>
-</ul>
-<h3 id="InnoDB"><a href="#InnoDB" class="headerlink" title="InnoDB"></a>InnoDB</h3><p>如果 InnoDB_row_lock_waits 和 InnoDB_row_lock_time_avg 的值比较高，表示锁争用情况比较严重。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show status like 'InnoDB_row_lock%';</span><br><span class="line">+<span class="comment">-------------------------------+-------+</span></span><br><span class="line">| Variable_name                 | Value |</span><br><span class="line">+<span class="comment">-------------------------------+-------+</span></span><br><span class="line">| Innodb_row_lock_current_waits | 0     |</span><br><span class="line">| Innodb_row_lock_time          | 0     |</span><br><span class="line">| Innodb_row_lock_time_avg      | 0     |</span><br><span class="line">| Innodb_row_lock_time_max      | 0     |</span><br><span class="line">| Innodb_row_lock_waits         | 0     |</span><br><span class="line">+<span class="comment">-------------------------------+-------+</span></span><br><span class="line">5 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-
-<p>InnoDB 实现了一下两种类型的行锁：  </p>
-<ul>
-<li>共享锁(S)：允许一个事务去多一行，阻止其它事务获得相同数据集的排他锁。  </li>
-<li>排他锁(X): 允许获得排他锁的事务更新数据，阻止其它事务获得相同数据集的共享锁和排他写锁。</li>
-</ul>
-<p>另外，为了允许行锁和表锁共存，实现多粒度锁机制，InnoDB 还有两种内部使用的意向锁（Intention Locks），这两种意向锁都是表锁。（感觉与MyISAM 的表锁机制类似）  </p>
-<ul>
-<li>意向共享锁（IS）：事务打算给数据行加行共享锁，事务在给一个数据行加共享锁前必须先取得该表的 IS 锁。  </li>
-<li>意向排他锁（IX）：事务打算给数据行加行排他锁，事务在给一个数据行加排他锁前必须先取得该表的 IX 锁。</li>
-</ul>
-<p><strong>InnoDB行锁模式兼容性列表</strong>：</p>
-<table>
-<thead>
-<tr>
-<th align="left">请求锁模式矩阵结果表示是否兼容 当前锁模式</th>
-<th align="left">X</th>
-<th align="left">IX</th>
-<th align="left">S</th>
-<th align="left">IS</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">X</td>
-<td align="left">冲突</td>
-<td align="left">冲突</td>
-<td align="left">冲突</td>
-<td align="left">冲突</td>
-</tr>
-<tr>
-<td align="left">IX</td>
-<td align="left">冲突</td>
-<td align="left">兼容</td>
-<td align="left">冲突</td>
-<td align="left">兼容</td>
-</tr>
-<tr>
-<td align="left">S</td>
-<td align="left">冲突</td>
-<td align="left">冲突</td>
-<td align="left">兼容</td>
-<td align="left">兼容</td>
-</tr>
-<tr>
-<td align="left">IS</td>
-<td align="left">冲突</td>
-<td align="left">兼容</td>
-<td align="left">兼容</td>
-<td align="left">兼容</td>
-</tr>
-</tbody></table>
-<h3 id="死锁（DeadLock"><a href="#死锁（DeadLock" class="headerlink" title="死锁（DeadLock)"></a>死锁（DeadLock)</h3><h3 id="避免死锁的方法"><a href="#避免死锁的方法" class="headerlink" title="避免死锁的方法"></a><strong>避免死锁的方法</strong></h3><ol>
-<li>在应用中，如果不同的程序会并发存取多个表，应尽量约定以相同的顺序来访问表，这样可以大大降低产生死锁的机会。在下面的例子中，由于两个 session 访问两个表的顺序不同，发生死锁的机会就非常高！但如果以相同的顺序来访问，死锁就可以避免。  </li>
-<li>在程序以批量方式处理数据的时候，如果事先对数据排序，保证每个线程按固定的顺序来处理记录，也可以大大降低出现死锁的可能。  </li>
-<li>在事务中，如果要更新记录，应该直接申请足够级别的锁，即排他锁，而不应先申请共享锁，更新时再申请排他锁，因为当用户申请排他锁时，其他事务可能又已经获得了相同记录的共享锁，从而造成锁冲突，甚至死锁。  </li>
-<li>在 REPEATABLE-READ 隔离级别下，如果两个线程同时对相同条件记录用 SELECT…FOR UPDATE 加排他锁，在没有符合该条件记录情况下，两个线程都会加锁成功。程序发现记录尚不存在，就试图插入一条新记录，如果两个线程都这么做，就会出现死锁。这种情况下，将隔离级别改成 READ COMMITTED，就可避免问题。  </li>
-<li>当隔离级别为 READ COMMITTED 时，如果两个线程都先执行 SELECT…FOR UPDATE，判断是否存在符合条件的记录，如果没有，就插入记录。此时，只有一个线程能插入成功，另一个线程会出现锁等待，当第 1 个线程提交后，第 2 个线程会因主键重出错，但虽然这个线程出错了，却会获得一个排他锁！这时如果有第 3 个线程又来申请排他锁，也会出现死锁。</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/19/book-cs/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/08/19/book-cs/" class="post-title-link" itemprop="url">读书笔记 · 深入理解计算机系统</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-19 11:09:11" itemprop="dateCreated datePublished" datetime="2019-08-19T11:09:11+08:00">2019-08-19</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-08-28 21:41:49" itemprop="dateModified" datetime="2019-08-28T21:41:49+08:00">2019-08-28</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>IP协议：主要解决网络路由和寻址问题</p>
-<p>TCP协议：主要解决如何在IP层之上可靠的传递数据包，使在网络上的另一端收到发端发出的所有包，并且顺序与发出顺序一致。</p>
-<p>HTTP协议：</p>
-<p>长连接：</p>
-<p>短连接：</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2137,7 +2079,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">55</span>
+                    <span class="site-state-item-count">57</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
