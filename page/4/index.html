@@ -1012,7 +1012,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-28 21:41:49" itemprop="dateModified" datetime="2019-08-28T21:41:49+08:00">2019-08-28</time>
+                <time title="修改时间：2019-09-12 09:41:35" itemprop="dateModified" datetime="2019-09-12T09:41:35+08:00">2019-09-12</time>
               
             
           </span>
@@ -1066,38 +1066,65 @@
       
         
           
-            <h2 id="开发规范"><a href="#开发规范" class="headerlink" title="开发规范"></a>开发规范</h2><h3 id="库表规范"><a href="#库表规范" class="headerlink" title="库表规范"></a>库表规范</h3><h3 id="SQL规范"><a href="#SQL规范" class="headerlink" title="SQL规范"></a>SQL规范</h3><h3 id="索引规范"><a href="#索引规范" class="headerlink" title="索引规范"></a>索引规范</h3><h2 id="运维规范"><a href="#运维规范" class="headerlink" title="运维规范"></a>运维规范</h2><h2 id="安全规范"><a href="#安全规范" class="headerlink" title="安全规范"></a>安全规范</h2><p><strong>不带 WHERE 子句的 UPDATE 和 DELETE 语句要相当谨慎</strong></p>
-<p>执行前，最好使用 SELETE 进行测试，保证它过滤的是正确的记录，以防编写的 WHERE 子句</p>
-<p>不正确。</p>
-<h2 id="军规"><a href="#军规" class="headerlink" title="军规"></a>军规</h2><ul>
-<li>表存储引擎必须使用 InnoDB</li>
+            <h2 id="开发规范"><a href="#开发规范" class="headerlink" title="开发规范"></a>开发规范</h2><ul>
+<li>存储引擎使用 <code>InnoDB</code></li>
 </ul>
 <blockquote>
 <p>解读：支持事务、行级锁、并发性能更好、CPU及内存缓存页优化使得资源利用率更高</p>
 </blockquote>
 <ul>
-<li>表字符集默认使用使用 utf8，必要时使用 utf8mb4</li>
+<li>字符集默认使用 <code>utf8</code>，必要时使用 <code>utf8mb4</code></li>
 </ul>
 <blockquote>
-<p>解读：通用，无乱码风险，汉字3字节，英文1字节。utf8mb4 是 utf8 的超集，存储4字节，如需存储表情符号时使用它。</p>
+<p>解读：通用，无乱码风险，汉字 3 字节，英文 1 字节，utf8mb4 是 utf8 的超集，存储 4 字节，如需存储表情符号时使用它。</p>
 </blockquote>
 <ul>
-<li>数据表、数据字段必须加入中文注释</li>
-</ul>
-<blockquote>
-<p>解读：N年后谁TM知道这些字段是干嘛的</p>
-</blockquote>
-<ul>
-<li>禁止使用存储过程、视图、触发器、Event</li>
+<li><p>数据表、数据字段要有中文注释</p>
+</li>
+<li><p>禁止使用 <strong>存储过程</strong>、<strong>视图</strong>、<strong>触发器</strong>、<strong>事件</strong></p>
+</li>
 </ul>
 <blockquote>
 <p>解读：（1）对数据库性能影响较大，能让服务层干的事情，不要交到数据库层。（2）调试、排错、迁移都比较困难，扩展性较差。</p>
 </blockquote>
 <ul>
-<li>禁止存储大文件或者大照片</li>
+<li>禁止存储文件或者照片</li>
 </ul>
 <blockquote>
-<p>解读：可以将大文件和照片存储在对象存储系统，数据库中存储路径</p>
+<p>解读：可以将文件和照片放在对象存储，数据库中存储路径</p>
+</blockquote>
+<h3 id="库表规范"><a href="#库表规范" class="headerlink" title="库表规范"></a>库表规范</h3><h3 id="SQL规范"><a href="#SQL规范" class="headerlink" title="SQL规范"></a>SQL规范</h3><h3 id="索引规范"><a href="#索引规范" class="headerlink" title="索引规范"></a>索引规范</h3><h2 id="运维规范"><a href="#运维规范" class="headerlink" title="运维规范"></a>运维规范</h2><h2 id="安全规范"><a href="#安全规范" class="headerlink" title="安全规范"></a>安全规范</h2><p><strong>不带 WHERE 子句的 UPDATE 和 DELETE 语句要相当谨慎</strong></p>
+<p>执行前，最好使用 SELETE 进行测试，保证它过滤的是正确的记录，以防编写的 WHERE 子句</p>
+<p>不正确。</p>
+<h2 id="军规"><a href="#军规" class="headerlink" title="军规"></a>军规</h2><ul>
+<li>存储引擎使用 <code>InnoDB</code></li>
+</ul>
+<blockquote>
+<p>解读：支持事务、行级锁、并发性能更好、CPU及内存缓存页优化使得资源利用率更高</p>
+</blockquote>
+<ul>
+<li>字符集默认使用 <code>utf8</code>，必要时使用 <code>utf8mb4</code></li>
+</ul>
+<blockquote>
+<p>解读：通用，无乱码风险，汉字 3 字节，英文 1 字节，utf8mb4 是 utf8 的超集，存储 4 字节，如需存储表情符号时使用它。</p>
+</blockquote>
+<ul>
+<li>数据表、数据字段要有中文注释</li>
+</ul>
+<blockquote>
+<p>解读：N年后谁TM知道这些字段是干嘛的</p>
+</blockquote>
+<ul>
+<li>禁止使用 <strong>存储过程</strong>、<strong>视图</strong>、<strong>触发器</strong>、<strong>事件</strong></li>
+</ul>
+<blockquote>
+<p>解读：（1）对数据库性能影响较大，能让服务层干的事情，不要交到数据库层。（2）调试、排错、迁移都比较困难，扩展性较差。</p>
+</blockquote>
+<ul>
+<li>禁止存储大文件或者照片</li>
+</ul>
+<blockquote>
+<p>解读：可以将文件和照片存储在对象存储，数据库中存储路径</p>
 </blockquote>
 <ul>
 <li>测试、开发、线上数据库环境必须隔离</li>
