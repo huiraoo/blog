@@ -96,18 +96,18 @@
 
 
 
-  <meta name="description" content="大表数据归档背景大表 base_barcode_info 数据量 5000w+，遇到很大的性能瓶颈，需要将表中的历史数据进行归档。 实践（1）安装 Percona Toolkit （2）创建归档表 base_barcode_info_history_20190801 （3）使用 crontab 执行定时任务，archiver.sh 脚本 12345# 后台执行任务nohup sh archiver">
+  <meta name="description" content="场景应用数据安全最佳实践实例容灾跨地域灾备实例 实现主实例和异地灾备实例之间的实时同步，主实例和灾备实例均搭建主备高可用架构，当主实例发生突发性自然灾害等状况，主节点（Master）和备节点（Slave）均无法连接时，您可以将异地灾备实例切换为主实例，在应用端修改数据库连接地址后，即可快速恢复应用的业务访问。 跨地域备份 将本地备份文件复制到另一个地域的OSS上，跨地域的数据备份可以用于监管和容灾">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL · 最佳实践">
 <meta property="og:url" content="https://huiraoo.github.io/blog/2019/07/25/mysql-best-practices/index.html">
 <meta property="og:site_name" content="Rao&#39;s Blog">
-<meta property="og:description" content="大表数据归档背景大表 base_barcode_info 数据量 5000w+，遇到很大的性能瓶颈，需要将表中的历史数据进行归档。 实践（1）安装 Percona Toolkit （2）创建归档表 base_barcode_info_history_20190801 （3）使用 crontab 执行定时任务，archiver.sh 脚本 12345# 后台执行任务nohup sh archiver">
+<meta property="og:description" content="场景应用数据安全最佳实践实例容灾跨地域灾备实例 实现主实例和异地灾备实例之间的实时同步，主实例和灾备实例均搭建主备高可用架构，当主实例发生突发性自然灾害等状况，主节点（Master）和备节点（Slave）均无法连接时，您可以将异地灾备实例切换为主实例，在应用端修改数据库连接地址后，即可快速恢复应用的业务访问。 跨地域备份 将本地备份文件复制到另一个地域的OSS上，跨地域的数据备份可以用于监管和容灾">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-04-064242.jpg">
-<meta property="og:updated_time" content="2019-09-14T00:00:28.757Z">
+<meta property="og:updated_time" content="2019-09-17T02:48:55.378Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL · 最佳实践">
-<meta name="twitter:description" content="大表数据归档背景大表 base_barcode_info 数据量 5000w+，遇到很大的性能瓶颈，需要将表中的历史数据进行归档。 实践（1）安装 Percona Toolkit （2）创建归档表 base_barcode_info_history_20190801 （3）使用 crontab 执行定时任务，archiver.sh 脚本 12345# 后台执行任务nohup sh archiver">
+<meta name="twitter:description" content="场景应用数据安全最佳实践实例容灾跨地域灾备实例 实现主实例和异地灾备实例之间的实时同步，主实例和灾备实例均搭建主备高可用架构，当主实例发生突发性自然灾害等状况，主节点（Master）和备节点（Slave）均无法连接时，您可以将异地灾备实例切换为主实例，在应用端修改数据库连接地址后，即可快速恢复应用的业务访问。 跨地域备份 将本地备份文件复制到另一个地域的OSS上，跨地域的数据备份可以用于监管和容灾">
 <meta name="twitter:image" content="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-04-064242.jpg">
 
 
@@ -385,7 +385,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-09-14 08:00:28" itemprop="dateModified" datetime="2019-09-14T08:00:28+08:00">2019-09-14</time>
+                <time title="修改时间：2019-09-17 10:48:55" itemprop="dateModified" datetime="2019-09-17T10:48:55+08:00">2019-09-17</time>
               
             
           </span>
@@ -444,7 +444,23 @@
       
 
       
-        <h2 id="大表数据归档"><a href="#大表数据归档" class="headerlink" title="大表数据归档"></a>大表数据归档</h2><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>大表 <code>base_barcode_info</code> 数据量 <code>5000w+</code>，遇到很大的性能瓶颈，需要将表中的历史数据进行归档。</p>
+        <h2 id="场景应用"><a href="#场景应用" class="headerlink" title="场景应用"></a>场景应用</h2><h3 id="数据安全最佳实践"><a href="#数据安全最佳实践" class="headerlink" title="数据安全最佳实践"></a>数据安全最佳实践</h3><h4 id="实例容灾"><a href="#实例容灾" class="headerlink" title="实例容灾"></a>实例容灾</h4><p>跨地域灾备实例</p>
+<p>实现主实例和异地灾备实例之间的实时同步，主实例和灾备实例均搭建主备高可用架构，当主实例发生突发性自然灾害等状况，主节点（Master）和备节点（Slave）均无法连接时，您可以将异地灾备实例切换为主实例，在应用端修改数据库连接地址后，即可快速恢复应用的业务访问。</p>
+<p>跨地域备份</p>
+<p>将本地备份文件复制到另一个地域的OSS上，跨地域的数据备份可以用于监管和容灾恢复。</p>
+<h4 id="权限控制"><a href="#权限控制" class="headerlink" title="权限控制"></a>权限控制</h4><p><strong>数据库账号授权</strong></p>
+<p>读写账号</p>
+<p>只读账号</p>
+<p>授权管理库</p>
+<p>授权管理表</p>
+<h4 id="网络隔离"><a href="#网络隔离" class="headerlink" title="网络隔离"></a>网络隔离</h4><p>IP白名单</p>
+<h4 id="日志审计"><a href="#日志审计" class="headerlink" title="日志审计"></a>日志审计</h4><p>SQL洞察</p>
+<p>为数据库提供安全审计、性能诊断等增值服务</p>
+<h4 id="数据加密"><a href="#数据加密" class="headerlink" title="数据加密"></a>数据加密</h4><p>SSL加密</p>
+<p>在通过公网连接数据库时，您可以启用SSL（Secure Sockets Layer）加密，并安装SSL CA证书到需要的应用服务。SSL在传输层对网络连接进行加密，能提升通信数据的安全性和完整性，但会同时增加网络连接响应时间。</p>
+<p>透明数据加密</p>
+<p>可对数据文件执行实时I/O加密和解密，数据在写入磁盘之前进行加密，从磁盘读入内存时进行解密。</p>
+<h3 id="数据备份最佳实践"><a href="#数据备份最佳实践" class="headerlink" title="数据备份最佳实践"></a>数据备份最佳实践</h3><h2 id="故障处理"><a href="#故障处理" class="headerlink" title="故障处理"></a>故障处理</h2><h3 id="大表数据归档"><a href="#大表数据归档" class="headerlink" title="大表数据归档"></a>大表数据归档</h3><h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p>大表 <code>base_barcode_info</code> 数据量 <code>5000w+</code>，遇到很大的性能瓶颈，需要将表中的历史数据进行归档。</p>
 <h3 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h3><p>（1）安装 <a href="https://huiraoo.github.io/blog/2019/07/05/mysql-toolkit/"><strong>Percona Toolkit</strong></a></p>
 <p>（2）创建归档表 <code>base_barcode_info_history_20190801</code></p>
 <p>（3）使用 <a href="https://tool.lu/crontab/" target="_blank" rel="noopener"><strong>crontab</strong></a> 执行定时任务，<code>archiver.sh</code> 脚本</p>
@@ -770,7 +786,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#大表数据归档"><span class="nav-number">1.</span> <span class="nav-text">大表数据归档</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景"><span class="nav-number">1.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实践"><span class="nav-number">1.2.</span> <span class="nav-text">实践</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#快速添加索引"><span class="nav-number">2.</span> <span class="nav-text">快速添加索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景-1"><span class="nav-number">2.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实践-1"><span class="nav-number">2.2.</span> <span class="nav-text">实践</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#快速删除数据"><span class="nav-number">3.</span> <span class="nav-text">快速删除数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景-2"><span class="nav-number">3.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实践-2"><span class="nav-number">3.2.</span> <span class="nav-text">实践</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#表水平拆分"><span class="nav-number">4.</span> <span class="nav-text">表水平拆分</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景-3"><span class="nav-number">4.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实践-3"><span class="nav-number">4.2.</span> <span class="nav-text">实践</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改数据库名"><span class="nav-number">5.</span> <span class="nav-text">修改数据库名</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景-4"><span class="nav-number">5.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实践-4"><span class="nav-number">5.2.</span> <span class="nav-text">实践</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跨机房数据同步"><span class="nav-number">6.</span> <span class="nav-text">跨机房数据同步</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#误操作快速回滚"><span class="nav-number">7.</span> <span class="nav-text">误操作快速回滚</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#场景应用"><span class="nav-number">1.</span> <span class="nav-text">场景应用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#数据安全最佳实践"><span class="nav-number">1.1.</span> <span class="nav-text">数据安全最佳实践</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#实例容灾"><span class="nav-number">1.1.1.</span> <span class="nav-text">实例容灾</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#权限控制"><span class="nav-number">1.1.2.</span> <span class="nav-text">权限控制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#网络隔离"><span class="nav-number">1.1.3.</span> <span class="nav-text">网络隔离</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#日志审计"><span class="nav-number">1.1.4.</span> <span class="nav-text">日志审计</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据加密"><span class="nav-number">1.1.5.</span> <span class="nav-text">数据加密</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据备份最佳实践"><span class="nav-number">1.2.</span> <span class="nav-text">数据备份最佳实践</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#故障处理"><span class="nav-number">2.</span> <span class="nav-text">故障处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#大表数据归档"><span class="nav-number">2.1.</span> <span class="nav-text">大表数据归档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#背景"><span class="nav-number">2.2.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实践"><span class="nav-number">2.3.</span> <span class="nav-text">实践</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#快速添加索引"><span class="nav-number">3.</span> <span class="nav-text">快速添加索引</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景-1"><span class="nav-number">3.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实践-1"><span class="nav-number">3.2.</span> <span class="nav-text">实践</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#快速删除数据"><span class="nav-number">4.</span> <span class="nav-text">快速删除数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景-2"><span class="nav-number">4.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实践-2"><span class="nav-number">4.2.</span> <span class="nav-text">实践</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#表水平拆分"><span class="nav-number">5.</span> <span class="nav-text">表水平拆分</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景-3"><span class="nav-number">5.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实践-3"><span class="nav-number">5.2.</span> <span class="nav-text">实践</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#修改数据库名"><span class="nav-number">6.</span> <span class="nav-text">修改数据库名</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景-4"><span class="nav-number">6.1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实践-4"><span class="nav-number">6.2.</span> <span class="nav-text">实践</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#跨机房数据同步"><span class="nav-number">7.</span> <span class="nav-text">跨机房数据同步</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#误操作快速回滚"><span class="nav-number">8.</span> <span class="nav-text">误操作快速回滚</span></a></li></ol></div>
             
 
           </div>
