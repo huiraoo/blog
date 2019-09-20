@@ -104,7 +104,7 @@
 <meta property="og:description" content="背景由于内网限制，需要通过搭建代理服务器 Squid 进行访问。  实践搭建代理服务器  青岛代理服务器地址：10.133.0.53:3128  1234567891011# 安装 squidyum -y install squid# 设置开启自启动systemctl enable squid.service# 配置 squidvim /etc/squid/squid.conf# 启动 squid">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-09-073606.jpg">
-<meta property="og:updated_time" content="2019-09-15T10:53:50.554Z">
+<meta property="og:updated_time" content="2019-09-18T10:14:40.460Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL实例接入阿里云HDM">
 <meta name="twitter:description" content="背景由于内网限制，需要通过搭建代理服务器 Squid 进行访问。  实践搭建代理服务器  青岛代理服务器地址：10.133.0.53:3128  1234567891011# 安装 squidyum -y install squid# 设置开启自启动systemctl enable squid.service# 配置 squidvim /etc/squid/squid.conf# 启动 squid">
@@ -385,7 +385,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-09-15 18:53:50" itemprop="dateModified" datetime="2019-09-15T18:53:50+08:00">2019-09-15</time>
+                <time title="修改时间：2019-09-18 18:14:40" itemprop="dateModified" datetime="2019-09-18T18:14:40+08:00">2019-09-18</time>
               
             
           </span>
@@ -437,6 +437,12 @@
 <p><strong>接入 HDM</strong></p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 增加代理</span></span><br><span class="line">echo  <span class="string">"</span></span><br><span class="line"><span class="string">http_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">https_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">ssl_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">tls_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">ftp_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">tcp_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">export http_proxy</span></span><br><span class="line"><span class="string">export https_proxy</span></span><br><span class="line"><span class="string">export ssl_proxy</span></span><br><span class="line"><span class="string">export ftp_proxy</span></span><br><span class="line"><span class="string">export tcp_proxy</span></span><br><span class="line"><span class="string">export tls_proxy"</span> &gt;&gt; /etc/profile ;  source /etc/profile</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改wget代理配置文件</span></span><br><span class="line">echo <span class="string">"</span></span><br><span class="line"><span class="string">https_proxy=http://10.133.0.53:3128/</span></span><br><span class="line"><span class="string">http_proxy=http://10.133.0.53:3128/</span></span><br><span class="line"><span class="string">ftp_proxy=http://10.133.0.53:3128/"</span> &gt;&gt; /etc/wgetrc ;  source /etc/wgetrc</span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载install-dbgateway</span></span><br><span class="line">sudo wget -O install-dbgateway http://hdm-dbgateway-cn-hangzhou.oss-cn-hangzhou.aliyuncs.com/DBGateway/install-dbgateway &amp;&amp; sudo /bin/bash install-dbgateway --id idc_zqSS2oMpeyKubndD --token <span class="number">3</span>E24C01713C83B7328F9A2F4C411078DC820E63FAFBC058F6635FAC5B0B4B7F2 --endpoint master-hdm-cn-hangzhou.aliyuncs.com --region default --native</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改install-dbgateway</span></span><br><span class="line">注释以下代码</span><br><span class="line">curl -v --connect-timeout <span class="number">3</span> --silent $&#123;endpoint&#125;:<span class="number">80</span> --output -</span><br><span class="line"><span class="keyword">if</span> [ $? != <span class="number">0</span> -a $? != <span class="number">52</span> ]; then</span><br><span class="line">       echo <span class="string">"Error! Can not connect to $&#123;endpoint&#125;:80, please check your network environment."</span></span><br><span class="line">       <span class="keyword">exit</span> <span class="number">1</span></span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"><span class="comment"># 完成接入</span></span><br><span class="line">sudo /bin/bash install-dbgateway --id idc_zqSS2oMpeyKubndD --token <span class="number">3</span>E24C01713C83B7328F9A2F4C411078DC820E63FAFBC058F6635FAC5B0B4B7F2 --endpoint master-hdm-cn-hangzhou.aliyuncs.com --region default --native</span><br></pre></td></tr></table></figure>
 
+<p><strong>操作 dbgateway 命令</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 重启 </span></span><br><span class="line">/opt/dbgateway/bin/dbgateway-manager -d restart</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动 </span></span><br><span class="line">/opt/dbgateway/bin/dbgateway-manager -d start</span><br><span class="line"></span><br><span class="line"><span class="comment"># 停止 </span></span><br><span class="line">/opt/dbgateway/bin/dbgateway-manager -d stop</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除</span></span><br><span class="line">rm -rf /opt/dbgateway</span><br></pre></td></tr></table></figure>
+
+<p><strong>授权账号</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># hdm/Hdm@123!</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">USER</span> <span class="string">'hdm'</span>@<span class="string">'%'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="keyword">PASSWORD</span> <span class="string">'*14533888C6CA3952B3957903FF7E69469C7E3A2B'</span>;</span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">SHOW</span> <span class="keyword">DATABASES</span>, PROCESS, SUPER, <span class="keyword">REPLICATION</span> <span class="keyword">SLAVE</span>, <span class="keyword">REPLICATION</span> <span class="keyword">CLIENT</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'hdm'</span>@<span class="string">'%'</span>;</span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">SELECT</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'hdm'</span>@<span class="string">'%'</span>;</span><br></pre></td></tr></table></figure>
+
 
       
     </div>
@@ -476,6 +482,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/blog/2019/09/19/Optimize-case/" rel="prev" title="优化案例 | 大表数据归档">
+                优化案例 | 大表数据归档 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -546,7 +556,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">57</span>
+                    <span class="site-state-item-count">59</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
