@@ -1928,7 +1928,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-09-24 11:49:00" itemprop="dateModified" datetime="2019-09-24T11:49:00+08:00">2019-09-24</time>
+                <time title="修改时间：2019-09-24 14:37:49" itemprop="dateModified" datetime="2019-09-24T14:37:49+08:00">2019-09-24</time>
               
             
           </span>
@@ -1983,11 +1983,11 @@
         
           
             <h2 id="建表规范"><a href="#建表规范" class="headerlink" title="建表规范"></a>建表规范</h2><ul>
-<li><p>控制单表数据量在千万级</p>
+<li><input disabled type="checkbox"> <p>控制单表数据量在千万级</p>
 </li>
-<li><p>表存储引擎必须使用 InnoDB</p>
+<li><p>表存储引擎必须使用 <code>InnoDB</code></p>
 </li>
-<li><p>表字符集默认使用 utf8，必要时候使用 utf8mb4</p>
+<li><p>表字符集默认使用 <code>utf8</code>，必要时候使用 <code>utf8mb4</code></p>
 </li>
 <li><p>禁止使用存储过程、视图、触发器、event</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 对数据库性能影响较大，互联网业务，能让站点层和服务层干的事情，不要交到数据库层</span><br><span class="line">② 调试，排错，迁移都比较困难，扩展性较差</span><br></pre></td></tr></table></figure>
@@ -1998,8 +1998,8 @@
 </li>
 <li><p>库名，表名，列名必须用小写，采用下划线分隔</p>
 </li>
-<li><p>根据业务区分使用 tinyint（1 Byte）、smallint（2 Byte）、int（4 Byte）、bigint（8 Byte）</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">合适的字符存储长度，不但节约数据库表空间、节约索引存储，更重要的是提升检索速度</span><br></pre></td></tr></table></figure>
+<li><p>根据业务区分使用 <code>tinyint</code>（1 Byte）、<code>smallint</code>（2 Byte）、<code>int</code>（4 Byte）、<code>bigint</code>（8 Byte）</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 合适的字符存储长度，不但节约数据库表空间、节约索引存储，更重要的是提升检索速度</span><br></pre></td></tr></table></figure>
 
 <table>
 <thead>
@@ -2036,16 +2036,22 @@
 </tr>
 </tbody></table>
 </li>
-<li><p>根据业务区分使用 char、varchar</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 字段长度固定，或者长度近似的业务场景，适合使用 char，能够减少碎片，查询性能高</span><br><span class="line">② 字段长度相差较大，或者更新较少的业务场景，适合使用 varchar，能够减少空间</span><br></pre></td></tr></table></figure>
+<li><p>根据业务区分使用 <code>char</code>、<code>varchar</code></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 字段长度固定，或者长度近似的业务场景，适合使用char，能够减少碎片，查询性能高</span><br><span class="line">② 字段长度相差较大，或者更新较少的业务场景，适合使用varchar，能够减少空间</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>根据业务区分使用 datetime、timestamp</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">前者占用<span class="number">8</span>个字节，后者占用<span class="number">4</span>个字节，存储年使用YEAR，存储日期使用DATE，存储时间使用datetime</span><br></pre></td></tr></table></figure>
+<li><p>根据业务区分使用 <code>datetime</code>、<code>timestamp</code></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 前者占用<span class="number">8</span>个字节，后者占用<span class="number">4</span>个字节，存储年使用YEAR，存储日期使用DATE，存储时间使用datetime</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>表必须有主键，推荐使用 unsigned 整数为主键</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">删除无主键的表，如果是row模式的主从架构，从库会挂住</span><br></pre></td></tr></table></figure>
-
-
+<li><p>小数类型使用 <code>decimal</code>，禁止使用 <code>float</code> 和 <code>double</code></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① float 和 double 在存储的时候，存在精度损失的问题，很可能在值的比较时，得到不正确的结果</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>表必须有主键，推荐使用 <code>unsigned</code> 整数为主键</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 删除无主键的表，如果是 row 模式的主从架构，从库会挂住</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建是否概念字段，必须使用 <code>is_xxx</code> 的方式命名，数据类型是 <code>unsigned tinyint</code>（ 1表示是，0表示否）</p>
+</li>
+<li><p>表必备三字段：<code>id</code>，<code>gmt_create</code>，<code>gmt_modified</code></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① id必为主键，类型为unsigned bigint、单表时自增、步长为<span class="number">1</span></span><br><span class="line">② gmt_create, gmt_modified的类型均为datetime，前者现在时表示主动创建，后者过去分词表示被动更新</span><br></pre></td></tr></table></figure>
 
 </li>
 </ul>
