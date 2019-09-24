@@ -2100,7 +2100,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-09-24 23:14:29" itemprop="dateModified" datetime="2019-09-24T23:14:29+08:00">2019-09-24</time>
+                <time title="修改时间：2019-09-24 23:25:39" itemprop="dateModified" datetime="2019-09-24T23:25:39+08:00">2019-09-24</time>
               
             
           </span>
@@ -2160,7 +2160,7 @@
 <li><p>库名、表名、字段名必须用小写，采用下划线分隔</p>
 </li>
 <li><p>表字符集默认使用 <code>utf8</code>，必要时候使用 <code>utf8mb4</code></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 通用，无乱码风险，汉字<span class="number">3</span>字节，英文<span class="number">1</span>字节</span><br><span class="line">② utf8mb4 是 utf8 的超集，存储<span class="number">4</span>字节，例如表情符号时使用它</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 通用，无乱码风险，汉字<span class="number">3</span>字节，英文<span class="number">1</span>字节</span><br><span class="line">② utf8mb4是utf8的超集，存储<span class="number">4</span>字节，例如：表情符号时使用它</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>禁止使用存储过程、视图、触发器、event</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 对数据库性能影响较大，能让站点层和服务层干的事情，不要交到数据库层</span><br><span class="line">② 难以调试和扩展，更没有移植性</span><br></pre></td></tr></table></figure>
@@ -2172,7 +2172,7 @@
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 会浪费更多的磁盘和内存空间，非必要的大量的大字段查询会淘汰掉热数据，导致内存命中率急剧降低，影响数据库性能</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>根据业务区分使用 <code>tinyint</code>（1 byte）、<code>smallint</code>（2 byte）、<code>int</code>（4 byte）、<code>bigint</code>（8 byte）</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 合适的字符存储长度，不但节约数据库表空间，节约索引存储，更重要的是提升检索速度</span><br><span class="line">② 整数类型指定显示宽度，例如 int(M)，对大多数应用是没有意义的，他不会限制值的合法范围，对于存储和计算来说，int(<span class="number">1</span>) 和 int(<span class="number">20</span>) 是相同的</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 合适的字符存储长度，不但节约数据库表空间，节约索引存储，更重要的是提升检索速度</span><br><span class="line">② 整数类型指定显示宽度，例如：int(M)对大多数应用是没有意义的，他不会限制值的合法范围，对于存储和计算来说，int(<span class="number">1</span>)和int(<span class="number">20</span>)是相同的</span><br></pre></td></tr></table></figure>
 
 <table>
 <thead>
@@ -2215,32 +2215,32 @@
 </tbody></table>
 </li>
 <li><p>根据业务区分使用 <code>char</code>、<code>varchar</code></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 字段长度固定，或者长度近似的业务场景，适合使用 char，能够减少碎片，查询性能高</span><br><span class="line">② 字段长度相差较大，或者更新较少的业务场景，适合使用 varchar，节省磁盘空间</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 字段长度固定，或者长度近似的业务场景，适合使用char，能够减少碎片，查询性能高</span><br><span class="line">② 字段长度相差较大，或者更新较少的业务场景，适合使用varchar，节省磁盘空间</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>根据业务区分使用 <code>datetime</code>、<code>timestamp</code></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 前者占用<span class="number">8</span>个字节，后者占用<span class="number">4</span>个字节，存储年使用 YEAR，存储日期使用 DATE，存储时间使用 datetime</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 前者占用<span class="number">8</span>个字节，后者占用<span class="number">4</span>个字节，存储年使用YEAR，存储日期使用DATE，存储时间使用datetime</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>小数类型使用 <code>decimal</code>，禁止使用 <code>float</code> 和 <code>double</code></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① float 和 double 在存储的时候，存在精度损失的问题，很可能在值的比较时，得到不正确的结果</span><br><span class="line">② decimal(M,D)，如果M&gt;D，占用字节M+<span class="number">2</span>，否则为D+<span class="number">2</span>，M是数字最大位数，D是小数点右侧数字个数</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① float和double在存储的时候，存在精度损失的问题，很可能在值的比较时，得到不正确的结果</span><br><span class="line">② decimal(M,D)，如果M&gt;D，占用字节M+<span class="number">2</span>，否则为D+<span class="number">2</span>，M是数字最大位数，D是小数点右侧数字个数</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>表必须有主键，推荐使用 <code>unsigned</code> 整数为主键</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 删除无主键的表，如果是 row 模式的主从架构，从库会挂住</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 删除无主键的表，如果是row模式的主从架构，从库会挂住</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>创建是否概念字段，必须使用 <code>is_xxx</code> 的方式命名，数据类型是 <code>unsigned tinyint</code>（ 1表示是，0表示否）</p>
 </li>
 <li><p>表必备三字段：<code>id</code>，<code>gmt_create</code>，<code>gmt_modified</code></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① id 必为主键，类型为 unsigned bigint，单表时自增，步长为<span class="number">1</span></span><br><span class="line">② gmt_create, gmt_modified 的类型均为 datetime，前者现在时表示主动创建，后者过去分词表示被动更新</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① id必为主键，类型为unsigned bigint，单表时自增，步长为<span class="number">1</span></span><br><span class="line">② gmt_create, gmt_modified类型均为datetime，前者现在时表示主动创建，后者过去分词表示被动更新</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>字段定义必须为 <code>NOT NULL</code> ，并设默认值</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① NULL列使用索引，会影响优化器选择执行计划，很难优化</span><br><span class="line">② NULL只能采用 IS NULL 或者 IS NOT NULL，而在使用 =、!=、<span class="keyword">in</span>、not <span class="keyword">in</span> 时有大坑</span><br><span class="line">③ 整型默认值设置为<span class="number">0</span>，字符串默认值设置为<span class="string">''</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① NULL列使用索引，会影响优化器选择执行计划，很难优化</span><br><span class="line">② NULL只能采用IS NULL或者IS NOT NULL，而在使用=、!=、<span class="keyword">in</span>、not <span class="keyword">in</span>时有大坑</span><br><span class="line">③ 数值默认值设置为<span class="number">0</span>，字符串默认值设置为<span class="string">''</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>使用 <code>unsigned int</code> 存储 IPv4，不要用 <code>char(15)</code></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 节省存储空间，char(<span class="number">15</span>)占据<span class="number">16</span>个字节，unsigned int只需要<span class="number">4</span>个字节</span><br><span class="line">② int 型在逻辑运算上要比 char 速度快</span><br><span class="line">③ ip 和数字转换，靠MySQL自带的两个函数算法，inet_aton()和inet_ntoa()</span><br><span class="line"></span><br><span class="line">mysql&gt; select inet_aton(<span class="string">'192.168.1.200'</span>);</span><br><span class="line">+----------------------------+</span><br><span class="line">| inet_aton(<span class="string">'192.168.1.200'</span>) |</span><br><span class="line">+----------------------------+</span><br><span class="line">|                 <span class="number">3232235976</span> |</span><br><span class="line">+----------------------------+</span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select inet_ntoa(<span class="string">'3232235976'</span>);</span><br><span class="line">+-------------------------+</span><br><span class="line">| inet_ntoa(<span class="string">'3232235976'</span>) |</span><br><span class="line">+-------------------------+</span><br><span class="line">| <span class="number">192.168</span>.<span class="number">1.200</span>           |</span><br><span class="line">+-------------------------+</span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 节省存储空间，char(<span class="number">15</span>)占据<span class="number">16</span>个字节，unsigned int只需要<span class="number">4</span>个字节</span><br><span class="line">② int型在逻辑运算上，比char速度快</span><br><span class="line">③ ip和数字转换，函数算法：inet_aton()和inet_ntoa()</span><br><span class="line"></span><br><span class="line">mysql&gt; select inet_aton(<span class="string">'192.168.1.200'</span>);</span><br><span class="line">+----------------------------+</span><br><span class="line">| inet_aton(<span class="string">'192.168.1.200'</span>) |</span><br><span class="line">+----------------------------+</span><br><span class="line">|                 <span class="number">3232235976</span> |</span><br><span class="line">+----------------------------+</span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select inet_ntoa(<span class="string">'3232235976'</span>);</span><br><span class="line">+-------------------------+</span><br><span class="line">| inet_ntoa(<span class="string">'3232235976'</span>) |</span><br><span class="line">+-------------------------+</span><br><span class="line">| <span class="number">192.168</span>.<span class="number">1.200</span>           |</span><br><span class="line">+-------------------------+</span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>使用 <code>varchar(20)</code> 存储手机号，不要使用整数</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 牵扯到国家代号，可能出现 +/-/() 等字符，例如+<span class="number">86</span></span><br><span class="line">② 手机号不会用来做数学运算</span><br><span class="line">③ varchar 可以模糊查询，例如：like <span class="string">'138%'</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 牵扯到国家代号，可能出现+/-/()等字符，例如+<span class="number">86</span></span><br><span class="line">② 手机号不会用来做数学运算</span><br><span class="line">③ varchar可以模糊查询，例如：like <span class="string">'138%'</span></span><br></pre></td></tr></table></figure>
 </li>
-<li><p>控制单表数据量，单表记录控制在千万级</p>
+<li><p>控制单表数据量，单表数据控制在<strong>千万级</strong></p>
 </li>
 <li><p>测试、开发、线上数据库环境必须隔离</p>
 </li>
@@ -2249,13 +2249,13 @@
 </ul>
 <h2 id="SQL规范"><a href="#SQL规范" class="headerlink" title="SQL规范"></a>SQL规范</h2><ul>
 <li><p>禁止使用 <code>select *</code>，只获取必要字段</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① select* 会增加cpu/io/内存/带宽的消耗</span><br><span class="line">② 指定字段能有效利用索引覆盖</span><br><span class="line">③ 指定字段查询，在表结构变更时，能保证对应用程序无影响</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① select*会增加cpu/io/内存/带宽的消耗</span><br><span class="line">② 指定字段能有效利用索引覆盖</span><br><span class="line">③ 指定字段查询，在表结构变更时，能保证对应用程序无影响</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>禁止在 <code>where</code> 条件列使用函数或者表达式</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 导致不能命中索引，全表扫描</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>禁止负向查询，以及 <code>%</code> 开头的模糊查询</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 负向查询条件：NOT、!=、&lt;&gt;、!&lt;、!&gt;、NOT <span class="keyword">IN</span>、NOT LIKE 等，会导致全表扫描</span><br><span class="line">② %开头的模糊查询，会导致全表扫描</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 负向查询条件：NOT、!=、&lt;&gt;、!&lt;、!&gt;、NOT <span class="keyword">IN</span>、NOT LIKE等，会导致全表扫描</span><br><span class="line">② %开头的模糊查询，会导致全表扫描</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>不得使用外键与级联，一切外键概念必须在应用层解决</p>
 </li>
@@ -2264,9 +2264,9 @@
 <li><p>数据订正（<code>delete</code>、<code>update</code> 操作）时，要先 <code>select</code>，避免出现误删除，确认无误才能执行更新语句</p>
 </li>
 <li><p>推荐使用 <code>truncate</code>，速度比 <code>delete</code> 快，且使用的系统和事务日志资源少</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① truncate table 在功能上与不带 where 子句的 delete 语句相同</span><br><span class="line">② 但 truncate 无事务且不触发 trigger，有可能造成事故</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① truncate table在功能上与不带where子句的delete语句相同</span><br><span class="line">② truncate无事务且不触发trigger，有可能造成事故</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>避免 <code>in</code> 操作，若实在避免不了，需要仔细评估 <code>in</code> 后边的集合元素数量，控制在1000个之内</p>
+<li><p>避免 <code>in</code> 操作，若实在避免不了，需要仔细评估 <code>in</code> 后边的集合元素数量，控制在 1000 个之内</p>
 </li>
 <li><p>推荐 <code>or</code> 改写为 <code>union</code></p>
 </li>
@@ -2289,7 +2289,7 @@
 <li><p>避免因字段类型不同造成的隐式转换，导致索引失效</p>
 </li>
 <li><p>SQL性能优化的目标：至少要达到 <code>range</code> 级别，要求是 <code>ref</code> 级别，如果可以是 <code>consts</code> 最好</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① consts 单表中最多只有一个匹配行（主键或者唯一索引），在优化阶段即可读取到数据</span><br><span class="line">② ref 指的是使用普通的索引（normal index）</span><br><span class="line">③ range 对索引进行范围检索</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① consts单表中最多只有一个匹配行（主键或者唯一索引），在优化阶段即可读取到数据</span><br><span class="line">② ref指的是使用普通的索引（normal index）</span><br><span class="line">③ range对索引进行范围检索</span><br></pre></td></tr></table></figure>
 
 </li>
 </ul>
