@@ -96,17 +96,17 @@
 
 
 
-  <meta name="description" content="建表规范 单表数据量控制在千万级  表存储引擎必须使用 InnoDB  表字符集默认使用 utf8，必要时候使用 utf8mb4 123解读：① 通用，无乱码风险，汉字3字节，英文1字节② utf8mb4 是 utf8 的超集，有存储4字节例如表情符号时使用它  禁止使用存储过程、视图、触发器、event 123解读：① 对数据库性能影响较大，能让站点层和服务层干的事情，不要交到数据库层② 调试、">
+  <meta name="description" content="建表规范 表存储引擎必须使用 InnoDB  表字符集默认使用 utf8，必要时候使用 utf8mb4 123解读：① 通用，无乱码风险，汉字3字节，英文1字节② utf8mb4 是 utf8 的超集，存储4字节，例如表情符号时使用它  禁止使用存储过程、视图、触发器、event 123解读：① 对数据库性能影响较大，能让站点层和服务层干的事情，不要交到数据库层② 调试、排错、迁移都比较困难，扩展">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL · 设计规范">
 <meta property="og:url" content="https://huiraoo.github.io/blog/2019/07/23/mysql-rules/index.html">
 <meta property="og:site_name" content="Rao&#39;s Blog">
-<meta property="og:description" content="建表规范 单表数据量控制在千万级  表存储引擎必须使用 InnoDB  表字符集默认使用 utf8，必要时候使用 utf8mb4 123解读：① 通用，无乱码风险，汉字3字节，英文1字节② utf8mb4 是 utf8 的超集，有存储4字节例如表情符号时使用它  禁止使用存储过程、视图、触发器、event 123解读：① 对数据库性能影响较大，能让站点层和服务层干的事情，不要交到数据库层② 调试、">
+<meta property="og:description" content="建表规范 表存储引擎必须使用 InnoDB  表字符集默认使用 utf8，必要时候使用 utf8mb4 123解读：① 通用，无乱码风险，汉字3字节，英文1字节② utf8mb4 是 utf8 的超集，存储4字节，例如表情符号时使用它  禁止使用存储过程、视图、触发器、event 123解读：① 对数据库性能影响较大，能让站点层和服务层干的事情，不要交到数据库层② 调试、排错、迁移都比较困难，扩展">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-24T06:53:37.432Z">
+<meta property="og:updated_time" content="2019-09-24T10:23:06.488Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL · 设计规范">
-<meta name="twitter:description" content="建表规范 单表数据量控制在千万级  表存储引擎必须使用 InnoDB  表字符集默认使用 utf8，必要时候使用 utf8mb4 123解读：① 通用，无乱码风险，汉字3字节，英文1字节② utf8mb4 是 utf8 的超集，有存储4字节例如表情符号时使用它  禁止使用存储过程、视图、触发器、event 123解读：① 对数据库性能影响较大，能让站点层和服务层干的事情，不要交到数据库层② 调试、">
+<meta name="twitter:description" content="建表规范 表存储引擎必须使用 InnoDB  表字符集默认使用 utf8，必要时候使用 utf8mb4 123解读：① 通用，无乱码风险，汉字3字节，英文1字节② utf8mb4 是 utf8 的超集，存储4字节，例如表情符号时使用它  禁止使用存储过程、视图、触发器、event 123解读：① 对数据库性能影响较大，能让站点层和服务层干的事情，不要交到数据库层② 调试、排错、迁移都比较困难，扩展">
 
 
 
@@ -383,7 +383,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-09-24 14:53:37" itemprop="dateModified" datetime="2019-09-24T14:53:37+08:00">2019-09-24</time>
+                <time title="修改时间：2019-09-24 18:23:06" itemprop="dateModified" datetime="2019-09-24T18:23:06+08:00">2019-09-24</time>
               
             
           </span>
@@ -443,17 +443,13 @@
 
       
         <h2 id="建表规范"><a href="#建表规范" class="headerlink" title="建表规范"></a>建表规范</h2><ul>
-<li><p>单表数据量控制在千万级</p>
-</li>
 <li><p>表存储引擎必须使用 <code>InnoDB</code></p>
 </li>
 <li><p>表字符集默认使用 <code>utf8</code>，必要时候使用 <code>utf8mb4</code></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 通用，无乱码风险，汉字<span class="number">3</span>字节，英文<span class="number">1</span>字节</span><br><span class="line">② utf8mb4 是 utf8 的超集，有存储<span class="number">4</span>字节例如表情符号时使用它</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 通用，无乱码风险，汉字<span class="number">3</span>字节，英文<span class="number">1</span>字节</span><br><span class="line">② utf8mb4 是 utf8 的超集，存储<span class="number">4</span>字节，例如表情符号时使用它</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>禁止使用存储过程、视图、触发器、event</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 对数据库性能影响较大，能让站点层和服务层干的事情，不要交到数据库层</span><br><span class="line">② 调试、排错、迁移都比较困难，扩展性较差</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>测试、开发、线上数据库环境必须区分开</p>
 </li>
 <li><p>禁止在数据库中存储大文件</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 例如照片，可以将大文件存储在对象存储系统，数据库中存储路径</span><br></pre></td></tr></table></figure>
@@ -461,7 +457,7 @@
 <li><p>库名、表名、字段名必须用小写，采用下划线分隔</p>
 </li>
 <li><p>根据业务区分使用 <code>tinyint</code>（1 byte）、<code>smallint</code>（2 byte）、<code>int</code>（4 byte）、<code>bigint</code>（8 byte）</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 合适的字符存储长度，不但节约数据库表空间，节约索引存储，更重要的是提升检索速度</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 合适的字符存储长度，不但节约数据库表空间，节约索引存储，更重要的是提升检索速度</span><br><span class="line">② 整数类型指定显示宽度，例如 int(M)，对大多数应用是没有意义的，他不会限制值的合法范围，对于存储和计算来说，int(<span class="number">1</span>) 和 int(<span class="number">20</span>) 是相同的</span><br></pre></td></tr></table></figure>
 
 <table>
 <thead>
@@ -469,6 +465,7 @@
 <th>对象</th>
 <th>年龄区间</th>
 <th>类型</th>
+<th>范围</th>
 <th>字节</th>
 </tr>
 </thead>
@@ -476,36 +473,40 @@
 <td>人</td>
 <td>150岁之内</td>
 <td>unsigned tinyint</td>
+<td>0～255</td>
 <td>1</td>
 </tr>
 <tr>
 <td>龟</td>
 <td>数百岁</td>
 <td>unsigned smallint</td>
+<td>0～65535</td>
 <td>2</td>
 </tr>
 <tr>
 <td>恐龙化石</td>
 <td>数千万岁</td>
 <td>unsigned int</td>
+<td>0～4294967295</td>
 <td>4</td>
 </tr>
 <tr>
 <td>太阳</td>
 <td>约50亿年</td>
 <td>unsigned bigint</td>
+<td>0～2^64-1</td>
 <td>8</td>
 </tr>
 </tbody></table>
 </li>
 <li><p>根据业务区分使用 <code>char</code>、<code>varchar</code></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 字段长度固定，或者长度近似的业务场景，适合使用 char，能够减少碎片，查询性能高</span><br><span class="line">② 字段长度相差较大，或者更新较少的业务场景，适合使用 varchar，能够减少空间</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 字段长度固定，或者长度近似的业务场景，适合使用 char，能够减少碎片，查询性能高</span><br><span class="line">② 字段长度相差较大，或者更新较少的业务场景，适合使用 varchar，节省磁盘空间</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>根据业务区分使用 <code>datetime</code>、<code>timestamp</code></p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 前者占用<span class="number">8</span>个字节，后者占用<span class="number">4</span>个字节，存储年使用 YEAR，存储日期使用 DATE，存储时间使用 datetime</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>小数类型使用 <code>decimal</code>，禁止使用 <code>float</code> 和 <code>double</code></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① float 和 double 在存储的时候，存在精度损失的问题，很可能在值的比较时，得到不正确的结果</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① float 和 double 在存储的时候，存在精度损失的问题，很可能在值的比较时，得到不正确的结果</span><br><span class="line">② decimal(M,D)，如果M&gt;D，占用字节M+<span class="number">2</span>，否则为D+<span class="number">2</span>，M是数字最大位数，D是小数点右侧数字个数</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>表必须有主键，推荐使用 <code>unsigned</code> 整数为主键</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 删除无主键的表，如果是 row 模式的主从架构，从库会挂住</span><br></pre></td></tr></table></figure>
@@ -514,37 +515,21 @@
 </li>
 <li><p>表必备三字段：<code>id</code>，<code>gmt_create</code>，<code>gmt_modified</code></p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① id 必为主键，类型为 unsigned bigint，单表时自增，步长为<span class="number">1</span></span><br><span class="line">② gmt_create, gmt_modified 的类型均为 datetime，前者现在时表示主动创建，后者过去分词表示被动更新</span><br></pre></td></tr></table></figure>
-
+</li>
+<li><p>字段定义必须为 <code>NOT NULL</code> ，并设默认值</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① NULL的列使用索引，索引统计更加复杂，更难优化</span><br><span class="line">② NULL只能采用IS NULL或者IS NOT NULL，而在使用=、!=、<span class="keyword">in</span>、not <span class="keyword">in</span>时有大坑</span><br><span class="line">③ 整型默认值设置为<span class="number">0</span>，字符串默认值设置为<span class="string">''</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用 int unsigned 存储 IPv4，不要用 char(15)</p>
+</li>
+<li><p>使用 varchar(20) 存储手机号，不要使用整数</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 牵扯到国家代号，可能出现+/-/()等字符，例如+<span class="number">86</span></span><br><span class="line">② 手机号不会用来做数学运算</span><br><span class="line">③ varchar可以模糊查询，例如like <span class="string">'138%'</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>控制单表数据量，单表记录控制在千万级</p>
+</li>
+<li><p>测试、开发、线上数据库环境必须隔离</p>
 </li>
 </ul>
-<h2 id="SQL规范"><a href="#SQL规范" class="headerlink" title="SQL规范"></a>SQL规范</h2><h2 id="索引规范"><a href="#索引规范" class="headerlink" title="索引规范"></a>索引规范</h2><h2 id="开发规范"><a href="#开发规范" class="headerlink" title="开发规范"></a>开发规范</h2><ul>
-<li>存储引擎使用 <code>InnoDB</code></li>
-</ul>
-<blockquote>
-<p>解读：支持事务、行级锁、并发性能更好、CPU及内存缓存页优化使得资源利用率更高</p>
-</blockquote>
-<ul>
-<li>字符集默认使用 <code>utf8</code>，必要时使用 <code>utf8mb4</code></li>
-</ul>
-<blockquote>
-<p>解读：通用，无乱码风险，汉字 3 字节，英文 1 字节，utf8mb4 是 utf8 的超集，存储 4 字节，如需存储表情符号时使用它。</p>
-</blockquote>
-<ul>
-<li><p>数据表、数据字段要有中文注释</p>
-</li>
-<li><p>禁止使用 <strong>存储过程</strong>、<strong>视图</strong>、<strong>触发器</strong>、<strong>事件</strong></p>
-</li>
-</ul>
-<blockquote>
-<p>解读：（1）对数据库性能影响较大，能让服务层干的事情，不要交到数据库层。（2）调试、排错、迁移都比较困难，扩展性较差。</p>
-</blockquote>
-<ul>
-<li>禁止存储文件或者照片</li>
-</ul>
-<blockquote>
-<p>解读：可以将文件和照片放在对象存储，数据库中存储路径</p>
-</blockquote>
-<p><strong>不带 WHERE 子句的 UPDATE 和 DELETE 语句要相当谨慎</strong></p>
+<h2 id="SQL规范"><a href="#SQL规范" class="headerlink" title="SQL规范"></a>SQL规范</h2><h2 id="索引规范"><a href="#索引规范" class="headerlink" title="索引规范"></a>索引规范</h2><p><strong>不带 WHERE 子句的 UPDATE 和 DELETE 语句要相当谨慎</strong></p>
 <p>执行前，最好使用 SELETE 进行测试，保证它过滤的是正确的记录，以防编写的 WHERE 子句</p>
 <p>不正确。</p>
 <h2 id="军规"><a href="#军规" class="headerlink" title="军规"></a>军规</h2><ul>
@@ -787,7 +772,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">61</span>
+                    <span class="site-state-item-count">62</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -945,7 +930,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#建表规范"><span class="nav-number">1.</span> <span class="nav-text">建表规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL规范"><span class="nav-number">2.</span> <span class="nav-text">SQL规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#索引规范"><span class="nav-number">3.</span> <span class="nav-text">索引规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#开发规范"><span class="nav-number">4.</span> <span class="nav-text">开发规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#军规"><span class="nav-number">5.</span> <span class="nav-text">军规</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基础规范"><span class="nav-number">6.</span> <span class="nav-text">基础规范</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#命名规范"><span class="nav-number">6.1.</span> <span class="nav-text">命名规范</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#库表规范"><span class="nav-number">6.2.</span> <span class="nav-text">库表规范</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL规范-1"><span class="nav-number">6.3.</span> <span class="nav-text">SQL规范</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引规范-1"><span class="nav-number">6.4.</span> <span class="nav-text">索引规范</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库规范已制定好，如何保证开发人员必须按照规范来开发？"><span class="nav-number">6.5.</span> <span class="nav-text">数据库规范已制定好，如何保证开发人员必须按照规范来开发？</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#建表规范"><span class="nav-number">1.</span> <span class="nav-text">建表规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL规范"><span class="nav-number">2.</span> <span class="nav-text">SQL规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#索引规范"><span class="nav-number">3.</span> <span class="nav-text">索引规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#军规"><span class="nav-number">4.</span> <span class="nav-text">军规</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基础规范"><span class="nav-number">5.</span> <span class="nav-text">基础规范</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#命名规范"><span class="nav-number">5.1.</span> <span class="nav-text">命名规范</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#库表规范"><span class="nav-number">5.2.</span> <span class="nav-text">库表规范</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL规范-1"><span class="nav-number">5.3.</span> <span class="nav-text">SQL规范</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引规范-1"><span class="nav-number">5.4.</span> <span class="nav-text">索引规范</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库规范已制定好，如何保证开发人员必须按照规范来开发？"><span class="nav-number">5.5.</span> <span class="nav-text">数据库规范已制定好，如何保证开发人员必须按照规范来开发？</span></a></li></ol></li></ol></div>
             
 
           </div>
