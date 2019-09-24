@@ -98,14 +98,14 @@
 
   <meta name="description" content="MySQL 中常用的两种时间储存类型分别是 datetime 和 timestamp，建表时如何选择呢？ 占用空间    类型 占据字节 表示形式    datetime 8 字节 yyyy-mm-dd hh:mm:ss   timestamp 4 字节 yyyy-mm-dd hh:mm:ss   表示范围    类型 表示范围    datetime ‘1000-01-01 00:00:00.0">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MySQL · datetime vs timestamp">
+<meta property="og:title" content="MySQL · datetime 和 timestamp 的选择">
 <meta property="og:url" content="https://huiraoo.github.io/blog/2019/09/24/mysql-timetype/index.html">
 <meta property="og:site_name" content="Rao&#39;s Blog">
 <meta property="og:description" content="MySQL 中常用的两种时间储存类型分别是 datetime 和 timestamp，建表时如何选择呢？ 占用空间    类型 占据字节 表示形式    datetime 8 字节 yyyy-mm-dd hh:mm:ss   timestamp 4 字节 yyyy-mm-dd hh:mm:ss   表示范围    类型 表示范围    datetime ‘1000-01-01 00:00:00.0">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-24T06:15:28.620Z">
+<meta property="og:updated_time" content="2019-09-24T06:23:07.442Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="MySQL · datetime vs timestamp">
+<meta name="twitter:title" content="MySQL · datetime 和 timestamp 的选择">
 <meta name="twitter:description" content="MySQL 中常用的两种时间储存类型分别是 datetime 和 timestamp，建表时如何选择呢？ 占用空间    类型 占据字节 表示形式    datetime 8 字节 yyyy-mm-dd hh:mm:ss   timestamp 4 字节 yyyy-mm-dd hh:mm:ss   表示范围    类型 表示范围    datetime ‘1000-01-01 00:00:00.0">
 
 
@@ -124,7 +124,7 @@
   };
 </script>
 
-  <title>MySQL · datetime vs timestamp | Rao's Blog</title>
+  <title>MySQL · datetime 和 timestamp 的选择 | Rao's Blog</title>
   
 
 
@@ -340,7 +340,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">MySQL · datetime vs timestamp
+          <h1 class="post-title" itemprop="name headline">MySQL · datetime 和 timestamp 的选择
 
               
             
@@ -366,7 +366,7 @@
                 
               
 
-              <time title="创建时间：2019-09-24 11:50:26 / 修改时间：14:15:28" itemprop="dateCreated datePublished" datetime="2019-09-24T11:50:26+08:00">2019-09-24</time>
+              <time title="创建时间：2019-09-24 11:50:26 / 修改时间：14:23:07" itemprop="dateCreated datePublished" datetime="2019-09-24T11:50:26+08:00">2019-09-24</time>
             
 
             
@@ -451,9 +451,14 @@
 </tr>
 </tbody></table>
 <p><strong>时区</strong></p>
-<p><code>timestamp</code> 占 4 个字节，而且是以 <code>utc</code> 格式储存， 它会自动检索当前时区并进行转换，存和取可能不一样。</p>
-<p><code>datetime</code> 占 8 个字节储存，不会进行时区的检索，存和取一样。</p>
-<p>区别：如果存进去的是 <code>NULL</code>，<code>timestamp</code> 会自动储存当前时间，而 <code>datetime</code> 会储存 <code>NULL</code>。</p>
+<ul>
+<li><p><code>timestamp</code> 占 4 个字节，而且是以 <code>utc</code> 格式储存，它会自动检索当前时区并进行转换，存和取可能不一样。</p>
+</li>
+<li><p><code>datetime</code> 占 8 个字节储存，不会进行时区的检索，存和取一样。</p>
+</li>
+<li><p>区别：如果存进去的是 <code>NULL</code>，<code>timestamp</code> 会自动储存当前时间，而 <code>datetime</code> 会储存 <code>NULL</code>。</p>
+</li>
+</ul>
 <p><strong>测试</strong></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建测试表</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> timedemo(st <span class="built_in">timestamp</span>,dt datetime);</span><br><span class="line"></span><br><span class="line"><span class="comment"># 插入数据</span></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> timedemo <span class="keyword">values</span> (<span class="literal">null</span>,<span class="literal">null</span>), (<span class="keyword">now</span>(),<span class="keyword">now</span>()), (<span class="string">'20161001193450'</span>,<span class="string">'20161001193450'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment"># timestamp 会自动储存当前时间，而 datetime 会储存 NULL</span></span><br><span class="line">mysql&gt; select * from timedemo;</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line">| st                  | dt                  |</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line">| 2019-09-24 14:00:15 | NULL                |</span><br><span class="line">| 2019-09-24 14:00:15 | 2019-09-24 14:00:15 |</span><br><span class="line">| 2016-10-01 19:34:50 | 2016-10-01 19:34:50 |</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 将时区修改为东9区，会发现 timestamp 比 datetime 多一小时</span></span><br><span class="line">mysql&gt; set time_zone='+9:00';</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; show variables like "time_zone";</span><br><span class="line">+<span class="comment">---------------+--------+</span></span><br><span class="line">| Variable_name | Value  |</span><br><span class="line">+<span class="comment">---------------+--------+</span></span><br><span class="line">| time_zone     | +09:00 |</span><br><span class="line">+<span class="comment">---------------+--------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">select</span> * <span class="keyword">from</span> timedemo;</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line">| st                  | dt                  |</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line">| 2019-09-24 15:00:15 | NULL                |</span><br><span class="line">| 2019-09-24 15:00:15 | 2019-09-24 14:00:15 |</span><br><span class="line">| 2016-10-01 20:34:50 | 2016-10-01 19:34:50 |</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line">3 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
 
