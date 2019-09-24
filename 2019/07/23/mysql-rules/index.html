@@ -96,17 +96,17 @@
 
 
 
-  <meta name="description" content="建表规范 表存储引擎必须使用 InnoDB  表字符集默认使用 utf8，必要时候使用 utf8mb4 123解读：① 通用，无乱码风险，汉字3字节，英文1字节② utf8mb4 是 utf8 的超集，存储4字节，例如表情符号时使用它  禁止使用存储过程、视图、触发器、event 123解读：① 对数据库性能影响较大，能让站点层和服务层干的事情，不要交到数据库层② 调试、排错、迁移都比较困难，扩展">
+  <meta name="description" content="建表规范 表存储引擎必须使用 InnoDB  库名、表名、字段名必须用小写，采用下划线分隔  表字符集默认使用 utf8，必要时候使用 utf8mb4 123解读：① 通用，无乱码风险，汉字3字节，英文1字节② utf8mb4 是 utf8 的超集，存储4字节，例如表情符号时使用它  禁止使用存储过程、视图、触发器、event 123解读：① 对数据库性能影响较大，能让站点层和服务层干的事情，不要">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL · 设计规范">
 <meta property="og:url" content="https://huiraoo.github.io/blog/2019/07/23/mysql-rules/index.html">
 <meta property="og:site_name" content="Rao&#39;s Blog">
-<meta property="og:description" content="建表规范 表存储引擎必须使用 InnoDB  表字符集默认使用 utf8，必要时候使用 utf8mb4 123解读：① 通用，无乱码风险，汉字3字节，英文1字节② utf8mb4 是 utf8 的超集，存储4字节，例如表情符号时使用它  禁止使用存储过程、视图、触发器、event 123解读：① 对数据库性能影响较大，能让站点层和服务层干的事情，不要交到数据库层② 调试、排错、迁移都比较困难，扩展">
+<meta property="og:description" content="建表规范 表存储引擎必须使用 InnoDB  库名、表名、字段名必须用小写，采用下划线分隔  表字符集默认使用 utf8，必要时候使用 utf8mb4 123解读：① 通用，无乱码风险，汉字3字节，英文1字节② utf8mb4 是 utf8 的超集，存储4字节，例如表情符号时使用它  禁止使用存储过程、视图、触发器、event 123解读：① 对数据库性能影响较大，能让站点层和服务层干的事情，不要">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-24T10:23:06.488Z">
+<meta property="og:updated_time" content="2019-09-24T15:14:29.045Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL · 设计规范">
-<meta name="twitter:description" content="建表规范 表存储引擎必须使用 InnoDB  表字符集默认使用 utf8，必要时候使用 utf8mb4 123解读：① 通用，无乱码风险，汉字3字节，英文1字节② utf8mb4 是 utf8 的超集，存储4字节，例如表情符号时使用它  禁止使用存储过程、视图、触发器、event 123解读：① 对数据库性能影响较大，能让站点层和服务层干的事情，不要交到数据库层② 调试、排错、迁移都比较困难，扩展">
+<meta name="twitter:description" content="建表规范 表存储引擎必须使用 InnoDB  库名、表名、字段名必须用小写，采用下划线分隔  表字符集默认使用 utf8，必要时候使用 utf8mb4 123解读：① 通用，无乱码风险，汉字3字节，英文1字节② utf8mb4 是 utf8 的超集，存储4字节，例如表情符号时使用它  禁止使用存储过程、视图、触发器、event 123解读：① 对数据库性能影响较大，能让站点层和服务层干的事情，不要">
 
 
 
@@ -383,7 +383,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-09-24 18:23:06" itemprop="dateModified" datetime="2019-09-24T18:23:06+08:00">2019-09-24</time>
+                <time title="修改时间：2019-09-24 23:14:29" itemprop="dateModified" datetime="2019-09-24T23:14:29+08:00">2019-09-24</time>
               
             
           </span>
@@ -445,16 +445,19 @@
         <h2 id="建表规范"><a href="#建表规范" class="headerlink" title="建表规范"></a>建表规范</h2><ul>
 <li><p>表存储引擎必须使用 <code>InnoDB</code></p>
 </li>
+<li><p>库名、表名、字段名必须用小写，采用下划线分隔</p>
+</li>
 <li><p>表字符集默认使用 <code>utf8</code>，必要时候使用 <code>utf8mb4</code></p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 通用，无乱码风险，汉字<span class="number">3</span>字节，英文<span class="number">1</span>字节</span><br><span class="line">② utf8mb4 是 utf8 的超集，存储<span class="number">4</span>字节，例如表情符号时使用它</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>禁止使用存储过程、视图、触发器、event</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 对数据库性能影响较大，能让站点层和服务层干的事情，不要交到数据库层</span><br><span class="line">② 调试、排错、迁移都比较困难，扩展性较差</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 对数据库性能影响较大，能让站点层和服务层干的事情，不要交到数据库层</span><br><span class="line">② 难以调试和扩展，更没有移植性</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>禁止在数据库中存储大文件</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 例如照片，可以将大文件存储在对象存储系统，数据库中存储路径</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>库名、表名、字段名必须用小写，采用下划线分隔</p>
+<li><p>禁止使用 <code>text</code>、<code>blob</code> 类型</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 会浪费更多的磁盘和内存空间，非必要的大量的大字段查询会淘汰掉热数据，导致内存命中率急剧降低，影响数据库性能</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>根据业务区分使用 <code>tinyint</code>（1 byte）、<code>smallint</code>（2 byte）、<code>int</code>（4 byte）、<code>bigint</code>（8 byte）</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 合适的字符存储长度，不但节约数据库表空间，节约索引存储，更重要的是提升检索速度</span><br><span class="line">② 整数类型指定显示宽度，例如 int(M)，对大多数应用是没有意义的，他不会限制值的合法范围，对于存储和计算来说，int(<span class="number">1</span>) 和 int(<span class="number">20</span>) 是相同的</span><br></pre></td></tr></table></figure>
@@ -517,145 +520,68 @@
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① id 必为主键，类型为 unsigned bigint，单表时自增，步长为<span class="number">1</span></span><br><span class="line">② gmt_create, gmt_modified 的类型均为 datetime，前者现在时表示主动创建，后者过去分词表示被动更新</span><br></pre></td></tr></table></figure>
 </li>
 <li><p>字段定义必须为 <code>NOT NULL</code> ，并设默认值</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① NULL的列使用索引，索引统计更加复杂，更难优化</span><br><span class="line">② NULL只能采用IS NULL或者IS NOT NULL，而在使用=、!=、<span class="keyword">in</span>、not <span class="keyword">in</span>时有大坑</span><br><span class="line">③ 整型默认值设置为<span class="number">0</span>，字符串默认值设置为<span class="string">''</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① NULL列使用索引，会影响优化器选择执行计划，很难优化</span><br><span class="line">② NULL只能采用 IS NULL 或者 IS NOT NULL，而在使用 =、!=、<span class="keyword">in</span>、not <span class="keyword">in</span> 时有大坑</span><br><span class="line">③ 整型默认值设置为<span class="number">0</span>，字符串默认值设置为<span class="string">''</span></span><br></pre></td></tr></table></figure>
 </li>
-<li><p>使用 int unsigned 存储 IPv4，不要用 char(15)</p>
+<li><p>使用 <code>unsigned int</code> 存储 IPv4，不要用 <code>char(15)</code></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 节省存储空间，char(<span class="number">15</span>)占据<span class="number">16</span>个字节，unsigned int只需要<span class="number">4</span>个字节</span><br><span class="line">② int 型在逻辑运算上要比 char 速度快</span><br><span class="line">③ ip 和数字转换，靠MySQL自带的两个函数算法，inet_aton()和inet_ntoa()</span><br><span class="line"></span><br><span class="line">mysql&gt; select inet_aton(<span class="string">'192.168.1.200'</span>);</span><br><span class="line">+----------------------------+</span><br><span class="line">| inet_aton(<span class="string">'192.168.1.200'</span>) |</span><br><span class="line">+----------------------------+</span><br><span class="line">|                 <span class="number">3232235976</span> |</span><br><span class="line">+----------------------------+</span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select inet_ntoa(<span class="string">'3232235976'</span>);</span><br><span class="line">+-------------------------+</span><br><span class="line">| inet_ntoa(<span class="string">'3232235976'</span>) |</span><br><span class="line">+-------------------------+</span><br><span class="line">| <span class="number">192.168</span>.<span class="number">1.200</span>           |</span><br><span class="line">+-------------------------+</span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>使用 varchar(20) 存储手机号，不要使用整数</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 牵扯到国家代号，可能出现+/-/()等字符，例如+<span class="number">86</span></span><br><span class="line">② 手机号不会用来做数学运算</span><br><span class="line">③ varchar可以模糊查询，例如like <span class="string">'138%'</span></span><br></pre></td></tr></table></figure>
+<li><p>使用 <code>varchar(20)</code> 存储手机号，不要使用整数</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 牵扯到国家代号，可能出现 +/-/() 等字符，例如+<span class="number">86</span></span><br><span class="line">② 手机号不会用来做数学运算</span><br><span class="line">③ varchar 可以模糊查询，例如：like <span class="string">'138%'</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>控制单表数据量，单表记录控制在千万级</p>
 </li>
 <li><p>测试、开发、线上数据库环境必须隔离</p>
 </li>
-</ul>
-<h2 id="SQL规范"><a href="#SQL规范" class="headerlink" title="SQL规范"></a>SQL规范</h2><h2 id="索引规范"><a href="#索引规范" class="headerlink" title="索引规范"></a>索引规范</h2><p><strong>不带 WHERE 子句的 UPDATE 和 DELETE 语句要相当谨慎</strong></p>
-<p>执行前，最好使用 SELETE 进行测试，保证它过滤的是正确的记录，以防编写的 WHERE 子句</p>
-<p>不正确。</p>
-<h2 id="军规"><a href="#军规" class="headerlink" title="军规"></a>军规</h2><ul>
-<li>存储引擎使用 <code>InnoDB</code></li>
-</ul>
-<blockquote>
-<p>解读：支持事务、行级锁、并发性能更好、CPU及内存缓存页优化使得资源利用率更高</p>
-</blockquote>
-<ul>
-<li>字符集默认使用 <code>utf8</code>，必要时使用 <code>utf8mb4</code></li>
-</ul>
-<blockquote>
-<p>解读：通用，无乱码风险，汉字 3 字节，英文 1 字节，utf8mb4 是 utf8 的超集，存储 4 字节，如需存储表情符号时使用它。</p>
-</blockquote>
-<ul>
-<li>数据表、数据字段要有中文注释</li>
-</ul>
-<blockquote>
-<p>解读：N年后谁TM知道这些字段是干嘛的</p>
-</blockquote>
-<ul>
-<li>禁止使用 <strong>存储过程</strong>、<strong>视图</strong>、<strong>触发器</strong>、<strong>事件</strong></li>
-</ul>
-<blockquote>
-<p>解读：（1）对数据库性能影响较大，能让服务层干的事情，不要交到数据库层。（2）调试、排错、迁移都比较困难，扩展性较差。</p>
-</blockquote>
-<ul>
-<li>禁止存储大文件或者照片</li>
-</ul>
-<blockquote>
-<p>解读：可以将文件和照片存储在对象存储，数据库中存储路径</p>
-</blockquote>
-<ul>
-<li>测试、开发、线上数据库环境必须隔离</li>
-</ul>
-<h2 id="基础规范"><a href="#基础规范" class="headerlink" title="基础规范"></a>基础规范</h2><h3 id="命名规范"><a href="#命名规范" class="headerlink" title="命名规范"></a>命名规范</h3><ul>
-<li>库名、表名、字段名、索引名必须小写，采用下划线分割</li>
-<li>库名、表名、列名必须见名知义，长度不超过32字符</li>
-<li>库备份以bak为前缀，以日期为后缀</li>
-<li>从库以-s为后缀</li>
-</ul>
-<h3 id="库表规范"><a href="#库表规范" class="headerlink" title="库表规范"></a>库表规范</h3><ul>
-<li>单实例表数目必须小于2000，单表列数目必须小于30</li>
-</ul>
-<ul>
-<li>表必须有主键，推荐使用unsigned的自增主键</li>
-</ul>
-<blockquote>
-<p>a）主键递增，数据行写入可以提高插入性能，可以避免page分裂，减少表碎片提升空间和内存的使用。</p>
-<p>b） 删除无主键的表，如果是row模式的主从架构，从库会夯住。</p>
-</blockquote>
-<ul>
-<li>禁止使用外键</li>
-</ul>
-<blockquote>
-<p>解读：外键会导致表与表之间耦合，update与delete操作都会涉及相关联的表，十分影响sql 的性能，甚至会造成死锁。高并发情况下容易造成数据库性能，大数据高并发业务场景数据库使用以性能优先</p>
-</blockquote>
-<ul>
-<li>必须把字段定义为 NOT NULL 并且提供默认值</li>
-</ul>
-<blockquote>
-<p>浪费存储空间，因为InnoDB需要有额外一个字节存储</p>
-<p>表内默认值Null过多会影响优化器选择执行计划</p>
-</blockquote>
-<ul>
-<li>禁止使用 TEXT、BLOB 类型</li>
-</ul>
-<blockquote>
-<p>解读：会浪费更多的磁盘和内存空间，非必要的大量的大字段查询会淘汰掉热数据，导致内存命中率急剧降低，影响数据库性能</p>
-</blockquote>
-<ul>
-<li>字段类型在满足需求条件下越小越好，使用UNSIGNED存储非负整数 ，实际使用时候存储负数场景不多</li>
-<li>使用 TIMESTAMP 存储时间</li>
-<li>使用 DECIMAL 存储精确浮点数，用float有的时候会有问题</li>
-</ul>
-<h3 id="SQL规范-1"><a href="#SQL规范-1" class="headerlink" title="SQL规范"></a>SQL规范</h3><p>避免使用大表的JOIN，MySQL优化器对join优化策略过于简单</p>
-<p>避免在数据库中进行数学运算和其他大量计算任务</p>
-<p>UPDATE、DELETE语句不使用LIMIT ，容易造成主从不一致</p>
-<h3 id="索引规范-1"><a href="#索引规范-1" class="headerlink" title="索引规范"></a>索引规范</h3><ul>
-<li>单表索引建议控制在不超过5个</li>
-</ul>
-<blockquote>
-<p>加速读的同时也引入了很多额外的写入和锁，降低写入能力</p>
-</blockquote>
-<ul>
-<li>禁止在更新十分频繁、区分度不高的属性上建立索引</li>
-</ul>
-<blockquote>
-<p>解读：</p>
-<p>a）更新会变更B+树，更新频繁的字段建立索引会大大降低数据库性能</p>
-<p>b）“性别”这种区分度不大的属性，建立索引是没有什么意义的，不能有效过滤数据，性能与全表扫描类似</p>
-</blockquote>
-<ul>
-<li>建立组合索引，必须把区分度高的字段放在前面</li>
-</ul>
-<blockquote>
-<p>解读：能够更加有效的过滤数据</p>
-</blockquote>
-<ul>
-<li>禁止负向查询，以及%开头的模糊查询</li>
-</ul>
-<blockquote>
-<p>解读：</p>
-<p>a）负向查询条件：NOT、!=、&lt;&gt;、!&lt;、!&gt;、NOT IN、NOT LIKE等，会导致全表扫描</p>
-<p>b）%开头的模糊查询，会导致全表扫描</p>
-</blockquote>
-<ul>
-<li>禁止大表使用JOIN查询，禁止大表使用子查询</li>
-</ul>
-<blockquote>
-<p>解读：会产生临时表，消耗较多内存与CPU，极大影响数据库性能</p>
-</blockquote>
-<ul>
-<li>避免索引的隐式转换</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">remark varchar(50) NOT Null*</span><br><span class="line"></span><br><span class="line">MySQL&gt;SELECT id, gift_code FROM gift WHERE deal_id = 640 AND remark=115127; </span><br><span class="line">1 row in set (0.14 sec)*</span><br><span class="line"></span><br><span class="line">MySQL&gt;SELECT id, gift_code FROM pool_gift WHEREdeal_id = 640 AND remark=‘115127’; </span><br><span class="line">1 row in set (0.005 sec)*</span><br><span class="line"></span><br><span class="line">字段定义为varchar，但传入的值是个int，就会导致全表扫描，要求程序端要做好类型检查</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>DML和order by和group by字段要建立合适的索引</p>
-</li>
-<li><p>避免冗余索引</p>
+<li><p>数据表、数据字段要有中文注释</p>
 </li>
 </ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">idx_abc(a,b,c)</span><br><span class="line">idx_a(a) 冗余</span><br><span class="line">idx_ab(a,b) 冗余</span><br></pre></td></tr></table></figure>
+<h2 id="SQL规范"><a href="#SQL规范" class="headerlink" title="SQL规范"></a>SQL规范</h2><ul>
+<li><p>禁止使用 <code>select *</code>，只获取必要字段</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① select* 会增加cpu/io/内存/带宽的消耗</span><br><span class="line">② 指定字段能有效利用索引覆盖</span><br><span class="line">③ 指定字段查询，在表结构变更时，能保证对应用程序无影响</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>禁止在 <code>where</code> 条件列使用函数或者表达式</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 导致不能命中索引，全表扫描</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>禁止负向查询，以及 <code>%</code> 开头的模糊查询</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 负向查询条件：NOT、!=、&lt;&gt;、!&lt;、!&gt;、NOT <span class="keyword">IN</span>、NOT LIKE 等，会导致全表扫描</span><br><span class="line">② %开头的模糊查询，会导致全表扫描</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>不得使用外键与级联，一切外键概念必须在应用层解决</p>
+</li>
+<li><p><code>count(*)</code> 会统计值为 <code>null</code> 的行，而 <code>count(列名)</code> 不会统计此列为 <code>null</code> 值的行</p>
+</li>
+<li><p>数据订正（<code>delete</code>、<code>update</code> 操作）时，要先 <code>select</code>，避免出现误删除，确认无误才能执行更新语句</p>
+</li>
+<li><p>推荐使用 <code>truncate</code>，速度比 <code>delete</code> 快，且使用的系统和事务日志资源少</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① truncate table 在功能上与不带 where 子句的 delete 语句相同</span><br><span class="line">② 但 truncate 无事务且不触发 trigger，有可能造成事故</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>避免 <code>in</code> 操作，若实在避免不了，需要仔细评估 <code>in</code> 后边的集合元素数量，控制在1000个之内</p>
+</li>
+<li><p>推荐 <code>or</code> 改写为 <code>union</code></p>
+</li>
+</ul>
+<h2 id="索引规范"><a href="#索引规范" class="headerlink" title="索引规范"></a>索引规范</h2><ul>
+<li><p>唯一索引使用 <code>uniq_[字段名]</code> 来命名，非唯一索引使用 <code>idx_[字段名]</code> 来命名</p>
+</li>
+<li><p>单张表索引数量建议控制在 <strong>5</strong> 个以内</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 高并发业务，太多索引会影响写性能</span><br><span class="line">② 生成执行计划时，如果索引太多，会降低性能，并可能导致MySQL选择不到最优索引</span><br><span class="line">③ 异常复杂的查询需求，可以选择ES等更为适合的方式存储</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>超过三个表禁止 <code>join</code>，需要 <code>join</code> 的字段，数据类型必须绝对一致，多表关联查询时，确保被关联的字段需要有索引</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 踩过因为join字段类型不一致，而导致全表扫描的坑</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>禁止在更新十分频繁，区分度不高的字段建立索引</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 更新会变更B+树，更新频繁的字段建立索引会大大降低数据库性能</span><br><span class="line">② 区分度：count(distinct left(列名, 索引长度))/count(*)</span><br><span class="line">③ 性别不适合建索引</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>理解组合索引最左前缀原则，避免重复建索引，如果建了 <code>(a,b,c)</code>，相当于建了 <code>(a)</code>，<code>(a,b)</code>，<code>(a,b,c)</code></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 示例：where a=? and b=? order by c; 索引：a_b_c</span><br><span class="line">② 存在非等号和等号混合判断条件时，在建索引时把等号条件的列前置。如：where a&gt;? and b=? 那么即使a的区分度更高，也必须把b放在索引的最前列</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>避免因字段类型不同造成的隐式转换，导致索引失效</p>
+</li>
+<li><p>SQL性能优化的目标：至少要达到 <code>range</code> 级别，要求是 <code>ref</code> 级别，如果可以是 <code>consts</code> 最好</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① consts 单表中最多只有一个匹配行（主键或者唯一索引），在优化阶段即可读取到数据</span><br><span class="line">② ref 指的是使用普通的索引（normal index）</span><br><span class="line">③ range 对索引进行范围检索</span><br></pre></td></tr></table></figure>
 
-<h3 id="数据库规范已制定好，如何保证开发人员必须按照规范来开发？"><a href="#数据库规范已制定好，如何保证开发人员必须按照规范来开发？" class="headerlink" title="数据库规范已制定好，如何保证开发人员必须按照规范来开发？"></a>数据库规范已制定好，如何保证开发人员必须按照规范来开发？</h3><p><strong>参考</strong>：</p>
+</li>
+</ul>
+<p><strong>参考</strong></p>
 <p>《<a href="https://mp.weixin.qq.com/s/YfCORbcCX1hymXBCrZbAZg" target="_blank" rel="noopener"><strong>58到家 · MySQL军规升级版</strong></a>》</p>
 <p>《<a href="https://www.cntofu.com/book/78/p3c-gitbook/" target="_blank" rel="noopener"><strong>阿里巴巴 · Java开发手册</strong></a>》</p>
 <p>​    </p>
@@ -930,7 +856,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#建表规范"><span class="nav-number">1.</span> <span class="nav-text">建表规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL规范"><span class="nav-number">2.</span> <span class="nav-text">SQL规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#索引规范"><span class="nav-number">3.</span> <span class="nav-text">索引规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#军规"><span class="nav-number">4.</span> <span class="nav-text">军规</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基础规范"><span class="nav-number">5.</span> <span class="nav-text">基础规范</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#命名规范"><span class="nav-number">5.1.</span> <span class="nav-text">命名规范</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#库表规范"><span class="nav-number">5.2.</span> <span class="nav-text">库表规范</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SQL规范-1"><span class="nav-number">5.3.</span> <span class="nav-text">SQL规范</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#索引规范-1"><span class="nav-number">5.4.</span> <span class="nav-text">索引规范</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数据库规范已制定好，如何保证开发人员必须按照规范来开发？"><span class="nav-number">5.5.</span> <span class="nav-text">数据库规范已制定好，如何保证开发人员必须按照规范来开发？</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#建表规范"><span class="nav-number">1.</span> <span class="nav-text">建表规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL规范"><span class="nav-number">2.</span> <span class="nav-text">SQL规范</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#索引规范"><span class="nav-number">3.</span> <span class="nav-text">索引规范</span></a></li></ol></div>
             
 
           </div>
