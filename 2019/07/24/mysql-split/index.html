@@ -96,17 +96,17 @@
 
 
 
-  <meta name="description" content="简介分库分表：是指把数据库中数据物理地拆分到多个实例或者多台机器上去，而不是 MySQL 原生的分区（Partitioning）。 分区：将一张表的数据分别存储为多个文件。 不足： 1）在使用的时候必须遵从分区规则写 SQL 语句，如果不符合分区规则，性能反而会非常低下。 2）MySQL 单实例的数据文件无法分布式存储的限制，不管怎么分区，所有数据还是都在一个服务器上，没办法通过水平扩展物理服务的">
+  <meta name="description" content="简介当数据库的数据量非常大时，水平切分和垂直拆分是两种常见的降低数据库大小，提升性能的方法。 1234567891011user(uid bigint,name varchar(16),pass varchar(16),age int,sex tinyint,flag tinyint,sign varchar(64),intro varchar(256)…);  水平切分：以某个字段为依据（例如">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL · 运维实践 · 分库分表">
 <meta property="og:url" content="https://huiraoo.github.io/blog/2019/07/24/mysql-split/index.html">
 <meta property="og:site_name" content="Rao&#39;s Blog">
-<meta property="og:description" content="简介分库分表：是指把数据库中数据物理地拆分到多个实例或者多台机器上去，而不是 MySQL 原生的分区（Partitioning）。 分区：将一张表的数据分别存储为多个文件。 不足： 1）在使用的时候必须遵从分区规则写 SQL 语句，如果不符合分区规则，性能反而会非常低下。 2）MySQL 单实例的数据文件无法分布式存储的限制，不管怎么分区，所有数据还是都在一个服务器上，没办法通过水平扩展物理服务的">
+<meta property="og:description" content="简介当数据库的数据量非常大时，水平切分和垂直拆分是两种常见的降低数据库大小，提升性能的方法。 1234567891011user(uid bigint,name varchar(16),pass varchar(16),age int,sex tinyint,flag tinyint,sign varchar(64),intro varchar(256)…);  水平切分：以某个字段为依据（例如">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-09-24T06:19:50.991Z">
+<meta property="og:updated_time" content="2019-09-25T06:44:45.487Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL · 运维实践 · 分库分表">
-<meta name="twitter:description" content="简介分库分表：是指把数据库中数据物理地拆分到多个实例或者多台机器上去，而不是 MySQL 原生的分区（Partitioning）。 分区：将一张表的数据分别存储为多个文件。 不足： 1）在使用的时候必须遵从分区规则写 SQL 语句，如果不符合分区规则，性能反而会非常低下。 2）MySQL 单实例的数据文件无法分布式存储的限制，不管怎么分区，所有数据还是都在一个服务器上，没办法通过水平扩展物理服务的">
+<meta name="twitter:description" content="简介当数据库的数据量非常大时，水平切分和垂直拆分是两种常见的降低数据库大小，提升性能的方法。 1234567891011user(uid bigint,name varchar(16),pass varchar(16),age int,sex tinyint,flag tinyint,sign varchar(64),intro varchar(256)…);  水平切分：以某个字段为依据（例如">
 
 
 
@@ -383,7 +383,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-09-24 14:19:50" itemprop="dateModified" datetime="2019-09-24T14:19:50+08:00">2019-09-24</time>
+                <time title="修改时间：2019-09-25 14:44:45" itemprop="dateModified" datetime="2019-09-25T14:44:45+08:00">2019-09-25</time>
               
             
           </span>
@@ -442,24 +442,26 @@
       
 
       
-        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>分库分表：是指把数据库中数据物理地拆分到多个实例或者多台机器上去，而不是 MySQL 原生的分区（Partitioning）。</p>
-<p>分区：将一张表的数据分别存储为多个文件。</p>
-<p>不足：</p>
-<p>1）在使用的时候必须遵从分区规则写 SQL 语句，如果不符合分区规则，性能反而会非常低下。</p>
-<p>2）MySQL 单实例的数据文件无法分布式存储的限制，不管怎么分区，所有数据还是都在一个服务器上，没办法通过水平扩展物理服务的方法把压力分摊出去。</p>
-<h3 id="sharding拆分问题"><a href="#sharding拆分问题" class="headerlink" title="sharding拆分问题"></a>sharding拆分问题</h3><ul>
-<li>Sharding is very complex, so itʼs best not to shard until itʼs obvious that you will actually need to!</li>
-<li>sharding是按照一定规则数据重新分布的方式</li>
-<li>主要解决单机写入压力过大和容量问题</li>
-<li>主要有垂直拆分和水平拆分两种方式</li>
-<li>拆分要适度，切勿过度拆分</li>
-<li>有中间层控制拆分逻辑最好，否则拆分过细管理成本会很高</li>
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>当数据库的数据量非常大时，<strong>水平切分</strong>和<strong>垂直拆分</strong>是两种常见的降低数据库大小，提升性能的方法。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">user</span><br><span class="line">(</span><br><span class="line">uid bigint,</span><br><span class="line">name varchar(16),</span><br><span class="line">pass varchar(16),</span><br><span class="line">age int,</span><br><span class="line">sex tinyint,</span><br><span class="line">flag tinyint,</span><br><span class="line">sign varchar(64),</span><br><span class="line">intro varchar(256)</span><br><span class="line">…);</span><br></pre></td></tr></table></figure>
+
+<p><strong>水平切分</strong>：以某个字段为依据（例如 <code>uid</code>），按照一定规则（例如取模），将一个库（表）上的数据拆分到多个库（表）上，以降低单库（表）大小，达到提升性能的目的的方法，水平切分后，各个库（表）的特点是：</p>
+<ul>
+<li>每个库（表）的<strong>结构</strong>都一样</li>
+<li>每个库（表）的<strong>数据</strong>都不一样，没有交集</li>
+<li>所有库（表）的并集是全量数据</li>
 </ul>
-<h3 id="垂直拆分"><a href="#垂直拆分" class="headerlink" title="垂直拆分"></a>垂直拆分</h3><p>当考虑数据库拆分的时候，应该优先考虑垂直拆分。垂直可以理解为分出来的库表结构是互相独立各不相同的。</p>
-<p>如果有多个业务，每个业务直接关联性不大，那么就可以把每个业务拆分为单独的实例、库或表。</p>
-<p>如果有一张表，表中字段很多，每个字段都有不同的含义。当表太大的时候，就可以把每个字段独立出来拆分为一张新表。</p>
-<h3 id="水平拆分"><a href="#水平拆分" class="headerlink" title="水平拆分"></a>水平拆分</h3><p>水平拆分是针对一张表来说。在经过垂直拆分之后，如果数据量仍然过大，那只好通过某种算法进行水平拆分。拆分后的结果是多张具有相同结构的表，每张表里面存储一部分数据。</p>
-<p>blog 表通过 id 取模 100、1024（blog_0、blog_1 … blog_99）、log 表通过每月一个表进行按时间的水平拆分（log_201901、log_201902 … log_201912）。</p>
+<p><strong>垂直拆分</strong>：将一个属性较多，一行数据较大的表，将不同的属性拆分到不同的表中，以降低单库（表）大小，达到提升性能的目的的方法，垂直切分后，各个库（表）的特点是：</p>
+<ul>
+<li>每个库（表）的<strong>结构</strong>都不一样</li>
+<li>一般来说，每个库（表）的<strong>属性</strong>至少有一列交集，一般是主键</li>
+<li>所有库（表）的并集是全量数据</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">user_base</span><br><span class="line">(</span><br><span class="line">uid bigint,</span><br><span class="line">name varchar(16),</span><br><span class="line">pass varchar(16),</span><br><span class="line">age int,</span><br><span class="line">sex tinyint,</span><br><span class="line">flag tinyint,</span><br><span class="line">…);</span><br><span class="line"></span><br><span class="line">user_ext</span><br><span class="line">(</span><br><span class="line">uid bigint,</span><br><span class="line">sign varchar(64),</span><br><span class="line">intro varchar(256)</span><br><span class="line">…);</span><br></pre></td></tr></table></figure>
+
+<p><strong>拆分原则</strong>：</p>
+<p>①  将长度较短，访问频率较高的属性尽量放在一个表里，这个表暂且称为<strong>主表</strong></p>
+<p>②  将字段较长，访问频率较低的属性尽量放在一个表里，这个表暂且称为<strong>扩展表</strong></p>
 <h2 id="原则"><a href="#原则" class="headerlink" title="原则"></a>原则</h2><ul>
 <li>原则零：能不分就不分</li>
 </ul>
@@ -482,17 +484,9 @@
 <li><p>原则五：业务耦合性考虑</p>
 </li>
 </ul>
-<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p>数据库层实现</p>
-<ul>
-<li>手工迁移</li>
-<li>slave复制</li>
-<li>触发器</li>
-</ul>
-<p>业务层实现</p>
-<ul>
-<li>路由表</li>
-<li>proxy</li>
-</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>①  <strong>水平拆分</strong>和<strong>垂直拆分</strong>都是降低数据量大小，提升数据库性能的常见手段</p>
+<p>②  流量大数据量大时，<strong>数据访问要有 service 层</strong>，并且 service 层不要通过 <code>join</code> 来获取主表和扩展表的属性</p>
+<p>③  <strong>垂直拆分的依据</strong>，尽量把长度较短，访问频率较高的属性放在主表里</p>
 
       
     </div>
@@ -764,7 +758,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#sharding拆分问题"><span class="nav-number">1.1.</span> <span class="nav-text">sharding拆分问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#垂直拆分"><span class="nav-number">1.2.</span> <span class="nav-text">垂直拆分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#水平拆分"><span class="nav-number">1.3.</span> <span class="nav-text">水平拆分</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原则"><span class="nav-number">2.</span> <span class="nav-text">原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实践"><span class="nav-number">3.</span> <span class="nav-text">实践</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原则"><span class="nav-number">2.</span> <span class="nav-text">原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>
