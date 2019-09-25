@@ -323,6 +323,570 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/11/mysql-tuning/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/11/mysql-tuning/" class="post-title-link" itemprop="url">MySQL · 调优实战</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-11 17:15:50" itemprop="dateCreated datePublished" datetime="2019-07-11T17:15:50+08:00">2019-07-11</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-09-23 15:58:22" itemprop="dateModified" datetime="2019-09-23T15:58:22+08:00">2019-09-23</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="SQL是怎样执行的-？"><a href="#SQL是怎样执行的-？" class="headerlink" title="SQL是怎样执行的 ？"></a>SQL是怎样执行的 ？</h2><p>MySQL 是典型的 <code>C/S</code> 架构，即 <code>Client/Server</code> 架构，服务器端程序使用的 <code>mysqld</code>。整体的流程如下图所示：</p>
+<p><img src="http://ww3.sinaimg.cn/large/006y8mN6ly1g6ap6gn423j30p00dc40x.jpg" alt="img"></p>
+<p>MySQL 由三层组成：</p>
+<p>1）连接层：客户端和服务器端建立连接，客户端发送 <code>SQL</code> 至服务器端；</p>
+<p>2）SQL 层：对 <code>SQL</code> 语句进行查询处理；</p>
+<p>3）存储引擎层：与数据库文件打交道，负责数据的存储和读取。</p>
+<p>SQL层的结构：</p>
+<p><img src="http://ww2.sinaimg.cn/large/006tNc79ly1g64xrbwlygj30k004b0sp.jpg" alt="img"></p>
+<ul>
+<li><strong>连接器</strong>：客户端与 Server 建立连接，并发送 SQL 至 Server（<strong>建立连接</strong>，<strong>用户验证</strong>，<strong>管理连接</strong>）</li>
+<li><strong>查询缓存</strong>：Server 如果在查询缓存中发现了这条 SQL 语句，就会直接将结果返回给客户端；如果没有，就进入到解析器阶段。需要说明的是，因为查询缓存往往效率不高，所以在 MySQL8.0 之后就抛弃了这个功能。（<strong>命中返回</strong>，<strong>未命中更新缓存</strong>）</li>
+<li><strong>解析器</strong>：对 SQL 语句进行语法分析、语义分析（<strong>语法分析</strong>，<strong>语义分析</strong>）</li>
+<li><strong>优化器</strong>：在优化器中会确定 SQL 语句的执行路径，比如是根据全表检索，还是根据索引来检索等（<strong>选择索引</strong>，<strong>生成执行计划</strong>）</li>
+<li><strong>执行器</strong>：在执行之前需要判断该用户是否具备权限，如果具备权限就执行 SQL 查询并返回结果。（<strong>验证权限</strong>，<strong>返回结果</strong>）</li>
+</ul>
+<p><img src="http://ww1.sinaimg.cn/large/006tNc79ly1g61nat9jo2j31400u0tpc.jpg" alt="img"></p>
+<p>SQL 语句在 MySQL 中的流程是：SQL 语句 → 缓存查询 → 解析器 → 优化器 → 执行器</p>
+<p>详细执行过程：</p>
+<p><img src="http://ww1.sinaimg.cn/large/006tNc79ly1g64togewmoj30m80ieq5a.jpg" alt="img"></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">举例：</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="keyword">user</span> <span class="keyword">where</span> <span class="keyword">id</span> = <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="连接器"><a href="#连接器" class="headerlink" title="连接器"></a>连接器</h3><p>负责与客户端建立连接、验证权限、管理连接。一条 SQL 语句从客户端传过来首先会创建一个连接，用 <code>username</code> 和 <code>password</code> 认证身份，连接完成后如果没有其他操作便处于 <code>Sleep</code> 状态，默认 <code>8h</code> 自动断开空闲连接。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">连接命令：</span><br><span class="line">mysql -h<span class="variable">$ip</span> -P<span class="variable">$port</span> -u<span class="variable">$user</span> -p</span><br><span class="line"></span><br><span class="line">环节：</span><br><span class="line"><span class="number">1</span>）TCP握手，建立连接</span><br><span class="line"><span class="number">2</span>）认证身份</span><br><span class="line"><span class="number">3</span>）获取权限</span><br></pre></td></tr></table></figure>
+
+<p><strong>长连接</strong>：持续使用同一个连接处理请求，维持长连接需要消耗内存。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">基本步骤：建立连接 -&gt; 数据传输...（保持连接）… 数据传输 -&gt; 关闭连接</span><br><span class="line">优点：省去较多TCP建立和关闭的操作，减少浪费，节约时间</span><br><span class="line">适合场景：操作频繁，点对点的通讯，且连接数不能太多。例如：数据库的连接用长连接</span><br></pre></td></tr></table></figure>
+
+<p><strong>短连接</strong>：一个连接仅执行几次后便断开，然后重新建立连接。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">基本步骤：建立连接 -&gt; 数据传输 -&gt; 关闭连接</span><br><span class="line">优点：管理起来比较简单，存在的连接都是有用的连接，不需要额外的控制手段</span><br><span class="line">适合场景：并发量大，但每个用户无需频繁操作情况下需用短连接好。例如：web 网站</span><br></pre></td></tr></table></figure>
+
+<p><strong>连接池</strong>：是一些网络代理服务或应用服务器的特性，被所有连接的客户端共享使用，连接池可以加速连接，也可以减少连接，降低服务器负载。</p>
+<p><strong>线程池</strong>：MySQL 每个连接都分配一个单独的线程，线程的创建和销毁都有一定的开销，当线程过多都处于活跃状态，会导致频繁的上下文切换，从而造成巨大的开销，大量短查询的业务场景推荐使用线程池。</p>
+<h3 id="查询缓存"><a href="#查询缓存" class="headerlink" title="查询缓存"></a>查询缓存</h3><p>建立连接后，MySQL 在执行查询时会先对查询缓存进行查询，之前执行过的语句会以 <code>key-value</code> 形式被直接缓存在内存当中， <code>key</code> 是语句、<code>value</code> 是查询结果，查询后有 2 种结果：</p>
+<ul>
+<li>查询缓存命中：直接返回结果（效率很高）</li>
+<li>查询缓存未命中： 继续执行，执行完成后，结果会被存入查询缓存中</li>
+</ul>
+<p>查询缓存默认是关闭的，由 <code>query_cache_type</code> 和 <code>query_cache_size</code> 两个参数控制：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">query_cache_type：否打开查询缓存，可以设置为OFF、ON和DEMAND，DEMAND表示只有在查询语句中明确写明SQL_CACHE的语句才会放入查询缓存</span><br><span class="line">query_cache_size：查询缓存使用的总内存空间</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>备注：<strong>生产环境不推荐使用查询缓存</strong>，因为只要有对表数据更新，表上的所有缓存都会清空然后重新创建缓存。查询缓存适合有大量相同查询的应用，不适合有大量数据更新的应用，MySQL 8.0 直接将查询缓存功能删掉了，可以使用 <code>select SQL_CACHE * from user where id = 1</code> 按需使用查询缓存。</p>
+</blockquote>
+<h3 id="分析器"><a href="#分析器" class="headerlink" title="分析器"></a>分析器</h3><p>先做词法分析，分析 SQL 语句中的关键字，生成对应的解析树，然后做语法分析，判断是否有语法错误。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="string">'xx'</span> <span class="keyword">FROM</span> <span class="string">'xx'</span> <span class="keyword">WHERE</span> <span class="string">'xx'</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="优化器"><a href="#优化器" class="headerlink" title="优化器"></a>优化器</h3><p>在表中有多个索引的时候，由优化器决定使用哪个索引，或者多表关联（join）的时候决定连接顺序，<strong>选择效率高、代价小的方案，生成执行计划</strong>。</p>
+<p>优化器有两类：基于规则的优化器 (Rule-Based Optimizer，<strong>RBO</strong>) 和基于代价的优化器 (Cost-Based Optimizer，<strong>CBO</strong>)。基于代价的优化器，是根据优化规则对关系表达式进行转换，这里的转换是说一个关系表达式经过优化规则后会生成另外一个关系表达式，同时原有表达式也会保留，经过一系列转换后会生成多个执行计划，然后 CBO 会根据统计信息和代价模型 (Cost Model) 计算每个执行计划的 Cost，从中挑选 Cost 最小的执行计划。由上可知，CBO 中有两个依赖：统计信息和代价模型，统计信息的准确与否、代价模型的合理与否都会影响 CBO 选择最优计划。</p>
+<h3 id="执行器"><a href="#执行器" class="headerlink" title="执行器"></a>执行器</h3><p>开始执行之前，先验证是否有读写权限，没有则返回权限错误，有的话调用存储引擎 API 接口获取执行结果集，返回给客户端。</p>
+<h2 id="SQL-语句的执行时间分析"><a href="#SQL-语句的执行时间分析" class="headerlink" title="SQL 语句的执行时间分析"></a>SQL 语句的执行时间分析</h2><p>工具：通过 MySQL <strong>profiling</strong> 来分析资源使用情况。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select @@profiling;</span><br></pre></td></tr></table></figure>
+
+<p>profiling = 0 代表关闭，我们需要把 profiling 打开，即设置为 1：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; set profiling=1;</span><br></pre></td></tr></table></figure>
+
+<p>执行任何一个查询：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from students;</span><br><span class="line">mysql&gt; show profile；</span><br><span class="line">mysql&gt; show profile for query 2;  # 查询指定的 Query ID</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g6apont0v2j30y50u04lx.jpg" alt="img"></p>
+<h2 id="Explain"><a href="#Explain" class="headerlink" title="Explain"></a>Explain</h2><h3 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h3><p>在 MySQL 中，当数据量增长的特别大的时候就需要用到索引来优化 SQL 语句，使用 <code>Explain</code> 来查看 SQL 语句的执行计划，是优化 SQL 最有效地的一种手段。</p>
+<h3 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h3><p><strong>语法</strong>：<code>explain + SQL</code></p>
+<p><strong>示例</strong>：<code>explain select * from customer</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from customer;</span><br><span class="line">+<span class="comment">----+-------------+----------+------+---------------+------+---------+------+--------+</span></span><br><span class="line">| id | select_type | table    | type | possible_keys | key  | key_len | ref  | rows   | </span><br><span class="line">+<span class="comment">----+-------------+----------+------+---------------+------+---------+------+--------+</span></span><br><span class="line">|  1 | SIMPLE      | customer | ALL  | NULL          | NULL | NULL    | NULL | 936161 |       </span><br><span class="line">+<span class="comment">----+-------------+----------+------+---------------+------+---------+------+--------+</span></span><br><span class="line">1 row in <span class="keyword">set</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="参数介绍"><a href="#参数介绍" class="headerlink" title="参数介绍"></a>参数介绍</h3><h4 id="id"><a href="#id" class="headerlink" title="id"></a>id</h4><p><strong>含义</strong>：SELECT 标识符，SQL 执行顺序的标识。</p>
+<p><strong>三种情况</strong>：</p>
+<ul>
+<li><p><code>id</code> 相同，执行顺序由上至下。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select t2.* from t1,t2,t3 where t1.id = t2.id and t1.id = t3.id and t1.other_column = '';</span><br><span class="line">+<span class="comment">----+-------------+-------+--------+---------------+---------+---------+---------------+------+-------------+</span></span><br><span class="line">| id | select_type | table | type   | possible_keys | key     | key_len | ref           | rows | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+-------+--------+---------------+---------+---------+---------------+------+-------------+</span></span><br><span class="line">| 1  | SIMPLE      | t1    | ALL    | PRIMARY       | NULL    | NULL    | NULL          | 5    | Using where |</span><br><span class="line">| 1  | SIMPLE      | t2    | eq_ref | PRIMARY       | PRIMARY | 4       | test_db.t1.id | 1    |             |</span><br><span class="line">| 1  | SIMPLE      | t3    | eq_ref | PRIMARY       | PRIMARY | 4       | test_db.t1.id | 1    | Using index |</span><br><span class="line">+<span class="comment">----+-------------+-------+--------+---------------+---------+---------+---------------+------+-------------+</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>id</code> 不同，如果是子查询，<code>id</code> 的序号会递增，<code>id</code> 值越大优先级越高，越先被执行。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select t2.* from t2 where id = (select id from t1 where id = (select t3.id from t3 where t3.other_column = ''));</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+---------+---------+-------+------+-------------+</span></span><br><span class="line">| id | select_type | table | type  | possible_keys | key     | key_len | ref   | rows | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+---------+---------+-------+------+-------------+</span></span><br><span class="line">| 1  | PRIMARY     | t2    | const | PRIMARY       | PRIMARY | 4       | const | 1    |             |</span><br><span class="line">| 2  | SUBQUERY    | t1    | const | PRIMARY       | PRIMARY | 4       |       | 1    | Using index |</span><br><span class="line">| 3  | SUBQUERY    | t3    | ALL   | NULL          | NULL    | NULL    | NULL  | 5    | Using where |</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+---------+---------+-------+------+-------------+</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>id</code> 有相同也有不同，<code>id</code> 值越大，优先级越高，越先执行；<code>id</code> 相同，则认为是一组，从上往下顺序执行。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select t2.* from t2 where id = (select id from t1 where id = (select t3.id from t3 where t3.other_column = ''));</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+---------+---------+-------+------+-------------+</span></span><br><span class="line">| id | select_type | table | type  | possible_keys | key     | key_len | ref   | rows | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+---------+---------+-------+------+-------------+</span></span><br><span class="line">| 1  | PRIMARY     | t2    | const | PRIMARY       | PRIMARY | 4       | const | 1    |             |</span><br><span class="line">| 2  | SUBQUERY    | t1    | const | PRIMARY       | PRIMARY | 4       |       | 1    | Using index |</span><br><span class="line">| 3  | SUBQUERY    | t3    | ALL   | NULL          | NULL    | NULL    | NULL  | 5    | Using where |</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+---------+---------+-------+------+-------------+</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h4 id="select-type"><a href="#select-type" class="headerlink" title="select_type"></a>select_type</h4><p><strong>含义</strong>：查询类型，主要用于区别普通查询、联合查询、子查询等复杂查询。</p>
+<p><strong>六种类型</strong>：</p>
+<ul>
+<li><strong>SIMPLE</strong>：简单的 <code>select</code> 查询，查询中不包含子查询或者 <code>union</code> 联合查询。</li>
+<li><strong>PRIMARY</strong>：查询中若包含任何复杂的子部分，最外层查询则被标记为 <code>PRIMARY</code>。</li>
+<li><strong>SUBQUERY</strong>：在 <code>select</code>或 <code>where</code> 列表中包含了子查询。</li>
+<li><strong>DERIVED</strong>：在 <code>from</code> 列表中包含的子查询被标记为 <code>DERIVED</code>（衍生），MySQL 会递归执行这些子查询，把结果放在临时表里。</li>
+<li><strong>UNION</strong>：若第二个 <code>select</code> 出现在 <code>union</code> 之后，则被标记为 <code>union</code>；若 <code>union</code> 包含在 <code>from</code> 字句的查询中，外层 <code>select</code> 将被标记为 <code>DERIVED</code>。</li>
+<li><strong>UNION RESULT</strong>：两种 <code>union</code> 语句的合并。</li>
+</ul>
+<h4 id="table"><a href="#table" class="headerlink" title="table"></a>table</h4><p><strong>含义</strong>：查询涉及的表或者衍生表。</p>
+<h4 id="type"><a href="#type" class="headerlink" title="type"></a>type</h4><p><strong>含义</strong>：显示连接使用的类型。常见的有7种，从最好到最差排序：<strong>system &gt; const &gt; eq_ref &gt; ref &gt; range &gt; index &gt; all</strong>（<strong>全表扫描</strong>），一般来说 <strong>至少达到 range 级别，最好达到 ref</strong>。</p>
+<p><strong>七种类型</strong>：</p>
+<ul>
+<li><p><strong>system</strong>：表只有一行记录，这是 <code>const</code> 类型的特例，只能用于 <code>myisam</code> 和 <code>memory</code> 表，可以忽略不计。</p>
+</li>
+<li><p><strong>const</strong>：表示通过索引一次就找到了，<code>const</code> 用于 <code>primary key</code> 或者 <code>unique</code> 索引，因为只匹配一行数据，所以很快，如将主键置于 <code>where</code> 列表中，MySQL 就能将该查询转换为一个常量。</p>
+</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from (select * from t1 where id =1) d1;</span><br><span class="line">+<span class="comment">----+-------------+------------+--------+---------------+---------+---------+------+----</span></span><br><span class="line">| id | select_type | table      | type   | possible_keys | key     | key_len | ref  | rows | Extra |</span><br><span class="line">+<span class="comment">----+-------------+------------+--------+---------------+---------+---------+------+----</span></span><br><span class="line">|  1 | PRIMARY     | &lt;derived2&gt; | system | NULL          | NULL    | NULL    | NULL |    1 |       |</span><br><span class="line">|  2 | DERIVED     | t1         | const  | PRIMARY       | PRIMARY | 4       |      |    1 |       |</span><br><span class="line">+<span class="comment">----+-------------+------------+--------+---------------+---------+---------+------+----</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>eq_ref</strong>：唯一性索引扫描，对于每个索引键，表中只有一条记录与之匹配，常见于主键或唯一索引扫描。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from t1,t2 where t1.id = t2.id;</span><br><span class="line">+<span class="comment">----+-------------+-------+--------+---------------+---------+---------+---------------</span></span><br><span class="line">| id | select_type | table | type   | possible_keys | key     | key_len | ref           | rows | Extra |</span><br><span class="line">+<span class="comment">----+-------------+-------+--------+---------------+---------+---------+---------------</span></span><br><span class="line">|  1 | SIMPLE      | t1    | ALL    | PRIMARY       | NULL    | NULL    | NULL          |    5 |       |</span><br><span class="line">|  1 | SIMPLE      | t2    | eq_ref | PRIMARY       | PRIMARY | 4       | test_db.t1.id |    1 |       |</span><br><span class="line">+<span class="comment">----+-------------+-------+--------+---------------+---------+---------+---------------</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>ref</strong>：非唯一索引或者主键扫描，或者使用了<strong>最左前缀规则</strong>索引的查询，它返回匹配某个单独值的所有行，然而它可能会找到多个符合条件的行，所以它应该属于查找和扫描的混合体。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create index idx_name on t1(name);</span><br><span class="line">mysql&gt; explain select * from t1 where name ='Tim';</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+------+---------+-------+------+------</span></span><br><span class="line">| id | select_type | table | type | possible_keys | key  | key_len | ref   | rows | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+------+---------+-------+------+------</span></span><br><span class="line">|  1 | SIMPLE      | t1    | ref  | idx_name          | idx_name  | 92      | const |    1 | Using where |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+------+---------+-------+------+------</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>range</strong>：只检索给定范围的行，使用一个索引来选择行。<code>key</code>列显示使用了哪个索引，一般就是在你的 <code>where</code>语句中出现了 <code>between</code>、<code>&lt;&gt;</code>、<code>in</code> 等查询。这种范围扫描索引比全表扫描要好，因为它只需要开始于索引的某一点，而结束于另一点，不用扫描全部索引。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from t1 where id between 2 and 5;</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+---------+---------+------+------+---</span></span><br><span class="line">| id | select_type | table | type  | possible_keys | key     | key_len | ref  | rows | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+---------+---------+------+------+---</span></span><br><span class="line">|  1 | SIMPLE      | t1    | range | PRIMARY       | PRIMARY | 4       | NULL |    3 | Using where |</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+---------+---------+------+------+---</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>index</strong>：表示全索引扫描 (full index scan)，<code>index</code> 与 <code>all</code> 区别为 <code>index</code> 类型只扫描所有的索引不扫描数据，通常比 <code>all</code> 快，因为索引文件通常比数据文件小。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select id from t1;</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+---------+---------+------+------+---</span></span><br><span class="line">| id | select_type | table | type  | possible_keys | key     | key_len | ref  | rows | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+---------+---------+------+------+---</span></span><br><span class="line">|  1 | SIMPLE      | t1    | index | NULL          | PRIMARY | 4       | NULL |    6 | Using index |</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+---------+---------+------+------+---</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>all</strong>：表示全表扫描，这个类型的查询是性能最差的查询之一。通常来说，查询不应该出现 <code>all</code> 类型的查询, 因为这样的查询在数据量大的情况下，对数据库的性能是巨大的灾难。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select * from t2 where other_column = '';</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+------+---------+------+------+-------</span></span><br><span class="line">| id | select_type | table | type | possible_keys | key  | key_len | ref  | rows | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+------+---------+------+------+-------</span></span><br><span class="line">|  1 | SIMPLE      | t2    | ALL  | NULL          | NULL | NULL    | NULL |    5 | Using where |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+------+---------+------+------+-------</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="possible-keys"><a href="#possible-keys" class="headerlink" title="possible_keys"></a>possible_keys</h4><p><strong>含义</strong>：显示可能应用在这张表中的索引。查询涉及到的字段上若存在索引，则该索引将被列出，但不一定被查询实际使用。</p>
+<h4 id="key"><a href="#key" class="headerlink" title="key"></a>key</h4><p><strong>含义</strong>：实际使用的索引。如果为 <code>NULL</code>，则没有使用索引，<code>key</code> 参数可以作为使用了索引的判断标准。</p>
+<h4 id="key-len"><a href="#key-len" class="headerlink" title="key_len"></a>key_len</h4><p><strong>含义</strong>：使用的索引的长度。<code>key_len</code> 显示的值为索引字段的最大可能长度，并非实际使用长度。在不损失精确性的情况下，长度越短越好。</p>
+<h4 id="ref"><a href="#ref" class="headerlink" title="ref"></a>ref</h4><p><strong>含义</strong>：显示索引的哪一列被使用了，如果可能的话是一个常数，哪些列或常量被用于查找索引列上的值。</p>
+<h4 id="rows"><a href="#rows" class="headerlink" title="rows"></a>rows</h4><p><strong>含义</strong>：根据表统计信息及索引选用情况，大致估算出找到所需的记录所需要读取的行数，当然越小越好。</p>
+<h4 id="Extra"><a href="#Extra" class="headerlink" title="Extra"></a>Extra</h4><p><strong>含义</strong>：附加信息，提供了与操作有关联的信息。</p>
+<p><strong>三种类型</strong>：</p>
+<ul>
+<li><strong>Using filesort</strong>：比较危险。说明 MySQL 会对数据使用一个外部的索引排序，而不是按照表内的索引顺序进行读取。MySQL 中无法利用索引完成的排序操作称之为文件排序，需要进行额外的步骤来发现如何对返回的行排序。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select other_column from t1 where other_column = 'A' order by other_column3;</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+------+---------+-------+------+---------</span></span><br><span class="line">| id | select_type | table | type | possible_keys | key  | key_len | ref   | rows | Extra                       |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+------+---------+-------+------+---------</span></span><br><span class="line">|  1 | SIMPLE      | t1    | ref  | idx           | idx  | 92      | const |    1 | Using where; Using filesort |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+------+---------+-------+------+---------</span></span><br></pre></td></tr></table></figure>
+
+<p>优化案例：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; create index u_idx2 on t1(other_column,other_column2,other_column3);</span><br><span class="line">mysql&gt; explain select other_column from t1 where other_column = 'A' order by other_column2,other_column3;</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+--------+---------+-------+------+-------</span></span><br><span class="line">| id | select_type | table | type | possible_keys | key    | key_len | ref   | rows | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+--------+---------+-------+------+-------</span></span><br><span class="line">|  1 | SIMPLE      | t1    | ref  | idx,u_idx2    | u_idx2 | 92      | const |    1 | Using where |</span><br><span class="line">+<span class="comment">----+-------------+-------+------+---------------+--------+---------+-------+------+-------</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>Using temporary</strong>：比较危险，使用了临时表保存中间结果。这通常发生在对不同的列集进行 <code>ORDER BY</code> 上和 <code>GROUP BY</code> 上，拖慢了查询速度。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select other_column from t1 where other_column in ('A','B','C') group by other_column3;</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span></span><br><span class="line">| id | select_type | table | type  | possible_keys | key    | key_len | ref  | rows | Extra                                                     |</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span></span><br><span class="line">|  1 | SIMPLE      | t1    | range | idx,u_idx2    | u_idx2 | 92      | NULL |    3 | Using where; Using index; Using temporary; Using filesort |</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span></span><br></pre></td></tr></table></figure>
+
+<p>优化案例：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select other_column from t1 where other_column in ('A','B','C') group by other_column,other_column2;</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span></span><br><span class="line">| id | select_type | table | type  | possible_keys | key    | key_len | ref  | rows | Extra                    |</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span></span><br><span class="line">|  1 | SIMPLE      | t1    | range | idx,u_idx2    | u_idx2 | 92      | NULL |    3 | Using where; Using index |</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong>Using index</strong>：表示相应的 <code>select</code> 操作中使用了覆盖索引，避免访问了表的数据行，效率不错。如果同时出现 <code>using where</code>，表明索引被用来执行索引键值的查找；如果没有同时出现 <code>using where</code>，表明索引用来读取数据而非执行查找动作。</p>
+<p><strong>覆盖索引</strong>： 就是 <code>select</code> 的数据列只用从索引中就能够取得，不必读取数据行，MySQL 可以利用索引返回 <code>select</code> 列表中的字段，而不必根据索引再次读取数据文件，换句话说查询列要被所建的索引覆盖。注意的是，如果要使用覆盖索引，一定要注意 <code>select</code> 列表中只读取出需要的列，而不是 <code>select *</code>，因为如果将所有字段一起做索引会导致索引文件过大，降低查询性能。</p>
+</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select other_column from t1 where other_column in ('A','B','C') group by other_column,other_column2;</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span></span><br><span class="line">| id | select_type | table | type  | possible_keys | key    | key_len | ref  | rows | Extra                    |</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span></span><br><span class="line">|  1 | SIMPLE      | t1    | range | idx,u_idx2    | u_idx2 | 92      | NULL |    3 | Using where; Using index |</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; explain select other_column,other_column2,other_column3 from t1;</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span></span><br><span class="line">| id | select_type | table | type  | possible_keys | key    | key_len | ref  | rows | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span></span><br><span class="line">|  1 | SIMPLE      | t1    | index | NULL          | u_idx2 | 276     | NULL |    6 | Using index |</span><br><span class="line">+<span class="comment">----+-------------+-------+-------+---------------+--------+---------+------+------+-------</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="SQL调优"><a href="#SQL调优" class="headerlink" title="SQL调优"></a>SQL调优</h2><p>INSERT 性能：MySQL 用单条 INSERT 语句处理多个插入比使用多条 INSERT 语句快。</p>
+<p>从表中删除所有行，不要使用 DELETE ，建议使用 TRUNCATE TABLE 语句。TRUNCATE 实际是删除原来的表并重新创建一个表，而不是逐行删除表中的数据。</p>
+<h2 id="索引调优"><a href="#索引调优" class="headerlink" title="索引调优"></a>索引调优</h2><p><strong>测试环境</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> <span class="string">`t1`</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`t1`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">10</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  <span class="string">`other_column`</span> <span class="built_in">varchar</span>(<span class="number">30</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span>,</span><br><span class="line">  <span class="string">`other_column2`</span> <span class="built_in">varchar</span>(<span class="number">30</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span>,</span><br><span class="line">  <span class="string">`other_column3`</span> <span class="built_in">varchar</span>(<span class="number">30</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>),</span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`idx`</span> (<span class="string">`other_column`</span>),</span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`u_idx`</span> (<span class="string">`other_column2`</span>,<span class="string">`other_column3`</span>),</span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`u_idx2`</span> (<span class="string">`other_column`</span>,<span class="string">`other_column2`</span>,<span class="string">`other_column3`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=MyISAM AUTO_INCREMENT=<span class="number">7</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8;</span><br><span class="line"></span><br><span class="line"><span class="comment">------</span></span><br><span class="line"><span class="comment">-- Records of t1</span></span><br><span class="line"><span class="comment">------</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t1`</span> <span class="keyword">VALUES</span> (<span class="string">'1'</span>, <span class="string">'A'</span>, <span class="string">'D'</span>, <span class="string">'L'</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t1`</span> <span class="keyword">VALUES</span> (<span class="string">'2'</span>, <span class="string">'B'</span>, <span class="string">'E'</span>, <span class="string">'M'</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t1`</span> <span class="keyword">VALUES</span> (<span class="string">'3'</span>, <span class="string">'C'</span>, <span class="string">''</span>, <span class="string">'N'</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t1`</span> <span class="keyword">VALUES</span> (<span class="string">'4'</span>, <span class="string">''</span>, <span class="string">'F'</span>, <span class="string">''</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t1`</span> <span class="keyword">VALUES</span> (<span class="string">'5'</span>, <span class="string">'F'</span>, <span class="string">'G'</span>, <span class="string">'O'</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t1`</span> <span class="keyword">VALUES</span> (<span class="string">'6'</span>, <span class="string">'A'</span>, <span class="string">'H'</span>, <span class="string">'P'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">------</span></span><br><span class="line"><span class="comment">-- Table structure for t2</span></span><br><span class="line"><span class="comment">------</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> <span class="string">`t2`</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`t2`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">10</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  <span class="string">`other_column`</span> <span class="built_in">varchar</span>(<span class="number">30</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>),</span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`idx`</span> (<span class="string">`other_column`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=MyISAM AUTO_INCREMENT=<span class="number">6</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8;</span><br><span class="line"></span><br><span class="line"><span class="comment">------</span></span><br><span class="line"><span class="comment">-- Records of t2</span></span><br><span class="line"><span class="comment">------</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t2`</span> <span class="keyword">VALUES</span> (<span class="string">'1'</span>, <span class="string">'C'</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t2`</span> <span class="keyword">VALUES</span> (<span class="string">'2'</span>, <span class="string">'D'</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t2`</span> <span class="keyword">VALUES</span> (<span class="string">'3'</span>, <span class="string">'E'</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t2`</span> <span class="keyword">VALUES</span> (<span class="string">'4'</span>, <span class="string">''</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t2`</span> <span class="keyword">VALUES</span> (<span class="string">'5'</span>, <span class="string">'G'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">------</span></span><br><span class="line"><span class="comment">-- Table structure for t3</span></span><br><span class="line"><span class="comment">------</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> <span class="string">`t3`</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`t3`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">10</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  <span class="string">`other_column`</span> <span class="built_in">varchar</span>(<span class="number">30</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=MyISAM AUTO_INCREMENT=<span class="number">6</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8;</span><br><span class="line"></span><br><span class="line"><span class="comment">------</span></span><br><span class="line"><span class="comment">-- Records of t3</span></span><br><span class="line"><span class="comment">------</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t3`</span> <span class="keyword">VALUES</span> (<span class="string">'1'</span>, <span class="string">'F'</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t3`</span> <span class="keyword">VALUES</span> (<span class="string">'2'</span>, <span class="string">'G'</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t3`</span> <span class="keyword">VALUES</span> (<span class="string">'3'</span>, <span class="string">'H'</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t3`</span> <span class="keyword">VALUES</span> (<span class="string">'4'</span>, <span class="string">''</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t3`</span> <span class="keyword">VALUES</span> (<span class="string">'5'</span>, <span class="string">'I'</span>);</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/10/Front-Learning/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/10/Front-Learning/" class="post-title-link" itemprop="url">前端学习笔记</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-10 11:22:20" itemprop="dateCreated datePublished" datetime="2019-07-10T11:22:20+08:00">2019-07-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-09-25 15:42:55" itemprop="dateModified" datetime="2019-09-25T15:42:55+08:00">2019-09-25</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/其他/" itemprop="url" rel="index"><span itemprop="name">其他</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前端学习路径"><a href="#前端学习路径" class="headerlink" title="前端学习路径"></a>前端学习路径</h2><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134136.png" alt="前端技能图谱"></p>
+<h2 id="如何搭建-一个-vue-项目？"><a href="#如何搭建-一个-vue-项目？" class="headerlink" title="如何搭建 一个 vue 项目？"></a>如何搭建 一个 vue 项目？</h2><h3 id="安装-node-环境"><a href="#安装-node-环境" class="headerlink" title="安装 node 环境"></a>安装 node 环境</h3><blockquote>
+<p>下载 <a href="http://nodejs.cn/download/" target="_blank" rel="noopener">Node.js</a></p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> node -v</span><br><span class="line">v10.15.3</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span> npm -v</span><br><span class="line">6.10.0</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>安装淘宝镜像，提高效率</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> npm install -g cnpm --registry=https://registry.npm.taobao.org</span><br><span class="line">C:\Users\01510886\AppData\Roaming\npm\cnpm -&gt; C:\Users\01510886\AppData\Roaming\npm\node_modules\cnpm\bin\cnpm</span><br><span class="line">+cnpm@6.1.0</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> cnpm -v</span><br><span class="line">cnpm@6.1.0 (C:\Users\01510886\AppData\Roaming\npm\node_modules\cnpm\lib\parse_argv.js)</span><br><span class="line">npm@6.10.0 (C:\Users\01510886\AppData\Roaming\npm\node_modules\cnpm\node_modules\npm\lib\npm.js)</span><br><span class="line">node@10.15.3 (D:\software\nodejs\node.exe)</span><br><span class="line">npminstall@3.22.1 (C:\Users\01510886\AppData\Roaming\npm\node_modules\cnpm\node_modules\npminstall\lib\index.js)</span><br><span class="line">prefix=C:\Users\01510886\AppData\Roaming\npm</span><br><span class="line">win32 x64 6.1.7601</span><br><span class="line">registry=https://r.npm.taobao.org</span><br></pre></td></tr></table></figure>
+
+<h3 id="搭建-vue-项目环境"><a href="#搭建-vue-项目环境" class="headerlink" title="搭建 vue 项目环境"></a>搭建 vue 项目环境</h3><blockquote>
+<p>安装 vue-cli</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> npm install --global vue-cli</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span> vue list</span><br><span class="line">  Available official templates:</span><br><span class="line">  ★  browserify - A full-featured Browserify + vueify setup with hot-reload, linting &amp; unit testing.</span><br><span class="line">  ★  browserify-simple - A simple Browserify + vueify setup for quick prototyping.</span><br><span class="line">  ★  pwa - PWA template for vue-cli based on the webpack template</span><br><span class="line">  ★  simple - The simplest possible Vue setup in a single HTML file</span><br><span class="line">  ★  webpack - A full-featured Webpack + vue-loader setup with hot reload, linting, testing &amp; css extraction.</span><br><span class="line">  ★  webpack-simple - A simple Webpack + vue-loader setup for quick prototyping.</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>创建一个基于 webpack 模板的新项目</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">$ vue init webpack vue-test</span><br><span class="line"></span><br><span class="line">? Project name (vue-test)</span><br><span class="line">? Project name vue-test</span><br><span class="line">? Project description (A Vue.js project)</span><br><span class="line">? Project description A Vue.js project</span><br><span class="line">? Author (raohui &lt;raohui@haier.com&gt;)</span><br><span class="line">? Author raohui &lt;raohui@haier.com&gt;</span><br><span class="line">? Vue build standalone</span><br><span class="line">? Install vue-router? (Y/n) Y</span><br><span class="line">? Install vue-router? Yes</span><br><span class="line">? Use ESLint to lint your code? (Y/n) n</span><br><span class="line">? Use ESLint to lint your code? No</span><br><span class="line">? Set up unit tests (Y/n) n</span><br><span class="line">? Set up unit tests No</span><br><span class="line">? Setup e2e tests with Nightwatch? (Y/n) n</span><br><span class="line">? Setup e2e tests with Nightwatch? No</span><br><span class="line">? Should we run `npm install` <span class="keyword">for</span> you after the project has been created? (recom</span><br><span class="line">? Should we run `npm install` <span class="keyword">for</span> you after the project has been created? (recom</span><br><span class="line">mended) npm</span><br><span class="line"></span><br><span class="line">   vue-cli · Generated <span class="string">"vue-test"</span>.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># Installing project dependencies ...</span></span><br><span class="line"><span class="comment"># ========================</span></span><br><span class="line"></span><br><span class="line">npm WARN deprecated extract-text-webpack-plugin@<span class="number">3.0</span>.<span class="number">2</span>: Deprecated. Please use https://github.com/webpack-contrib/mini-css-extract-plugin</span><br><span class="line">npm WARN deprecated browserslist@<span class="number">2.11</span>.<span class="number">3</span>: Browserslist <span class="number">2</span> could fail on reading Browserslist &gt;<span class="number">3.0</span> config used <span class="keyword">in</span> other tools.</span><br><span class="line">npm WARN deprecated bfj-node4@<span class="number">5.3</span>.<span class="number">1</span>: <span class="keyword">Switch</span> to the `bfj` package <span class="keyword">for</span> fixes and new features!</span><br><span class="line">npm WARN deprecated flatten@<span class="number">1.0</span>.<span class="number">2</span>: I wrote this module a very long time ago; you should use something else.</span><br><span class="line">npm WARN deprecated browserslist@<span class="number">1.7</span>.<span class="number">7</span>: Browserslist <span class="number">2</span> could fail on reading Browserslist &gt;<span class="number">3.0</span> config used <span class="keyword">in</span> other tools.</span><br><span class="line"></span><br><span class="line">&gt; core-js@<span class="number">2.6</span>.<span class="number">9</span> postinstall D:\vue\vue-test\node_modules\core-js</span><br><span class="line">&gt; node scripts/postinstall || echo <span class="string">"ignore"</span></span><br><span class="line"></span><br><span class="line">Thank you <span class="keyword">for</span> using core-js ( https://github.com/zloirock/core-js ) <span class="keyword">for</span> polyfilling JavaScript standard library!</span><br><span class="line"></span><br><span class="line">The project needs your help! Please consider supporting of core-js on Open Collective or Patreon:</span><br><span class="line">&gt; https://opencollective.com/core-js</span><br><span class="line">&gt; https://www.patreon.com/zloirock</span><br><span class="line"></span><br><span class="line">Also, the author of core-js ( https://github.com/zloirock ) is looking <span class="keyword">for</span> a good job -)</span><br><span class="line"></span><br><span class="line">&gt; uglifyjs-webpack-plugin@<span class="number">0.4</span>.<span class="number">6</span> postinstall D:\vue\vue-test\node_modules\webpack\node_modules\uglifyjs-webpack-plugin</span><br><span class="line">&gt; node lib/post_install.js</span><br><span class="line"></span><br><span class="line">npm notice created a lockfile as package-lock.json. You should commit this file.</span><br><span class="line">npm WARN ajv-keywords@<span class="number">3.4</span>.<span class="number">1</span> requires a peer of ajv@^<span class="number">6.9</span>.<span class="number">1</span> but none is installed. You must install peer dependencies yourself.</span><br><span class="line">npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@<span class="number">1.2</span>.<span class="number">9</span> (node_modules\fsevents):</span><br><span class="line">npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform <span class="keyword">for</span> fsevents@<span class="number">1.2</span>.<span class="number">9</span>: wanted &#123;<span class="string">"os"</span>:<span class="string">"darwin"</span>,<span class="string">"arch"</span>:<span class="string">"any"</span>&#125; (current: &#123;<span class="string">"os"</span>:<span class="string">"win32"</span>,<span class="string">"arch"</span>:<span class="string">"x64"</span>&#125;)</span><br><span class="line"></span><br><span class="line">added <span class="number">1208</span> packages from <span class="number">669</span> contributors and audited <span class="number">11766</span> packages <span class="keyword">in</span> <span class="number">196.113</span>s</span><br><span class="line">found <span class="number">10</span> vulnerabilities (<span class="number">6</span> moderate, <span class="number">4</span> high)</span><br><span class="line">  run `npm audit fix` to fix them, or `npm audit` <span class="keyword">for</span> details</span><br><span class="line"></span><br><span class="line"><span class="comment"># Project initialization finished!</span></span><br><span class="line"><span class="comment"># ========================</span></span><br><span class="line"></span><br><span class="line">To get started:</span><br><span class="line"></span><br><span class="line">  cd vue-test</span><br><span class="line">  npm run dev</span><br><span class="line"></span><br><span class="line">Documentation can be found at https://vuejs-templates.github.io/webpack</span><br><span class="line"></span><br><span class="line">tips:</span><br><span class="line">npm install -g npm （升级npm至最新版本）</span><br><span class="line">npm cache clean --force  (出现报错可清除缓存)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>启动项目</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ cd vue-test</span><br><span class="line">$ npm run dev</span><br><span class="line"></span><br><span class="line">&gt; vue-test@<span class="number">1.0</span>.<span class="number">0</span> dev D:\vue\vue-test</span><br><span class="line">&gt; webpack-dev-server --inline --progress --config build/webpack.dev.conf.js</span><br><span class="line"></span><br><span class="line"> <span class="number">13</span>% building modules <span class="number">26</span>/<span class="number">33</span> modules <span class="number">7</span> active ...ue-test\src\components\HelloWorld.vue&#123; parser: <span class="string">"babylon"</span> &#125; is deprecated; we now treat it as &#123; parser: <span class="string">"babel"</span> &#125;.</span><br><span class="line"> <span class="number">95</span>% emitting DONE  Compiled successfully <span class="keyword">in</span> <span class="number">11954</span>ms14:<span class="number">06</span>:<span class="number">01</span></span><br><span class="line"></span><br><span class="line"> I  Your application is running here: http://localhost:<span class="number">8080</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="vue-项目目录解析"><a href="#vue-项目目录解析" class="headerlink" title="vue 项目目录解析"></a>vue 项目目录解析</h3><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134137.png" alt="vue"></p>
+<p><strong>build</strong>：构建脚本目录</p>
+<p><strong>config</strong>：项目配置目录</p>
+<p><strong>node_modules</strong>：npm 加载的项目依赖目录</p>
+<p><strong>src</strong>：开发目录，基本上要做的事情都集中在这个目录，里面包含几个目录和文件：</p>
+<ul>
+<li>assets：资源目录，放置一些图片或者公共 js、公共 css，这里的资源会被 webpack 构建</li>
+<li>components：组件目录，我们写的组件就放在这个目录里面</li>
+<li>router：前端路由，我们需要配置的路由路径写在 index.js 里面</li>
+<li>App.vue：根组件</li>
+<li>main.js：入口 js 文件</li>
+</ul>
+<p><strong>static</strong>：静态资源目录，如图片、字体等，不会被 webpack 构建</p>
+<p><strong>index.html</strong>：首页入口文件，可以添加一些 meta 信息等</p>
+<p><strong>package.json</strong>：npm 包配置文件，定义了项目的 npm 脚本，依赖包等信息</p>
+<h3 id="开发-Frist-vue-项目"><a href="#开发-Frist-vue-项目" class="headerlink" title="开发 Frist.vue 项目"></a>开发 Frist.vue 项目</h3><blockquote>
+<p>1）components 目录下新建一个 views 目录，并新建组件 First.vue</p>
+</blockquote>
+<blockquote>
+<p>2）router 目录下的 index.js 配置路由路径</p>
+</blockquote>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Vue <span class="keyword">from</span> <span class="string">'vue'</span></span><br><span class="line"><span class="keyword">import</span> Router <span class="keyword">from</span> <span class="string">'vue-router'</span></span><br><span class="line"><span class="keyword">import</span> HelloWorld <span class="keyword">from</span> <span class="string">'@/components/HelloWorld'</span></span><br><span class="line"><span class="keyword">import</span> First <span class="keyword">from</span> <span class="string">'@/components/views/First'</span></span><br><span class="line"></span><br><span class="line">Vue.use(Router)</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">new</span> Router(&#123;</span><br><span class="line"></span><br><span class="line">  routes: [</span><br><span class="line">    &#123;</span><br><span class="line">      path: <span class="string">'/'</span>,</span><br><span class="line">      name: <span class="string">'HelloWorld'</span>,</span><br><span class="line">      component: HelloWorld</span><br><span class="line">    &#125;,&#123;</span><br><span class="line">      path: <span class="string">'/first'</span>,</span><br><span class="line">      name: <span class="string">'First'</span>,</span><br><span class="line">      component: First</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>3）First.vue 文件 template 写 html，script 写 js，style 写 css</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div class=&quot;first-app&quot;&gt;</span><br><span class="line">        &#123;&#123;msg&#125;&#125;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">export default &#123;</span><br><span class="line">    name: &quot;First&quot;,</span><br><span class="line">    data() &#123;</span><br><span class="line">        return &#123;</span><br><span class="line">            msg: &quot;Welcome to FirstApp&quot;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">&lt;style&gt;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>4）<a href="http://localhost:8080/#/first，查看页面效果" target="_blank" rel="noopener">http://localhost:8080/#/first，查看页面效果</a></p>
+</blockquote>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/08/linux-ssh/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1078,7 +1642,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-09-13 22:27:09" itemprop="dateModified" datetime="2019-09-13T22:27:09+08:00">2019-09-13</time>
+                <time title="修改时间：2019-09-25 17:26:17" itemprop="dateModified" datetime="2019-09-25T17:26:17+08:00">2019-09-25</time>
               
             
           </span>
@@ -1132,23 +1696,18 @@
       
         
           
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://github.com/percona/percona-toolkit" target="_blank" rel="noopener"><strong>Percona Toolkit</strong></a> 包含多种用于 MySQL 数据库管理的工具，使用 Perl 语言编写和执行。</p>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>（1）安装包</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> scp xxx haieradmin@10.133.0.53:/tmp</span><br></pre></td></tr></table></figure>
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://github.com/percona/percona-toolkit" target="_blank" rel="noopener"><strong>Percona Toolkit</strong></a> 包含多种用于 <code>MySQL</code> 数据库管理的工具，使用 <code>Perl</code> 语言编写。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>①  安装</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ wget http://devops-files.oss-cn-qingdao.aliyuncs.com/percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-el7-x86_64-bundle.tar</span><br><span class="line">$ tar xvf percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-el7-x86_64-bundle.tar</span><br><span class="line">$ rpm -ivh percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br><span class="line">warning: percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64.rpm: Header V4 RSA/SHA256 Signature, key ID <span class="number">8507</span>efa5: NOKEY</span><br><span class="line">error: Failed dependencies:</span><br><span class="line">	perl(DBD::mysql) &gt;= <span class="number">1.0</span> is needed by percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64</span><br><span class="line">	perl(IO::Socket::SSL) is needed by percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64</span><br><span class="line">	perl(Digest::MD5) is needed by percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64</span><br></pre></td></tr></table></figure>
 
-<p>（2）开始安装</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> wget http://10.190.179.84:8085/percona-toolkit-3.0.13-el7-x86_64-bundle.tar</span><br><span class="line"><span class="meta">$</span> tar xvf percona-toolkit-3.0.13-el7-x86_64-bundle.tar</span><br><span class="line">- percona-toolkit-3.0.13-1.el7.x86_64.rpm</span><br><span class="line">- percona-toolkit-debuginfo-3.0.13-1.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
+<p>②  依赖</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ yum -y install perl-DBD-MySQL</span><br><span class="line">$ yum -y install perl-Digest-MD5</span><br><span class="line">$ yum -y install perl-IO-Socket-SSL</span><br><span class="line">$ yum -y install perl-TermReadKey</span><br><span class="line">$ rpm -ivh percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br><span class="line"></span><br><span class="line">$ pt-archiver --help</span><br><span class="line">Usage: pt-archiver [OPTIONS] --source DSN --where WHERE</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> rpm -ivh percona-toolkit-3.0.13-1.el7.x86_64.rpm</span><br><span class="line">warning: percona-toolkit-3.0.13-1.el7.x86_64.rpm: Header V4 RSA/SHA256 Signature, key ID 8507efa5: NOKEY</span><br><span class="line">error: Failed dependencies:</span><br><span class="line">	perl(DBD::mysql) &gt;= 1.0 is needed by percona-toolkit-3.0.13-1.el7.x86_64</span><br><span class="line">	perl(IO::Socket::SSL) is needed by percona-toolkit-3.0.13-1.el7.x86_64</span><br><span class="line">	perl(Digest::MD5) is needed by percona-toolkit-3.0.13-1.el7.x86_64</span><br></pre></td></tr></table></figure>
-
-<p>（3）安装依赖</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> yum -y install perl-DBD-MySQL</span><br><span class="line"><span class="meta">$</span> yum -y install perl-Digest-MD5</span><br><span class="line"><span class="meta">$</span> yum -y install perl-IO-Socket-SSL</span><br><span class="line"><span class="meta">$</span> yum -y install perl-TermReadKey</span><br><span class="line"><span class="meta">$</span> rpm -ivh percona-toolkit-3.0.13-1.el7.x86_64.rpm</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span> pt-archiver --help</span><br><span class="line">Usage: pt-archiver [OPTIONS] --source DSN --where WHERE</span><br></pre></td></tr></table></figure>
-
-<h2 id="工具汇总"><a href="#工具汇总" class="headerlink" title="工具汇总"></a>工具汇总</h2><table>
+<h2 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h2><table>
 <thead>
 <tr>
-<th>工具命令</th>
-<th>工具作用</th>
+<th>命令</th>
+<th>作用</th>
 </tr>
 </thead>
 <tbody><tr>
@@ -1201,19 +1760,19 @@
 </tr>
 <tr>
 <td>pt-ioprofile</td>
-<td>查询进程 IO 并打印活动表</td>
+<td>查询进程 <code>IO</code> 并打印活动表</td>
 </tr>
 <tr>
-<td><strong>pt-kill</strong></td>
-<td>Kill 掉符合条件的 sql</td>
+<td>pt-kill</td>
+<td><code>kill</code> 掉符合条件的 <code>SQL</code></td>
 </tr>
 <tr>
 <td>pt-mext</td>
-<td>并行查看 status 样本信息</td>
+<td>并行查看 <code>status</code> 样本信息</td>
 </tr>
 <tr>
 <td>pt-mysql-summary</td>
-<td>对 mysql 配置和 status 进行汇总</td>
+<td>对 <code>mysql</code> 配置和 <code>status</code> 进行汇总</td>
 </tr>
 <tr>
 <td><strong>pt-online-schema-change</strong></td>
@@ -1248,8 +1807,8 @@
 <td>查找和打印所有复制层级关系</td>
 </tr>
 <tr>
-<td>pt-slave-restart</td>
-<td>监控 salve 错误，并尝试重启 salve</td>
+<td><strong>pt-slave-restart</strong></td>
+<td>监控 <code>salve</code> 错误，并尝试重启 <code>salve</code></td>
 </tr>
 <tr>
 <td>pt-stalk</td>
@@ -1296,24 +1855,24 @@
 <blockquote>
 <p>操作示例</p>
 </blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">pt-archiver --source h=10.138.228.231,P=3306,u=sre,p=&apos;xxx&apos;,D=matomo,t=matomo_log_link_visit_action --charset=utf8 --dest h=10.138.228.231,P=3306,u=sre,p=&apos;xxx&apos;,D=matomo,t=matomo_log_link_visit_action_history --where &quot;server_time &lt; &apos;2019-01-01&apos;&quot; --limit 1000 --commit-each --bulk-insert --no-version-check</span><br><span class="line"></span><br><span class="line"># h=10.138.228.231               -- 数据库实例地址</span><br><span class="line"># P=3306                         -- 数据库实例端口</span><br><span class="line"># u=sre                          -- 数据库实例用户</span><br><span class="line"># p=xxx                          -- 数据库实例用户密码</span><br><span class="line"># D=matomo                       -- 数据库实例数据库</span><br><span class="line"># t=matomo_log_link_visit_action -- 数据库实例表名称</span><br><span class="line"></span><br><span class="line"># --source                       -- 指定要被归档的数据源</span><br><span class="line"># --charset=utf8                 -- 使用的字符集，需与表字符集一致</span><br><span class="line"># --file                         -- 指定目标操作系统文件名</span><br><span class="line"># --dest                         -- 指定归档到的目标表</span><br><span class="line"># --where &quot;id &gt; 3008&quot;            -- 指定 where 过滤条件，过滤出要归档的数据</span><br><span class="line"># --limit 1000                   -- 每条语句读取和归档的数据行数，默认是 1</span><br><span class="line"># --commit-each                  -- 每次获取和归档数据后，commit提交</span><br><span class="line"># --no-version-check             -- 不做版本检查</span><br><span class="line"># --bulk-insert                  -- 批量插入数据，会自动启用 --bulk-delete --commit-each，每次插入行数通过--limit 选项指定</span><br><span class="line"># --statistics                   -- 显示 pt-archiver 本次操作的统计信息。</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">pt-archiver --source h=<span class="number">10.138</span>.<span class="number">228.231</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'xxx'</span>,D=matomo,t=matomo_log_link_visit_action --charset=utf8 --dest h=<span class="number">10.138</span>.<span class="number">228.231</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'xxx'</span>,D=matomo,t=matomo_log_link_visit_action_history --where <span class="string">"server_time &lt; '2019-01-01'"</span> --limit <span class="number">1000</span> --commit-each --bulk-insert --no-version-check</span><br><span class="line"></span><br><span class="line"><span class="comment"># h=10.138.228.231               -- 数据库实例地址</span></span><br><span class="line"><span class="comment"># P=3306                         -- 数据库实例端口</span></span><br><span class="line"><span class="comment"># u=sre                          -- 数据库实例用户</span></span><br><span class="line"><span class="comment"># p=xxx                          -- 数据库实例用户密码</span></span><br><span class="line"><span class="comment"># D=matomo                       -- 数据库实例数据库</span></span><br><span class="line"><span class="comment"># t=matomo_log_link_visit_action -- 数据库实例表名称</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --source                       -- 指定要被归档的数据源</span></span><br><span class="line"><span class="comment"># --charset=utf8                 -- 使用的字符集，需与表字符集一致</span></span><br><span class="line"><span class="comment"># --file                         -- 指定目标操作系统文件名</span></span><br><span class="line"><span class="comment"># --dest                         -- 指定归档到的目标表</span></span><br><span class="line"><span class="comment"># --where "id &gt; 3008"            -- 指定 where 过滤条件，过滤出要归档的数据</span></span><br><span class="line"><span class="comment"># --limit 1000                   -- 每条语句读取和归档的数据行数，默认是 1</span></span><br><span class="line"><span class="comment"># --commit-each                  -- 每次获取和归档数据后，commit提交</span></span><br><span class="line"><span class="comment"># --no-version-check             -- 不做版本检查</span></span><br><span class="line"><span class="comment"># --bulk-insert                  -- 批量插入数据，会自动启用 --bulk-delete --commit-each，每次插入行数通过--limit 选项指定</span></span><br><span class="line"><span class="comment"># --statistics                   -- 显示 pt-archiver 本次操作的统计信息。</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="pt-online-schema-change"><a href="#pt-online-schema-change" class="headerlink" title="pt-online-schema-change"></a>pt-online-schema-change</h3><p>提供在线修改表结构等功能，可以避免在修改表结构的过程中阻塞应用对表数据的访问。</p>
 <h3 id="pt-query-digest"><a href="#pt-query-digest" class="headerlink" title="pt-query-digest"></a>pt-query-digest</h3><p>提供慢日志分析功能，可以统计出查询执行时间、次数、占比等，并把分析结果输出到文件中，然后借助分析结果找出问题进行优化。</p>
 <blockquote>
 <p>直接分析慢查询日志</p>
 </blockquote>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">pt-query-digest</span>  <span class="string">slow.log</span> <span class="string">&gt; slow_report.log</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-query-digest  slow.log &gt; slow_report.log</span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p>分析最近12个小时内的查询</p>
 </blockquote>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">pt-query-digest</span> <span class="bullet">--since=12h</span>  <span class="string">slow.log</span> <span class="string">&gt; slow_report.log</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-query-digest --since=<span class="number">12</span>h  slow.log &gt; slow_report.log</span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p>分析最近1个月内的查询</p>
 </blockquote>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">pt-query-digest</span> <span class="string">dzspdb-slow.log</span> <span class="bullet">--since</span> <span class="string">'2019-06-08 10:00:00'</span> <span class="bullet">--until</span> <span class="string">'2019-07-08 10:00:00'</span> <span class="string">&gt; dzsp_slow_report.log</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-query-digest dzspdb-slow.log --since <span class="string">'2019-06-08 10:00:00'</span> --until <span class="string">'2019-07-08 10:00:00'</span> &gt; dzsp_slow_report.log</span><br></pre></td></tr></table></figure>
 
 
           
@@ -1433,7 +1992,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-08-28 21:41:49" itemprop="dateModified" datetime="2019-08-28T21:41:49+08:00">2019-08-28</time>
+                <time title="修改时间：2019-09-25 15:43:15" itemprop="dateModified" datetime="2019-09-25T15:43:15+08:00">2019-09-25</time>
               
             
           </span>
@@ -1487,11 +2046,11 @@
       
         
           
-            <h2 id="报名信息"><a href="#报名信息" class="headerlink" title="报名信息"></a>报名信息</h2><p><a href="https://ielts.etest.net.cn" target="_blank" rel="noopener">报名入口</a></p>
+            <h2 id="报名"><a href="#报名" class="headerlink" title="报名"></a>报名</h2><p><a href="https://ielts.etest.net.cn" target="_blank" rel="noopener">报名入口</a></p>
 <p>考试时间：2019年10月19日 <a href="https://ielts.etest.net.cn/showTestCenterInfo?id=5B19A0CFF31C65E2E0530746C80AB4DA" target="_blank" rel="noopener">青岛中国海洋大学继续教育学院</a></p>
 <p>考试费用：￥2020</p>
 <p>转考费用：￥420</p>
-<h2 id="备考资料"><a href="#备考资料" class="headerlink" title="备考资料"></a>备考资料</h2><p>《剑桥雅思官方真题》</p>
+<h2 id="资料"><a href="#资料" class="headerlink" title="资料"></a>资料</h2><p>《剑桥雅思官方真题》</p>
 <p>《剑桥雅思真题精讲》</p>
 <p>《7天搞定雅思高频核心词》</p>
 <p>《雅思词汇真经》</p>
@@ -2288,440 +2847,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/04/29/mysql-security/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/04/29/mysql-security/" class="post-title-link" itemprop="url">MySQL · 数据安全</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-04-29 23:14:11" itemprop="dateCreated datePublished" datetime="2019-04-29T23:14:11+08:00">2019-04-29</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-09-17 14:06:28" itemprop="dateModified" datetime="2019-09-17T14:06:28+08:00">2019-09-17</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>2018年3月，Facebook数据泄露事件，共享第三方剑桥分析公司，泄露5千万条</p>
-<p>2017年3月，58同城简历数据泄露事件，黑客，泄露数千份用户简历数据</p>
-<p>2016年10月，湖南某银行信息泄露，内部人员，50万余份公民个人征信报告</p>
-<p>2015年10月，网易邮箱数据泄露事件，黑客，泄露5亿条邮件信息</p>
-<p> …..</p>
-<p>从这些事件的分析来看，究其原因既有安全意识的薄弱，也有由于安全体系的老旧而导致的数据泄露。</p>
-<h2 id="安全风险"><a href="#安全风险" class="headerlink" title="安全风险"></a>安全风险</h2><p>管理层面</p>
-<p>主要表现为人员职责、工作流程架构有待完善，内部员工的日常操作有待规范，第三方维护人员的操作监控不足，致使安全事件发生时，无法追溯并定位真实的操作者。</p>
-<p>技术层面</p>
-<p>现有的数据库内部操作不透明，无法通过外部的任何安全工具（比如防火墙、白名单等）来阻止来自内部用户的恶意操作、滥用资源和泄露企业机密信息等行为。</p>
-<p>审计层面</p>
-<p>黑客攻击（<a href="http://www.cnnvd.org.cn" target="_blank" rel="noopener">CVE漏洞</a>、SQL注入、恶意操作、数据泄露、滥用资源）</p>
-<p>自然灾害（地震、海啸）</p>
-<p>内部隐患</p>
-<p>外部攻击（授权外包人员、监控内部人员）</p>
-<h2 id="安全策略"><a href="#安全策略" class="headerlink" title="安全策略"></a>安全策略</h2><p>操作系统级别安全配置</p>
-<p>文件系统权限安全配置</p>
-<p>MySQL基本安全配置</p>
-<p>MySQL 权限安全配置</p>
-<p>审计和日志安全配置</p>
-<p>身份认证安全配置</p>
-<p>网络安全配置</p>
-<p>复制数据传输中的安全配置</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/04/29/new-blog/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/04/29/new-blog/" class="post-title-link" itemprop="url">Github Page + Hexo + Next 搭建个人博客</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-04-29 13:56:06" itemprop="dateCreated datePublished" datetime="2019-04-29T13:56:06+08:00">2019-04-29</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-08-28 21:41:49" itemprop="dateModified" datetime="2019-08-28T21:41:49+08:00">2019-08-28</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/其他/" itemprop="url" rel="index"><span itemprop="name">其他</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="博客架构"><a href="#博客架构" class="headerlink" title="博客架构"></a>博客架构</h2><p><img src="http://ww4.sinaimg.cn/large/006tNc79ly1g5os777yb2j30m80dcaba.jpg" alt></p>
-<blockquote>
-<p><a href="https://pages.github.com/" target="_blank" rel="noopener">Github Page</a>：是 <a href="https://github.com/" target="_blank" rel="noopener">Github</a> 提供的一种免费的静态网页托管服务，可以用来托管博客、项目官网等静态网页。支持 <a href="http://www.jekyllrb.com/" target="_blank" rel="noopener">Jekyll</a>、<a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a>、<a href="https://hexo.io/zh-cn/" target="_blank" rel="noopener">Hexo</a> 等编译静态资源。</p>
-</blockquote>
-<blockquote>
-<p><a href="https://hexo.io/zh-cn/" target="_blank" rel="noopener">Hexo</a>：是基于 <a href="http://nodejs.cn/" target="_blank" rel="noopener">Node.js</a> 驱动的一款快速、简洁且高效的博客框架，有多个 <a href="https://hexo.io/themes/" target="_blank" rel="noopener">主题</a> 可选。通过 <a href="https://hexo.io/zh-cn/" target="_blank" rel="noopener">Hexo</a> 你可以轻松地使用 <a href="http://markdownpad.com/" target="_blank" rel="noopener">Markdown</a> 编写文章，除了 <a href="http://markdownpad.com/" target="_blank" rel="noopener">Markdown</a> 本身的语法之外，还可以使用 <a href="https://hexo.io/zh-cn/" target="_blank" rel="noopener">Hexo</a> 提供的 <a href="https://hexo.io/zh-cn/docs/tag-plugins.html" target="_blank" rel="noopener">标签插件</a> 来快速的插入特定形式的内容。</p>
-</blockquote>
-<blockquote>
-<p><a href="http://theme-next.iissnan.com" target="_blank" rel="noopener">Next</a>：是一款高质量的 <a href="https://hexo.io/zh-cn/" target="_blank" rel="noopener">Hexo</a> 主题。</p>
-</blockquote>
-<h2 id="搭建流程"><a href="#搭建流程" class="headerlink" title="搭建流程"></a>搭建流程</h2><h3 id="安装-Node-js"><a href="#安装-Node-js" class="headerlink" title="安装 Node.js"></a>安装 Node.js</h3><p>下载地址：<a href="https://nodejs.org/en/" target="_blank" rel="noopener">https://nodejs.org/en/</a></p>
-<p>注意：在安装时，勾选 <strong><u>Add to PATH</u></strong> 选项</p>
-<h3 id="安装-Git"><a href="#安装-Git" class="headerlink" title="安装 Git"></a>安装 Git</h3><p>下载地址：<a href="https://git-scm.com/" target="_blank" rel="noopener">https://git-scm.com/</a></p>
-<p>验证是否安装成功：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git version</span><br><span class="line">$ node -v</span><br><span class="line">$ npm -v</span><br></pre></td></tr></table></figure>
-
-<h3 id="安装-Hexo"><a href="#安装-Hexo" class="headerlink" title="安装 Hexo"></a>安装 Hexo</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ npm install -g hexo-cli</span><br><span class="line">$ hexo init blog</span><br><span class="line">$ <span class="built_in">cd</span> blog</span><br><span class="line">$ npm install</span><br></pre></td></tr></table></figure>
-
-<p>安装完成后，文件夹目录说明如下：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">.</span></span><br><span class="line"><span class="string">├──</span> <span class="string">_config.yml</span>            <span class="comment"># 站点配置文件 </span></span><br><span class="line"><span class="string">├──</span> <span class="string">package.json</span></span><br><span class="line"><span class="string">├──</span> <span class="string">scaffolds</span>              <span class="comment"># 模版文件夹</span></span><br><span class="line"><span class="string">├──</span> <span class="string">source</span>                 <span class="comment"># 资源文件夹</span></span><br><span class="line"><span class="string">|   ├── _drafts            # 草稿文件</span></span><br><span class="line"><span class="string">|   └── _posts             # *.md文件 </span></span><br><span class="line"><span class="string">└── themes                 # 主题文件夹</span></span><br></pre></td></tr></table></figure>
-
-<p>如果上面的命令都没报错的话，运行 <code>hexo s</code> 命令，在浏览器中输入 <code>http://localhost:4000</code> 可以看到 <code>Hello World</code>，说明安装成功了。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo s</span><br></pre></td></tr></table></figure>
-
-<p><code>hexo</code> 命令说明：</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate            <span class="comment"># 生成静态文件至public目录</span></span><br><span class="line">$ hexo deploy              <span class="comment"># 将.deploy目录部署到github</span></span><br><span class="line">$ hexo new <span class="string">"postName"</span>      <span class="comment"># 新建文章</span></span><br><span class="line">$ hexo new page <span class="string">"pageName"</span> <span class="comment"># 新建页面</span></span><br><span class="line">$ hexo server              <span class="comment"># 启动服务</span></span><br><span class="line">$ hexo clean               <span class="comment"># 清除部署緩存</span></span><br><span class="line">$ hexo g -d                <span class="comment"># 生成加部署</span></span><br><span class="line">$ hexo g -s                <span class="comment"># 生成加预览</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="主题-Next"><a href="#主题-Next" class="headerlink" title="主题 Next"></a>主题 Next</h3><blockquote>
-<p>站点配置文件：<code>E:\Rao&#39;s Blog\hexo\_config.yml</code></p>
-</blockquote>
-<blockquote>
-<p>主题配置文件：<code>E:\Rao&#39;s Blog\hexo\themes\next\_config.yml</code></p>
-</blockquote>
-<p>安装主题的方式非常简单，只需要将主题文件拷贝至站点目录的 <code>themes</code> 目录下， 然后修改下配置文件即可。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> hexo</span><br><span class="line">$ git <span class="built_in">clone</span> https://github.com/iissnan/hexo-theme-next themes/next</span><br></pre></td></tr></table></figure>
-
-<p>当 克隆/下载 完成后，打开 站点配置文件， 找到 <code>theme</code> 字段，并将其值更改为 <code>next</code>。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">theme:</span> <span class="string">next</span></span><br></pre></td></tr></table></figure>
-
-<p>最好使用 <code>hexo clean</code> 来清除 Hexo 的缓存，然后即可使用浏览器访问 <code>http://localhost:4000</code>，检查站点是否正确运行。</p>
-<p><img src="http://ww4.sinaimg.cn/large/006tNc79ly1g5osgyn3e9j30wc0h2405.jpg" alt></p>
-<p>至此，你本地的博客就已经搭建成功，也可以对主题进行 <a href="http://theme-next.iissnan.com/getting-started.html" target="_blank" rel="noopener">个性化设定</a>，接下来就是部署到 <a href="https://pages.github.com/" target="_blank" rel="noopener">Github Page</a> 了。</p>
-<h3 id="设置-Github-Page"><a href="#设置-Github-Page" class="headerlink" title="设置 Github Page"></a>设置 Github Page</h3><p>首先如果你还没有 Github 账号的先 <a href="https://github.com/" target="_blank" rel="noopener">注册</a> 一个，点击 <code>Start project</code> 或者下面的 <code>new repository</code> 创建一个新的仓库 <code>blog</code>，GitHub Pages 选择 <code>master</code> 分支，出现地址 <code>https://huiraoo.github.io/blog/</code> 就是你的个人博客。</p>
-<p><img src="http://ww1.sinaimg.cn/large/006tNc79ly1g5osf29m0aj30kc0ea3yx.jpg" alt></p>
-<h3 id="部署-Hexo-到-Github"><a href="#部署-Hexo-到-Github" class="headerlink" title="部署 Hexo 到 Github"></a>部署 Hexo 到 Github</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">配置 SSH key</span><br><span class="line">cat ~/.ssh/id_rsa.pub</span><br><span class="line">git config --global user.name <span class="string">"用户名"</span></span><br><span class="line">git config --global user.email <span class="string">"邮箱地址"</span></span><br><span class="line">ssh-keygen -t rsa -C <span class="string">'上面的邮箱'</span></span><br><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
-
-<p><img src="http://ww2.sinaimg.cn/large/006tNc79ly1g5osh133vgj30sb0c9wj3.jpg" alt></p>
-<p>修改站点配置文件，把仓库的 <code>git</code> 地址添加进去就行了</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Deployment</span></span><br><span class="line"><span class="comment">## Docs: https://hexo.io/docs/deployment.html</span></span><br><span class="line"><span class="attr">deploy:</span></span><br><span class="line"><span class="attr">  type:</span> <span class="string">git</span></span><br><span class="line"><span class="attr">  repository:</span> <span class="string">git@github.com:huiraoo/blog.git</span></span><br><span class="line"><span class="attr">  branch:</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
-
-<p>最后执行部署命令</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ hexo clean</span><br><span class="line">$ hexo g -d</span><br></pre></td></tr></table></figure>
-
-<p>图床 <a href="https://toolinbox.net/iPic/AddAliOSS.html" target="_blank" rel="noopener"><strong>阿里云OSS</strong></a></p>
-<h2 id="FA-amp-Q"><a href="#FA-amp-Q" class="headerlink" title="FA&amp;Q"></a>FA&amp;Q</h2><p><strong>问题描述</strong>：Hexo 主题无法加载到 Github Page，访问 <code>https://huiraoo.github.io/blog</code> 显示乱码</p>
-<p><strong>解决办法</strong>：修改站点配置文件，填写 <code>url</code> 和 <code>root</code></p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># URL</span></span><br><span class="line"><span class="comment">## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'</span></span><br><span class="line"><span class="attr">url:</span> <span class="attr">https://huiraoo.github.io/blog</span></span><br><span class="line"><span class="attr">root:</span> <span class="string">/blog/</span></span><br><span class="line"><span class="attr">permalink:</span> <span class="string">:year/:month/:day/:title/</span></span><br><span class="line"><span class="attr">permalink_defaults:</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>问题描述</strong>：文章插入图片，无法正常显示</p>
-<p><strong>解决办法</strong>：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">修改站点配置文件，post_asset_folder</span> <span class="string">置为</span> <span class="literal">true</span></span><br><span class="line"><span class="string">npm</span> <span class="string">install</span> <span class="string">hexo-asset-image</span> <span class="bullet">--save</span></span><br><span class="line"><span class="string">hexo</span> <span class="string">n</span> <span class="string">"new blog"</span></span><br><span class="line"><span class="string">将图片转移至同名文件夹内</span></span><br><span class="line"><span class="string">*.md</span> <span class="string">文档引入图片![github](new-blog/xx.jpg)</span></span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/5/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/5/">5</a><span class="page-number current">6</span>
+    <a class="extend prev" rel="prev" href="/blog/page/5/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/blog/page/7/">7</a><a class="extend next" rel="next" href="/blog/page/7/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -2765,7 +2895,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">60</span>
+                    <span class="site-state-item-count">62</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
