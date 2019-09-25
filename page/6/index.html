@@ -1642,7 +1642,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-09-25 17:26:17" itemprop="dateModified" datetime="2019-09-25T17:26:17+08:00">2019-09-25</time>
+                <time title="修改时间：2019-09-25 17:36:04" itemprop="dateModified" datetime="2019-09-25T17:36:04+08:00">2019-09-25</time>
               
             
           </span>
@@ -1764,7 +1764,7 @@
 </tr>
 <tr>
 <td>pt-kill</td>
-<td><code>kill</code> 掉符合条件的 <code>SQL</code></td>
+<td><code>kill</code> 掉符合条件的 <code>sql</code></td>
 </tr>
 <tr>
 <td>pt-mext</td>
@@ -1796,7 +1796,7 @@
 </tr>
 <tr>
 <td>pt-sift</td>
-<td>浏览由 pt-stalk 创建的文件</td>
+<td>浏览由 <code>pt-stalk</code> 创建的文件</td>
 </tr>
 <tr>
 <td>pt-slave-delay</td>
@@ -1843,36 +1843,28 @@
 <td>格式化执行计划</td>
 </tr>
 </tbody></table>
-<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><h3 id="pt-archiver"><a href="#pt-archiver" class="headerlink" title="pt-archiver"></a>pt-archiver</h3><h4 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h4><h4 id="参数介绍"><a href="#参数介绍" class="headerlink" title="参数介绍"></a>参数介绍</h4><h4 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h4><p>pt-archiver 是 Percona 官方提供的归档工具，用于归档大型表中的记录到另一个表或文件。</p>
-<blockquote>
-<p>功能描述</p>
-</blockquote>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><h3 id="pt-archiver"><a href="#pt-archiver" class="headerlink" title="pt-archiver"></a>pt-archiver</h3><p><strong>简介</strong>：<code>pt-archiver</code> 是 <code>Percona</code> 官方提供的归档工具，用于归档大型表中的记录到另一个表或文件。</p>
+<p><strong>功能</strong>：</p>
 <ul>
 <li>归档到操作系统文件</li>
 <li>归档到同实例不同库下的表（<strong>tips</strong>：归档操作前，目标表要存在）</li>
 <li>归档到不同实例下的表（<strong>tips</strong>：归档操作前，目标表要存在）</li>
 </ul>
-<blockquote>
-<p>操作示例</p>
-</blockquote>
+<p><strong>原理</strong></p>
+<p><strong>参数</strong></p>
+<p><strong>实战</strong></p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">pt-archiver --source h=<span class="number">10.138</span>.<span class="number">228.231</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'xxx'</span>,D=matomo,t=matomo_log_link_visit_action --charset=utf8 --dest h=<span class="number">10.138</span>.<span class="number">228.231</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'xxx'</span>,D=matomo,t=matomo_log_link_visit_action_history --where <span class="string">"server_time &lt; '2019-01-01'"</span> --limit <span class="number">1000</span> --commit-each --bulk-insert --no-version-check</span><br><span class="line"></span><br><span class="line"><span class="comment"># h=10.138.228.231               -- 数据库实例地址</span></span><br><span class="line"><span class="comment"># P=3306                         -- 数据库实例端口</span></span><br><span class="line"><span class="comment"># u=sre                          -- 数据库实例用户</span></span><br><span class="line"><span class="comment"># p=xxx                          -- 数据库实例用户密码</span></span><br><span class="line"><span class="comment"># D=matomo                       -- 数据库实例数据库</span></span><br><span class="line"><span class="comment"># t=matomo_log_link_visit_action -- 数据库实例表名称</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --source                       -- 指定要被归档的数据源</span></span><br><span class="line"><span class="comment"># --charset=utf8                 -- 使用的字符集，需与表字符集一致</span></span><br><span class="line"><span class="comment"># --file                         -- 指定目标操作系统文件名</span></span><br><span class="line"><span class="comment"># --dest                         -- 指定归档到的目标表</span></span><br><span class="line"><span class="comment"># --where "id &gt; 3008"            -- 指定 where 过滤条件，过滤出要归档的数据</span></span><br><span class="line"><span class="comment"># --limit 1000                   -- 每条语句读取和归档的数据行数，默认是 1</span></span><br><span class="line"><span class="comment"># --commit-each                  -- 每次获取和归档数据后，commit提交</span></span><br><span class="line"><span class="comment"># --no-version-check             -- 不做版本检查</span></span><br><span class="line"><span class="comment"># --bulk-insert                  -- 批量插入数据，会自动启用 --bulk-delete --commit-each，每次插入行数通过--limit 选项指定</span></span><br><span class="line"><span class="comment"># --statistics                   -- 显示 pt-archiver 本次操作的统计信息。</span></span><br></pre></td></tr></table></figure>
 
-<h3 id="pt-online-schema-change"><a href="#pt-online-schema-change" class="headerlink" title="pt-online-schema-change"></a>pt-online-schema-change</h3><p>提供在线修改表结构等功能，可以避免在修改表结构的过程中阻塞应用对表数据的访问。</p>
-<h3 id="pt-query-digest"><a href="#pt-query-digest" class="headerlink" title="pt-query-digest"></a>pt-query-digest</h3><p>提供慢日志分析功能，可以统计出查询执行时间、次数、占比等，并把分析结果输出到文件中，然后借助分析结果找出问题进行优化。</p>
-<blockquote>
-<p>直接分析慢查询日志</p>
-</blockquote>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-query-digest  slow.log &gt; slow_report.log</span><br></pre></td></tr></table></figure>
+<h3 id="pt-online-schema-change"><a href="#pt-online-schema-change" class="headerlink" title="pt-online-schema-change"></a>pt-online-schema-change</h3><p><strong>简介</strong>：提供在线修改表结构等功能，可以避免在修改表结构的过程中阻塞应用对表数据的访问。</p>
+<h3 id="pt-query-digest"><a href="#pt-query-digest" class="headerlink" title="pt-query-digest"></a>pt-query-digest</h3><p><strong>简介</strong>：提供慢日志分析功能，可以统计出查询执行时间、次数、占比等，并把分析结果输出到文件中，然后借助分析结果找出问题进行优化。</p>
+<p>①  分析慢查询日志</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pt-query-digest  slow.log &gt; slow_report.log</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>分析最近12个小时内的查询</p>
-</blockquote>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-query-digest --since=<span class="number">12</span>h  slow.log &gt; slow_report.log</span><br></pre></td></tr></table></figure>
+<p>②  分析最近12个小时内的查询</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pt-query-digest --since=<span class="number">12</span>h  slow.log &gt; slow_report.log</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>分析最近1个月内的查询</p>
-</blockquote>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-query-digest dzspdb-slow.log --since <span class="string">'2019-06-08 10:00:00'</span> --until <span class="string">'2019-07-08 10:00:00'</span> &gt; dzsp_slow_report.log</span><br></pre></td></tr></table></figure>
+<p>③  分析最近1个月内的查询</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pt-query-digest dzspdb-slow.log --since <span class="string">'2019-06-08 10:00:00'</span> --until <span class="string">'2019-07-08 10:00:00'</span> &gt; dzsp_slow_report.log</span><br></pre></td></tr></table></figure>
 
 
           
