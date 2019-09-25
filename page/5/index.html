@@ -1143,294 +1143,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/16/nginx/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/16/nginx/" class="post-title-link" itemprop="url">Nginx</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-16 18:11:56" itemprop="dateCreated datePublished" datetime="2019-07-16T18:11:56+08:00">2019-07-16</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-08-28 21:41:49" itemprop="dateModified" datetime="2019-08-28T21:41:49+08:00">2019-08-28</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p><a href="http://nginx.org/" target="_blank" rel="noopener"><strong>Nginx</strong></a>：是一款自由的、开源的、高性能的 HTTP 服务器和反向代理服务器，同时也是一个 IMAP、POP3、SMTP 代理服务器，它可以作为一个 HTTP 服务器进行网站的发布处理，另外也可以作为反向代理进行负载均衡的实现。</p>
-<p><strong>代理</strong>：代理就是一个代表、一个渠道。涉及到两个角色，一个是被代理角色，一个是目标角色，被代理角色通过这个代理访问目标角色完成一些任务的过程称为代理操作过程。如同生活中的专卖店，客人到 adidas 专卖店买了一双鞋，这个专卖店就是代理，被代理角色就是 adidas 厂家，目标角色就是用户。</p>
-<h3 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h3><p>在如今的网络环境下，我们如果由于技术需要要去访问国外的某些网站，此时你会发现位于国外的某网站我们通过浏览器是没有办法访问的，此时大家可能都会用一个操作翻墙进行访问，翻墙的方式主要是找到一个可以访问国外网站的代理服务器，我们将请求发送给代理服务器，代理服务器去访问国外的网站，然后将访问到的数据传递给我们，这种代理模式称为正向代理。</p>
-<p>正向代理最大的特点是客户端非常明确要访问的服务器地址，服务器只清楚请求来自哪个代理服务器，而不清楚来自哪个具体的客户端，正向代理模式屏蔽或者隐藏了真实客户端信息。</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133811.png" alt></p>
-<p>客户端必须设置正向代理服务器，当然前提是要知道正向代理服务器的 IP 地址，还有代理程序的端口。</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133807.png" alt></p>
-<p><strong>总结来说</strong>：正向代理，”它代理的是客户端，代客户端发出请求”，是一个位于客户端和原始服务器（origin server）之间的服务器，为了从原始服务器取得内容，客户端向代理发送一个请求并指定目标（原始服务器），然后代理向原始服务器转交请求并将获得的内容返回给客户端，客户端必须要进行一些特别的设置才能使用正向代理。</p>
-<p>正向代理的用途：</p>
-<ul>
-<li>访问原来无法访问的资源，如 Google</li>
-<li>可以做缓存，加速访问资源</li>
-<li>对客户端访问授权，上网进行认证</li>
-<li>代理可以记录用户访问记录（上网行为管理），对外隐藏用户信息</li>
-</ul>
-<h3 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h3><p>多个客户端给服务器发送的请求，Nginx 服务器接收到之后，按照一定的规则分发给了后端的业务处理服务器进行处理了。此时，请求的来源也就是客户端是明确的，但是请求具体由哪台服务器处理的并不明确了，Nginx 扮演的就是一个反向代理角色。客户端是无感知代理的存在的，反向代理对外都是透明的，访问者并不知道自己访问的是一个代理。因为客户端不需要任何配置就可以访问。</p>
-<p>反向代理，”它代理的是服务端，代服务端接收请求”，主要用于服务器集群分布式部署的情况下，反向代理隐藏了服务器的信息。</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133801.png" alt></p>
-<p>反向代理的作用：</p>
-<ul>
-<li>保证内网的安全，通常将反向代理作为公网访问地址，Web服务器是内网</li>
-<li>负载均衡，通过反向代理服务器来优化网站的负载</li>
-</ul>
-<p><strong>项目场景</strong>：通常情况下，我们在实际项目操作时，正向代理和反向代理很有可能会存在在一个应用场景中，正向代理代理客户端的请求去访问目标服务器，目标服务器是一个反向单利服务器，反向代理了多台真实的业务处理服务器。具体的拓扑图如下：</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133752.png" alt></p>
-<p>二者之间的区别：</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133744.png" alt></p>
-<p>在正向代理中，Proxy 和 Client 同属于一个 LAN（图中方框内），隐藏了客户端信息；</p>
-<p>在反向代理中，Proxy 和 Server 同属于一个LAN（图中方框内），隐藏了服务端信息；</p>
-<p>实际上，Proxy 在两种代理中做的事情都是替服务器代为收发请求和响应，不过从结构上看正好左右互换了一下，所以把后出现的那种代理方式称为反向代理了。</p>
-<h3 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h3><p>这里提到的客户端发送的、Nginx反向代理服务器接收到的请求数量，就是我们说的负载量。请求数量按照一定的规则进行分发到不同的服务器处理的规则，就是一种均衡规则。所以，将服务器接收到的请求按照规则分发的过程，称为负载均衡。</p>
-<p>负载均衡在实际项目操作过程中，有硬件负载均衡和软件负载均衡两种，硬件负载均衡也称为硬负载，如F5负载均衡，相对造价昂贵成本较高，但是数据的稳定性安全性等等有非常好的保障，如中国移动中国联通这样的公司才会选择硬负载进行操作；更多的公司考虑到成本原因，会选择使用软件负载均衡，软件负载均衡是利用现有的技术结合主机硬件实现的一种消息队列分发机制。</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133716.png" alt></p>
-<h3 id="几种-web-服务器对比"><a href="#几种-web-服务器对比" class="headerlink" title="几种 web 服务器对比"></a>几种 web 服务器对比</h3><table>
-<thead>
-<tr>
-<th><strong>对比项 \ 服务器</strong></th>
-<th><strong>Apache</strong></th>
-<th><strong>Nginx</strong></th>
-<th><strong>Lighttpd</strong></th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Proxy代理</td>
-<td>非常好</td>
-<td>非常好</td>
-<td>一般</td>
-</tr>
-<tr>
-<td>Rewriter</td>
-<td>好</td>
-<td>非常好</td>
-<td>一般</td>
-</tr>
-<tr>
-<td>Fcgi</td>
-<td>不好</td>
-<td>好</td>
-<td>非常好</td>
-</tr>
-<tr>
-<td>热部署</td>
-<td>不支持</td>
-<td>支持</td>
-<td>不支持</td>
-</tr>
-<tr>
-<td>系统压力</td>
-<td>很大</td>
-<td>很小</td>
-<td>比较小</td>
-</tr>
-<tr>
-<td>稳定性</td>
-<td>好</td>
-<td>非常好</td>
-<td>不好</td>
-</tr>
-<tr>
-<td>安全性</td>
-<td>好</td>
-<td>一般</td>
-<td>一般</td>
-</tr>
-<tr>
-<td>静态文件处理</td>
-<td>一般</td>
-<td>非常好</td>
-<td>好</td>
-</tr>
-<tr>
-<td>反向代理</td>
-<td>一般</td>
-<td>非常好</td>
-<td>一般</td>
-</tr>
-</tbody></table>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><blockquote>
-<p>yum方式安装</p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm</span><br><span class="line">yum install -y nginx</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>安装路径</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">whereis nginx</span><br><span class="line">nginx: /usr/sbin/nginx /usr/lib64/nginx /etc/nginx /usr/share/nginx /usr/share/man/man8/nginx.8.gz</span><br><span class="line"></span><br><span class="line">(1) Nginx配置路径：/etc/nginx/nginx.conf</span><br><span class="line">(2) PID目录：/var/run/nginx.pid</span><br><span class="line">(3) 错误日志：/var/log/nginx/error.log</span><br><span class="line">(4) 访问日志：/var/log/nginx/access.log</span><br><span class="line">(5) 默认站点目录：/usr/share/nginx/html</span><br></pre></td></tr></table></figure>
-
-<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">        listen       80;</span><br><span class="line">        server_name  zentao.smocer.top;</span><br><span class="line"></span><br><span class="line">        access_log  /var/log/nginx/zentao.access.log;</span><br><span class="line"></span><br><span class="line">        location / &#123;</span><br><span class="line">          try_files /_not_exists_ @backend;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        location @backend &#123;</span><br><span class="line">           proxy_set_header X-Forwarded-For $remote_addr;</span><br><span class="line">           proxy_set_header Host            $http_host;</span><br><span class="line">           proxy_set_header X-Forwarded-Proto $scheme;</span><br><span class="line">           </span><br><span class="line">        proxy_pass http://10.133.0.53:8080;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><blockquote>
-<p>启动</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>测试 Nginx 配置</p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -t</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>重启</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -s reload</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>查询进程</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef | grep nginx</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>停止服务</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -s stop</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/16/Nginx/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3026,11 +2738,242 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/10/Front-Learning/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/10/Front-Learning/" class="post-title-link" itemprop="url">前端学习笔记</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-10 11:22:20" itemprop="dateCreated datePublished" datetime="2019-07-10T11:22:20+08:00">2019-07-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-08-28 21:41:49" itemprop="dateModified" datetime="2019-08-28T21:41:49+08:00">2019-08-28</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/其他/" itemprop="url" rel="index"><span itemprop="name">其他</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="前端学习路径"><a href="#前端学习路径" class="headerlink" title="前端学习路径"></a>前端学习路径</h2><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134136.png" alt="前端技能图谱"></p>
+<h2 id="如何搭建-一个-vue-项目？"><a href="#如何搭建-一个-vue-项目？" class="headerlink" title="如何搭建 一个 vue 项目？"></a>如何搭建 一个 vue 项目？</h2><h3 id="安装-node-环境"><a href="#安装-node-环境" class="headerlink" title="安装 node 环境"></a>安装 node 环境</h3><blockquote>
+<p>下载 <a href="http://nodejs.cn/download/" target="_blank" rel="noopener">Node.js</a></p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> node -v</span><br><span class="line">v10.15.3</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span> npm -v</span><br><span class="line">6.10.0</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>安装淘宝镜像，提高效率</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> npm install -g cnpm --registry=https://registry.npm.taobao.org</span><br><span class="line">C:\Users\01510886\AppData\Roaming\npm\cnpm -&gt; C:\Users\01510886\AppData\Roaming\npm\node_modules\cnpm\bin\cnpm</span><br><span class="line">+cnpm@6.1.0</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> cnpm -v</span><br><span class="line">cnpm@6.1.0 (C:\Users\01510886\AppData\Roaming\npm\node_modules\cnpm\lib\parse_argv.js)</span><br><span class="line">npm@6.10.0 (C:\Users\01510886\AppData\Roaming\npm\node_modules\cnpm\node_modules\npm\lib\npm.js)</span><br><span class="line">node@10.15.3 (D:\software\nodejs\node.exe)</span><br><span class="line">npminstall@3.22.1 (C:\Users\01510886\AppData\Roaming\npm\node_modules\cnpm\node_modules\npminstall\lib\index.js)</span><br><span class="line">prefix=C:\Users\01510886\AppData\Roaming\npm</span><br><span class="line">win32 x64 6.1.7601</span><br><span class="line">registry=https://r.npm.taobao.org</span><br></pre></td></tr></table></figure>
+
+<h3 id="搭建-vue-项目环境"><a href="#搭建-vue-项目环境" class="headerlink" title="搭建 vue 项目环境"></a>搭建 vue 项目环境</h3><blockquote>
+<p>安装 vue-cli</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> npm install --global vue-cli</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span> vue list</span><br><span class="line">  Available official templates:</span><br><span class="line">  ★  browserify - A full-featured Browserify + vueify setup with hot-reload, linting &amp; unit testing.</span><br><span class="line">  ★  browserify-simple - A simple Browserify + vueify setup for quick prototyping.</span><br><span class="line">  ★  pwa - PWA template for vue-cli based on the webpack template</span><br><span class="line">  ★  simple - The simplest possible Vue setup in a single HTML file</span><br><span class="line">  ★  webpack - A full-featured Webpack + vue-loader setup with hot reload, linting, testing &amp; css extraction.</span><br><span class="line">  ★  webpack-simple - A simple Webpack + vue-loader setup for quick prototyping.</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>创建一个基于 webpack 模板的新项目</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> vue init webpack vue-test</span><br><span class="line"></span><br><span class="line">? Project name (vue-test)</span><br><span class="line">? Project name vue-test</span><br><span class="line">? Project description (A Vue.js project)</span><br><span class="line">? Project description A Vue.js project</span><br><span class="line">? Author (raohui &lt;raohui@haier.com&gt;)</span><br><span class="line">? Author raohui &lt;raohui@haier.com&gt;</span><br><span class="line">? Vue build standalone</span><br><span class="line">? Install vue-router? (Y/n) Y</span><br><span class="line">? Install vue-router? Yes</span><br><span class="line">? Use ESLint to lint your code? (Y/n) n</span><br><span class="line">? Use ESLint to lint your code? No</span><br><span class="line">? Set up unit tests (Y/n) n</span><br><span class="line">? Set up unit tests No</span><br><span class="line">? Setup e2e tests with Nightwatch? (Y/n) n</span><br><span class="line">? Setup e2e tests with Nightwatch? No</span><br><span class="line">? Should we run `npm install` for you after the project has been created? (recom</span><br><span class="line">? Should we run `npm install` for you after the project has been created? (recom</span><br><span class="line">mended) npm</span><br><span class="line"></span><br><span class="line">   vue-cli · Generated "vue-test".</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> Installing project dependencies ...</span><br><span class="line"><span class="meta">#</span> ========================</span><br><span class="line"></span><br><span class="line">npm WARN deprecated extract-text-webpack-plugin@3.0.2: Deprecated. Please use https://github.com/webpack-contrib/mini-css-extract-plugin</span><br><span class="line">npm WARN deprecated browserslist@2.11.3: Browserslist 2 could fail on reading Browserslist &gt;3.0 config used in other tools.</span><br><span class="line">npm WARN deprecated bfj-node4@5.3.1: Switch to the `bfj` package for fixes and new features!</span><br><span class="line">npm WARN deprecated flatten@1.0.2: I wrote this module a very long time ago; you should use something else.</span><br><span class="line">npm WARN deprecated browserslist@1.7.7: Browserslist 2 could fail on reading Browserslist &gt;3.0 config used in other tools.</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;</span> core-js@2.6.9 postinstall D:\vue\vue-test\node_modules\core-js</span><br><span class="line"><span class="meta">&gt;</span> node scripts/postinstall || echo "ignore"</span><br><span class="line"></span><br><span class="line">Thank you for using core-js ( https://github.com/zloirock/core-js ) for polyfilling JavaScript standard library!</span><br><span class="line"></span><br><span class="line">The project needs your help! Please consider supporting of core-js on Open Collective or Patreon:</span><br><span class="line"><span class="meta">&gt;</span> https://opencollective.com/core-js</span><br><span class="line"><span class="meta">&gt;</span> https://www.patreon.com/zloirock</span><br><span class="line"></span><br><span class="line">Also, the author of core-js ( https://github.com/zloirock ) is looking for a good job -)</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;</span> uglifyjs-webpack-plugin@0.4.6 postinstall D:\vue\vue-test\node_modules\webpack\node_modules\uglifyjs-webpack-plugin</span><br><span class="line"><span class="meta">&gt;</span> node lib/post_install.js</span><br><span class="line"></span><br><span class="line">npm notice created a lockfile as package-lock.json. You should commit this file.</span><br><span class="line">npm WARN ajv-keywords@3.4.1 requires a peer of ajv@^6.9.1 but none is installed. You must install peer dependencies yourself.</span><br><span class="line">npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@1.2.9 (node_modules\fsevents):</span><br><span class="line">npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform for fsevents@1.2.9: wanted &#123;"os":"darwin","arch":"any"&#125; (current: &#123;"os":"win32","arch":"x64"&#125;)</span><br><span class="line"></span><br><span class="line">added 1208 packages from 669 contributors and audited 11766 packages in 196.113s</span><br><span class="line">found 10 vulnerabilities (6 moderate, 4 high)</span><br><span class="line">  run `npm audit fix` to fix them, or `npm audit` for details</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span> Project initialization finished!</span><br><span class="line"><span class="meta">#</span> ========================</span><br><span class="line"></span><br><span class="line">To get started:</span><br><span class="line"></span><br><span class="line">  cd vue-test</span><br><span class="line">  npm run dev</span><br><span class="line"></span><br><span class="line">Documentation can be found at https://vuejs-templates.github.io/webpack</span><br><span class="line"></span><br><span class="line">tips:</span><br><span class="line">npm install -g npm （升级npm至最新版本）</span><br><span class="line">npm cache clean --force  (出现报错可清除缓存)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>启动项目</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> cd vue-test</span><br><span class="line"><span class="meta">$</span> npm run dev</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;</span> vue-test@1.0.0 dev D:\vue\vue-test</span><br><span class="line"><span class="meta">&gt;</span> webpack-dev-server --inline --progress --config build/webpack.dev.conf.js</span><br><span class="line"></span><br><span class="line"><span class="meta"> 13%</span> building modules 26/33 modules 7 active ...ue-test\src\components\HelloWorld.vue&#123; parser: "babylon" &#125; is deprecated; we now treat it as &#123; parser: "babel" &#125;.</span><br><span class="line"><span class="meta"> 95%</span> emitting DONE  Compiled successfully in 11954ms14:06:01</span><br><span class="line"></span><br><span class="line"> I  Your application is running here: http://localhost:8080</span><br></pre></td></tr></table></figure>
+
+<h3 id="vue-项目目录解析"><a href="#vue-项目目录解析" class="headerlink" title="vue 项目目录解析"></a>vue 项目目录解析</h3><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134137.png" alt="vue项目目录"></p>
+<p><strong>build</strong>：构建脚本目录</p>
+<p><strong>config</strong>：项目配置目录</p>
+<p><strong>node_modules</strong>：npm 加载的项目依赖目录</p>
+<p><strong>src</strong>：开发目录，基本上要做的事情都集中在这个目录，里面包含几个目录和文件：</p>
+<ul>
+<li>assets：资源目录，放置一些图片或者公共 js、公共 css，这里的资源会被 webpack 构建</li>
+<li>components：组件目录，我们写的组件就放在这个目录里面</li>
+<li>router：前端路由，我们需要配置的路由路径写在 index.js 里面</li>
+<li>App.vue：根组件</li>
+<li>main.js：入口 js 文件</li>
+</ul>
+<p><strong>static</strong>：静态资源目录，如图片、字体等，不会被 webpack 构建</p>
+<p><strong>index.html</strong>：首页入口文件，可以添加一些 meta 信息等</p>
+<p><strong>package.json</strong>：npm 包配置文件，定义了项目的 npm 脚本，依赖包等信息</p>
+<h3 id="开发-Frist-vue-项目"><a href="#开发-Frist-vue-项目" class="headerlink" title="开发 Frist.vue 项目"></a>开发 Frist.vue 项目</h3><blockquote>
+<p>1）components 目录下新建一个 views 目录，并新建组件 First.vue</p>
+</blockquote>
+<blockquote>
+<p>2）router 目录下的 index.js 配置路由路径</p>
+</blockquote>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Vue <span class="keyword">from</span> <span class="string">'vue'</span></span><br><span class="line"><span class="keyword">import</span> Router <span class="keyword">from</span> <span class="string">'vue-router'</span></span><br><span class="line"><span class="keyword">import</span> HelloWorld <span class="keyword">from</span> <span class="string">'@/components/HelloWorld'</span></span><br><span class="line"><span class="keyword">import</span> First <span class="keyword">from</span> <span class="string">'@/components/views/First'</span></span><br><span class="line"></span><br><span class="line">Vue.use(Router)</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">new</span> Router(&#123;</span><br><span class="line"></span><br><span class="line">  routes: [</span><br><span class="line">    &#123;</span><br><span class="line">      path: <span class="string">'/'</span>,</span><br><span class="line">      name: <span class="string">'HelloWorld'</span>,</span><br><span class="line">      component: HelloWorld</span><br><span class="line">    &#125;,&#123;</span><br><span class="line">      path: <span class="string">'/first'</span>,</span><br><span class="line">      name: <span class="string">'First'</span>,</span><br><span class="line">      component: First</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>3）First.vue 文件 template 写 html，script 写 js，style 写 css</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div class=&quot;first-app&quot;&gt;</span><br><span class="line">        &#123;&#123;msg&#125;&#125;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">export default &#123;</span><br><span class="line">    name: &quot;First&quot;,</span><br><span class="line">    data() &#123;</span><br><span class="line">        return &#123;</span><br><span class="line">            msg: &quot;Welcome to FirstApp&quot;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">&lt;style&gt;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>4）<a href="http://localhost:8080/#/first，查看页面效果" target="_blank" rel="noopener">http://localhost:8080/#/first，查看页面效果</a></p>
+</blockquote>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/4/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/blog/page/6/">6</a><a class="page-number" href="/blog/page/7/">7</a><a class="extend next" rel="next" href="/blog/page/6/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/page/4/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/blog/page/6/">6</a><a class="extend next" rel="next" href="/blog/page/6/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -3074,7 +3017,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">61</span>
+                    <span class="site-state-item-count">60</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
