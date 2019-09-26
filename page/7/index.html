@@ -323,6 +323,279 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/06/12/mysql-pmm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/06/12/mysql-pmm/" class="post-title-link" itemprop="url">MySQL · 监控告警 · PMM</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-12 15:06:22" itemprop="dateCreated datePublished" datetime="2019-06-12T15:06:22+08:00">2019-06-12</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-09-25 15:18:23" itemprop="dateModified" datetime="2019-09-25T15:18:23+08:00">2019-09-25</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>Percona Monitoring and Management (PMM)</strong>：是一款 <code>Percona</code> 发布的用于管理和监控 <code>Linux</code>、<code>MySQL</code>、<code>MongoDB</code>、<code>PostgreSQL</code>、<code>ProxySQL</code>  的开源平台，通过 <code>PMM</code> 客户端收集到的监控数据，通过第三方软件 <code>Grafana</code> 展示出来。</p>
+<blockquote>
+<p><strong>PMM功能</strong></p>
+</blockquote>
+<ul>
+<li>支持对主机的硬盘、网络、CPU、内存的监控。</li>
+<li>支持对 <code>MyISAM</code>、<code>InnoDB</code>、<code>TokuDB</code> 和 <code>PXC/Glarera</code> 的监控。</li>
+<li>支持 <code>Query Analytics</code> 的功能，可以检视执行了哪些 <code>SQL</code> 指令，并对执行性能较差的 <code>SQL</code> 进行优化。</li>
+<li>支持了 <code>MySQL</code> 复制拓扑图结构构造。</li>
+</ul>
+<blockquote>
+<p>官网 <a href="http://pmmdemo.percona.com" target="_blank" rel="noopener"><strong>Demo</strong></a> </p>
+</blockquote>
+<h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-070801.jpg" alt="PMM架构"></p>
+<h3 id="PMM-Client"><a href="#PMM-Client" class="headerlink" title="PMM Client"></a>PMM Client</h3><p><strong>pmm-mysql-queries-0</strong>：是一个管理 <code>qan</code> 代理的服务，它从 <code>MySQL</code> 收集性能数据，然后通过 <code>QAN API</code> 发送到 <code>PMM Server</code>。</p>
+<p><strong>pmm-mongodb-queries-0</strong>：是一个管理 <code>qan</code> 代理的服务，它从 <code>mongodb</code> 收集性能数据，然后通过 <code>QAN API</code> 发送到 <code>PMM Server</code>。</p>
+<p><a href="https://github.com/percona/pmm-admin" target="_blank" rel="noopener"><strong>pmm-admin</strong></a>：用于管理 <code>PMM Client</code> 的命令行工具，例如：添加、删除要监视的数据库实例。</p>
+<p><a href="https://github.com/prometheus/node_exporter" target="_blank" rel="noopener"><strong>node_exporter</strong></a>：采集主机监控指标。</p>
+<p><a href="https://github.com/prometheus/mysqld_exporter" target="_blank" rel="noopener"><strong>mysqld_exporter</strong></a>：采集 <code>MySQL</code> 监控指标。</p>
+<p><a href="https://github.com/percona/mongodb_exporter" target="_blank" rel="noopener"><strong>mongodb_exporter</strong></a>：采集 <code>MongoDB</code> 监控指标。</p>
+<p><a href="https://github.com/percona/proxysql_exporter" target="_blank" rel="noopener"><strong>proxysql_exporter</strong></a>：采集 <code>ProxySQL</code> 监控指标。</p>
+<h3 id="PMM-Server"><a href="#PMM-Server" class="headerlink" title="PMM Server"></a>PMM Server</h3><p><strong>Query Analytics（QAN）</strong>：主要用来搜集指令并作性能分析。</p>
+<ul>
+<li><strong>QAN API</strong>：作为后端储存和读取 <code>Query</code> 资料用。</li>
+<li><strong>QAN APP</strong>：提供图形化分析界面。</li>
+</ul>
+<p><strong>Metrics Monitor（MM）</strong>：主要提供 <code>MySQL</code> 和 <code>MongoDB</code> 历史监控信息。组件说明如下：</p>
+<ul>
+<li><a href="https://prometheus.io/" target="_blank" rel="noopener"><strong>Prometheus</strong></a>：一个开源的服务监控系统和时间序列数据库，它连接到 <code>PMM Client</code> 上的 <code>exporter</code> 聚集的监控数据。</li>
+<li><a href="https://www.consul.io/" target="_blank" rel="noopener"><strong>Consul</strong></a>：提供 <code>API</code> 让 <code>PMM Client</code> 可以远端替 <code>Prometheus</code> 新增、移除 <code>Hosts</code>，同时它也储存了监控的<code>metadata</code>。</li>
+<li><a href="http://grafana.org/" target="_blank" rel="noopener"><strong>Grafana</strong></a>： 这是一个第三方 <code>Dashboard</code> 和图形构建器，用于可视化 <code>Prometheus</code> 中聚合的数据，以 <code>Web</code> 方式呈现。</li>
+<li><a href="https://github.com/percona/grafana-dashboards" target="_blank" rel="noopener"><strong>Percona Dashboards</strong></a>：是由 <code>Percona</code> 开发的一组用于 <code>Grafana</code> 的仪表板。上述的 <code>Web</code> 页面都能从 <code>PMM Landing Page</code>直接连接。</li>
+</ul>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><h3 id="PMM-Server-1"><a href="#PMM-Server-1" class="headerlink" title="PMM Server"></a>PMM Server</h3><p>（1）<strong>安装 docker</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ yum -y install docker</span><br><span class="line"></span><br><span class="line"><span class="comment"># 卸载 docker</span></span><br><span class="line">$ yum remove docker</span><br></pre></td></tr></table></figure>
+
+<p>（2）<strong>运行 docker</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl start docker</span><br><span class="line">$ systemctl enable docker</span><br><span class="line">$ systemctl stop docker</span><br></pre></td></tr></table></figure>
+
+<p>（3）<strong>下载容器镜像</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker pull percona/pmm-server:latest</span><br></pre></td></tr></table></figure>
+
+<p>（4）<strong>创建数据卷容器</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ docker create \</span><br><span class="line">-v /opt/prometheus/<span class="keyword">data</span> \</span><br><span class="line">-v /opt/consul-data \</span><br><span class="line">-v /var/lib/mysql \</span><br><span class="line">-v /var/lib/grafana \</span><br><span class="line">--name pmm-data \</span><br><span class="line">percona/pmm-server:latest /bin/true</span><br></pre></td></tr></table></figure>
+
+<p>（5）<strong>运行 PMM Server</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ docker run -d \</span><br><span class="line">-p <span class="number">8090</span>:<span class="number">80</span> \</span><br><span class="line">--volumes-from pmm-data \</span><br><span class="line">--name pmm-server \</span><br><span class="line">--restart always \</span><br><span class="line">percona/pmm-server:latest</span><br></pre></td></tr></table></figure>
+
+<p>（6）<strong>验证</strong>，通过 <a href="http://pmm.ilearning.fun" target="_blank" rel="noopener"><strong>登录</strong></a> 查看是否正常显示，也可以通过如下方式：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ curl http://<span class="number">10.133</span>.<span class="number">0.53</span>/ping</span><br><span class="line">&#123;<span class="string">'version'</span>: <span class="string">'1.8.0'</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其他命令：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ docker exec -it <span class="string">'xx'</span> /bin/bash</span><br><span class="line">$ docker ps -a</span><br><span class="line">$ docker stop pmm-server &amp;&amp; docker rm pmm-server (停止 pmm-server)</span><br></pre></td></tr></table></figure>
+
+<h3 id="PMM-Client-1"><a href="#PMM-Client-1" class="headerlink" title="PMM Client"></a>PMM Client</h3><p>1）确保 <code>PMM Server</code> 主机可访问</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ping <span class="number">10.133</span>.<span class="number">0.52</span></span><br></pre></td></tr></table></figure>
+
+<p>2）安装 <code>Client</code> 包</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ yum install -y https://repo.percona.com/yum/percona-release-latest.noarch.rpm</span><br><span class="line">$ yum install -y pmm-client</span><br><span class="line"></span><br><span class="line">$ scp pmm-client-<span class="number">1.17</span>.<span class="number">1</span>-<span class="number">1</span>.el7.x86_64.rpm haieradmin@<span class="number">10.133</span>.<span class="number">0.52</span>:/tmp</span><br><span class="line">$ wget http://<span class="number">10.190</span>.<span class="number">179.84</span>:<span class="number">8085</span>/pmm-client-<span class="number">1.17</span>.<span class="number">1</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br><span class="line">$ rpm -ivh pmm-client-<span class="number">1.17</span>.<span class="number">1</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br><span class="line"></span><br><span class="line"><span class="comment"># 卸载 pmm-client</span></span><br><span class="line">$ yum remove pmm-client</span><br></pre></td></tr></table></figure>
+
+<p>3）连接 <code>PMM Client</code> 到 <code>PMM Server</code></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ pmm-admin config --server <span class="number">10.133</span>.<span class="number">0.52</span></span><br><span class="line">OK, PMM server is alive.</span><br><span class="line">PMM Server      | <span class="number">10.133</span>.<span class="number">0.52</span> </span><br><span class="line">Client Name     | cmp15</span><br><span class="line">Client Address  | <span class="number">10.138</span>.<span class="number">228.236</span></span><br><span class="line"></span><br><span class="line">$ pmm-admin config --server <span class="number">10.133</span>.<span class="number">0.52</span>:<span class="number">8080</span> （适用于非<span class="number">80</span>端口）</span><br></pre></td></tr></table></figure>
+
+<h2 id="监控"><a href="#监控" class="headerlink" title="监控"></a>监控</h2><h3 id="主机"><a href="#主机" class="headerlink" title="主机"></a>主机</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加监控</span></span><br><span class="line">$ pmm-admin add linux:metrics</span><br><span class="line"></span><br><span class="line"><span class="comment"># 取消监控</span></span><br><span class="line">$ pmm-admin remove linux:metrics</span><br></pre></td></tr></table></figure>
+
+<h3 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加监控</span></span><br><span class="line">$ pmm-admin add mysql --socket /<span class="keyword">data</span>/mysql3306/mysql.sock --user root --password Haier@<span class="number">123</span></span><br><span class="line">$ pmm-admin list</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">$ wget http://<span class="number">10.190</span>.<span class="number">179.84</span>:<span class="number">8085</span>/pmm-client-<span class="number">1.17</span>.<span class="number">1</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br><span class="line">$ rpm -ivh pmm-client-<span class="number">1.17</span>.<span class="number">1</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br><span class="line"></span><br><span class="line">$ pmm-admin config --server <span class="number">10.133</span>.<span class="number">0.52</span>:<span class="number">8080</span></span><br><span class="line">OK, PMM server is alive.</span><br><span class="line">PMM Server      | <span class="number">10.133</span>.<span class="number">0.52</span>:<span class="number">8080</span> </span><br><span class="line">Client Name     | GPCMS-DB-P</span><br><span class="line">Client Address  | <span class="number">10.133</span>.<span class="number">7.19</span></span><br><span class="line"></span><br><span class="line">$ pmm-admin add linux:metrics</span><br><span class="line">OK, now monitoring this system.</span><br><span class="line"></span><br><span class="line">$ pmm-admin add mysql --user hdm --password Hdm@<span class="number">123</span>!</span><br><span class="line">[linux:metrics] OK, already monitoring this system.</span><br><span class="line">[mysql:metrics] OK, now monitoring MySQL metrics using DSN hdm:***@unix(/<span class="keyword">data</span>/mysql3306/mysql.sock)</span><br><span class="line">[mysql:queries] OK, now monitoring MySQL queries from slowlog using DSN hdm:***@unix(/<span class="keyword">data</span>/mysql3306/mysql.sock)</span><br><span class="line"></span><br><span class="line">$ pmm-admin check-network</span><br><span class="line">PMM Network Status</span><br><span class="line"></span><br><span class="line">Server Address | <span class="number">10.133</span>.<span class="number">0.52</span>:<span class="number">8080</span></span><br><span class="line">Client Address | <span class="number">10.133</span>.<span class="number">7.19</span> </span><br><span class="line"></span><br><span class="line">* System Time</span><br><span class="line">NTP Server (<span class="number">0</span>.pool.ntp.org)         | <span class="number">2019</span>-<span class="number">07</span>-<span class="number">26</span> <span class="number">10</span>:<span class="number">18</span>:<span class="number">20</span> +<span class="number">0000</span> UTC</span><br><span class="line">PMM Server                          | <span class="number">2019</span>-<span class="number">07</span>-<span class="number">26</span> <span class="number">10</span>:<span class="number">18</span>:<span class="number">20</span> +<span class="number">0000</span> GMT</span><br><span class="line">PMM Client                          | <span class="number">2019</span>-<span class="number">07</span>-<span class="number">26</span> <span class="number">18</span>:<span class="number">18</span>:<span class="number">20</span> +<span class="number">0800</span> CST</span><br><span class="line">PMM Server Time Drift               | OK</span><br><span class="line">PMM Client Time Drift               | OK</span><br><span class="line">PMM Client to PMM Server Time Drift | OK</span><br><span class="line"></span><br><span class="line">* Connection: Client --&gt; Server</span><br><span class="line">-------------------- -------      </span><br><span class="line">SERVER SERVICE       STATUS       </span><br><span class="line">-------------------- -------      </span><br><span class="line">Consul API           OK</span><br><span class="line">Prometheus API       OK</span><br><span class="line">Query Analytics API  OK</span><br><span class="line"></span><br><span class="line">Connection duration | <span class="number">702.217</span>µs</span><br><span class="line">Request duration    | <span class="number">4.66389</span>ms</span><br><span class="line">Full round trip     | <span class="number">5.366107</span>ms</span><br><span class="line"></span><br><span class="line">* Connection: Client &lt;-- Server</span><br><span class="line">-------------- ----------- ------------------ ------- ---------- ---------</span><br><span class="line">SERVICE TYPE   NAME        REMOTE ENDPOINT    STATUS  HTTPS/TLS  PASSWORD </span><br><span class="line">-------------- ----------- ------------------ ------- ---------- ---------</span><br><span class="line">linux:metrics  GPCMS-DB-P  <span class="number">10.133</span>.<span class="number">7.19</span>:<span class="number">42000</span>  OK      YES        -        </span><br><span class="line">mysql:metrics  GPCMS-DB-P  <span class="number">10.133</span>.<span class="number">7.19</span>:<span class="number">42002</span>  OK      YES        -</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开启防火墙端口</span></span><br><span class="line">firewall-cmd --zone=public --add-port=<span class="number">42000</span>/tcp --permanent</span><br><span class="line">firewall-cmd --zone=public --add-port=<span class="number">42002</span>/tcp --permanent</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 更改存储类型为MySQL</span></span><br><span class="line">docker exec -i -t pmm-server /bin/bash</span><br><span class="line">vi /etc/grafana/grafana.ini</span><br><span class="line"></span><br><span class="line">查/sqlite改为MYSQL存储</span><br><span class="line">type=mysql</span><br><span class="line">host=<span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">3306</span></span><br><span class="line">name=grafana</span><br><span class="line">user=root</span><br><span class="line">password =</span><br></pre></td></tr></table></figure>
+
+<p>在容器进入 mysql 客户端,创建数据库 grafana</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ create database grafana;</span><br><span class="line">$ docker restart pmm-server</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">$ pmm-admin --help</span><br><span class="line">Usage:</span><br><span class="line">pmm-admin [flags]</span><br><span class="line">pmm-admin [command]</span><br><span class="line">Available Commands:</span><br><span class="line">config         Configure PMM Client. <span class="comment"># 配置PMM客户端</span></span><br><span class="line">add            Add service to monitoring. <span class="comment"># 增加监控</span></span><br><span class="line">remove         Remove service from monitoring. <span class="comment"># 删除监控服务</span></span><br><span class="line">list           List monitoring services <span class="keyword">for</span> this system. <span class="comment"># 列出监控服务</span></span><br><span class="line">info           Display PMM Client information (works offline). <span class="comment"># 打印PMM客户端信息</span></span><br><span class="line">check-network  Check network connectivity between client and server. <span class="comment"># 检查网络</span></span><br><span class="line">ping           Check <span class="keyword">if</span> PMM server is alive. </span><br><span class="line">start          Start monitoring service. <span class="comment"># 开启服务</span></span><br><span class="line">stop           Stop monitoring service. <span class="comment"># 停止服务</span></span><br><span class="line">restart        Restart monitoring service. <span class="comment"># 重启服务</span></span><br><span class="line">show-passwords Show PMM Client password information (works offline). <span class="comment"># 显示客户端密码</span></span><br><span class="line">purge          Purge metrics <span class="keyword">data</span> on PMM server. <span class="comment"># 删除PMM server端监控信息</span></span><br><span class="line">repair         Repair installation. <span class="comment"># 重新安装</span></span><br><span class="line">uninstall      Removes all monitoring services with the best effort. <span class="comment"># 删除所有服务</span></span><br><span class="line">help           Help about any command</span><br><span class="line">Flags:</span><br><span class="line">-c, --config-file string   PMM config file (default <span class="string">"/usr/local/percona/pmm-client/pmm.yml"</span>)</span><br><span class="line">-h, --help                 help <span class="keyword">for</span> pmm-admin</span><br><span class="line">    --verbose              verbose output</span><br><span class="line">-v, --version              show version</span><br><span class="line">Use <span class="string">"pmm-admin [command] --help"</span> <span class="keyword">for</span> more information about a command.</span><br></pre></td></tr></table></figure>
+
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p><strong>安装 pmm-client</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ scp /usr/local/src/pmm-client-<span class="number">1.17</span>.<span class="number">1</span>-<span class="number">1</span>.el7.x86_64.rpm haieradmin@x.x.x.x:/tmp</span><br><span class="line">$ rpm -ivh pmm-client-<span class="number">1.17</span>.<span class="number">1</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<p><strong>监控主机</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将client_name修改为服务器ip</span></span><br><span class="line">$ vi /usr/local/percona/pmm-client/pmm.yml</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启pmm-client</span></span><br><span class="line">$ pmm-admin restart --all</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加监控</span></span><br><span class="line">$ pmm-admin add linux:metrics</span><br></pre></td></tr></table></figure>
+
+<p><strong>监控MySQL</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ pmm-admin add mysql --user hdm --password Hdm@<span class="number">123</span>! x.x.x.x:port</span><br><span class="line">$ pmm-admin list</span><br></pre></td></tr></table></figure>
+
+<p><strong>配置告警</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 进入docker</span></span><br><span class="line">$ docker exec -it pmm-server /bin/bash</span><br><span class="line"></span><br><span class="line"><span class="comment"># 编缉 grafana.ini</span></span><br><span class="line">vim /etc/grafana/grafana.ini</span><br><span class="line"></span><br><span class="line">[smtp]</span><br><span class="line">enabled = true</span><br><span class="line">host = [smtp.healthmall.cn](http://smtp.healthmall.cn/):<span class="number">25</span></span><br><span class="line">user = liuqian@healthmall.cn</span><br><span class="line">password = <span class="number">123456</span></span><br><span class="line">from_address = liuqian@healthmall.cn</span><br><span class="line">from_name = Grafana</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启pmm-server容器</span></span><br><span class="line">$ docker restart pmm-server</span><br><span class="line"></span><br><span class="line"><span class="comment"># 钉钉报警配置</span></span><br><span class="line">http://docs.grafana.org/alerting/notifications/</span><br></pre></td></tr></table></figure>
+
+<p><strong>升级</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ docker pull percona/pmm-server:latest</span><br><span class="line">$ docker stop pmm-server &amp;&amp; docker rm pmm-server</span><br><span class="line">$ docker run -d -p <span class="number">80</span>:<span class="number">80</span> -p <span class="number">9090</span>:<span class="number">9090</span> --volumes-from pmm-data --name pmm-server -e SERVER_USER=pmm -e SERVER_PASSWORD=ngiISI0Q4g9gfqWz89folKJSi --restart always --init percona/pmm-server:latest</span><br></pre></td></tr></table></figure>
+
+<h2 id="FA-amp-Q"><a href="#FA-amp-Q" class="headerlink" title="FA&amp;Q"></a>FA&amp;Q</h2><p>（1）<code>docker</code> 默认目录 <code>/var/lib/docker</code> 修改为 <code>/data/dockerfile</code></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ docker info</span><br><span class="line">Kernel Version: <span class="number">3.10</span>.<span class="number">0</span>-<span class="number">693</span>.el7.x86_64</span><br><span class="line">Operating System: CentOS Linux <span class="number">7</span> (Core)</span><br><span class="line">OSType: linux</span><br><span class="line">Architecture: x86_64</span><br><span class="line">Number of Docker Hooks: <span class="number">3</span></span><br><span class="line">CPUs: <span class="number">6</span></span><br><span class="line">Total Memory: <span class="number">15.66</span> GiB</span><br><span class="line">Name: console</span><br><span class="line">ID: <span class="number">7</span>MYD:NQPC:<span class="number">4</span>TNL:IT3W:<span class="number">6</span>KZS:TY6L:CORW:L432:UE3M:<span class="number">4</span>LBJ:OFUU:HSMB</span><br><span class="line">Docker Root Dir: /var/lib/docker</span><br><span class="line">Debug Mode (client): false</span><br><span class="line">Debug Mode (server): false</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 停止docker服务</span></span><br><span class="line">$ systemctl stop docker</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将docker文件迁移到指定目录</span></span><br><span class="line">$ mkdir /<span class="keyword">data</span>/dockerfile</span><br><span class="line">$ mv /var/lib/docker/* /<span class="keyword">data</span>/dockerfile</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除原目录</span></span><br><span class="line">$ rm -rf /var/lib/docker</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建软连接</span></span><br><span class="line">$ ln -s/<span class="keyword">data</span>/dockerfile/ /var/lib/docker</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动docker服务</span></span><br><span class="line">$ systemctl start docker</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ docker info</span><br><span class="line">Kernel Version: <span class="number">3.10</span>.<span class="number">0</span>-<span class="number">693</span>.el7.x86_64</span><br><span class="line">Operating System: CentOS Linux <span class="number">7</span> (Core)</span><br><span class="line">OSType: linux</span><br><span class="line">Architecture: x86_64</span><br><span class="line">Number of Docker Hooks: <span class="number">3</span></span><br><span class="line">CPUs: <span class="number">6</span></span><br><span class="line">Total Memory: <span class="number">15.66</span> GiB</span><br><span class="line">Name: console</span><br><span class="line">ID: <span class="number">7</span>MYD:NQPC:<span class="number">4</span>TNL:IT3W:<span class="number">6</span>KZS:TY6L:CORW:L432:UE3M:<span class="number">4</span>LBJ:OFUU:HSMB</span><br><span class="line">Docker Root Dir: /<span class="keyword">data</span>/dockerfile</span><br><span class="line">Debug Mode (client): false</span><br><span class="line">Debug Mode (server): false</span><br></pre></td></tr></table></figure>
+
+<p>（2）<code>PMM</code> 修改主机名作为唯一标识，修改为 <code>ip</code>、<code>port</code></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">[root@ptdsmapp03 pmm-client]<span class="comment"># pmm-admin check-network</span></span><br><span class="line">PMM Network Status</span><br><span class="line"></span><br><span class="line">Server Address | <span class="number">10.133</span>.<span class="number">0.53</span>:<span class="number">8090</span></span><br><span class="line">Client Address | <span class="number">10.133</span>.<span class="number">0.51</span> </span><br><span class="line"></span><br><span class="line">*** System Time**</span><br><span class="line">NTP Server (<span class="number">0</span>.pool.ntp.org)         | <span class="number">2019</span>-<span class="number">09</span>-<span class="number">02</span> <span class="number">08</span>:<span class="number">59</span>:<span class="number">28</span> +<span class="number">0000</span> UTC</span><br><span class="line">PMM Server                          | <span class="number">2019</span>-<span class="number">09</span>-<span class="number">02</span> <span class="number">08</span>:<span class="number">59</span>:<span class="number">28</span> +<span class="number">0000</span> GMT</span><br><span class="line">PMM Client                          | <span class="number">2019</span>-<span class="number">09</span>-<span class="number">02</span> <span class="number">16</span>:<span class="number">59</span>:<span class="number">28</span> +<span class="number">0800</span> CST</span><br><span class="line">PMM Server Time Drift               | **OK**</span><br><span class="line">PMM Client Time Drift               | **OK**</span><br><span class="line">PMM Client to PMM Server Time Drift | **OK**</span><br><span class="line"></span><br><span class="line">*** Connection: Client --&gt; Server**</span><br><span class="line">-------------------- -------      </span><br><span class="line">SERVER SERVICE       STATUS       </span><br><span class="line">-------------------- -------      </span><br><span class="line">Consul API           **OK**</span><br><span class="line">Prometheus API       **OK**</span><br><span class="line">Query Analytics API  **OK**</span><br><span class="line"></span><br><span class="line">Connection duration | <span class="number">433.939</span>µs</span><br><span class="line">Request duration    | <span class="number">3.335106</span>ms</span><br><span class="line">Full round trip     | <span class="number">3.769045</span>ms</span><br><span class="line"></span><br><span class="line">*** Connection: Client &lt;-- Server**</span><br><span class="line">-------------- ----------------- ------------------ ------- ---------- ---------</span><br><span class="line">SERVICE TYPE   NAME              REMOTE ENDPOINT    STATUS  HTTPS/TLS  PASSWORD </span><br><span class="line">-------------- ----------------- ------------------ ------- ---------- ---------</span><br><span class="line">linux:metrics  <span class="number">10.133</span>.<span class="number">0.51</span>       <span class="number">10.133</span>.<span class="number">0.51</span>:<span class="number">42000</span>  **OK**      **YES**        -        </span><br><span class="line">mysql:metrics  <span class="number">10.133</span>.<span class="number">0.51</span>:<span class="number">3306</span>  <span class="number">10.133</span>.<span class="number">0.51</span>:<span class="number">42002</span>  **OK**      **YES**        -</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/04/29/mysql-security/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -785,7 +1058,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">62</span>
+                    <span class="site-state-item-count">63</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -801,8 +1074,6 @@
                     
                   
                     
-                    
-                      
                     
                       
                     
@@ -832,8 +1103,6 @@
                     
                   
                     
-                    
-                      
                     
                       
                     
