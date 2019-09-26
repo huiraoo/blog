@@ -385,7 +385,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-09-26 11:56:48" itemprop="dateModified" datetime="2019-09-26T11:56:48+08:00">2019-09-26</time>
+                <time title="修改时间：2019-09-26 13:54:23" itemprop="dateModified" datetime="2019-09-26T13:54:23+08:00">2019-09-26</time>
               
             
           </span>
@@ -437,18 +437,18 @@
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'L'</span> -&gt;  <span class="number">01001100</span>（十六进制：<span class="number">0</span>x4C）</span><br><span class="line"><span class="string">'啊'</span> -&gt;  <span class="number">111001011001010110001010</span>（十六进制：<span class="number">0</span>xE5958A）</span><br></pre></td></tr></table></figure>
 
 <blockquote>
-<p>Tips： <code>utf8</code> 只是 <code>Unicode</code> 字符集的一种编码方案，<code>Unicode</code> 字符集可以用 <code>utf8</code>、<code>utf16</code>、<code>utf32</code> 这几种编码方案，<code>utf8</code> 使用<code>1～4</code>个字节编码一个字符。</p>
+<p>Tips： <code>utf8</code> 只是 <code>Unicode</code> 字符集的一种编码方案，<code>Unicode</code> 字符集可以用 <code>utf8</code>、<code>utf16</code>、<code>utf32</code> 这几种编码方案，<code>utf8</code> 使用 <code>1～4</code> 个字节编码一个字符。</p>
 </blockquote>
 </li>
 </ul>
-<p><strong>查看字符集（character set）</strong></p>
+<p><strong>查看字符集（character set/charset）</strong></p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show charset like <span class="string">'utf8%'</span>;</span><br><span class="line">+---------+---------------+--------------------+--------+</span><br><span class="line">| Charset | Description   | Default collation  | Maxlen |</span><br><span class="line">+---------+---------------+--------------------+--------+</span><br><span class="line">| utf8    | UTF-<span class="number">8</span> Unicode | utf8_general_ci    |      <span class="number">3</span> |</span><br><span class="line">| utf8mb4 | UTF-<span class="number">8</span> Unicode | utf8mb4_general_ci |      <span class="number">4</span> |</span><br><span class="line">+---------+---------------+--------------------+--------+</span><br></pre></td></tr></table></figure>
 
 <p><strong>查看比较规则（collation）</strong></p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show collation like <span class="string">'utf8%general_ci'</span>;</span><br><span class="line">+--------------------+---------+----+---------+----------+---------+</span><br><span class="line">| Collation          | Charset | Id | Default | Compiled | Sortlen |</span><br><span class="line">+--------------------+---------+----+---------+----------+---------+</span><br><span class="line">| utf8_general_ci    | utf8    | <span class="number">33</span> | Yes     | Yes      |       <span class="number">1</span> |</span><br><span class="line">| utf8mb4_general_ci | utf8mb4 | <span class="number">45</span> | Yes     | Yes      |       <span class="number">1</span> |</span><br><span class="line">+--------------------+---------+----+---------+----------+---------+</span><br></pre></td></tr></table></figure>
 
-<p><code>utf8</code> 字符集默认的比较规则是 <code>utf8_general_ci</code>，它是一种通用的比较规则，<code>_ci</code> 结尾，说明不区分大小写。</p>
-<h2 id="MySQL字符集和比较规则"><a href="#MySQL字符集和比较规则" class="headerlink" title="MySQL字符集和比较规则"></a>MySQL字符集和比较规则</h2><p><code>MySQL</code> 有四个级别的字符集和比较规则，分别是：</p>
+<p><code>utf8</code> 字符集默认的比较规则是 <code>utf8_general_ci</code>，它是一种通用的比较规则，<code>_ci</code> 结尾，表示不区分大小写。</p>
+<h2 id="字符集和比较规则"><a href="#字符集和比较规则" class="headerlink" title="字符集和比较规则"></a>字符集和比较规则</h2><p><code>MySQL</code> 有四个级别的字符集和比较规则，分别是：</p>
 <ul>
 <li>服务器级别</li>
 <li>数据库级别</li>
@@ -486,7 +486,9 @@
 <li>明确了 <code>charset_name</code>、<code>collation_name</code> 均明确，则采用 <code>charset_name</code>、<code>collation_name</code> 为准。</li>
 <li><code>charset_name</code>、<code>collation_name</code> 均未明确，则以表的字符集、比较规则为准。</li>
 </ul>
+<blockquote>
 <p><strong>小结</strong></p>
+</blockquote>
 <ul>
 <li>如果创建或修改列时没有显式的指定字符集和比较规则，则该列默认用表的字符集和比较规则</li>
 <li>如果创建或修改表时没有显式的指定字符集和比较规则，则该表默认用数据库的字符集和比较规则</li>
