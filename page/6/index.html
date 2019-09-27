@@ -2389,7 +2389,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-09-27 10:17:58" itemprop="dateModified" datetime="2019-09-27T10:17:58+08:00">2019-09-27</time>
+                <time title="修改时间：2019-09-27 10:52:22" itemprop="dateModified" datetime="2019-09-27T10:52:22+08:00">2019-09-27</time>
               
             
           </span>
@@ -2443,24 +2443,23 @@
       
         
           
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>缓存</strong>是计算机系统非常重要的组成部分，因为访问硬盘相比缓存可能会慢到 <code>100</code> 到 <code>100000</code> 倍，取决于访问的数据量。<code>MySQL</code> 作为一个存储系统，同样具有<strong>缓冲池</strong>（buffer pool）机制，以避免每次查询数据都进行磁盘 <code>IO</code>。不同存储引擎的缓存方式有所区别：</p>
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>缓存</strong>是计算机系统非常重要的组成部分，因为访问硬盘相比缓存可能会慢 <code>100</code> 到 <code>100000</code> 倍，取决于访问的数据量。<code>MySQL</code> 作为一个存储系统，同样具有<strong>缓冲池</strong>（<code>Buffer Pool</code>）机制，以避免每次查询数据都进行磁盘 <code>IO</code>，不同存储引擎缓存方式有所区别：</p>
 <ul>
 <li><p><a href="https://baike.baidu.com/item/myisam" target="_blank" rel="noopener"><strong>MyISAM</strong></a> 使用的是操作系统的文件系统缓存，来缓存那些经常被查询的数据。</p>
 </li>
 <li><p><a href="https://baike.baidu.com/item/innodb" target="_blank" rel="noopener"><strong>InnoDB</strong></a> 不依赖操作系统的缓存，自己在 <a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-buffer-pool-resize.html" target="_blank" rel="noopener"><strong>InnoDB Buffer Pool</strong></a> 处理缓存。</p>
 </li>
 </ul>
-<p><strong>InnoDB Buffer Pool （缓冲池）主要作用？</strong></p>
+<p><strong>①  InnoDB Buffer Pool 主要作用？</strong></p>
 <p>缓存表数据与索引数据，把磁盘上的数据加载到缓冲池，避免每次访问都进行磁盘 <code>IO</code>，起到加速访问的作用。</p>
-<p><strong>为什么不把所有数据都放到缓冲池里？</strong></p>
+<p><strong>②  为什么不把所有数据都放到缓冲池里？</strong></p>
 <p>凡事都具备两面性，抛开数据易失性不说，访问快速的反面是存储容量小：</p>
 <ul>
 <li>缓存访问快，但容量小，数据库存储了 <code>200G</code> 数据，缓存容量可能只有 <code>64G</code>；</li>
 <li>内存访问快，但容量小，买一台笔记本磁盘有 <code>2T</code>，内存可能只有 <code>16G</code>；</li>
 </ul>
-<p>因此，只能 <strong>把”最热”的数据放到”最近”的地方</strong>，以 “<strong>最大限度</strong>“ 的降低磁盘访问。</p>
-<p><strong>如何管理与淘汰缓冲池，使得性能最大化呢？</strong></p>
-<p><strong>如何解决MySQL缓冲池污染？</strong></p>
+<p>因此，<strong>只能把“最热”的数据放到“最近”的地方，以“最大限度” 的降低磁盘访问</strong>。</p>
+<p><strong>③  如何管理与淘汰缓冲池，使得性能最大化呢？</strong></p>
 <h2 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h2><p><strong>参数</strong>：innodb_buffer_pool_size</p>
 <p><strong>介绍</strong>：配置缓冲池的大小，在内存允许的情况下，DBA 往往会建议调大这个参数，越多数据和索引放到内存里，数据库的性能会越好。</p>
 <p><strong>参数</strong>：innodb_old_blocks_pct</p>
@@ -2490,7 +2489,7 @@
 <li><p>InnoDB 对普通 LRU 进行了优化：（1）将缓冲池分为老生代和新生代，入缓冲池的页，优先进入老生代，页被访问才进入新生代，以解决预读失效的问题；（2）页被访问，且在老生代停留时间超过配置阈值的，才进入新生代，以解决批量数据访问，大量热数据淘汰的问题。</p>
 </li>
 </ul>
-<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p>InnoDB Buffer Pool 缓存了表数据和二级索引在内存中，设置 <code>innodb_buffer_pool_size</code> 合理数值对实例性能影响很大。</p>
+<h2 id="设置-InnoDB-Buffer-Pool"><a href="#设置-InnoDB-Buffer-Pool" class="headerlink" title="设置 InnoDB Buffer Pool"></a>设置 InnoDB Buffer Pool</h2><p>InnoDB Buffer Pool 缓存了表数据和二级索引在内存中，设置 <code>innodb_buffer_pool_size</code> 合理数值对实例性能影响很大。</p>
 <ul>
 <li>设置偏小，会导致数据库大量直接对磁盘的访问，查询效率低。</li>
 <li>设置过大，会导致数据库进程占用内存太多，发生 <code>OOM</code>。</li>
