@@ -323,6 +323,212 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/24/mysql-backup/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/24/mysql-backup/" class="post-title-link" itemprop="url">MySQL · 备份恢复</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-24 10:00:24" itemprop="dateCreated datePublished" datetime="2019-07-24T10:00:24+08:00">2019-07-24</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-09-25 15:29:14" itemprop="dateModified" datetime="2019-09-25T15:29:14+08:00">2019-09-25</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>物理备份：直接备份数据库的数据文件，适用于大数据量，需要快速恢复的数据库。</p>
+<p>逻辑备份：备份数据库中数据结构和内容的SQL语句，适用于较小数据量或是跨版本的数据库备份恢复。</p>
+<p>目前备份方式的几个纬度：</p>
+<ul>
+<li>全量备份 VS 增量备份</li>
+<li>热备 VS 冷备</li>
+<li>物理备份 VS 逻辑备份</li>
+<li>延时备份</li>
+<li>全量binlog备份</li>
+</ul>
+<p>建议方式：</p>
+<ul>
+<li>热备＋物理备份</li>
+<li>核心业务：延时备份＋逻辑备份</li>
+<li>全量binlog备份</li>
+</ul>
+<p>主要做的几点：</p>
+<ul>
+<li>备份策略集中式调度管理</li>
+<li>xtrabackup热备</li>
+<li>备份结果统计分析</li>
+<li>备份数据一致性校验</li>
+<li>采用分布式文件系统存储备份</li>
+</ul>
+<p>备份系统采用分布式文件系统原因：</p>
+<ul>
+<li>解决存储分配的问题</li>
+<li>解决存储NFS备份效率低下问题</li>
+<li>存储集中式管理</li>
+<li>数据可靠性更好</li>
+</ul>
+<h2 id="备份方案"><a href="#备份方案" class="headerlink" title="备份方案"></a>备份方案</h2><h3 id="mysqldump"><a href="#mysqldump" class="headerlink" title="mysqldump"></a>mysqldump</h3><h3 id="XtraBackup"><a href="#XtraBackup" class="headerlink" title="XtraBackup"></a>XtraBackup</h3><h2 id="恢复实践"><a href="#恢复实践" class="headerlink" title="恢复实践"></a>恢复实践</h2><p>目前的MySQL数据恢复方案主要还是基于备份来恢复，可见备份的重要性。比如我今天下午15点删除了线上一张表，该如何恢复呢？首先确认删除语句，然后用备份扩容实例启动，假设备份时间点是凌晨3点，就还需要把凌晨3点到现在关于这个表的binlog导出来，然后应用到新扩容的实例上，确认好恢复的时间点，然后把删除表的数据导出来应用到线上。</p>
+<p><strong>关于备份，binlog备份自然不用说了，物理备份有很多方式，有没有推荐的一种，逻辑备份在量大的时候恢复速度比较慢，一般用在什么场景？</strong></p>
+<p>物理备份采用xtrabackup热备方案比较好。逻辑备份一般用在单表恢复效果会非常好。比如你删了一个2G表，但你总数据量2T，用物理备份就会要慢了，逻辑备份就非常有用了。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/23/mysql-rules/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2881,256 +3087,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/12/mysql-cookbook/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/12/mysql-cookbook/" class="post-title-link" itemprop="url">MySQL · 核心知识体系</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-12 15:25:39" itemprop="dateCreated datePublished" datetime="2019-07-12T15:25:39+08:00">2019-07-12</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-08-28 21:41:49" itemprop="dateModified" datetime="2019-08-28T21:41:49+08:00">2019-08-28</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="数据库基础"><a href="#数据库基础" class="headerlink" title="数据库基础"></a>数据库基础</h2><h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>OLTP、OLAP、事务、库、表、行、列、主键、外键</p>
-<p><strong>数据库</strong>：物理操作系统或其他形式文件类型的集合。在mysql下数据库文件可以是 frm，myd，myi，ibd 结尾的文件。</p>
-<p><strong>数据库实例</strong>：由数据库后台进程/线程以及一个共享内存区组成。数据库实例才是真正用来操作数据库文件的。<br>mysql数据库：是单进程多线程的程序，与sql server比较类似。也就是说，Mysql数据库实例在系统上的表现就是一个进程</p>
-<p>数据库应用主要有两类：<strong>OLAP</strong>（联机分析处理）和 <strong>OLTP</strong>（联机事务处理）</p>
-<p>OLAP的主要特点是:</p>
-<ul>
-<li>实时性要求不高</li>
-<li>数据量大</li>
-<li>并发量小</li>
-</ul>
-<p>OLTP的主要特点是:</p>
-<ul>
-<li>实时性要求高</li>
-<li>数据量小</li>
-<li>高并发</li>
-<li>要求满足ACID</li>
-</ul>
-<h3 id="DBMS-vs-NoSQL-vs-NewSQL"><a href="#DBMS-vs-NoSQL-vs-NewSQL" class="headerlink" title="DBMS vs NoSQL vs NewSQL"></a>DBMS vs NoSQL vs NewSQL</h3><ul>
-<li>Oracle，典型的高富帅；</li>
-<li>SQL Server，微软自家产品，Windows定制专款；</li>
-<li>DB2，IBM的产品，听起来挺高端；</li>
-<li>Sybase，曾经跟微软是好基友，后来关系破裂，现在家境惨淡；</li>
-<li>MySQL，大家都在用，一般错不了；</li>
-<li>PostgreSQL，学术气息有点重，其实挺不错，但知名度没有MySQL高；</li>
-<li>SQLite，嵌入式数据库，适合桌面和移动应用；</li>
-</ul>
-<h3 id="MySQL基础"><a href="#MySQL基础" class="headerlink" title="MySQL基础"></a>MySQL基础</h3><h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><h4 id="主流分支版本"><a href="#主流分支版本" class="headerlink" title="主流分支版本"></a>主流分支版本</h4><p>官方版本</p>
-<p>Percona Server</p>
-<p>MariaDB</p>
-<h2 id="核心知识点"><a href="#核心知识点" class="headerlink" title="核心知识点"></a>核心知识点</h2><h3 id="体系结构"><a href="#体系结构" class="headerlink" title="体系结构"></a>体系结构</h3><h3 id="InnoDB存储引擎"><a href="#InnoDB存储引擎" class="headerlink" title="InnoDB存储引擎"></a>InnoDB存储引擎</h3><p><img src="http://ww4.sinaimg.cn/large/006tNc79ly1g5tdauxzpzj313i0u0qag.jpg" alt></p>
-<h3 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h3><p>什么是索引？</p>
-<p>B+Tree索引和Hash索引区别？</p>
-<ul>
-<li>哈希索引适合等值查询，但是无法进行范围查询；</li>
-<li>哈希索引没办法利用索引完成排序 ；</li>
-<li>哈希索引不支持多列联合索引的最左匹配规则；</li>
-<li>如果有大量重复键值的情况下，哈希索引的效率会很低，因为存在哈希碰撞问题。</li>
-</ul>
-<p>最左前缀匹配原则</p>
-<p>查询优化器</p>
-<p>一条SQL语句的查询，可以有不同的执行方案，至于最终选择哪种方案，需要通过优化器进行选择，选择执行成本最低的方案。</p>
-<p>在一条单表查询语句真正执行之前，MySQL的查询优化器会找出执行该语句所有可能使用的方案，对比之后找出成本最低的方案。 </p>
-<p>这个成本最低的方案就是所谓的执行计划。优化过程大致如下：</p>
-<ul>
-<li>根据搜索条件，找出所有可能使用的索引；</li>
-<li>计算全表扫描的代价；</li>
-<li>计算使用不同索引执行查询的代价；</li>
-<li>对比各种执行方案的代价，找出成本最低的那一个。</li>
-</ul>
-<h3 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h3><h3 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h3><h3 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h3><h3 id="SQL"><a href="#SQL" class="headerlink" title="SQL"></a>SQL</h3><p>视图</p>
-<p>存储过程</p>
-<p>触发器</p>
-<p>事件</p>
-<p>函数</p>
-<p>分区</p>
-<h2 id="运维实践"><a href="#运维实践" class="headerlink" title="运维实践"></a>运维实践</h2><h3 id="安装部署"><a href="#安装部署" class="headerlink" title="安装部署"></a>安装部署</h3><p>安装</p>
-<p>升级</p>
-<h3 id="监控告警"><a href="#监控告警" class="headerlink" title="监控告警"></a>监控告警</h3><p>监控指标、定制告警</p>
-<h3 id="备份恢复"><a href="#备份恢复" class="headerlink" title="备份恢复"></a>备份恢复</h3><h3 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h3><h3 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h3><p>慢查询、配置优化、SQL优化、索引优化、分库分表</p>
-<h3 id="高可用"><a href="#高可用" class="headerlink" title="高可用"></a>高可用</h3><p>读写分离</p>
-<p>同城双活</p>
-<p>两地三中心架构</p>
-<h3 id="安全"><a href="#安全" class="headerlink" title="安全"></a>安全</h3><h2 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h2><p><strong>工具</strong></p>
-<p><strong>阅读源码</strong></p>
-<p><strong>数据库设计</strong></p>
-<p><strong>自动化运维</strong></p>
-<p>主键</p>
-<p>外键：外键为某个表中的一列，它包含另一个表的主键值，定义了两个表之间的关系。</p>
-<p>优点：更有效的存储和处理数据，具有很强的可伸缩性（能够适应不断增加的工作量而不失败）。</p>
-<p>代价：数据存储在多个表中，如何快速检索出数据？（联结）</p>
-<p>唯一键</p>
-<p>行</p>
-<p>列</p>
-<p>函数</p>
-<p>优点：很高效地完成一些数据处理类任务。</p>
-<p>缺点：不同DBMS之间函数定义区别大，可移植性差。函数没有SQL的可移植性强。</p>
-<p>如果决定使用函数，就需要做好注释</p>
-<p>子查询：难以阅读和调试，需要格式化SQL</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3179,7 +3135,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">63</span>
+                    <span class="site-state-item-count">64</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

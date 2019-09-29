@@ -323,6 +323,199 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/29/mysql-datadir/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/29/mysql-datadir/" class="post-title-link" itemprop="url">MySQL · 数据目录</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-29 10:56:15 / 修改时间：11:55:36" itemprop="dateCreated datePublished" datetime="2019-09-29T10:56:15+08:00">2019-09-29</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>文件系统</strong></p>
+<p><strong>安装目录</strong>：用来存储许多关于控制客户端程序和服务器程序的命令（如： <code>mysql</code>，<code>mysqld</code>，<code>mysqld_safe</code> 等）</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like 'basedir';</span><br><span class="line">+<span class="comment">---------------+-------------------------------------+</span></span><br><span class="line">| Variable_name | Value                               |</span><br><span class="line">+<span class="comment">---------------+-------------------------------------+</span></span><br><span class="line">| basedir       | /usr/local/mysql-5.7.23-el7-x86_64/ |</span><br><span class="line">+<span class="comment">---------------+-------------------------------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p><strong>数据目录</strong>：用来存储 <code>MySQL</code> 在运行过程中产生的数据</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like 'datadir';</span><br><span class="line">+<span class="comment">---------------+-------------------+</span></span><br><span class="line">| Variable_name | Value             |</span><br><span class="line">+<span class="comment">---------------+-------------------+</span></span><br><span class="line">| datadir       | /data/mysql-tdds/ |</span><br><span class="line">+<span class="comment">---------------+-------------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p><strong>系统数据库</strong></p>
+<ul>
+<li><p><code>mysql</code></p>
+<p>它存储了 <code>MySQL</code> 的用户账户和权限信息，一些存储过程、事件的定义信息，一些运行过程中产生的日志信息，一些帮助信息以及时区信息等。</p>
+</li>
+<li><p><code>information_schema</code></p>
+<p>存储了 <code>MySQL</code> 服务器维护的所有其他数据库的信息，比如有哪些表、哪些视图、哪些触发器、哪些列、哪些索引。这些信息并不是真实的用户数据，而是一些描述性信息，有时候也称之为元数据。</p>
+</li>
+<li><p><code>performance_schema</code></p>
+<p>存储了 <code>MySQL</code> 服务器运行过程中的一些状态信息，算是对 <code>MySQL</code> 服务器的一个性能监控。包括统计最近执行了哪些语句，在执行过程的每个阶段都花费了多长时间，内存的使用情况等信息。</p>
+</li>
+<li><p><code>sys</code></p>
+<p>主要是通过视图的形式把 <code>information_schema</code> 和 <code>performance_schema</code> 结合起来，让程序员可以更方便的了解 <code>MySQL</code> 服务器的一些性能信息。</p>
+</li>
+</ul>
+<h2 id="数据在文件系统的表示"><a href="#数据在文件系统的表示" class="headerlink" title="数据在文件系统的表示"></a>数据在文件系统的表示</h2><h3 id="数据库在文件系统中的表示"><a href="#数据库在文件系统中的表示" class="headerlink" title="数据库在文件系统中的表示"></a>数据库在文件系统中的表示</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show databases;</span><br><span class="line">+<span class="comment">--------------------+</span></span><br><span class="line">| Database           |</span><br><span class="line">+<span class="comment">--------------------+</span></span><br><span class="line">| information_schema |</span><br><span class="line">| employees          |</span><br><span class="line">| mysql              |</span><br><span class="line">| performance_schema |</span><br><span class="line">| sys                |</span><br><span class="line">| test               |</span><br><span class="line">+<span class="comment">--------------------+</span></span><br><span class="line">6 rows in <span class="keyword">set</span> (<span class="number">0.01</span> sec)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── auto.cnf</span><br><span class="line">├── employees</span><br><span class="line">├── error.log</span><br><span class="line">├── ib_buffer_pool</span><br><span class="line">├── ibdata1</span><br><span class="line">├── ib_logfile0</span><br><span class="line">├── ib_logfile1</span><br><span class="line">├── ibtmp1</span><br><span class="line">├── master.info</span><br><span class="line">├── mysql</span><br><span class="line">├── mysql-bin.<span class="number">000001</span></span><br><span class="line">├── mysql-bin.index</span><br><span class="line">├── mysql.pid</span><br><span class="line">├── performance_schema</span><br><span class="line">├── slow.log</span><br><span class="line">├── sys</span><br><span class="line">└── test</span><br></pre></td></tr></table></figure>
+
+<h3 id="表在文件系统中的表示"><a href="#表在文件系统中的表示" class="headerlink" title="表在文件系统中的表示"></a>表在文件系统中的表示</h3><h4 id="InnoDB表存储数据"><a href="#InnoDB表存储数据" class="headerlink" title="InnoDB表存储数据"></a>InnoDB表存储数据</h4><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── db.opt</span><br><span class="line">├── test.frm</span><br><span class="line">└── test.ibd</span><br><span class="line"></span><br><span class="line"><span class="comment"># db.opt：这个文件中包含了该数据库的各种属性，例如该数据库的字符集和比较规则</span></span><br><span class="line">default-character-set=utf8</span><br><span class="line">default-collation=utf8_general_ci</span><br><span class="line"></span><br><span class="line"><span class="comment"># 表结构文件：存储表名称、列类型、约束条件、字符集等专门用于描述表结构的文件</span></span><br><span class="line">test.frm</span><br><span class="line"></span><br><span class="line"><span class="comment"># innodb数据存储文件</span></span><br><span class="line">test.ibd</span><br></pre></td></tr></table></figure>
+
+<p><strong>系统表空间（system tablespace）</strong></p>
+<p><code>ibdata1</code> 是一个自扩展文件，默认可设置 <code>1G</code>，不够用的时候会自己增加文件大小</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">innodb_data_home_dir  = /<span class="keyword">data</span>/mysql</span><br><span class="line">innodb_data_file_path = ibdata1:<span class="number">1</span>G:autoextend</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Tips：从 <code>MySQL 5.5.7</code> 到 <code>MySQL 5.6.6</code> 之间的各个版本中，我们表中的数据都会被默认存储到这个 <strong><em>系统表空间</em></strong></p>
+</blockquote>
+<p><strong>独立表空间（file-per-table tablespace）</strong></p>
+<p>在 <code>MySQL 5.6.6</code> 以及之后的版本，<code>InnoDB</code> 并不会默认的把各个表的数据存储到系统表空间中，而是为每一个表建立一个独立表空间。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">test.ibd  <span class="comment"># 用来存储test表中的数据和索引</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>innodb_file_per_table</strong>：指定使用系统表空间还是独立表空间来存储数据，不过该参数只对新建的表起作用，对于已经分配了表空间的表并不起作用。</p>
+<ul>
+<li><p>当 <code>innodb_file_per_table</code> 的值为 <code>0</code> 时，代表使用系统表空间</p>
+</li>
+<li><p>当 <code>innodb_file_per_table</code> 的值为 <code>1</code> 时，代表使用独立表空间</p>
+</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like 'innodb_file_per_table';</span><br><span class="line">+<span class="comment">-----------------------+-------+</span></span><br><span class="line">| Variable_name         | Value |</span><br><span class="line">+<span class="comment">-----------------------+-------+</span></span><br><span class="line">| innodb_file_per_table | ON    |</span><br><span class="line">+<span class="comment">-----------------------+-------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># test表从独立表空间移动到系统表空间</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="keyword">test</span> <span class="keyword">TABLESPACE</span> innodb_system;</span><br><span class="line"></span><br><span class="line"><span class="comment"># test表从系统表空间移动到独立表空间</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="keyword">test</span> <span class="keyword">TABLESPACE</span> innodb_file_per_table;</span><br></pre></td></tr></table></figure>
+
+<h4 id="MyISAM表存储数据"><a href="#MyISAM表存储数据" class="headerlink" title="MyISAM表存储数据"></a>MyISAM表存储数据</h4><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">test.frm  <span class="comment"># 表结构文件</span></span><br><span class="line">test.MYD  <span class="comment"># 表数据文件</span></span><br><span class="line">test.MYI  <span class="comment"># 表索引文件</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="视图在文件系统中的表示"><a href="#视图在文件系统中的表示" class="headerlink" title="视图在文件系统中的表示"></a>视图在文件系统中的表示</h3><p>视图是虚拟的表，也就是某个查询语句的一个别名而已，所以在存储视图的时候是不需要存储真实的数据的，只需要把它的结构存储起来就行了。和表一样描述视图结构的文件也会被存储到所属数据库对应的子目录下边，只会存储一个 <code>视图名.frm</code> 的文件。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/26/mysql-innodb/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1963,144 +2156,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/07/Ansible/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/09/07/Ansible/" class="post-title-link" itemprop="url">Ansible</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-09-07 16:07:25" itemprop="dateCreated datePublished" datetime="2019-09-07T16:07:25+08:00">2019-09-07</time>
-            
-
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2149,7 +2204,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">63</span>
+                    <span class="site-state-item-count">64</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
