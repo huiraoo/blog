@@ -385,7 +385,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-10-10 11:06:05" itemprop="dateModified" datetime="2019-10-10T11:06:05+08:00">2019-10-10</time>
+                <time title="修改时间：2019-10-10 11:56:38" itemprop="dateModified" datetime="2019-10-10T11:56:38+08:00">2019-10-10</time>
               
             
           </span>
@@ -466,7 +466,7 @@
 </tr>
 </tbody></table>
 <p><strong>目标用户</strong>：DBA</p>
-<p><strong>登录地址</strong>：<a href="https://hdm.console.aliyun.com" target="_blank" rel="noopener">入口</a></p>
+<p><strong>登录地址</strong>：<a href="https://signin.aliyun.com/login.htm" target="_blank" rel="noopener">入口</a></p>
 <p><strong>RAM账号</strong>：sre@1596633715004367.onaliyun.com</p>
 <p><strong>DBGateway</strong>：是 <code>HDM</code> 的一个组件，部署在用户环境中的 <code>Daemon</code> 程序，它负责进行数据库性能数据的采集、计算，不读取用户业务数据，并且通过加密压缩的方式进行通信。</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── bin</span><br><span class="line">│   ├── dbgateway</span><br><span class="line">│   └── dbgateway-manager</span><br><span class="line">├── conf</span><br><span class="line">│   ├── dbgateway.conf</span><br><span class="line">│   └── server.crt</span><br><span class="line">└── log</span><br><span class="line">    ├── dbgateway.err</span><br><span class="line">    ├── dbgateway.log</span><br><span class="line">    └── dbgateway_manager.log</span><br></pre></td></tr></table></figure>
@@ -569,7 +569,7 @@
 </blockquote>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">USER</span> <span class="string">'hdm'</span>@<span class="string">'%'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="keyword">PASSWORD</span> <span class="string">'Hdm@123!'</span>;</span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">SHOW</span> <span class="keyword">DATABASES</span>, PROCESS, <span class="keyword">REPLICATION</span> <span class="keyword">SLAVE</span>, <span class="keyword">REPLICATION</span> <span class="keyword">CLIENT</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'hdm'</span>@<span class="string">'%'</span>;</span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">SELECT</span> <span class="keyword">ON</span> *.*  <span class="keyword">TO</span> <span class="string">'hdm'</span>@<span class="string">'%'</span>;</span><br></pre></td></tr></table></figure>
 
-<h3 id="统一监控"><a href="#统一监控" class="headerlink" title="统一监控"></a>统一监控</h3><h4 id="MySQL-Server"><a href="#MySQL-Server" class="headerlink" title="MySQL Server"></a>MySQL Server</h4><p><strong>TPS/QPS</strong>：Transactions Per Second / Queries Per Second，并发数 / 平均响应时间</p>
+<h3 id="统一监控"><a href="#统一监控" class="headerlink" title="统一监控"></a>统一监控</h3><h4 id="MySQL-Server"><a href="#MySQL-Server" class="headerlink" title="MySQL Server"></a>MySQL Server</h4><p><strong>TPS/QPS</strong>：Queries Per Second，每秒 SQL 语句执行次数；Transactions Per Second，每秒写操作数</p>
 <table>
 <thead>
 <tr>
@@ -699,7 +699,7 @@
 <td align="left">读缓存命中率计算公式：(Innodb_buffer_pool_read_requests - Innodb_buffer_pool_reads) / Innodb_buffer_pool_read_requests * 100%</td>
 </tr>
 <tr>
-<td align="left">mysql.innodb_bp_usage_pct</td>
+<td align="left"><strong>mysql.innodb_bp_usage_pct</strong></td>
 <td align="left">%</td>
 <td align="left">使用率计算公式：innodb_buffer_pool_pages_data / ( innodb_buffer_pool_pages_data + innodb_buffer_pool_pages_free ) * 100%</td>
 </tr>
@@ -920,13 +920,13 @@
 <td>网卡每秒发送数据量</td>
 </tr>
 </tbody></table>
-<h3 id="统一告警"><a href="#统一告警" class="headerlink" title="统一告警"></a>统一告警</h3><p><strong>告警功能</strong>：发送告警、屏蔽告警、解除屏蔽等</p>
-<p><strong>配置步骤</strong>：告警模板  -&gt;  告警联系组  -&gt;  关联资源</p>
+<h3 id="统一告警"><a href="#统一告警" class="headerlink" title="统一告警"></a>统一告警</h3><p><strong>告警功能</strong>：触发告警、屏蔽告警、解除屏蔽、告警订阅等</p>
+<p><strong>告警配置</strong>：告警模板  -&gt;  告警联系组  -&gt;  关联资源，告警模板默认配置 <code>8</code> 条告警，可自定义</p>
 <table>
 <thead>
 <tr>
 <th>告警项</th>
-<th>规则</th>
+<th>告警规则</th>
 <th>发送间隔</th>
 <th>告警类型</th>
 <th>告警对象</th>
@@ -998,10 +998,24 @@
 <td>短信 / 邮件 / 钉钉</td>
 </tr>
 </tbody></table>
-<p>慢日志分析</p>
-<p>死锁分析</p>
-<p>诊断报告</p>
-<h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><p>① 有些数据库服务器未连接外网，<code>dbgateway</code> 无法下载，实例如何接入？</p>
+<h3 id="诊断"><a href="#诊断" class="headerlink" title="诊断"></a>诊断</h3><p><strong>实例会话</strong>：原理是执行 <code>show processlist</code>，查看活跃会话和全部会话，可快速诊断阻塞的 SQL，紧急情况下先结束会话，释放资源，缓解恶化。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-10-112617.png" alt></p>
+<p><strong>拓扑结构</strong></p>
+<blockquote>
+<p>注意：目前拓扑诊断仅支持 MySQL</p>
+</blockquote>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-140100.png" alt></p>
+<h3 id="优化"><a href="#优化" class="headerlink" title="优化"></a>优化</h3><p><strong>慢 SQL</strong></p>
+<p>架构设计</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-10-111910.png" alt></p>
+<p>SQL分析 [ <a href="https://help.aliyun.com/document_detail/87374.html?spm=a2c4g.11186623.6.577.5e2f690dVvEL0F" target="_blank" rel="noopener">样本</a> | <a href="https://help.aliyun.com/document_detail/102635.html?spm=a2c4g.11186623.6.568.62631a4cLlP0XJ" target="_blank" rel="noopener">优化</a> ]</p>
+<p><strong>死锁</strong></p>
+<p><strong>空间分析</strong></p>
+<h3 id="安全审计"><a href="#安全审计" class="headerlink" title="安全审计"></a>安全审计</h3><p>HDM 的安全审计功能，采用旁路的技术，采集并分析对数据库服务器的各类操作行为，实时地、智能地解析对数据库服务器的各种操作，自动识别<strong>高危 SQL</strong>、<strong>SQL 注入</strong>、<strong>新增访问来源</strong>等风险。</p>
+<p><strong>高危 SQL</strong></p>
+<p><strong>SQL 注入</strong></p>
+<p><strong>新增访问来源</strong></p>
+<h3 id="诊断报告"><a href="#诊断报告" class="headerlink" title="诊断报告"></a>诊断报告</h3><h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><p>① 有些数据库服务器未连接外网，<code>dbgateway</code> 无法下载，实例如何接入？</p>
 <p>② 实例接入后，显示的 <code>IP</code> 不是真实的业务 <code>IP</code> ？</p>
 <p>③ 服务器断电启动后，<code>dbgateway</code> 服务未自动重启？</p>
 
