@@ -385,7 +385,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-10-10 08:04:17" itemprop="dateModified" datetime="2019-10-10T08:04:17+08:00">2019-10-10</time>
+                <time title="修改时间：2019-10-10 10:13:32" itemprop="dateModified" datetime="2019-10-10T10:13:32+08:00">2019-10-10</time>
               
             
           </span>
@@ -471,7 +471,7 @@
 <p><strong>DBGateway</strong>：是 <code>HDM</code> 的一个组件，部署在用户环境中的 <code>Daemon</code> 程序，它负责进行数据库性能数据的采集、计算，不读取用户业务数据，并且通过加密压缩的方式进行通信。</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── bin</span><br><span class="line">│   ├── dbgateway</span><br><span class="line">│   └── dbgateway-manager</span><br><span class="line">├── conf</span><br><span class="line">│   ├── dbgateway.conf</span><br><span class="line">│   └── server.crt</span><br><span class="line">└── log</span><br><span class="line">    ├── dbgateway.err</span><br><span class="line">    ├── dbgateway.log</span><br><span class="line">    └── dbgateway_manager.log</span><br></pre></td></tr></table></figure>
 
-<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p><strong>开通服务</strong>：<a href="https://help.aliyun.com/knowledge_detail/66674.html?spm=a2c4g.11186623.2.12.7ac677adzLmyV7" target="_blank" rel="noopener">手册</a></p>
+<h2 id="用户指南"><a href="#用户指南" class="headerlink" title="用户指南"></a>用户指南</h2><p><strong>开通服务</strong>：<a href="https://help.aliyun.com/knowledge_detail/66674.html?spm=a2c4g.11186623.2.12.7ac677adzLmyV7" target="_blank" rel="noopener">手册</a></p>
 <p><strong>实例接入</strong>：<a href="https://help.aliyun.com/document_detail/65405.html?spm=a2c4g.11186623.6.552.58c5b105ScOBwq" target="_blank" rel="noopener">阿里云 RDS</a>、<a href="https://help.aliyun.com/document_detail/65407.html?spm=a2c4g.11186623.6.553.6aa210edll0oBP" target="_blank" rel="noopener">阿里云 ECS 自建数据库</a>、<a href="https://help.aliyun.com/document_detail/65406.html?spm=a2c4g.11186623.6.554.29e19c69mPchPY" target="_blank" rel="noopener">本地 IDC 自建数据库</a>、<a href="https://help.aliyun.com/document_detail/99480.html?spm=a2c4g.11186623.6.555.51a5cf58DNb8ol" target="_blank" rel="noopener">账号直连</a></p>
 <p>接入方式：</p>
 <p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-09-172707.png" alt></p>
@@ -569,22 +569,371 @@
 </blockquote>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">USER</span> <span class="string">'hdm'</span>@<span class="string">'%'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="keyword">PASSWORD</span> <span class="string">'Hdm@123!'</span>;</span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">SHOW</span> <span class="keyword">DATABASES</span>, PROCESS, <span class="keyword">REPLICATION</span> <span class="keyword">SLAVE</span>, <span class="keyword">REPLICATION</span> <span class="keyword">CLIENT</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'hdm'</span>@<span class="string">'%'</span>;</span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">SELECT</span> <span class="keyword">ON</span> *.*  <span class="keyword">TO</span> <span class="string">'hdm'</span>@<span class="string">'%'</span>;</span><br></pre></td></tr></table></figure>
 
-<p><strong>监控</strong></p>
-<p>TPS/QPS、会话连接、执行次数、流量吞吐、InnoDB Buffer Pool 命中率、InnoDB Data 读写吞吐量、CPU 利用率、MySQL 内存使用量、主机 CPU 利用率、主机 Load 负载、主机内存使用量、主机网络吞吐</p>
-<p><strong>告警</strong></p>
-<p>告警类型：事件告警、阈值告警</p>
-<p>告警规则：xx告警，连续 <code>3</code> 次，大于等于xx，发送间隔 <code>30</code> 分钟</p>
-<p>通知方式：手机短信、钉钉机器人、邮件</p>
-<p>告警项：</p>
+<p><strong>统一监控</strong></p>
+<p>TPS/QPS：Transactions Per Second / Queries Per Second，并发数 / 平均响应时间</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.tps</td>
+<td align="left">Per Second</td>
+<td align="left">计算公式：(Com_commit + Com_rollback) / Uptime</td>
+</tr>
+<tr>
+<td align="left">mysql.qps</td>
+<td align="left">Per Second</td>
+<td align="left">计算公式：Questions / Uptime</td>
+</tr>
+</tbody></table>
+<p>会话连接</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.threads_created</td>
+<td align="left">Count</td>
+<td align="left">当前新创建的线程</td>
+</tr>
+<tr>
+<td align="left">mysql.threads_cached</td>
+<td align="left">Count</td>
+<td align="left">当前 cached 线程</td>
+</tr>
+<tr>
+<td align="left"><strong>mysql.threads_connected</strong></td>
+<td align="left">Count</td>
+<td align="left">当前全部线程数</td>
+</tr>
+<tr>
+<td align="left">mysql.threads_rejected</td>
+<td align="left">Count</td>
+<td align="left">当前 rejected 线程</td>
+</tr>
+<tr>
+<td align="left"><strong>mysql.threads_running</strong></td>
+<td align="left">Count</td>
+<td align="left">当前活跃线程数</td>
+</tr>
+</tbody></table>
+<p>执行次数</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.insert_ps</td>
+<td align="left">Per Second</td>
+<td align="left">平均每秒 insert 语句执行次数</td>
+</tr>
+<tr>
+<td align="left">mysql.select_ps</td>
+<td align="left">Per Second</td>
+<td align="left">平均每秒 select 语句执行次数</td>
+</tr>
+<tr>
+<td align="left">mysql.update_ps</td>
+<td align="left">Per Second</td>
+<td align="left">平均每秒 update 语句执行次数</td>
+</tr>
+<tr>
+<td align="left">mysql.delete_ps</td>
+<td align="left">Per Second</td>
+<td align="left">平均每秒 delete 语句执行次数</td>
+</tr>
+<tr>
+<td align="left">mysql.replace_ps</td>
+<td align="left">Per Second</td>
+<td align="left">平均每秒 replace 语句执行次数</td>
+</tr>
+</tbody></table>
+<p>流量吞吐（单位：KB）</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.bytes_received</td>
+<td align="left">KByte</td>
+<td align="left">平均每秒从所有客户端接收到的字节数</td>
+</tr>
+<tr>
+<td align="left">mysql.bytes_sent</td>
+<td align="left">KByte</td>
+<td align="left">平均每秒发送给所有客户端的字节数</td>
+</tr>
+</tbody></table>
+<p>InnoDB Buffer Pool 命中率（%）</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.innodb_bp_dirty_pct</td>
+<td align="left">%</td>
+<td align="left">脏页比率，计算公式：Innodb_buffer_pool_pages_dirty / Innodb_buffer_pool_pages_data * 100%</td>
+</tr>
+<tr>
+<td align="left">mysql.innodb_bp_hit</td>
+<td align="left">%</td>
+<td align="left">读缓存命中率，计算公式：(Innodb_buffer_pool_read_requests - Innodb_buffer_pool_reads) / Innodb_buffer_pool_read_requests * 100%</td>
+</tr>
+<tr>
+<td align="left">mysql.innodb_bp_usage_pct</td>
+<td align="left">%</td>
+<td align="left">使用率，计算公式：innodb_buffer_pool_pages_data / ( innodb_buffer_pool_pages_data + innodb_buffer_pool_pages_free ) * 100%</td>
+</tr>
+</tbody></table>
+<p>InnoDB Data 读写吞吐量（单位：KB）</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.innodb_data_written</td>
+<td align="left">KByte</td>
+<td align="left">InnoDB 平均每秒写字节数</td>
+</tr>
+<tr>
+<td align="left">mysql.innodb_data_read</td>
+<td align="left">KByte</td>
+<td align="left">InnoDB 平均每秒读字节数</td>
+</tr>
+</tbody></table>
+<p>InnoDB Row Operations</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.innodb_rows_deleted</td>
+<td align="left">Per Second</td>
+<td align="left">InnoDB 平均每秒删除的行数</td>
+</tr>
+<tr>
+<td align="left">mysql.innodb_rows_read</td>
+<td align="left">Per Second</td>
+<td align="left">InnoDB 平均每秒读取的行数</td>
+</tr>
+<tr>
+<td align="left">mysql.innodb_rows_inserted</td>
+<td align="left">Per Second</td>
+<td align="left">InnoDB 平均每秒插入的行数</td>
+</tr>
+<tr>
+<td align="left">mysql.innodb_rows_updated</td>
+<td align="left">Per Second</td>
+<td align="left">InnoDB 平均每秒更新的行数</td>
+</tr>
+</tbody></table>
+<p>MySQL CPU 利用率（%）</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.cpu_usage</td>
+<td align="left">%</td>
+<td align="left">MySQL 服务进程 CPU 使用率（200% 代表使用 2 个 CPU Core）</td>
+</tr>
+</tbody></table>
+<p>MySQL 内存使用量（单位：GB）</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.mem_used</td>
+<td align="left">GByte</td>
+<td align="left">MySQL 服务进程内存使用量</td>
+</tr>
+</tbody></table>
+<p>MySQL 存储空间使用量（单位：<code>GB</code>）</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.storage.data.used</td>
+<td align="left">GByte</td>
+<td align="left">数据文件目录的空间使用量</td>
+</tr>
+<tr>
+<td align="left">mysql.storage.log.used</td>
+<td align="left">GByte</td>
+<td align="left">日志文件目录的空间使用量</td>
+</tr>
+</tbody></table>
+<p>主机 Load 负载：在 <code>UNIX</code> 系统中，系统负载是对当前 <code>CPU</code> 工作量的度量，被定义为特定时间间隔内运行队列中的平均线程数对于单个 <code>CPU</code>，有人认为如果 <code>Load</code> 超过 <code>0.7</code> 就算是超出正常范围了，这个值越低越好，负载过高会导致机器无法处理其他请求及操作，甚至导致死机。</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">load1</td>
+<td align="left">Count</td>
+<td align="left">主机负载 load1</td>
+</tr>
+</tbody></table>
+<p>主机 CPU 利用率（%）</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>单位</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>host.cpu.user_usage</td>
+<td>Count</td>
+<td>系统 CPU user 利用率</td>
+</tr>
+<tr>
+<td>host.cpu.si_usage</td>
+<td>Count</td>
+<td>系统 CPU 软中断利用率</td>
+</tr>
+<tr>
+<td><strong>host.cpu.usage</strong></td>
+<td>Count</td>
+<td>系统 CPU 利用率</td>
+</tr>
+<tr>
+<td>host.cpu.hi_usage</td>
+<td>Count</td>
+<td>系统 CPU 硬中断利用率</td>
+</tr>
+<tr>
+<td>host.cpu.iowait_usage</td>
+<td>Count</td>
+<td>系统 CPU iowait 利用率</td>
+</tr>
+<tr>
+<td>host.cpu.sys_usage</td>
+<td>Count</td>
+<td>系统 CPU sys 利用率</td>
+</tr>
+</tbody></table>
+<p>主机内存使用量（单位：MB）</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>单位</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>mem.buffers</td>
+<td>MByte</td>
+<td>系统 IO Buffer 占用内存大小</td>
+</tr>
+<tr>
+<td><strong>mem.used</strong></td>
+<td>MByte</td>
+<td>系统已用内存</td>
+</tr>
+<tr>
+<td>mem.cached</td>
+<td>MByte</td>
+<td>系统 Page Cache 占用内存大小</td>
+</tr>
+<tr>
+<td>gw.pidstat.mem_used</td>
+<td>MByte</td>
+<td>DBGateway 内存使用量</td>
+</tr>
+<tr>
+<td>mem.swap_used</td>
+<td>MByte</td>
+<td>系统 swap 使用大小</td>
+</tr>
+<tr>
+<td><strong>mem.total</strong></td>
+<td>MByte</td>
+<td>系统总可用内存</td>
+</tr>
+</tbody></table>
+<p>主机网络吞吐（单位：KB）</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>单位</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>net.recv</td>
+<td>KByte</td>
+<td>网卡每秒接收数据量</td>
+</tr>
+<tr>
+<td>net.send</td>
+<td>KByte</td>
+<td>网卡每秒发送数据量</td>
+</tr>
+</tbody></table>
+<p><strong>统一告警</strong>：发送、屏蔽、解除屏蔽等功能</p>
+<blockquote>
+<p>配置告警模板 -&gt; 选择告警联系组 -&gt; 关联资源</p>
+</blockquote>
+<p>告警类型：事件告警、阈值告警<br>告警规则：xx告警，连续 <code>3</code> 次，大于等于xx，发送间隔 <code>30</code> 分钟<br>通知方式：手机短信、钉钉机器人、邮件<br>告警项：</p>
 <ul>
-<li>主机CPU使用率：连续 <code>3</code> 次，总是大于等于 <code>90</code>，告警</li>
-<li>主机内存使用率：连续 <code>3</code> 次，总是大于等于 <code>95</code>，告警</li>
-<li>主机网络发送带宽使用率：连续 <code>3</code> 次，总是大于等于 <code>95</code>，告警</li>
-<li>主机网络接收带宽使用率：连续 <code>3</code> 次，总是大于等于 <code>95</code>，告警</li>
-<li>数据库无法连接：连续 <code>3</code> 次，告警</li>
-<li>MySQL复制中断：连续 <code>3</code> 次，告警</li>
-<li>MySQL复制延迟：连续 <code>3</code> 次，总是大于等于 <code>1800</code>，告警</li>
-<li>MySQL活跃会话数：连续 <code>3</code> 次，总是大于等于 <code>100</code>，告警</li>
+<li>主机CPU使用率：连续 <code>3</code> 次，总是大于等于 <code>90</code>，触发告警</li>
+<li>主机内存使用率：连续 <code>3</code> 次，总是大于等于 <code>95</code>，触发告警</li>
+<li>主机网络发送带宽使用率：连续 <code>3</code> 次，总是大于等于 <code>95</code>，触发告警</li>
+<li>主机网络接收带宽使用率：连续 <code>3</code> 次，总是大于等于 <code>95</code>，触发告警</li>
+<li>数据库无法连接：连续 <code>3</code> 次，触发告警</li>
+<li>MySQL复制中断：连续 <code>3</code> 次，触发告警</li>
+<li>MySQL复制延迟：连续 <code>3</code> 次，总是大于等于 <code>1800</code>，触发告警</li>
+<li>MySQL活跃会话数：连续 <code>3</code> 次，总是大于等于 <code>100</code>，触发告警</li>
 </ul>
 <p><strong>慢日志分析</strong></p>
 <p><strong>死锁分析</strong></p>
