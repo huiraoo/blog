@@ -105,7 +105,10 @@
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-11-163310.png">
 <meta property="og:image" content="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-11-092550.png">
-<meta property="og:updated_time" content="2019-10-12T01:10:12.597Z">
+<meta property="og:image" content="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-12-093300.png">
+<meta property="og:image" content="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-12-094143.png">
+<meta property="og:image" content="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-12-094215.png">
+<meta property="og:updated_time" content="2019-10-12T01:48:57.527Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="阿里云 · RDS">
 <meta name="twitter:description" content="简介阿里云关系型数据库 RDS（Relational Database Service）是一种稳定可靠、可弹性伸缩的在线数据库服务。 支持功能：提供容灾、备份、恢复、监控、迁移等全套解决方案，彻底解决数据库运维的烦恼。 支持引擎：MySQL、SQL Server、PostgreSQL、 MariaDB TX 等。 基本概念：  实例：一个独立占用物理内存的数据库服务进程，用户可以设置不同的内存大小">
@@ -386,7 +389,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-10-12 09:10:12" itemprop="dateModified" datetime="2019-10-12T09:10:12+08:00">2019-10-12</time>
+                <time title="修改时间：2019-10-12 09:48:57" itemprop="dateModified" datetime="2019-10-12T09:48:57+08:00">2019-10-12</time>
               
             
           </span>
@@ -890,7 +893,7 @@
 <td align="left">免费支持</td>
 </tr>
 </tbody></table>
-<p><strong>告警</strong>：<a href="https://huiraoo.github.io/blog/2019/10/09/mysql-hdm/">统一告警</a></p>
+<p><strong>告警</strong>：<a href="https://huiraoo.github.io/blog/2019/10/09/mysql-hdm/">统一告警</a>，需要自行 <a href="https://help.aliyun.com/document_detail/96113.html?spm=a2c4g.11186623.2.26.5a2849eat7zURd#concept-ir2-twp-wdb" target="_blank" rel="noopener">设置报警规则</a></p>
 <h3 id="备份恢复"><a href="#备份恢复" class="headerlink" title="备份恢复"></a>备份恢复</h3><table>
 <thead>
 <tr>
@@ -916,10 +919,21 @@
 <td>存储 0.001元/GB/小时 + <a href="https://help.aliyun.com/document_detail/70005.html?spm=a2c4g.11186623.2.19.1f4148ceRRiyUY#h2-rds-3" target="_blank" rel="noopener">流量费</a></td>
 </tr>
 </tbody></table>
+<p>默认备份</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-12-093300.png" alt></p>
 <h3 id="异地容灾"><a href="#异地容灾" class="headerlink" title="异地容灾"></a>异地容灾</h3><ul>
-<li><a href="https://help.aliyun.com/document_detail/26137.html?spm=a2c4g.11186623.2.11.438719bbr36Auk#concept-bpb-gw5-vdb" target="_blank" rel="noopener">灾备实例</a>：通过创建异地灾备实例来抵御地域级别（多可用区级别）灾难，<strong>计费：RDS 灾备实例 + DTS 传输</strong>。</li>
-<li><a href="https://help.aliyun.com/document_detail/120824.html?spm=a2c4g.11186623.2.12.438719bbxQlAAm#concept-405443" target="_blank" rel="noopener">跨地域备份</a>：将本地备份文件复制到另一个地域的 <code>OSS</code> 上，用于容灾恢复，<strong>计费：存储 0.001元/GB/小时 + <a href="https://help.aliyun.com/document_detail/70005.html?spm=a2c4g.11186623.2.19.1f4148ceRRiyUY#h2-rds-3" target="_blank" rel="noopener">流量费</a></strong>。</li>
+<li><a href="https://help.aliyun.com/document_detail/26137.html?spm=a2c4g.11186623.2.11.438719bbr36Auk#concept-bpb-gw5-vdb" target="_blank" rel="noopener">灾备实例</a>：通过<a href="https://help.aliyun.com/document_detail/26592.html" target="_blank" rel="noopener">数据传输服务</a>（<code>DTS</code>）实现主实例和异地灾备实例之间的实时同步，主实例和灾备实例均搭建主备高可用架构，当主实例所在区域发生突发性自然灾害等状况，主节点（<code>Master</code>）和备节点（<code>Slave</code>）均无法连接时，可将异地灾备实例切换为主实例，在应用端修改数据库链接地址后，即可快速恢复应用的业务访问，<strong>计费：灾备实例 + DTS</strong>。</li>
+<li><a href="https://help.aliyun.com/document_detail/120824.html?spm=a2c4g.11186623.2.12.438719bbxQlAAm#concept-405443" target="_blank" rel="noopener">跨地域备份</a>：自动将本地备份文件复制到另一个地域的 <code>OSS</code> 上，文件可保留 <code>7~1825</code> 天，即最多保留 <code>5</code> 年，<strong>计费：存储（0.001元/GB/小时） + <a href="https://help.aliyun.com/document_detail/70005.html?spm=a2c4g.11186623.2.19.1f4148ceRRiyUY#h2-rds-3" target="_blank" rel="noopener">流量费</a>。</strong></li>
 </ul>
+<h3 id="高可用"><a href="#高可用" class="headerlink" title="高可用"></a>高可用</h3><p>购买时建议选择<strong>高可用版</strong>，或更高的<strong>三节点企业版</strong>，高可用版实例有一个备实例，三节点企业版实例有两个备实例，主备实例的数据会实时同步，只能访问主实例，备实例仅作为备份形式存在，不提供业务访问。</p>
+<ul>
+<li>自动切换：实例默认为自动切换，当主实例出现故障无法访问时，会自动切换到备实例。</li>
+<li>手动切换：即使自动切换是开启状态，也可以手动进行主备切换。</li>
+</ul>
+<p>单可用区</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-12-094143.png" alt></p>
+<p>多可用区</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-12-094215.png" alt></p>
 <h3 id="慢日志"><a href="#慢日志" class="headerlink" title="慢日志"></a>慢日志</h3><p>对 <code>1</code> 个月内数据库中执行时间超过 <code>1</code> 秒（可以在 <a href="https://help.aliyun.com/document_detail/96063.html#concept-lfl-xmn-wdb" target="_blank" rel="noopener">参数设置</a> 中修改 <code>long_query_time</code> 来设置）的 <code>SQL</code> 语句进行统计汇总，给出慢查询日志的分析报告。</p>
 
       
@@ -1184,7 +1198,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#选型"><span class="nav-number">2.</span> <span class="nav-text">选型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#产品系列"><span class="nav-number">2.1.</span> <span class="nav-text">产品系列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#存储类型"><span class="nav-number">2.2.</span> <span class="nav-text">存储类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实例规格"><span class="nav-number">2.3.</span> <span class="nav-text">实例规格</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络类型"><span class="nav-number">2.4.</span> <span class="nav-text">网络类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最佳实践"><span class="nav-number">2.5.</span> <span class="nav-text">最佳实践</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实践"><span class="nav-number">3.</span> <span class="nav-text">实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#开通服务"><span class="nav-number">3.1.</span> <span class="nav-text">开通服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#快速使用"><span class="nav-number">3.2.</span> <span class="nav-text">快速使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#监控告警"><span class="nav-number">3.3.</span> <span class="nav-text">监控告警</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#备份恢复"><span class="nav-number">3.4.</span> <span class="nav-text">备份恢复</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#异地容灾"><span class="nav-number">3.5.</span> <span class="nav-text">异地容灾</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#慢日志"><span class="nav-number">3.6.</span> <span class="nav-text">慢日志</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#选型"><span class="nav-number">2.</span> <span class="nav-text">选型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#产品系列"><span class="nav-number">2.1.</span> <span class="nav-text">产品系列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#存储类型"><span class="nav-number">2.2.</span> <span class="nav-text">存储类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实例规格"><span class="nav-number">2.3.</span> <span class="nav-text">实例规格</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络类型"><span class="nav-number">2.4.</span> <span class="nav-text">网络类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#最佳实践"><span class="nav-number">2.5.</span> <span class="nav-text">最佳实践</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实践"><span class="nav-number">3.</span> <span class="nav-text">实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#开通服务"><span class="nav-number">3.1.</span> <span class="nav-text">开通服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#快速使用"><span class="nav-number">3.2.</span> <span class="nav-text">快速使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#监控告警"><span class="nav-number">3.3.</span> <span class="nav-text">监控告警</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#备份恢复"><span class="nav-number">3.4.</span> <span class="nav-text">备份恢复</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#异地容灾"><span class="nav-number">3.5.</span> <span class="nav-text">异地容灾</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#高可用"><span class="nav-number">3.6.</span> <span class="nav-text">高可用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#慢日志"><span class="nav-number">3.7.</span> <span class="nav-text">慢日志</span></a></li></ol></li></ol></div>
             
 
           </div>
