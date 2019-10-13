@@ -1329,7 +1329,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-10-13 18:00:38" itemprop="dateModified" datetime="2019-10-13T18:00:38+08:00">2019-10-13</time>
+                <time title="修改时间：2019-10-13 18:07:43" itemprop="dateModified" datetime="2019-10-13T18:07:43+08:00">2019-10-13</time>
               
             
           </span>
@@ -1456,7 +1456,7 @@
 <td align="center">支持</td>
 </tr>
 <tr>
-<td align="left">SQL 诊断</td>
+<td align="left">SQL诊断</td>
 <td align="right">支持</td>
 <td align="center">支持</td>
 <td align="center">支持</td>
@@ -1527,7 +1527,7 @@
 <p><code>VPN</code> 网关是一款基于互联网通信技术，通过加密通道将企业数据中心和阿里云专有网络安全可靠地连接起来的服务。</p>
 <p><strong>互联网</strong></p>
 <p>本地 <code>IDC</code> 直接通过互联网和阿里云公有云互联，<code>HDM</code> 会对数据访问链路进行加密，用户无需担心安全问题。</p>
-<h3 id="统一监控"><a href="#统一监控" class="headerlink" title="统一监控"></a>统一监控</h3><h4 id="MySQL-Server"><a href="#MySQL-Server" class="headerlink" title="MySQL Server"></a>MySQL Server</h4><p><strong>TPS/QPS</strong>：Queries Per Second，每秒 SQL 语句执行次数；Transactions Per Second，每秒写操作数</p>
+<h3 id="统一监控"><a href="#统一监控" class="headerlink" title="统一监控"></a>统一监控</h3><h4 id="MySQL-Server"><a href="#MySQL-Server" class="headerlink" title="MySQL Server"></a>MySQL Server</h4><p><strong>TPS/QPS</strong>：Queries Per Second，每秒 <code>SQL</code> 语句执行次数；Transactions Per Second，每秒写操作数</p>
 <table>
 <thead>
 <tr>
@@ -1649,17 +1649,17 @@
 <tbody><tr>
 <td align="left">mysql.innodb_bp_dirty_pct</td>
 <td align="left">%</td>
-<td align="left">脏页比率计算公式：Innodb_buffer_pool_pages_dirty / Innodb_buffer_pool_pages_data * 100%</td>
+<td align="left">脏页比率：Innodb_buffer_pool_pages_dirty / Innodb_buffer_pool_pages_data * 100%</td>
 </tr>
 <tr>
 <td align="left">mysql.innodb_bp_hit</td>
 <td align="left">%</td>
-<td align="left">读缓存命中率计算公式：(Innodb_buffer_pool_read_requests - Innodb_buffer_pool_reads) / Innodb_buffer_pool_read_requests * 100%</td>
+<td align="left">读缓存命中率：(Innodb_buffer_pool_read_requests - Innodb_buffer_pool_reads) / Innodb_buffer_pool_read_requests * 100%</td>
 </tr>
 <tr>
 <td align="left"><strong>mysql.innodb_bp_usage_pct</strong></td>
 <td align="left">%</td>
-<td align="left">使用率计算公式：innodb_buffer_pool_pages_data / ( innodb_buffer_pool_pages_data + innodb_buffer_pool_pages_free ) * 100%</td>
+<td align="left">使用率：innodb_buffer_pool_pages_data / ( innodb_buffer_pool_pages_data + innodb_buffer_pool_pages_free ) * 100%</td>
 </tr>
 </tbody></table>
 <p><strong>InnoDB Data 读写吞吐量</strong>（单位：<code>KB</code>）</p>
@@ -1973,7 +1973,9 @@
 <p>SQL分析 [ <a href="https://help.aliyun.com/document_detail/87374.html?spm=a2c4g.11186623.6.577.5e2f690dVvEL0F" target="_blank" rel="noopener"><strong>样本</strong></a> | <a href="https://help.aliyun.com/document_detail/102635.html?spm=a2c4g.11186623.6.568.62631a4cLlP0XJ" target="_blank" rel="noopener"><strong>优化</strong></a> ]</p>
 <p><strong>死锁</strong></p>
 <p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-10-145357.png" alt></p>
-<p>⚠️可通过以下手段降低死锁发生的概率：</p>
+<blockquote>
+<p>可通过以下手段降低死锁发生的概率：</p>
+</blockquote>
 <ul>
 <li>如果不同程序会并发存取多个表，尽量约定以相同的顺序访问表，可以大大降低死锁机会；</li>
 <li>为表添加合理的索引，如果不走索引将会为表的每一行记录加锁，死锁的概率就会大大增大；</li>
@@ -1982,35 +1984,37 @@
 <li>对于非常容易产生死锁的业务部分，可以尝试使用升级锁定颗粒度，通过表级锁定来减少死锁产生的概率。</li>
 </ul>
 <p><strong>空间分析</strong>：可以查看每张表的占用空间、索引空间、碎片率等，点击表名可以查看表结构和索引。</p>
-<p>异常条件：</p>
-<p>（1）实例的空间使用率大于 <code>90%</code>。</p>
-<p>（2）实例的库表总空间（物理）剩余可用天数估计不足 <code>7</code> 天。</p>
-<p>（3）实例可回收空间大于 <code>60GB</code>，且碎片率大于 <code>5%</code>。</p>
-<p>（4）单表大于 <code>6G</code>，并且碎片率大于 <code>30%</code>。</p>
-<p>（5）单表大于 <code>50GB</code>。</p>
-<p>（6）单表行数大于 <code>500w</code>，且平均行长大于 <code>10KB</code>。</p>
+<p><strong>异常</strong>：</p>
+<ul>
+<li>实例的空间使用率大于 <code>90%</code>。</li>
+<li>实例的库表总空间（物理）剩余可用天数估计不足 <code>7</code> 天。</li>
+<li>实例可回收空间大于 <code>60GB</code>，且碎片率大于 <code>5%</code>。</li>
+<li>单表大于 <code>6G</code>，并且碎片率大于 <code>30%</code>。</li>
+<li>单表大于 <code>50GB</code>。</li>
+<li>单表行数大于 <code>500w</code>，且平均行长大于 <code>10KB</code>。</li>
+</ul>
 <h3 id="安全审计"><a href="#安全审计" class="headerlink" title="安全审计"></a>安全审计</h3><p><code>HDM</code> 的安全审计功能，采用旁路的技术，采集并分析对数据库服务器的各类操作行为，实时地、智能地解析对数据库服务器的各种操作，自动识别 <strong>高危 SQL</strong>、<strong>SQL 注入</strong>、<strong>新增访问来源</strong> 等风险。</p>
 <p><strong>高危 SQL</strong></p>
 <p>在 <code>HDM</code> 中，会根据预设的规则库，自动识别三种类型的高危 <code>SQL</code> ：</p>
-<p>① <code>DDL</code>（新建表、修改表结构、修改索引、重命名表等操作）</p>
-<p>② 全表更新（例如全表 <code>Update</code> 、全表 <code>Delete</code> 等)</p>
+<p>① <code>DDL</code>（新建表、修改表结构、修改索引、重命名表等操作)；</p>
+<p>② 全表更新（例如全表 <code>Update</code> 、全表 <code>Delete</code> 等)；</p>
 <p>③ 大请求，默认规则是满足下面三个条件中的任意一个：</p>
 <ul>
-<li>扫描行数 &gt;= 100w</li>
-<li>返回行数 &gt;= 10w</li>
-<li>更新行数 &gt;= 10w</li>
+<li>扫描行数 &gt;= <code>100w</code></li>
+<li>返回行数 &gt;= <code>10w</code></li>
+<li>更新行数 &gt;= <code>10w</code></li>
 </ul>
 <p><strong>SQL 注入</strong></p>
 <p>所谓 <code>SQL</code> 注入，就是通过把 <code>SQL</code> 命令插入到 <code>Web</code> 表单提交或输入域名或页面请求的查询字符串，最终达到欺骗服务器执行恶意的 <code>SQL</code> 命令，严重危害数据库的健康。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">示例：</span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">'xx'</span> <span class="keyword">FROM</span> <span class="string">'xx'</span> <span class="keyword">WHERE</span> <span class="number">1</span> = <span class="number">1</span> <span class="keyword">AND</span> <span class="number">1</span> = <span class="number">1</span></span><br><span class="line">- <span class="keyword">Where</span> 子句中连续出现两个常量运算表达式</span><br><span class="line">- <span class="keyword">Where</span> 子句中有部分条件总为真</span><br></pre></td></tr></table></figure>
 
 <p><strong>新增访问来源</strong></p>
-<p>和历史的访问来源纪录进行对比，自动识别新增的访问来源，帮助用户确认是否存在未知的机器在访问或者读取数据库，默认规则是过去 <strong>七天</strong> 没有出现过的访问来源，即为新增访问来源。</p>
+<p>和历史的访问来源纪录进行对比，自动识别新增的访问来源，帮助用户确认是否存在未知的机器在访问或者读取数据库，默认规则是过去<strong>七天</strong>没有出现过的访问来源，即为新增访问来源。</p>
 <h3 id="诊断报告"><a href="#诊断报告" class="headerlink" title="诊断报告"></a>诊断报告</h3><p><strong>功能</strong>：支持用户 <strong>创建</strong>、<strong>查看</strong>、<strong>下载</strong> 诊断报告</p>
 <p><strong>要求</strong>：诊断时间必须小于 <code>24小时</code></p>
 <p><strong>内容</strong>：实例信息、健康状况（<code>CPU</code> / 连接数 / 活跃会话 / <code>QPS</code> / <code>TPS</code>）、告警列表、活跃会话列表、Top5 慢 SQL、Top5 表空间、死锁分析、性能趋势（<code>CPU</code> / 网络 / 内存 / <code>QPS and TPS</code> / 会话 / 空间变化）</p>
 <h3 id="容量评估"><a href="#容量评估" class="headerlink" title="容量评估"></a>容量评估</h3><blockquote>
-<p>限制：目前仅支持 RDS MySQL</p>
+<p>限制：目前仅支持 <code>MySQL RDS</code></p>
 </blockquote>
 <p><strong>功能</strong>：容量建议 | 容量评估（<code>CPU</code> / 内存 / <code>IOPS</code> / 活跃会话 / 存储空间）</p>
 <h2 id="问题记录"><a href="#问题记录" class="headerlink" title="问题记录"></a>问题记录</h2><p>① 有些数据库服务器未连接外网，<code>dbgateway</code> 无法下载，实例如何接入？</p>
