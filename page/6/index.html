@@ -323,6 +323,256 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/12/mysql-cookbook/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/12/mysql-cookbook/" class="post-title-link" itemprop="url">MySQL · 构建知识体系</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-12 15:25:39" itemprop="dateCreated datePublished" datetime="2019-07-12T15:25:39+08:00">2019-07-12</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-13 21:00:00" itemprop="dateModified" datetime="2019-10-13T21:00:00+08:00">2019-10-13</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="数据库基础"><a href="#数据库基础" class="headerlink" title="数据库基础"></a>数据库基础</h2><h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>OLTP、OLAP、事务、库、表、行、列、主键、外键</p>
+<p><strong>数据库</strong>：物理操作系统或其他形式文件类型的集合。在mysql下数据库文件可以是 frm，myd，myi，ibd 结尾的文件。</p>
+<p><strong>数据库实例</strong>：由数据库后台进程/线程以及一个共享内存区组成。数据库实例才是真正用来操作数据库文件的。<br>mysql数据库：是单进程多线程的程序，与sql server比较类似。也就是说，Mysql数据库实例在系统上的表现就是一个进程</p>
+<p>数据库应用主要有两类：<strong>OLAP</strong>（联机分析处理）和 <strong>OLTP</strong>（联机事务处理）</p>
+<p>OLAP的主要特点是:</p>
+<ul>
+<li>实时性要求不高</li>
+<li>数据量大</li>
+<li>并发量小</li>
+</ul>
+<p>OLTP的主要特点是:</p>
+<ul>
+<li>实时性要求高</li>
+<li>数据量小</li>
+<li>高并发</li>
+<li>要求满足ACID</li>
+</ul>
+<h3 id="DBMS-vs-NoSQL-vs-NewSQL"><a href="#DBMS-vs-NoSQL-vs-NewSQL" class="headerlink" title="DBMS vs NoSQL vs NewSQL"></a>DBMS vs NoSQL vs NewSQL</h3><ul>
+<li>Oracle，典型的高富帅；</li>
+<li>SQL Server，微软自家产品，Windows定制专款；</li>
+<li>DB2，IBM的产品，听起来挺高端；</li>
+<li>Sybase，曾经跟微软是好基友，后来关系破裂，现在家境惨淡；</li>
+<li>MySQL，大家都在用，一般错不了；</li>
+<li>PostgreSQL，学术气息有点重，其实挺不错，但知名度没有MySQL高；</li>
+<li>SQLite，嵌入式数据库，适合桌面和移动应用；</li>
+</ul>
+<h3 id="MySQL基础"><a href="#MySQL基础" class="headerlink" title="MySQL基础"></a>MySQL基础</h3><h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><h4 id="主流分支版本"><a href="#主流分支版本" class="headerlink" title="主流分支版本"></a>主流分支版本</h4><p>官方版本</p>
+<p>Percona Server</p>
+<p>MariaDB</p>
+<h2 id="核心知识点"><a href="#核心知识点" class="headerlink" title="核心知识点"></a>核心知识点</h2><h3 id="体系结构"><a href="#体系结构" class="headerlink" title="体系结构"></a>体系结构</h3><h3 id="InnoDB存储引擎"><a href="#InnoDB存储引擎" class="headerlink" title="InnoDB存储引擎"></a>InnoDB存储引擎</h3><p><img src="http://ww4.sinaimg.cn/large/006tNc79ly1g5tdauxzpzj313i0u0qag.jpg" alt></p>
+<h3 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h3><p>什么是索引？</p>
+<p>B+Tree索引和Hash索引区别？</p>
+<ul>
+<li>哈希索引适合等值查询，但是无法进行范围查询；</li>
+<li>哈希索引没办法利用索引完成排序 ；</li>
+<li>哈希索引不支持多列联合索引的最左匹配规则；</li>
+<li>如果有大量重复键值的情况下，哈希索引的效率会很低，因为存在哈希碰撞问题。</li>
+</ul>
+<p>最左前缀匹配原则</p>
+<p>查询优化器</p>
+<p>一条SQL语句的查询，可以有不同的执行方案，至于最终选择哪种方案，需要通过优化器进行选择，选择执行成本最低的方案。</p>
+<p>在一条单表查询语句真正执行之前，MySQL的查询优化器会找出执行该语句所有可能使用的方案，对比之后找出成本最低的方案。 </p>
+<p>这个成本最低的方案就是所谓的执行计划。优化过程大致如下：</p>
+<ul>
+<li>根据搜索条件，找出所有可能使用的索引；</li>
+<li>计算全表扫描的代价；</li>
+<li>计算使用不同索引执行查询的代价；</li>
+<li>对比各种执行方案的代价，找出成本最低的那一个。</li>
+</ul>
+<h3 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h3><h3 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h3><h3 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h3><h3 id="SQL"><a href="#SQL" class="headerlink" title="SQL"></a>SQL</h3><p>视图</p>
+<p>存储过程</p>
+<p>触发器</p>
+<p>事件</p>
+<p>函数</p>
+<p>分区</p>
+<h2 id="运维实践"><a href="#运维实践" class="headerlink" title="运维实践"></a>运维实践</h2><h3 id="安装部署"><a href="#安装部署" class="headerlink" title="安装部署"></a>安装部署</h3><p>安装</p>
+<p>升级</p>
+<h3 id="监控告警"><a href="#监控告警" class="headerlink" title="监控告警"></a>监控告警</h3><p>监控指标、定制告警</p>
+<h3 id="备份恢复"><a href="#备份恢复" class="headerlink" title="备份恢复"></a>备份恢复</h3><h3 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h3><h3 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h3><p>慢查询、配置优化、SQL优化、索引优化、分库分表</p>
+<h3 id="高可用"><a href="#高可用" class="headerlink" title="高可用"></a>高可用</h3><p>读写分离</p>
+<p>同城双活</p>
+<p>两地三中心架构</p>
+<h3 id="安全"><a href="#安全" class="headerlink" title="安全"></a>安全</h3><h2 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h2><p><strong>工具</strong></p>
+<p><strong>阅读源码</strong></p>
+<p><strong>数据库设计</strong></p>
+<p><strong>自动化运维</strong></p>
+<p>主键</p>
+<p>外键：外键为某个表中的一列，它包含另一个表的主键值，定义了两个表之间的关系。</p>
+<p>优点：更有效的存储和处理数据，具有很强的可伸缩性（能够适应不断增加的工作量而不失败）。</p>
+<p>代价：数据存储在多个表中，如何快速检索出数据？（联结）</p>
+<p>唯一键</p>
+<p>行</p>
+<p>列</p>
+<p>函数</p>
+<p>优点：很高效地完成一些数据处理类任务。</p>
+<p>缺点：不同DBMS之间函数定义区别大，可移植性差。函数没有SQL的可移植性强。</p>
+<p>如果决定使用函数，就需要做好注释</p>
+<p>子查询：难以阅读和调试，需要格式化SQL</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/12/db-evolution/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2560,263 +2810,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/06/18/mysql-xtrabackup/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/06/18/mysql-xtrabackup/" class="post-title-link" itemprop="url">MySQL · 备份工具 · Percona XtraBackup</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-06-18 10:24:13" itemprop="dateCreated datePublished" datetime="2019-06-18T10:24:13+08:00">2019-06-18</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-15 22:54:39" itemprop="dateModified" datetime="2019-10-15T22:54:39+08:00">2019-10-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://www.percona.com/software/mysql-database/percona-xtrabackup" target="_blank" rel="noopener"><strong>Percona XtraBackup</strong></a> 是 <code>Percona</code> 公司开发的一个用于 <code>MySQL</code> 数据库 <strong>物理热备</strong> 的 <strong>免费开源</strong> 的备份工具，支持 <code>MySQL（Oracle）</code>、 <code>MariaDB</code>，阿里云 <code>RDS MySQL</code> 的物理备份就是基于这个工具。</p>
-<blockquote>
-<p><strong>XtraBackup 优势</strong> </p>
-</blockquote>
-<ul>
-<li>支持 <code>InnoDB</code> 热备和增量备份</li>
-<li>支持流压缩传输到其它服务器</li>
-<li>备份速度快，比较容易地创建主从同步</li>
-<li>备份时不会增加服务器负载</li>
-</ul>
-<blockquote>
-<p><strong>XtraBackup 备份原理</strong></p>
-</blockquote>
-<p><code>innobackupex</code> 在后台线程不断追踪 <code>InnoDB</code> 的日志文件，然后复制 <code>InnoDB</code> 的数据文件。数据文件复制完成之后，日志的复制线程也会结束。这样就得到了不在同一时间点的数据副本和开始备份以后的事务日志。完成上面的步骤之后，就可以使用 <code>InnoDB</code> 崩溃恢复代码执行事务日志（<code>redo log</code>），以达到数据的一致性。备份分为两个过程：</p>
-<ul>
-<li><strong>backup</strong>，备份阶段，追踪事务日志和复制数据文件（物理备份）。</li>
-<li><strong>preparing</strong>，重放事务日志，使所有的数据处于同一个时间点，达到一致性状态。</li>
-</ul>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>1）下载 <code>Percona-XtraBackup</code></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ wget http://devops-files.oss-cn-qingdao.aliyuncs.com/percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
-
-<p>2）<code>rpm</code> 方式安装</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rpm -ivh percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
-
-<p><strong>报错信息</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">warning: percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64.rpm: Header V4 DSA/SHA1 Signature, key ID cd2efd2a: NOKEY</span><br><span class="line">error: Failed dependencies:</span><br><span class="line">	libev.so.<span class="number">4</span>()(<span class="number">64</span>bit) is needed by percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64</span><br><span class="line">	perl(DBD::mysql) is needed by percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64</span><br><span class="line">	perl(Digest::MD5) is needed by percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64</span><br></pre></td></tr></table></figure>
-
-<p><strong>解决方法</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ wget http://devops-files.oss-cn-qingdao.aliyuncs.com/libev-<span class="number">4.15</span>-<span class="number">1</span>.el6.x86_64.rpm</span><br><span class="line">$ yum -y install perl-DBD-MySQL</span><br><span class="line">$ yum -y install perl-Digest-MD5</span><br><span class="line">$ rpm -ivh libev-<span class="number">4.15</span>-<span class="number">1</span>.el6.x86_64.rpm</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ rpm -ivh percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br><span class="line">Preparing...                           <span class="comment">################################# [100%]</span></span><br><span class="line">Updating / installing...</span><br><span class="line">   <span class="number">1</span>:percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el <span class="comment">################################# [100%]</span></span><br><span class="line"></span><br><span class="line">$ xtrabackup --version </span><br><span class="line">xtrabackup version <span class="number">2.4</span>.<span class="number">12</span> based on MySQL server <span class="number">5.7</span>.<span class="number">19</span> Linux (x86_64)</span><br></pre></td></tr></table></figure>
-
-<p><strong>报错信息</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@hop02 src]<span class="comment"># rpm -ivh percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span></span><br><span class="line">warning: percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64.rpm: Header V4 DSA/SHA1 Signature, key ID cd2efd2a: NOKEY</span><br><span class="line">error: Failed dependencies:</span><br><span class="line">​	libc.so.<span class="number">6</span>(GLIBC_2.<span class="number">14</span>)(<span class="number">64</span>bit) is needed by percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64</span><br><span class="line">​	libstdc++.so.<span class="number">6</span>(GLIBCXX_3.<span class="number">4.15</span>)(<span class="number">64</span>bit) is needed by percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64</span><br></pre></td></tr></table></figure>
-
-<p><strong>解决方法</strong>：</p>
-<p>查看操作系统版本，CentOS 6 下载 el6 的安装包即可。</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/redhat-release</span><br><span class="line">CentOS release <span class="number">6.5</span> (Final)</span><br><span class="line"></span><br><span class="line">$ wget http://devops-files.oss-cn-qingdao.aliyuncs.com/percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el6.x86_64.rpm</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>Tips：不要轻易在真实生产环境中直接安装，因为升级的过程中比较容易出现系统出错。</p>
-</blockquote>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><h3 id="备份过程"><a href="#备份过程" class="headerlink" title="备份过程"></a>备份过程</h3><p><img src="http://ww4.sinaimg.cn/large/006tNc79ly1g5r4dhuzpvj30hi0srwtk.jpg" alt="PXB"></p>
-<ol>
-<li><code>innobackupex</code> 在启动后，会先 fork 一个进程，启动 <code>xtrabackup</code>进程，然后就等待 <code>xtrabackup</code> 备份完 ibd 数据文件；</li>
-<li><code>xtrabackup</code> 在备份 InnoDB 相关数据时，是有2种线程的，1种是 redo 拷贝线程，负责拷贝 redo 文件，1种是 ibd 拷贝线程，负责拷贝 ibd 文件；redo 拷贝线程只有一个，在 ibd 拷贝线程之前启动，在 ibd 线程结束后结束。<code>xtrabackup</code> 进程开始执行后，先启动 redo 拷贝线程，从最新的 checkpoint 点开始顺序拷贝 redo 日志；然后再启动 ibd 数据拷贝线程，在 <code>xtrabackup</code> 拷贝 ibd 过程中，<code>innobackupex</code> 进程一直处于等待状态（等待文件被创建）。</li>
-<li><code>xtrabackup</code> 拷贝完成idb后，通知 <code>innobackupex</code>（通过创建文件），同时自己进入等待（redo 线程仍然继续拷贝）;</li>
-<li><code>innobackupex</code> 收到 <code>xtrabackup</code> 通知后，执行<code>FLUSH TABLES WITH READ LOCK</code> (FTWRL)，取得一致性位点，然后开始备份非 InnoDB 文件（包括 frm、MYD、MYI、CSV、opt、par等）。拷贝非 InnoDB 文件过程中，因为数据库处于全局只读状态，如果在业务的主库备份的话，要特别小心，非 InnoDB 表（主要是MyISAM）比较多的话整库只读时间就会比较长，这个影响一定要评估到。</li>
-<li>当 <code>innobackupex</code> 拷贝完所有非 InnoDB 表文件后，通知 <code>xtrabackup</code>（通过删文件） ，同时自己进入等待（等待另一个文件被创建）；</li>
-<li><code>xtrabackup</code> 收到 <code>innobackupex</code> 备份完非 InnoDB 通知后，就停止 redo 拷贝线程，然后通知 <code>innobackupex</code>redo log 拷贝完成（通过创建文件）；</li>
-<li><code>innobackupex</code> 收到 redo 备份完成通知后，就开始解锁，执行 <code>UNLOCK TABLES</code>；</li>
-<li>最后 <code>innobackupex</code> 和 <code>xtrabackup</code> 进程各自完成收尾工作，如资源的释放、写备份元数据信息等，<code>innobackupex</code> 等待 <code>xtrabackup</code> 子进程结束后退出。</li>
-</ol>
-<p>在上面描述的文件拷贝，都是备份进程直接通过操作系统读取数据文件的，只在执行 SQL 命令时和数据库有交互，基本不影响数据库的运行，在备份非 InnoDB 时会有一段时间只读（如果没有 MyISAM 表的话，只读时间在几秒左右），在备份 InnoDB 数据文件时，对数据库完全没有影响，是真正的热备。</p>
-<p><code>InnoDB</code> 和非 <code>InnoDB</code> 文件的备份都是通过拷贝文件来做的，但是实现的方式不同，前者是以 <code>page</code> 为粒度做的(<code>xtrabackup</code>)，后者是 <code>cp</code> 或者 <code>tar</code> 命令(<code>innobackupex</code>)，<code>xtrabackup</code> 在读取每个 <code>page</code> 时会校验 <code>checksum</code> 值，保证数据块是一致的，而 <code>innobackupex</code> 在 <code>cp</code> MyISAM 文件时已经做了 <code>flush</code>（<code>FTWRL</code>），磁盘上的文件也是完整的，所以最终备份集里的数据文件都是写入完整的。</p>
-<p><strong>备份流程：</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>）复制已有的redo log，然后监听redo log变化并持续复制</span><br><span class="line"><span class="number">2</span>）复制事务引擎数据文件</span><br><span class="line"><span class="number">3</span>）等到数据文件复制完成</span><br><span class="line"><span class="number">4</span>）加锁：全局读锁</span><br><span class="line"><span class="number">5</span>）备份非事务引擎数据文件及其他文件</span><br><span class="line"><span class="number">6</span>）获取binlog点位信息等元数据</span><br><span class="line"><span class="number">7</span>）停止复制redo log</span><br><span class="line"><span class="number">8</span>）解锁：全局读锁</span><br><span class="line"><span class="number">9</span>）复制buffer pool dump</span><br><span class="line"><span class="number">10</span>）备份完成</span><br></pre></td></tr></table></figure>
-
-<p><code>XtraBackup</code> 基于 <code>InnoDB</code> 的 <code>crash recovery</code> 机制，在备份还原时利用 <code>redo log</code> 得到完整的数据文件，并通过全局读锁，保证 <code>InnoDB</code> 数据与非 <code>InnoDB</code> 数据的一致性，最终完成备份还原的功能。</p>
-<h3 id="恢复过程"><a href="#恢复过程" class="headerlink" title="恢复过程"></a>恢复过程</h3><p><strong>apply-log</strong></p>
-<ul>
-<li>模拟 <code>MySQL</code> 进行 <code>recover</code>，将 <code>redo log</code> 回放到数据文件中。</li>
-<li>等到 <code>recover</code> 完成 。</li>
-<li>重建 <code>redo log</code>，为启动数据库做准备。</li>
-</ul>
-<p><strong>copy-back</strong></p>
-<ul>
-<li>将数据文件复制回 <code>MySQL</code> 数据目录。</li>
-<li>还原完成。</li>
-</ul>
-<p><code>InnoDB</code> 数据会被恢复至备份结束时（全局读锁时）的状态，而非 <code>InnoDB</code> 数据本身即是在全局读锁时被复制出来，它们的数据一致。</p>
-<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p><strong>全量备份</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># !/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#############################################################################</span></span><br><span class="line"><span class="comment"># Full Backup Using XtraBackup For MySQL</span></span><br><span class="line"><span class="comment">#############################################################################</span></span><br><span class="line"></span><br><span class="line">mode=<span class="variable">$1</span></span><br><span class="line">backupdir=<span class="string">'/data/backup'</span>   <span class="comment"># backup dir</span></span><br><span class="line"></span><br><span class="line">backup() &#123;</span><br><span class="line"><span class="keyword">if</span> [ ! -d <span class="variable">$backupdir</span> ]; then</span><br><span class="line">    mkdir -p <span class="variable">$backupdir</span> </span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份主库：</span></span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --user=root --password=Haier@<span class="number">123</span> --no-timestamp /<span class="variable">$backupdir</span>/full-`date +%Y%m%d%H%M`-bak</span><br><span class="line">find <span class="variable">$backupdir</span> -mtime +<span class="number">2</span> -name <span class="string">'full-*-bak'</span> -exec rm -rf &#123;&#125; \;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 传输到从库：</span></span><br><span class="line"><span class="comment"># scp -r /data/backup/* root@10.133.7.19:/data/backup</span></span><br><span class="line"><span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">case <span class="string">"<span class="variable">$mode</span>"</span> <span class="keyword">in</span></span><br><span class="line">    <span class="string">'full'</span>) backup ;;</span><br><span class="line">*)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># usage</span></span><br><span class="line">    basename=`basename <span class="string">"<span class="variable">$0</span>"</span>`</span><br><span class="line">    echo <span class="string">"Usage: <span class="variable">$basename</span> &#123;full&#125;"</span></span><br><span class="line">    <span class="keyword">exit</span> <span class="number">1</span></span><br><span class="line">    ;;</span><br><span class="line">esac</span><br><span class="line"><span class="keyword">exit</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 每天中午12:00执行全量备份，保留前1天数据</span></span><br><span class="line">crontab -e</span><br><span class="line"><span class="number">0</span> <span class="number">12</span> * * <span class="number">0</span> sh /<span class="keyword">data</span>/backup.sh full</span><br></pre></td></tr></table></figure>
-
-<p><strong>备份报错</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">190812</span> <span class="number">13</span>:<span class="number">39</span>:<span class="number">54</span> &gt;&gt; log scanned up to (<span class="number">491275222500</span>)</span><br><span class="line">xtrabackup: Generating a list of tablespaces</span><br><span class="line">InnoDB: Allocated tablespace ID <span class="number">2</span> <span class="keyword">for</span> mysql/plugin, old maximum was <span class="number">0</span></span><br><span class="line">InnoDB: Operating system error number <span class="number">24</span> <span class="keyword">in</span> a file operation.</span><br><span class="line">InnoDB: Error number <span class="number">24</span> means <span class="string">'Too many open files'</span></span><br><span class="line">InnoDB: Some operating system error numbers are described at http://dev.mysql.com/doc/refman/<span class="number">5.7</span>/en/operating-system-error-codes.html</span><br><span class="line">InnoDB: File ./cosmo_im_1023/bns_io_sapsourcinglist.ibd: <span class="string">'open'</span> returned OS error <span class="number">124</span>. Cannot <span class="keyword">continue</span> operation</span><br><span class="line">InnoDB: Cannot <span class="keyword">continue</span> operation.</span><br></pre></td></tr></table></figure>
-
-<p><strong>解决方案</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>）shell&gt; ulimit -n <span class="number">65535</span></span><br><span class="line"><span class="number">2</span>）修改 my.cnf 配置文件的参数</span><br><span class="line">innodb_open_files = <span class="number">10240</span></span><br><span class="line">open_files_limit = <span class="number">10240</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
-<li>优先使用高版本 <code>innobackupex</code> 。</li>
-<li>尽量不要使用 <code>innobackupex</code> 自带的增量备份，因为后期使用或者恢复不太方便。</li>
-<li>备份结束时，请立即 <code>apply-log</code> ，这样能够知道备份集是否可用。</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2865,7 +2858,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">63</span>
+                    <span class="site-state-item-count">64</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
