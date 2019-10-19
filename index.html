@@ -1078,7 +1078,7 @@
                 
               
 
-              <time title="创建时间：2019-10-19 09:52:54 / 修改时间：10:05:34" itemprop="dateCreated datePublished" datetime="2019-10-19T09:52:54+08:00">2019-10-19</time>
+              <time title="创建时间：2019-10-19 09:52:54 / 修改时间：11:46:28" itemprop="dateCreated datePublished" datetime="2019-10-19T09:52:54+08:00">2019-10-19</time>
             
 
             
@@ -1119,7 +1119,14 @@
       
         
           
-            
+            <h4 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h4><p>显示 <code>mysql.user</code> 所有用户及权限</p>
+<h4 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h4><ul>
+<li>先查找所有 <code>user</code> 和 <code>host</code></li>
+<li>然后逐个执行 <code>show grants</code></li>
+</ul>
+<h4 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h4><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ pt-show-grants -u <span class="string">'xx'</span> -p <span class="string">'xx'</span> -S /tmp/mysql.sock</span><br><span class="line"></span><br><span class="line">-- Grants dumped by pt-show-grants</span><br><span class="line">-- Dumped from server Localhost via UNIX socket, MySQL <span class="number">5.7</span>.<span class="number">23</span>-log at <span class="number">2019</span>-<span class="number">10</span>-<span class="number">18</span> <span class="number">15</span>:<span class="number">56</span>:<span class="number">29</span></span><br><span class="line">-- Grants <span class="keyword">for</span> <span class="string">'hdm'</span><span class="string">@'%'</span></span><br><span class="line"><span class="string">CREATE USER IF NOT EXISTS 'hdm'@'%';</span></span><br><span class="line"><span class="string">ALTER USER 'hdm'@'%' IDENTIFIED WITH 'mysql_native_password' AS '*14533888C6CA3952B3957903FF7E69469C7E3A2B' REQUIRE NONE PASSWORD EXPIRE DEFAULT ACCOUNT UNLOCK;</span></span><br><span class="line"><span class="string">GRANT PROCESS, REPLICATION CLIENT, REPLICATION SLAVE, SELECT, SHOW DATABASES ON *.* TO 'hdm'@'%';</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">-- Grants for 'monitor'@'10.138.228.%'</span></span><br><span class="line"><span class="string">CREATE USER IF NOT EXISTS 'monitor'@'10.138.228.%';</span></span><br><span class="line"><span class="string">ALTER USER 'monitor'@'10.138.228.%' IDENTIFIED WITH 'mysql_native_password' AS '*67C7E9852A88EE023433F77C5C63AF9DD730667B' REQUIRE NONE PASSWORD EXPIRE DEFAULT ACCOUNT UNLOCK;</span></span><br><span class="line"><span class="string">GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO 'monitor'@'10.138.228.%';</span></span><br></pre></td></tr></table></figure>
+
+
           
         
       
@@ -1220,7 +1227,7 @@
                 
               
 
-              <time title="创建时间：2019-10-19 09:52:44 / 修改时间：10:02:54" itemprop="dateCreated datePublished" datetime="2019-10-19T09:52:44+08:00">2019-10-19</time>
+              <time title="创建时间：2019-10-19 09:52:44 / 修改时间：11:47:50" itemprop="dateCreated datePublished" datetime="2019-10-19T09:52:44+08:00">2019-10-19</time>
             
 
             
@@ -1261,7 +1268,11 @@
       
         
           
-            
+            <h4 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h4><p>从日志当中分析索引的使用情况，检测多余的索引</p>
+<h4 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h4><p>通过 <code>EXPLAIN</code> 慢查询日志中的 <code>SQL</code>，然后用执行计划和数据库中的索引做对比，看哪些索引没有被利用</p>
+<h4 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h4><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pt-index-usage /<span class="keyword">data</span>/mysql/slow.log  -u <span class="string">'xx'</span> -p <span class="string">'xx'</span> -S /tmp/mysql.sock</span><br></pre></td></tr></table></figure>
+
+
           
         
       
@@ -1504,7 +1515,7 @@
                 
               
 
-              <time title="创建时间：2019-10-19 09:52:23 / 修改时间：09:59:22" itemprop="dateCreated datePublished" datetime="2019-10-19T09:52:23+08:00">2019-10-19</time>
+              <time title="创建时间：2019-10-19 09:52:23 / 修改时间：11:51:33" itemprop="dateCreated datePublished" datetime="2019-10-19T09:52:23+08:00">2019-10-19</time>
             
 
             
@@ -1545,7 +1556,10 @@
       
         
           
-            
+            <h4 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h4><p>提供慢日志分析功能，可以统计出查询执行时间、次数、占比等，并把分析结果输出到文件中，然后借助分析结果找出问题进行优化。</p>
+<h4 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h4><h4 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h4><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 分析慢查询日志</span></span><br><span class="line">$ pt-query-digest slow.log &gt; slow_report.log</span><br><span class="line"></span><br><span class="line"><span class="comment"># 分析最近12个小时内的查询</span></span><br><span class="line">$ pt-query-digest --since=<span class="number">12</span>h  slow.log &gt; slow_report.log</span><br><span class="line"></span><br><span class="line"><span class="comment"># 分析最近1个月内的查询</span></span><br><span class="line">$ pt-query-digest slow.log --since <span class="string">'2019-06-08 10:00:00'</span> --until <span class="string">'2019-07-08 10:00:00'</span> &gt; slow_report.log</span><br></pre></td></tr></table></figure>
+
+
           
         
       
@@ -1621,7 +1635,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/blog/2019/10/19/pt-online-schema-change/" class="post-title-link" itemprop="url">Percona Toolkit · 表结构修改工具 pt-online-schema-change</a>
+                <a href="/blog/2019/10/19/pt-online-schema-change/" class="post-title-link" itemprop="url">Percona Toolkit · 在线修改表结构工具 pt-online-schema-change</a>
               
             
           </h1>
@@ -1646,7 +1660,7 @@
                 
               
 
-              <time title="创建时间：2019-10-19 09:52:13 / 修改时间：10:03:28" itemprop="dateCreated datePublished" datetime="2019-10-19T09:52:13+08:00">2019-10-19</time>
+              <time title="创建时间：2019-10-19 09:52:13 / 修改时间：11:52:17" itemprop="dateCreated datePublished" datetime="2019-10-19T09:52:13+08:00">2019-10-19</time>
             
 
             
@@ -1687,7 +1701,8 @@
       
         
           
-            
+            <h4 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h4><p>提供在线修改表结构等功能</p>
+<h4 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h4><h4 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h4>
           
         
       
