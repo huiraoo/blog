@@ -323,6 +323,1480 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/25/mysql-character/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/25/mysql-character/" class="post-title-link" itemprop="url">MySQL · 字符集</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-25 16:58:31" itemprop="dateCreated datePublished" datetime="2019-09-25T16:58:31+08:00">2019-09-25</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-09-27 09:07:21" itemprop="dateModified" datetime="2019-09-27T09:07:21+08:00">2019-09-27</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>字符集</strong>：计算机中只能存储二进制数据，那字符串该如何存储字符串呢？是靠建立字符与二进制数据的映射关系，将一个字符映射成一个二进制数据的过程叫做<strong>编码</strong>，将一个二进制数据映射到一个字符的过程叫做<strong>解码</strong>，抽象出一个<strong>字符集</strong>的概念来描述某个字符范围的编码规则。</p>
+<p><strong>比较规则</strong>：英文名为 <code>collation</code>，用于比较两个字符的大小。</p>
+<p><strong>常用字符集</strong></p>
+<ul>
+<li><p><code>ASCII</code> 字符集</p>
+<p>共收录 <code>128</code> 个字符，包括空格、标点符号、数字、大小写字母和一些不可见字符。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'L'</span> -&gt;  <span class="number">01001100</span>（十六进制：<span class="number">0</span>x4C，十进制：<span class="number">76</span>）</span><br><span class="line"><span class="string">'M'</span> -&gt;  <span class="number">01001101</span>（十六进制：<span class="number">0</span>x4D，十进制：<span class="number">77</span>）</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>ISO 8859-1</code> 字符集</p>
+<p>共收录 <code>256</code> 个字符，是在 <code>ASCII</code> 字符集的基础上又扩充了 <code>128</code> 个西欧常用字符（包括德法两国的字母），这个字符集也有一个别名 <code>latin1</code>。</p>
+</li>
+<li><p><code>utf8</code> 字符集</p>
+<p>收录地球上能想到的所有字符，而且还在不断扩充。这种字符集兼容 <code>ASCII</code> 字符集，采用变长编码方式，编码一个字符需要使用 <code>1～4</code> 个字节，比方说这样：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'L'</span> -&gt;  <span class="number">01001100</span>（十六进制：<span class="number">0</span>x4C）</span><br><span class="line"><span class="string">'啊'</span> -&gt;  <span class="number">111001011001010110001010</span>（十六进制：<span class="number">0</span>xE5958A）</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Tips： <code>utf8</code> 只是 <code>Unicode</code> 字符集的一种编码方案，<code>Unicode</code> 字符集可以用 <code>utf8</code>、<code>utf16</code>、<code>utf32</code> 这几种编码方案，<code>utf8</code> 使用 <code>1～4</code> 个字节编码一个字符。</p>
+</blockquote>
+</li>
+</ul>
+<p><strong>查看字符集（character set/charset）</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show charset like <span class="string">'utf8%'</span>;</span><br><span class="line">+---------+---------------+--------------------+--------+</span><br><span class="line">| Charset | Description   | Default collation  | Maxlen |</span><br><span class="line">+---------+---------------+--------------------+--------+</span><br><span class="line">| utf8    | UTF-<span class="number">8</span> Unicode | utf8_general_ci    |      <span class="number">3</span> |</span><br><span class="line">| utf8mb4 | UTF-<span class="number">8</span> Unicode | utf8mb4_general_ci |      <span class="number">4</span> |</span><br><span class="line">+---------+---------------+--------------------+--------+</span><br></pre></td></tr></table></figure>
+
+<p><strong>查看比较规则（collation）</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show collation like <span class="string">'utf8%general_ci'</span>;</span><br><span class="line">+--------------------+---------+----+---------+----------+---------+</span><br><span class="line">| Collation          | Charset | Id | Default | Compiled | Sortlen |</span><br><span class="line">+--------------------+---------+----+---------+----------+---------+</span><br><span class="line">| utf8_general_ci    | utf8    | <span class="number">33</span> | Yes     | Yes      |       <span class="number">1</span> |</span><br><span class="line">| utf8mb4_general_ci | utf8mb4 | <span class="number">45</span> | Yes     | Yes      |       <span class="number">1</span> |</span><br><span class="line">+--------------------+---------+----+---------+----------+---------+</span><br></pre></td></tr></table></figure>
+
+<p><code>utf8</code> 字符集默认的比较规则是 <code>utf8_general_ci</code>，它是一种通用的比较规则，<code>_ci</code> 结尾，表示不区分大小写。</p>
+<h2 id="字符集和比较规则"><a href="#字符集和比较规则" class="headerlink" title="字符集和比较规则"></a>字符集和比较规则</h2><p><code>MySQL</code> 有四个级别的字符集和比较规则，分别是：</p>
+<ul>
+<li>服务器级别</li>
+<li>数据库级别</li>
+<li>表级别</li>
+<li>列级别</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like <span class="string">'character%'</span>;</span><br><span class="line">+--------------------------+----------------------------------------------------+</span><br><span class="line">| Variable_name            | Value                                              |</span><br><span class="line">+--------------------------+----------------------------------------------------+</span><br><span class="line">| character_set_client     | utf8                                               |</span><br><span class="line">| character_set_connection | utf8                                               |</span><br><span class="line">| character_set_database   | utf8                                               |</span><br><span class="line">| character_set_filesystem | binary                                             |</span><br><span class="line">| character_set_results    | utf8                                               |</span><br><span class="line">| character_set_server     | latin1                                             |</span><br><span class="line">| character_set_system     | utf8                                               |</span><br><span class="line">| character_sets_dir       | /usr/local/mysql-<span class="number">5.7</span>.<span class="number">23</span>-el7-x86_64/share/charsets/ |</span><br><span class="line">+--------------------------+----------------------------------------------------+</span><br></pre></td></tr></table></figure>
+
+<p><strong><em>character_set_server</em></strong>： 默认的内部操作字符集<br><strong><em>character_set_client</em></strong>： 服务器解码请求时使用的字符集<br><strong><em>character_set_connection</em></strong>：连接层字符集<br><strong><em>character_set_results</em></strong>： 服务器向客户端返回数据时使用的字符集<br><strong><em>character_set_database</em></strong>： 当前选中数据库的默认字符集<br><strong><em>character_set_system</em></strong>： 系统元数据(字段名等)字符集</p>
+<p><strong>服务器级别</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 控制参数</span></span><br><span class="line">character_set_server</span><br><span class="line">collation_server</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置文件设置</span></span><br><span class="line">[client]</span><br><span class="line">default-character-<span class="keyword">set</span>  = utf8</span><br><span class="line"></span><br><span class="line">[mysql]</span><br><span class="line"><span class="keyword">default</span>-<span class="built_in">character</span>-<span class="keyword">set</span>  = utf8</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line"><span class="built_in">character</span>-<span class="keyword">set</span>-<span class="keyword">server</span>   = utf8</span><br><span class="line"><span class="keyword">collation</span>-<span class="keyword">server</span>       = utf8_general_ci</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看方法</span></span><br><span class="line">mysql&gt; <span class="keyword">SHOW</span> <span class="keyword">VARIABLES</span> <span class="keyword">LIKE</span> <span class="string">'character_set_server'</span>;</span><br><span class="line">+<span class="comment">----------------------+--------+</span></span><br><span class="line">| Variable_name        | Value  |</span><br><span class="line">+<span class="comment">----------------------+--------+</span></span><br><span class="line">| character_set_server | utf8   |</span><br><span class="line">+<span class="comment">----------------------+--------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">SHOW</span> <span class="keyword">VARIABLES</span> <span class="keyword">LIKE</span> <span class="string">'collation_server'</span>;</span><br><span class="line">+<span class="comment">------------------+-------------------+</span></span><br><span class="line">| Variable_name    | Value             |</span><br><span class="line">+<span class="comment">------------------+-------------------+</span></span><br><span class="line">| collation_server | utf8_general_ci   |</span><br><span class="line">+<span class="comment">------------------+-------------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p><strong>数据库级别</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 控制参数</span></span><br><span class="line">character_set_database</span><br><span class="line">collation_database</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建语法</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">DATABASE</span> 数据库名</span><br><span class="line">    [[<span class="keyword">DEFAULT</span>] <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> 字符集名称]</span><br><span class="line">    [[<span class="keyword">DEFAULT</span>] <span class="keyword">COLLATE</span> 比较规则名称];</span><br><span class="line"></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">DATABASE</span> 数据库名</span><br><span class="line">    [[<span class="keyword">DEFAULT</span>] <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> 字符集名称]</span><br><span class="line">    [[<span class="keyword">DEFAULT</span>] <span class="keyword">COLLATE</span> 比较规则名称];</span><br><span class="line">    </span><br><span class="line"><span class="comment"># 查看方法</span></span><br><span class="line">mysql&gt; use test;</span><br><span class="line">mysql&gt; SELECT @@character_set_database, @@collation_database;</span><br><span class="line">+<span class="comment">--------------------------+----------------------+</span></span><br><span class="line">| @@character_set_database | @@collation_database |</span><br><span class="line">+<span class="comment">--------------------------+----------------------+</span></span><br><span class="line">| utf8                     | utf8_general_ci      |</span><br><span class="line">+<span class="comment">--------------------------+----------------------+</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>规则</strong></p>
+<ul>
+<li>创建数据库时，指定了 <code>CHARACTER SET</code> 或 <code>COLLATE</code>，则以对应的字符集、比较规则为准。</li>
+<li>创建数据库时，没有指定字符集、排序规则，则以 <code>character_set_server</code>、<code>collation_server</code> 为准。</li>
+<li><code>character_set_database</code> 和 <code>collation_database</code> 这两个系统变量是只读的，不能通过修改这两个变量的值而改变当前数据库的字符集和比较规则。</li>
+</ul>
+<p><strong>表级别</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建语法</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> 表名 (列的信息)</span><br><span class="line">    [[<span class="keyword">DEFAULT</span>] <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> 字符集名称]</span><br><span class="line">    [<span class="keyword">COLLATE</span> 比较规则名称]]</span><br><span class="line"></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> 表名</span><br><span class="line">    [[<span class="keyword">DEFAULT</span>] <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> 字符集名称]</span><br><span class="line">    [<span class="keyword">COLLATE</span> 比较规则名称]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看方法</span></span><br><span class="line">mysql&gt; <span class="keyword">show</span> <span class="keyword">table</span> <span class="keyword">status</span> <span class="keyword">from</span> <span class="keyword">test</span>\G</span><br><span class="line">*************************** <span class="number">1.</span> <span class="keyword">row</span> ***************************</span><br><span class="line">           <span class="keyword">Name</span>: <span class="keyword">test</span></span><br><span class="line">         <span class="keyword">Engine</span>: <span class="keyword">InnoDB</span></span><br><span class="line">        <span class="keyword">Version</span>: <span class="number">10</span></span><br><span class="line">     Row_format: Dynamic</span><br><span class="line">           <span class="keyword">Rows</span>: <span class="number">5</span></span><br><span class="line"> Avg_row_length: <span class="number">3276</span></span><br><span class="line">    Data_length: <span class="number">16384</span></span><br><span class="line">Max_data_length: <span class="number">0</span></span><br><span class="line">   Index_length: <span class="number">0</span></span><br><span class="line">      Data_free: <span class="number">0</span></span><br><span class="line"> Auto_increment: <span class="number">6</span></span><br><span class="line">    Create_time: <span class="number">2019</span><span class="number">-09</span><span class="number">-24</span> <span class="number">18</span>:<span class="number">00</span>:<span class="number">54</span></span><br><span class="line">    Update_time: <span class="literal">NULL</span></span><br><span class="line">     Check_time: <span class="literal">NULL</span></span><br><span class="line">      <span class="keyword">Collation</span>: utf8_general_ci</span><br><span class="line">       <span class="keyword">Checksum</span>: <span class="literal">NULL</span></span><br><span class="line"> Create_options: </span><br><span class="line">        <span class="keyword">Comment</span>:</span><br></pre></td></tr></table></figure>
+
+<p><strong>规则</strong></p>
+<ul>
+<li>明确了 <code>charset_name</code>、<code>collation_name</code>，则采用 <code>charset_name</code>、<code>collation_name</code>。</li>
+<li><code>charset_name</code>、<code>collation_name</code> 均未明确，则采用数据库的字符集、比较规则设置。</li>
+</ul>
+<p><strong>列级别</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建语法</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> 表名(</span><br><span class="line">    列名 字符串类型 [<span class="built_in">CHARACTER</span> <span class="keyword">SET</span> 字符集名称] [<span class="keyword">COLLATE</span> 比较规则名称],</span><br><span class="line">    其他列...</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> 表名 <span class="keyword">MODIFY</span> 列名 字符串类型 [<span class="built_in">CHARACTER</span> <span class="keyword">SET</span> 字符集名称] [<span class="keyword">COLLATE</span> 比较规则名称];</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看方法</span></span><br><span class="line">mysql&gt; SELECT CHARACTER_SET_NAME, COLLATION_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA="test" AND TABLE_NAME="test" AND COLUMN_NAME="name";</span><br><span class="line">+<span class="comment">--------------------+-----------------+</span></span><br><span class="line">| CHARACTER_SET_NAME | COLLATION_NAME  |</span><br><span class="line">+<span class="comment">--------------------+-----------------+</span></span><br><span class="line">| utf8               | utf8_general_ci |</span><br><span class="line">+<span class="comment">--------------------+-----------------+</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>规则</strong></p>
+<ul>
+<li>明确了 <code>charset_name</code>、<code>collation_name</code> 均明确，则采用 <code>charset_name</code>、<code>collation_name</code> 为准。</li>
+<li><code>charset_name</code>、<code>collation_name</code> 均未明确，则以表的字符集、比较规则为准。</li>
+</ul>
+<blockquote>
+<p><strong>小结</strong></p>
+</blockquote>
+<ul>
+<li>如果创建或修改列时没有显式的指定字符集和比较规则，则该列默认用表的字符集和比较规则</li>
+<li>如果创建或修改表时没有显式的指定字符集和比较规则，则该表默认用数据库的字符集和比较规则</li>
+<li>如果创建或修改数据库时没有显式的指定字符集和比较规则，则该数据库默认用服务器的字符集和比较规则</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li><strong>字符集</strong>是某个字符范围的编码规则。</li>
+<li><strong>比较规则</strong>是针对某个字符集中的字符比较大小的一种规则。</li>
+<li><code>MySQL</code> 中一个字符集可以有若干种比较规则，其中有一个默认的比较规则。</li>
+<li><code>MySQL</code> 有四个级别的字符集和比较规则，优先级排序：列 &gt; 表 &gt; 库 &gt; 服务器。</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/25/mysql-config/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/25/mysql-config/" class="post-title-link" itemprop="url">MySQL · 配置文件</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-25 16:31:23" itemprop="dateCreated datePublished" datetime="2019-09-25T16:31:23+08:00">2019-09-25</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-13 19:13:15" itemprop="dateModified" datetime="2019-10-13T19:13:15+08:00">2019-10-13</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>MySQL 默认配置文件：<code>/etc/my.cnf</code>，自动 <a href="https://imysql.com/my_cnf_generator" target="_blank" rel="noopener"><strong>生成工具</strong></a></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">port                      = <span class="number">3306</span></span><br><span class="line">socket                    = /<span class="keyword">data</span>/mysql/mysql.sock</span><br><span class="line">default-character-set     = utf8</span><br><span class="line"></span><br><span class="line">[mysql]</span><br><span class="line">default-character-set     = utf8</span><br><span class="line">no-auto-rehash</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">port                      = <span class="number">3306</span></span><br><span class="line">basedir                   = /usr/local/mysql</span><br><span class="line">datadir                   = /<span class="keyword">data</span>/mysql</span><br><span class="line">socket                    = /<span class="keyword">data</span>/mysql/mysql.sock</span><br><span class="line">pid-file                  = /<span class="keyword">data</span>/mysql/mysql.pid</span><br><span class="line">character-set-server      = utf8</span><br><span class="line">collation-server          = utf8_general_ci</span><br><span class="line">skip_name_resolve         = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># LOG</span></span><br><span class="line">slow_query_log            = <span class="number">1</span></span><br><span class="line">long_query_time           = <span class="number">5</span></span><br><span class="line">log_error                 = /<span class="keyword">data</span>/mysql/error.log</span><br><span class="line">slow_query_log_file       = /<span class="keyword">data</span>/mysql/slow.log</span><br><span class="line"></span><br><span class="line"><span class="comment"># INNODB</span></span><br><span class="line">innodb_data_home_dir      = /<span class="keyword">data</span>/mysql</span><br><span class="line">innodb_buffer_pool_size   = <span class="number">10240</span>M</span><br><span class="line">innodb_log_file_size      = <span class="number">2</span>G</span><br><span class="line">innodb_data_file_path     = ibdata1:<span class="number">1</span>G:autoextend</span><br><span class="line">innodb_buffer_pool_instances = <span class="number">4</span></span><br><span class="line">innodb_max_undo_log_size  = <span class="number">4</span>G</span><br><span class="line"></span><br><span class="line"><span class="comment"># OTHER</span></span><br><span class="line">back_log                  = <span class="number">1024</span></span><br><span class="line">max_connections           = <span class="number">3000</span></span><br><span class="line">interactive_timeout       = <span class="number">600</span></span><br><span class="line">wait_timeout              = <span class="number">600</span></span><br><span class="line">sort_buffer_size          = <span class="number">16</span>M</span><br><span class="line">join_buffer_size          = <span class="number">16</span>M</span><br><span class="line">lower_case_table_names    = <span class="number">1</span></span><br><span class="line">log_timestamps            = SYSTEM</span><br><span class="line">explicit_defaults_for_timestamp = <span class="number">1</span></span><br><span class="line">log_queries_not_using_indexes   = <span class="number">1</span></span><br><span class="line"></span><br><span class="line">server-id                 = <span class="number">3306100</span></span><br><span class="line">log-bin                   = /<span class="keyword">data</span>/mysql/mysql-bin</span><br><span class="line">sync_binlog               = <span class="number">1</span></span><br><span class="line">max_binlog_size           = <span class="number">1024</span>M</span><br><span class="line">binlog-format             = row</span><br><span class="line">expire_logs_days          = <span class="number">7</span></span><br></pre></td></tr></table></figure>
+
+<p>[<strong>mysql</strong>]：该部分由 <code>mysql</code> 命令行客户端读取<br>[<strong>client</strong>]：该部分由所有连接的客户端读取（包括 <code>mysql cli</code>）<br>[<strong>mysqld</strong>]：该部分由 <code>mysql</code> 服务器读取<br>[<strong>mysqldump</strong>]：该部分由 <code>mysqldump</code> 备份工具读取<br>[<strong>mysqld_safe</strong>]：该部分由 <code>mysqld_safe</code> 进程读取</p>
+<p><strong>参数类型</strong></p>
+<p>静态参数：重启 <code>MySQL</code> 服务器后才能使之生效。<br>动态参数：可以在不重新启动 <code>MySQL</code> 服务器的情况下即时更改。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/24/mysql-stringtype/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/24/mysql-stringtype/" class="post-title-link" itemprop="url">MySQL · 参数选择 · varchar vs char</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-24 15:33:55" itemprop="dateCreated datePublished" datetime="2019-09-24T15:33:55+08:00">2019-09-24</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-13 19:13:47" itemprop="dateModified" datetime="2019-10-13T19:13:47+08:00">2019-10-13</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>CHAR</strong> ：是一种<strong>定长字符串</strong>类型，并且必须在圆括号内用一个大小修饰符来定义，这个大小修饰符的范围从 0～255。比指定长度大的值将被截短，而比指定长度小的值将会用空格作填补。</p>
+<p><strong>VARCHAR</strong> ：是一种<strong>可变长度</strong>的字符串类型，并且也必须带有一个范围指示器。</p>
+<table>
+<thead>
+<tr>
+<th align="left">Value</th>
+<th align="left">CHAR(4)</th>
+<th align="left">Storage Required</th>
+<th align="left">VARCHAR(4)</th>
+<th align="left">Storage Required</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">‘’</td>
+<td align="left">‘’</td>
+<td align="left">4 bytes</td>
+<td align="left">‘’</td>
+<td align="left">1 byte</td>
+</tr>
+<tr>
+<td align="left">‘ab’</td>
+<td align="left">‘ab’</td>
+<td align="left">4 bytes</td>
+<td align="left">‘ab’</td>
+<td align="left">3 bytes</td>
+</tr>
+<tr>
+<td align="left">‘abcd’</td>
+<td align="left">‘abcd’</td>
+<td align="left">4 bytes</td>
+<td align="left">‘abcd’</td>
+<td align="left">5 bytes</td>
+</tr>
+<tr>
+<td align="left">‘abcdefgh’</td>
+<td align="left">‘abcd’</td>
+<td align="left">4 bytes</td>
+<td align="left">‘abcd’</td>
+<td align="left">5 bytes</td>
+</tr>
+</tbody></table>
+<p><strong>性能对比</strong></p>
+<p>char &gt; varchar</p>
+<p><strong>选择</strong></p>
+<p>选择最小的数据范围，因为这样可以大大减少磁盘空间及磁盘 I/O 读写开销，<strong>减少内存占用，减少CPU占用率</strong></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/24/mysql-timetype/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/24/mysql-timetype/" class="post-title-link" itemprop="url">MySQL · 参数选择 · datetime vs timestamp</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-24 11:50:26" itemprop="dateCreated datePublished" datetime="2019-09-24T11:50:26+08:00">2019-09-24</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-09-26 15:38:08" itemprop="dateModified" datetime="2019-09-26T15:38:08+08:00">2019-09-26</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>MySQL 中常用的两种时间储存类型分别是 <code>datetime</code> 和 <code>timestamp</code>，建表时该如何选择呢？</p>
+<p><strong>占用空间</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">类型</th>
+<th align="left">占据字节</th>
+<th align="left">表示形式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">datetime</td>
+<td align="left">8 字节</td>
+<td align="left">yyyy-mm-dd hh:mm:ss</td>
+</tr>
+<tr>
+<td align="left">timestamp</td>
+<td align="left">4 字节</td>
+<td align="left">yyyy-mm-dd hh:mm:ss</td>
+</tr>
+</tbody></table>
+<p><strong>表示范围</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">类型</th>
+<th align="left">表示范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">datetime</td>
+<td align="left">‘1000-01-01 00:00:00.000000’ to ‘9999-12-31 23:59:59.999999’</td>
+</tr>
+<tr>
+<td align="left">timestamp</td>
+<td align="left">‘1970-01-01 00:00:01.000000’ to ‘2038-01-19 03:14:07.999999’</td>
+</tr>
+</tbody></table>
+<p><strong>时区</strong></p>
+<ul>
+<li><p><code>timestamp</code> 占 4 个字节，而且是以 <code>utc</code> 格式储存，它会自动检索当前时区并进行转换，存和取可能不一样。</p>
+</li>
+<li><p><code>datetime</code> 占 8 个字节储存，不会进行时区的检索，存和取一样。</p>
+</li>
+<li><p>区别：如果存进去的是 <code>NULL</code>，<code>timestamp</code> 会自动储存当前时间，而 <code>datetime</code> 会储存 <code>NULL</code>。</p>
+</li>
+</ul>
+<p><strong>测试</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建测试表</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> timedemo(st <span class="built_in">timestamp</span>,dt datetime);</span><br><span class="line"></span><br><span class="line"><span class="comment"># 插入数据</span></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> timedemo <span class="keyword">values</span> (<span class="literal">null</span>,<span class="literal">null</span>), (<span class="keyword">now</span>(),<span class="keyword">now</span>()), (<span class="string">'20161001193450'</span>,<span class="string">'20161001193450'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment"># timestamp 会自动储存当前时间，而 datetime 会储存 NULL</span></span><br><span class="line">mysql&gt; select * from timedemo;</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line">| st                  | dt                  |</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line">| 2019-09-24 14:00:15 | NULL                |</span><br><span class="line">| 2019-09-24 14:00:15 | 2019-09-24 14:00:15 |</span><br><span class="line">| 2016-10-01 19:34:50 | 2016-10-01 19:34:50 |</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 将时区修改为东9区，会发现 timestamp 比 datetime 多一小时</span></span><br><span class="line">mysql&gt; set time_zone='+9:00';</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; show variables like "time_zone";</span><br><span class="line">+<span class="comment">---------------+--------+</span></span><br><span class="line">| Variable_name | Value  |</span><br><span class="line">+<span class="comment">---------------+--------+</span></span><br><span class="line">| time_zone     | +09:00 |</span><br><span class="line">+<span class="comment">---------------+--------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">select</span> * <span class="keyword">from</span> timedemo;</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line">| st                  | dt                  |</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line">| 2019-09-24 15:00:15 | NULL                |</span><br><span class="line">| 2019-09-24 15:00:15 | 2019-09-24 14:00:15 |</span><br><span class="line">| 2016-10-01 20:34:50 | 2016-10-01 19:34:50 |</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line">3 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p><strong>选择</strong></p>
+<ul>
+<li>如果在时间上要超过 <code>Linux</code> 时间的，或者服务器时区不一样的就建议选择 <code>datetime</code>。</li>
+<li>如果是想要使用自动插入时间或者自动更新时间功能，可以使用 <code>timestamp</code>。</li>
+<li>存储年使用 <code>year</code>，存储日期使用 <code>date</code>，存储时间使用 <code>datetime</code>。</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/20/mysql-practice-slave/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/20/mysql-practice-slave/" class="post-title-link" itemprop="url">MySQL · 运维实践 · 在线搭建从库</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-20 11:01:53" itemprop="dateCreated datePublished" datetime="2019-09-20T11:01:53+08:00">2019-09-20</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-09-25 15:19:06" itemprop="dateModified" datetime="2019-09-25T15:19:06+08:00">2019-09-25</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h2><p>常见有以下两种：</p>
+<ul>
+<li>主从复制中断，主 <code>binlog</code> 缺失，需要重新搭建从库</li>
+<li>单主模式，升级为主从模式</li>
+</ul>
+<h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><p>使用 Percona XtraBackup 工具不停机不锁表在线搭建从库。</p>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p>（1）主从服务器，<a href="https://huiraoo.github.io/blog/2019/06/18/mysql-xtrabackup/"><strong>安装 XtraBackup</strong></a></p>
+<p>（2）<a href="https://huiraoo.github.io/blog/2019/07/08/linux-ssh/"><strong>配置主从互信</strong></a></p>
+<p>（3）备份主库</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ innobackupex --defaults-file=/etc/my.cnf --user=<span class="string">'xx'</span> --password=<span class="string">'xx'</span> --no-timestamp /<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Tips：备份目录要依据服务器磁盘分配，否则会占满磁盘，影响业务。</p>
+</blockquote>
+<p>（4）传输到从库</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ scp -r /<span class="keyword">data</span>/backup/* root@x.x.x.x:/<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
+
+<p>（5）恢复数据</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ mysqladmin -uroot -p<span class="string">'xx'</span> shutdown</span><br><span class="line">$ innobackupex --apply-log /<span class="keyword">data</span>/backup</span><br><span class="line">$ mv mysql mysql_bak</span><br><span class="line">$ mkdir mysql</span><br><span class="line">$ innobackupex --copy-back /<span class="keyword">data</span>/backup</span><br><span class="line">$ chown -R mysql:mysql mysql</span><br><span class="line">$ /usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql &gt;/dev/null &amp;</span><br></pre></td></tr></table></figure>
+
+<p>（6）建立复制关系</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">$ cat xtrabackup_binlog_info</span><br><span class="line">mysql-binlog.<span class="number">000297</span>	<span class="number">900834433</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置同步</span></span><br><span class="line">CHANGE MASTER TO </span><br><span class="line">MASTER_HOST=<span class="string">'x.x.x.x'</span>,</span><br><span class="line">MASTER_USER=<span class="string">'repl'</span>,</span><br><span class="line">MASTER_PASSWORD=<span class="string">'Changeme_123'</span>,</span><br><span class="line">MASTER_PORT=<span class="number">3306</span>,</span><br><span class="line">MASTER_LOG_FILE=<span class="string">'mysql-binlog.000297'</span>, </span><br><span class="line">MASTER_LOG_POS=<span class="number">900834433</span>,</span><br><span class="line">MASTER_CONNECT_RETRY=<span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 开启同步</span></span><br><span class="line">mysql&gt; start slave;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 主库检查参数</span></span><br><span class="line">mysql&gt; show master status;</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line">| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB |</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line">| mysql-bin.<span class="number">001958</span> | <span class="number">32629730</span> |              |                  |</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line"></span><br><span class="line"><span class="comment"># 从库检查参数</span></span><br><span class="line">show slave status\G</span><br><span class="line">Slave_IO_Running: Yes</span><br><span class="line">Slave_SQL_Running: Yes</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/20/mysql-case-replication/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/20/mysql-case-replication/" class="post-title-link" itemprop="url">MySQL · 案例分析 · 主从复制中断</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-20 09:51:44" itemprop="dateCreated datePublished" datetime="2019-09-20T09:51:44+08:00">2019-09-20</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-13 19:13:13" itemprop="dateModified" datetime="2019-10-13T19:13:13+08:00">2019-10-13</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-20-015800.png" alt="image-20190920095751451"></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">************************* 1. row ***************************</span><br><span class="line">               Slave_IO_State: </span><br><span class="line">                  Master_Host: 10.135.22.70</span><br><span class="line">                  Master_User: repluser</span><br><span class="line">                  Master_Port: 3308</span><br><span class="line">                Connect_Retry: 10</span><br><span class="line">              Master_Log_File: mysql-bin.001935</span><br><span class="line">          Read_Master_Log_Pos: 6587</span><br><span class="line">               Relay_Log_File: relay-log.001487</span><br><span class="line">                Relay_Log_Pos: 4</span><br><span class="line">        Relay_Master_Log_File: mysql-bin.001935</span><br><span class="line">             Slave_IO_Running: No</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">              Replicate_Do_DB: </span><br><span class="line">          Replicate_Ignore_DB: </span><br><span class="line">           Replicate_Do_Table: </span><br><span class="line">       Replicate_Ignore_Table: </span><br><span class="line">      Replicate_Wild_Do_Table: </span><br><span class="line">  Replicate_Wild_Ignore_Table: test.%</span><br><span class="line">                   Last_Errno: 0</span><br><span class="line">                   Last_Error: </span><br><span class="line">                 Skip_Counter: 0</span><br><span class="line">          Exec_Master_Log_Pos: 6587</span><br><span class="line">              Relay_Log_Space: 107</span><br><span class="line">              Until_Condition: None</span><br><span class="line">               Until_Log_File: </span><br><span class="line">                Until_Log_Pos: 0</span><br><span class="line">           Master_SSL_Allowed: No</span><br><span class="line">           Master_SSL_CA_File: </span><br><span class="line">           Master_SSL_CA_Path: </span><br><span class="line">              Master_SSL_Cert: </span><br><span class="line">            Master_SSL_Cipher: </span><br><span class="line">               Master_SSL_Key: </span><br><span class="line">        Seconds_Behind_Master: NULL</span><br><span class="line">Master_SSL_Verify_Server_Cert: No</span><br><span class="line">                Last_IO_Errno: 1236</span><br><span class="line">                Last_IO_Error: Got fatal error 1236 from master when reading data from binary log: 'Could not find first log file name in binary log index file'</span><br><span class="line">               Last_SQL_Errno: 0</span><br><span class="line">               Last_SQL_Error: </span><br><span class="line">  Replicate_Ignore_Server_Ids: </span><br><span class="line">             Master_Server_Id: 1</span><br></pre></td></tr></table></figure>
+
+<h2 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h2><p>该错误发生在从库 <code>io</code> 进程从主库拉取日志时，发现主库的 <code>mysql_bin.index</code> 文件中第一个文件不存在，出现此类报错可能有两个原因：</p>
+<ul>
+<li><code>Slave</code> 由于某种原因停了好长一段是时间，当你重启 <code>slave</code> 复制的时候，在主库上找不到相应的 <code>binlog</code> 。</li>
+<li>由于某些设置主库上的 <code>binlog</code> 被删除了，导致从库获取不到对应的 <code>binlog</code>。</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@hop02 mzjh]<span class="comment"># ll | grep mysql-bin</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073742013</span> Sep <span class="number">12</span> <span class="number">14</span>:<span class="number">55</span> mysql-bin.<span class="number">001948</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073742073</span> Sep <span class="number">13</span> <span class="number">11</span>:<span class="number">53</span> mysql-bin.<span class="number">001949</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073742120</span> Sep <span class="number">14</span> <span class="number">08</span>:<span class="number">39</span> mysql-bin.<span class="number">001950</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073859355</span> Sep <span class="number">15</span> <span class="number">06</span>:<span class="number">21</span> mysql-bin.<span class="number">001951</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1074054892</span> Sep <span class="number">16</span> <span class="number">06</span>:<span class="number">18</span> mysql-bin.<span class="number">001952</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1075243641</span> Sep <span class="number">17</span> <span class="number">06</span>:<span class="number">18</span> mysql-bin.<span class="number">001953</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1074801420</span> Sep <span class="number">18</span> <span class="number">06</span>:<span class="number">16</span> mysql-bin.<span class="number">001954</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1075257243</span> Sep <span class="number">19</span> <span class="number">06</span>:<span class="number">16</span> mysql-bin.<span class="number">001955</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql   <span class="number">619405162</span> Sep <span class="number">19</span> <span class="number">13</span>:<span class="number">32</span> mysql-bin.<span class="number">001956</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1072898197</span> Sep <span class="number">20</span> <span class="number">09</span>:<span class="number">44</span> mysql-bin.<span class="number">001957</span></span><br><span class="line">-rw-r-----. <span class="number">1</span> mysql mysql         <span class="number">190</span> Sep <span class="number">19</span> <span class="number">13</span>:<span class="number">32</span> mysql-bin.index</span><br></pre></td></tr></table></figure>
+
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><p>为了避免数据丢失，需要重新搭建 Slave。</p>
+<blockquote>
+<p>Tips：不要使用 <code>rm -rf</code> 命令删除 <code>binlog</code> 日志文件，这样不会同步修改 <code>mysql-bin.index</code> 记录的 <code>binlog</code> 条目。在删除 <code>binlog</code> 的时候确保主库保留了从库 <code>show slave status</code> 的 <code>Relay_Master_Log_File</code> 对应的 <code>binlog</code> 日志文件。</p>
+</blockquote>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 手动清除binlog</span></span><br><span class="line">$ mysql -u root -p</span><br><span class="line">mysql&gt; PURGE MASTER LOGS TO 'mysql-bin.001950′</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/04/datacenter/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/04/datacenter/" class="post-title-link" itemprop="url">MySQL · 容灾</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-04 16:16:31" itemprop="dateCreated datePublished" datetime="2019-09-04T16:16:31+08:00">2019-09-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-13 20:52:57" itemprop="dateModified" datetime="2019-10-13T20:52:57+08:00">2019-10-13</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>数据是企业的生命线，<code>PSI</code> 线上系统数据基本都存储在青岛本地机房，缺少异地容灾能力，当出现机房级灾难场景下（如：地震、海啸、火灾等），业务连续性受到极大的影响，损失不可估量。如下图所示，目前 <code>PSI</code> 已具备前两类故障场景的覆盖能力，需要构建覆盖第三类故障场景能力，全方位保障业务数据安全，有备无患。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-135300.png" alt></p>
+<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><ul>
+<li>保证极端场景下业务数据可恢复</li>
+<li><code>RPO</code> &lt; 2 小时，<code>RTO</code> &lt; 24 小时</li>
+</ul>
+<h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><p><strong>设计方案</strong>：如下图所示，重要系统生产数据（青岛本地机房：电信机房、联通机房、移动机房…）同步至红岛灾备数据中心，特别重要系统数据压缩存储上传至阿里云 <code>OSS</code>。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-135600.png" alt></p>
+<p><strong>实施方案</strong>：从库实例再搭建一个从实例形成级联结构，对数据进行实时同步，主要为避免增加主库负载。</p>
+<p>实例拓扑：</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-140100.png" alt></p>
+<p>系统监控：</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-140200.png" alt></p>
+<p>①  主实例：<code>TDDS_M</code></p>
+<p>②  从实例：<code>TDDS_S</code></p>
+<p>③  灾备实例：<code>TDDS_D</code></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/28/docker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/08/28/docker/" class="post-title-link" itemprop="url">docker</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-28 23:04:00" itemprop="dateCreated datePublished" datetime="2019-08-28T23:04:00+08:00">2019-08-28</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-13 19:13:06" itemprop="dateModified" datetime="2019-10-13T19:13:06+08:00">2019-10-13</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl start docker  // 启动docker</span><br><span class="line">$ systemctl stop docker   // 关闭docker</span><br><span class="line">$ docker restart xxx      // 重启一个容器</span><br><span class="line">$ docker stop xxx         // 停止一个容器</span><br><span class="line">$ docker rm xxx           // 删除一个容器</span><br><span class="line">$ docker rm -f xxx        // 强制删除一个容器</span><br><span class="line">$ docker log xxx          // 查看容器日志</span><br><span class="line">$ docker ps -a            // 查看容器信息</span><br><span class="line">$ docker search xxx       // 查看镜像</span><br></pre></td></tr></table></figure>
+
+<h2 id="学习资源"><a href="#学习资源" class="headerlink" title="学习资源"></a>学习资源</h2><p><a href="http://asdfghjkl.xyz/2019/04/25/%E6%B7%B1%E5%85%A5%E5%89%96%E6%9E%90Kubernetes/" target="_blank" rel="noopener">深入剖析 Kubernetes</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/28/tools/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -656,1551 +2130,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/27/projects/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/08/27/projects/" class="post-title-link" itemprop="url">项目</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-27 15:31:42" itemprop="dateCreated datePublished" datetime="2019-08-27T15:31:42+08:00">2019-08-27</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-17 09:42:28" itemprop="dateModified" datetime="2019-10-17T09:42:28+08:00">2019-10-17</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="监控告警"><a href="#监控告警" class="headerlink" title="监控告警"></a>监控告警</h2><p><strong>背景</strong>：为了托管已上线 <code>MySQL</code> 系统，建立完善的监控体系，提升业务系统稳定性，达到以下 <code>3</code> 个目的：</p>
-<ul>
-<li><strong>告警</strong>：当系统出现或者即将出现故障时，监控系统需要迅速反应并通知管理员，从而能够对问题进行快速的处理或者提前预防问题的发生，避免出现对业务的影响。</li>
-<li><strong>故障分析与定位</strong>：当问题发生后，需要对问题进行调查和处理。通过对不同监控监控以及历史数据的分析，能够找到并解决根源问题。</li>
-<li><strong>数据可视化</strong>：通过可视化仪表盘能够直接获取系统的运行状态、资源使用情况、以及服务运行状态等直观的信息。</li>
-</ul>
-<p><strong>技术方案</strong>：[<a href="https://prometheus.io" target="_blank" rel="noopener"><strong>Prometheus</strong></a>] [<a href="https://grafana.com" target="_blank" rel="noopener"><strong>Grafana</strong></a>] [<a href="https://www.consul.io/" target="_blank" rel="noopener"><strong>Consul</strong></a>] [<a href="https://www.percona.com/doc/percona-monitoring-and-management/index.html" target="_blank" rel="noopener"><strong>PMM</strong></a>] </p>
-<h2 id="运维工单"><a href="#运维工单" class="headerlink" title="运维工单"></a>运维工单</h2><p><strong>背景</strong>：日常运维问题繁多，提高运维效率。</p>
-<p><strong>技术方案</strong>：[<a href="https://golang.google.cn/" target="_blank" rel="noopener"><strong>Golang</strong></a>] [<a href="https://cn.vuejs.org/" target="_blank" rel="noopener"><strong>Vue</strong></a>] [<a href="https://element.eleme.cn/#/" target="_blank" rel="noopener"><strong>Element UI</strong></a>] [<a href="https://www.heidisql.com/" target="_blank" rel="noopener"><strong>HeidiSQL</strong></a>] [<a href="https://www.percona.com/downloads/percona-toolkit" target="_blank" rel="noopener"><strong>Percona Toolkit</strong></a>] </p>
-<h2 id="备份"><a href="#备份" class="headerlink" title="备份"></a>备份</h2><p><strong>背景</strong>：100+ 上线项目系统（<code>MySQL</code>、<code>Oracle</code>、<code>Server SQL</code>、小型机、etc. ）之前未做备份恢复演练，也有部分上线系统未备份，存在巨大的数据安全风险，全量排查消除隐患。</p>
-<p><strong>技术方案</strong>：[<a href="https://www.commvault.com.cn/" target="_blank" rel="noopener"><strong>Commvault</strong></a>] [<a href="https://www.percona.com/software/mysql-database/percona-xtrabackup" target="_blank" rel="noopener"><strong>Percona XtraBackup</strong></a>]</p>
-<h2 id="体验优化"><a href="#体验优化" class="headerlink" title="体验优化"></a>体验优化</h2><p><strong>背景</strong>：数据库 <code>slowlog</code> 发布每周报告，需要从管理视角驱动质量提升，展现技术平台的价值。</p>
-<p><strong>技术方案</strong>：[<a href="https://www.aliyun.com/product/hdm" target="_blank" rel="noopener"><strong>HDM</strong></a>] </p>
-<h2 id="堡垒机"><a href="#堡垒机" class="headerlink" title="堡垒机"></a>堡垒机</h2><p><strong>背景</strong>：核心功能是用于实现对运维操作人员的<strong>权限控制</strong>与<strong>操作行为审计</strong>，<a href="http://www.openskill.cn/article/260" target="_blank" rel="noopener"><strong>工作原理</strong></a></p>
-<p><strong>技术方案</strong>：[<a href="http://www.jumpserver.org" target="_blank" rel="noopener"><strong>Jumpserver</strong></a>]</p>
-<h2 id="容灾"><a href="#容灾" class="headerlink" title="容灾"></a>容灾</h2><p><strong>背景</strong>：为解决本地机房发生重大灾难，数据不可恢复，特在红岛建立的灾备数据中心。</p>
-<p><strong>技术方案</strong>：<a href="https://huiraoo.github.io/blog/2019/09/04/DataCenter/"><strong>容灾</strong></a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/26/prometheus/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/08/26/prometheus/" class="post-title-link" itemprop="url">Prometheus</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-26 14:34:30" itemprop="dateCreated datePublished" datetime="2019-08-26T14:34:30+08:00">2019-08-26</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-13 19:13:55" itemprop="dateModified" datetime="2019-10-13T19:13:55+08:00">2019-10-13</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h2><p><a href="https://prometheus.io/" target="_blank" rel="noopener"><strong>Prometheus</strong></a> 是一个开源的完整监控解决方案，其对传统监控系统的测试和告警模型进行了彻底的颠覆，形成了基于中央化的规则计算、统一分析和告警的新模型，基于 <code>Golang</code> 编写。</p>
-<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><p><strong>易于管理</strong></p>
-<p><code>Prometheus</code> 基于 <code>Pull</code> 模型的架构方式，可以在任何地方（本地电脑，开发环境，测试环境）搭建我们的监控系统。对于一些复杂的情况，还可以使用 <code>Prometheus</code> 服务发现 (<code>Service Discovery</code>) 能力动态管理监控目标。</p>
-<p><strong>强大的数据模型</strong></p>
-<p>所有采集的监控数据均以指标 <code>metric</code> 的形式保存在内置的时间序列数据库当中 <code>TSDB</code>。所有的样本除了基本的指标名称以外，还包含一组用于描述该样本特征的标签。</p>
-<p>如下所示：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">http_request_status&#123;code='200',content_path='/api/path',</span> <span class="string">environment='produment'&#125;</span> <span class="string">=&gt;</span> <span class="string">[value1@timestamp1,value2@timestamp2...]</span></span><br><span class="line"><span class="string">http_request_status&#123;code='200',content_path='/api/path2',</span> <span class="string">environment='produment'&#125;</span> <span class="string">=&gt;</span> <span class="string">[value1@timestamp1,value2@timestamp2...]</span></span><br></pre></td></tr></table></figure>
-
-<p>每一条时间序列由指标名称 <code>Metrics Name</code> 以及一组标签 <code>Labels</code> 唯一标识。每条时间序列按照时间的先后顺序存储一系列的样本值。表示维度的标签可能来源于你的监控对象的状态，比如 <code>code=404</code> 或者 <code>content_path=/api/path</code>。基于这些 <code>Labels</code> ，我们可以方便地对监控数据进行聚合、过滤、裁剪。</p>
-<p><strong>强大的查询语言 PromSQL</strong></p>
-<p><code>Prometheus</code> 内置了一个强大的数据查询语言 <code>PromQL</code>。 通过 <code>PromQL</code> 可以实现对监控数据的查询、聚合。同时 <code>PromQL</code> 也被应用于数据可视化(如 <code>Grafana</code> )以及告警当中。</p>
-<p><strong>高效</strong></p>
-<p>对于监控系统而言，大量的监控任务必然导致有大量的数据产生。而<code>Prometheus</code> 可以高效地处理这些数据，对于单一 <code>Prometheus Server</code> 实例而言它可以处理：</p>
-<ul>
-<li>数以百万的监控指标</li>
-<li>每秒处理数十万的数据点</li>
-</ul>
-<p><strong>易于集成</strong></p>
-<p><code>Prometheus</code> 社区还提供了大量第三方实现的监控数据采集支持：<code>MySQL</code>、<code>Consul</code>、<code>Redis</code> 等等。</p>
-<p><strong>可视化</strong></p>
-<p><code>Prometheus Server</code> 中自带了一个 <code>Prometheus UI</code>，通过这个 UI 可以方便地直接对数据进行查询，并且支持直接以图形化的形式展示数据。开源第三方可视化工具 <code>Grafana</code> 也已经提供了完整的 <code>Prometheus</code> 支持，基于 <code>Grafana</code> 可以创建更加精美的监控图标。</p>
-<p><strong>缺点</strong>：相比于 <a href="https://www.zabbix.com/" target="_blank" rel="noopener"><strong>zabbix</strong></a>，更加消耗资源</p>
-<h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><p><img src="http://ww3.sinaimg.cn/large/006y8mN6ly1g6d2tdrnvxj311j0mjjtq.jpg" alt="Prometheus architecture"></p>
-<p><strong>Prometheus Server</strong>：是 <code>Prometheus</code> 组件中的核心部分，负责实现对监控数据的获取、存储以及查询。</p>
-<ul>
-<li><code>Prometheus Server</code> 可以通过静态配置管理监控目标（<code>prometheus.yml</code>），也可以配合使用 <code>Service Discovery</code> 的方式动态管理监控目标，并从这些监控目标中获取数据。</li>
-<li><code>Prometheus Server</code> 需要对采集到的监控数据进行存储，它本身就是一个时序数据库，将采集到的监控数据按照时间序列的方式存储在本地磁盘当中。</li>
-<li><code>Prometheus Server</code> 对外提供了自定义的 <code>PromQL</code> 语言，实现对数据的查询以及分析。</li>
-</ul>
-<p><strong>exporters</strong>：负责将监控数据采集的端点通过 <code>HTTP</code> 服务的形式暴露给 <code>Prometheus Server</code>，<code>Prometheus Server</code> 通过访问该 <code>exporter</code> 提供的 <code>Endpoint</code> 端点，即可获取到需要采集的监控数据。一般来说可以将<code>exporter</code> 分为 2 类：</p>
-<ul>
-<li><p>直接采集：这一类 <code>exporter</code> 直接内置了对 <code>Prometheus</code> 监控的支持，例如：<code>Kubernetes</code>。</p>
-</li>
-<li><p>间接采集：原有监控目标并不直接支持 <code>Prometheus</code>，因此我们需要通过 <code>Prometheus</code> 提供的 <code>Client Library</code> 编写该监控目标的监控采集程序。例如：监控主机有 <a href="https://github.com/prometheus/node_exporter" target="_blank" rel="noopener"><strong>node_exporter</strong></a>，监控 <code>MySQL</code> 有 <a href="https://github.com/prometheus/mysqld_exporter" target="_blank" rel="noopener"><strong>mysqld_exporter</strong></a>。</p>
-</li>
-</ul>
-<p><strong>Pushgateway</strong>：由于 <code>Prometheus</code> 数据采集基于 <code>Pull</code> 模型进行设计，因此在网络环境的配置上必须要让<code>Prometheus Server</code> 能够直接与 <code>exporter</code> 进行通信。 当这种网络需求无法直接满足时，就可以利用<code>PushGateway</code> 来进行中转。可以通过 <code>PushGateway</code> 将内部网络的监控数据主动 <code>Push</code> 到 <code>Gateway</code> 当中。而 <code>Prometheus Server</code> 则可以采用同样 <code>Pull</code> 的方式从 <code>PushGateway</code> 中获取到监控数据。</p>
-<p><strong>Alertmanager</strong>：在 <code>Prometheus Server</code> 中支持基于 <code>PromQL</code> 创建告警规则，如果满足 <code>PromQL</code> 定义的规则，则会产生一条告警，而告警的后续处理流程则由 <code>AlertManager</code> 进行管理。在 <code>AlertManager</code> 中我们可以与邮件，<code>Slack</code> 等等内置的通知方式进行集成，也可以通过 <code>Webhook</code> 自定义告警处理方式。<code>AlertManager</code> 即 <code>Prometheus</code> 体系中的告警处理中心。</p>
-<p><strong>Web UI</strong>：数据可视化，主要使用第三方工具 <a href="https://grafana.com/" target="_blank" rel="noopener"><strong>Grafana</strong></a> 来实现。</p>
-<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><h4 id="Prometheus-Server"><a href="#Prometheus-Server" class="headerlink" title="Prometheus Server"></a>Prometheus Server</h4><p><strong>二进制包方式安装</strong></p>
-<p>（1）下载最新版本 <a href="https://prometheus.io/download/" target="_blank" rel="noopener"><strong>软件包</strong></a></p>
-<p>（2）解压</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">wget</span> <span class="attr">https://github.com/prometheus/prometheus/releases/download/v2.12.0/prometheus-2.12.0.linux-amd64.tar.gz</span></span><br><span class="line"><span class="string">tar</span> <span class="bullet">-xzf</span> <span class="string">prometheus-2.12.0.linux-amd64.tar.gz</span></span><br><span class="line"><span class="string">cd</span> <span class="string">prometheus-2.12.0.linux-amd64</span></span><br></pre></td></tr></table></figure>
-
-<p>（3）配置文件 <code>promethes.yml</code>，修改 <code>job_name</code>。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># my global config</span></span><br><span class="line"><span class="attr">global:</span></span><br><span class="line"><span class="attr">  scrape_interval:</span>     <span class="number">15</span><span class="string">s</span> <span class="comment"># Set the scrape interval to every 15 seconds. Default is every 1 minute.</span></span><br><span class="line"><span class="attr">  evaluation_interval:</span> <span class="number">15</span><span class="string">s</span> <span class="comment"># Evaluate rules every 15 seconds. The default is every 1 minute.</span></span><br><span class="line">  <span class="comment"># scrape_timeout is set to the global default (10s).</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Alertmanager configuration</span></span><br><span class="line"><span class="attr">alerting:</span></span><br><span class="line"><span class="attr">  alertmanagers:</span></span><br><span class="line"><span class="attr">  - static_configs:</span></span><br><span class="line"><span class="attr">    - targets:</span></span><br><span class="line">      <span class="comment"># - alertmanager:9093</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Load rules once and periodically evaluate them according to the global 'evaluation_interval'.</span></span><br><span class="line"><span class="attr">rule_files:</span></span><br><span class="line">  <span class="comment"># - "first_rules.yml"</span></span><br><span class="line">  <span class="comment"># - "second_rules.yml"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># A scrape configuration containing exactly one endpoint to scrape:</span></span><br><span class="line"><span class="comment"># Here it's Prometheus itself.</span></span><br><span class="line"><span class="attr">scrape_configs:</span></span><br><span class="line">  <span class="comment"># The job name is added as a label `job=&lt;job_name&gt;` to any timeseries scraped from this config.</span></span><br><span class="line"><span class="attr">  - job_name:</span> <span class="string">'prometheus'</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># metrics_path defaults to '/metrics'</span></span><br><span class="line">    <span class="comment"># scheme defaults to 'http'.</span></span><br><span class="line"></span><br><span class="line"><span class="attr">    static_configs:</span></span><br><span class="line"><span class="attr">    - targets:</span> <span class="string">['localhost:9090']</span></span><br></pre></td></tr></table></figure>
-
-<p>（4）创建数据存储目录，默认的存储路径为 <code>data/</code>，用户也可以通过参数 <code>--storage.tsdb.path=&quot;data/&quot;</code> 修改本地数据存储的路径。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">mkdir</span> <span class="bullet">-p</span> <span class="string">data</span></span><br></pre></td></tr></table></figure>
-
-<p>（5）启动 <code>prometheus</code> 服务，<a href="http://10.133.0.53:9090/" target="_blank" rel="noopener"><strong>http://10.133.0.53:9090</strong></a></p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">./prometheus</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.420Z</span> <span class="string">caller=main.go:293</span> <span class="string">msg="no</span> <span class="string">time</span> <span class="string">or</span> <span class="string">size</span> <span class="string">retention</span> <span class="string">was</span> <span class="string">set</span> <span class="string">so</span> <span class="string">using</span> <span class="string">the</span> <span class="string">default</span> <span class="string">time</span> <span class="string">retention"</span> <span class="string">duration=15d</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.420Z</span> <span class="string">caller=main.go:329</span> <span class="string">msg="Starting</span> <span class="string">Prometheus"</span> <span class="string">version="(version=2.12.0,</span> <span class="string">branch=HEAD,</span> <span class="string">revision=43acd0e2e93f9f70c49b2267efa0124f1e759e86)"</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.420Z</span> <span class="string">caller=main.go:330</span> <span class="string">build_context="(go=go1.12.8,</span> <span class="string">user=root@7a9dbdbe0cc7,</span> <span class="string">date=20190818-13:53:16)"</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.421Z</span> <span class="string">caller=main.go:331</span> <span class="string">host_details="(Linux</span> <span class="number">3.10</span><span class="number">.0</span><span class="bullet">-693.</span><span class="string">el7.x86_64</span> <span class="comment">#1 SMP Tue Aug 22 21:09:27 UTC 2017 x86_64 ptdsmapp05 (none))"</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.421Z</span> <span class="string">caller=main.go:332</span> <span class="string">fd_limits="(soft=65536,</span> <span class="string">hard=65536)"</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.421Z</span> <span class="string">caller=main.go:333</span> <span class="string">vm_limits="(soft=unlimited,</span> <span class="string">hard=unlimited)"</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.423Z</span> <span class="string">caller=web.go:448</span> <span class="string">component=web</span> <span class="string">msg="Start</span> <span class="string">listening</span> <span class="string">for</span> <span class="string">connections"</span> <span class="string">address=0.0.0.0:9090</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.423Z</span> <span class="string">caller=main.go:654</span> <span class="string">msg="Starting</span> <span class="string">TSDB</span> <span class="string">..."</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.442Z</span> <span class="string">caller=head.go:509</span> <span class="string">component=tsdb</span> <span class="string">msg="replaying</span> <span class="string">WAL,</span> <span class="string">this</span> <span class="string">may</span> <span class="string">take</span> <span class="string">awhile"</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.445Z</span> <span class="string">caller=head.go:557</span> <span class="string">component=tsdb</span> <span class="string">msg="WAL</span> <span class="string">segment</span> <span class="string">loaded"</span> <span class="string">segment=0</span> <span class="string">maxSegment=0</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.446Z</span> <span class="string">caller=main.go:669</span> <span class="string">fs_type=XFS_SUPER_MAGIC</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.446Z</span> <span class="string">caller=main.go:670</span> <span class="string">msg="TSDB</span> <span class="string">started"</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.446Z</span> <span class="string">caller=main.go:740</span> <span class="string">msg="Loading</span> <span class="string">configuration</span> <span class="string">file"</span> <span class="string">filename=prometheus.yml</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.448Z</span> <span class="string">caller=main.go:768</span> <span class="string">msg="Completed</span> <span class="string">loading</span> <span class="string">of</span> <span class="string">configuration</span> <span class="string">file"</span> <span class="string">filename=prometheus.yml</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.448Z</span> <span class="string">caller=main.go:623</span> <span class="string">msg="Server</span> <span class="string">is</span> <span class="string">ready</span> <span class="string">to</span> <span class="string">receive</span> <span class="string">web</span> <span class="string">requests."</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>docker 方式安装</strong></p>
-<p>直接使用 <code>Prometheus</code> 的镜像即可启动 <code>Prometheus Server</code>。启动完成后，可以通过 <a href="http://10.133.0.53:9090/" target="_blank" rel="noopener"><strong>http://10.133.0.53:9090</strong></a> 访问 <code>UI</code> 界面：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">docker</span> <span class="string">run</span> <span class="bullet">-p</span> <span class="number">9090</span><span class="string">:9090</span> <span class="bullet">-v</span> <span class="string">/etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml</span> <span class="string">prom/prometheus</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="http://ww4.sinaimg.cn/large/006y8mN6ly1g6d58mi60uj32800ke415.jpg" alt="Prometheus UI"></p>
-<h4 id="node-exporter"><a href="#node-exporter" class="headerlink" title="node_exporter"></a>node_exporter</h4><p>采集主机的运行指标如 CPU、内存、磁盘等信息。同样采用 <code>Golang</code> 编写，并且不存在任何的第三方依赖。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">wget</span> <span class="attr">https://github.com/prometheus/node_exporter/releases/download/v0.18.1/node_exporter-0.18.1.linux-amd64.tar.gz</span></span><br><span class="line"><span class="string">tar</span> <span class="bullet">-xzf</span> <span class="string">node_exporter-0.18.1.linux-amd64.tar.gz</span></span><br><span class="line"><span class="string">cd</span> <span class="string">node_exporter-0.18.1.linux-amd64</span></span><br><span class="line"><span class="string">cp</span> <span class="string">node_exporter-0.18.1.linux-amd64/node_exporter</span> <span class="string">/usr/local/bin</span></span><br><span class="line"><span class="string">./node_exporter</span></span><br></pre></td></tr></table></figure>
-
-<p>启动成功后，可以看到如下输出：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">INFO[0000]</span> <span class="string">Listening</span> <span class="string">on</span> <span class="string">:9100</span>                            <span class="string">source="node_exporter.go:170"</span></span><br></pre></td></tr></table></figure>
-
-<p>访问 <strong><a href="http://10.133.0.53:9100/metrics" target="_blank" rel="noopener">http://10.133.0.53:9100/metrics</a></strong>，可以看到采集到的监控数据：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># HELP node_cpu Seconds the cpus spent in each mode.</span></span><br><span class="line"><span class="comment"># TYPE node_cpu counter</span></span><br><span class="line"><span class="string">node_cpu&#123;cpu="cpu0",mode="idle"&#125;</span> <span class="number">362812.7890625</span></span><br><span class="line"><span class="comment"># HELP node_load1 1m load average.</span></span><br><span class="line"><span class="comment"># TYPE node_load1 gauge</span></span><br><span class="line"><span class="string">node_load1</span> <span class="number">3.0703125</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>HELP</strong>：解释当前指标的含义。</p>
-<p><strong>TYPE</strong>：说明当前指标的数据类型。有四种数据类型，<code>counter</code>（计数器）、<code>gauge</code>（仪表盘）、<code>histogram</code>（直方图）、<code>summary</code>（求和）</p>
-<p>除了这些之外，还可以看到如下监控指标：</p>
-<ul>
-<li>node_boot_time：系统启动时间</li>
-<li>node_cpu：系统 <code>CPU</code> 使用量</li>
-<li>node_disk_*：磁盘 <code>IO</code></li>
-<li>node_filesystem_*：文件系统用量</li>
-<li>node_load1：系统负载</li>
-<li>node_memeory_*：内存使用量</li>
-<li>node_network_*：网络带宽</li>
-<li>node_time：当前系统时间</li>
-<li>go_*：<code>node_exporter</code> 中 <code>go</code> 相关指标</li>
-<li>process_*：<code>node_exporter</code> 自身进程相关运行指标</li>
-</ul>
-<h4 id="mysqld-exporter"><a href="#mysqld-exporter" class="headerlink" title="mysqld_exporter"></a>mysqld_exporter</h4><p>（1）下载<a href="https://prometheus.io/download/" target="_blank" rel="noopener"><strong>二进制包</strong></a></p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">wget</span> <span class="attr">https://github.com/prometheus/mysqld_exporter/releases/download/v0.12.1/mysqld_exporter-0.12.1.linux-amd64.tar.gz</span></span><br><span class="line"><span class="string">tar</span> <span class="bullet">-xzf</span> <span class="string">mysqld_exporter-0.12.1.linux-amd64.tar.gz</span></span><br><span class="line"><span class="string">cd</span> <span class="string">mysqld_exporter-0.12.1.linux-amd64</span></span><br></pre></td></tr></table></figure>
-
-<p>（2）编辑 <code>.my.cnf</code></p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[client]</span></span><br><span class="line"><span class="string">user=hdm</span></span><br><span class="line"><span class="string">password=Hdm@123!</span></span><br><span class="line"><span class="string">host=10.133.0.53</span></span><br><span class="line"><span class="string">port=3306</span></span><br></pre></td></tr></table></figure>
-
-<p>（3）启动 <code>mysqld_exporter</code>，默认端口是 <code>9104</code>，可以看到采集到的 MySQL <a href="http://10.133.0.53:9104/metrics" target="_blank" rel="noopener"><strong>Metrics</strong></a>。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">./mysqld_exporter</span> <span class="bullet">--config.my-cnf=/data/mysqld_exporter-0.12.1.linux-amd64/.my.cnf</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="数据收集"><a href="#数据收集" class="headerlink" title="数据收集"></a>数据收集</h3><p>为了能够让 <code>Prometheus Server</code> 能够从当前 <code>node_exporter</code> 获取到监控数据，这里需要修改 <code>Prometheus</code> 配置文件，编辑 <code>prometheus.yml</code> 并在 <code>scrape_configs</code> 节点下添加以下内容：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">scrape_configs:</span></span><br><span class="line"><span class="attr">  - job_name:</span> <span class="string">'prometheus'</span></span><br><span class="line"><span class="attr">    static_configs:</span></span><br><span class="line"><span class="attr">      - targets:</span> <span class="string">['localhost:9090']</span></span><br><span class="line">  <span class="comment"># 采集node exporter监控数据</span></span><br><span class="line"><span class="attr">  - job_name:</span> <span class="string">'node'</span></span><br><span class="line"><span class="attr">    static_configs:</span></span><br><span class="line"><span class="attr">      - targets:</span> <span class="string">['localhost:9100']</span></span><br></pre></td></tr></table></figure>
-
-<p>重新启动 <code>Prometheus Server</code>，访问 <a href="http://10.133.0.53:9090/" target="_blank" rel="noopener"><strong>http://10.133.0.53:9090</strong></a>，进入到 <code>Prometheus Server</code>。如果输入 <code>up</code> 并且点击执行按钮以后，可以看到如下结果：</p>
-<p><img src="http://ww1.sinaimg.cn/large/006y8mN6ly1g6df70foddj32cs0riwia.jpg" alt="image-20190826215234095"></p>
-<p>如果 <code>Prometheus</code> 能够正常从 <code>node_exporter</code> 获取数据，则会看到以下结果：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">up&#123;instance="localhost:9090",job="prometheus"&#125;</span>	<span class="number">1</span></span><br><span class="line"><span class="string">up&#123;instance="localhost:9100",job="node"&#125;</span>	<span class="number">1</span></span><br></pre></td></tr></table></figure>
-
-<p>其中 <code>&quot;1&quot;</code> 表示正常，反之 <code>&quot;0&quot;</code> 则为异常。</p>
-<h3 id="数据模型"><a href="#数据模型" class="headerlink" title="数据模型"></a>数据模型</h3><p><code>Prometheus</code> 存储的是 <a href="https://en.wikipedia.org/wiki/Time_series" target="_blank" rel="noopener"><strong>时序数据</strong></a>，即按照相同时序（相同的名字和标签），以时间维度存储连续的数据的集合。时序（<code>Time Series</code>）是由名字（<code>Metric</code>），以及一组 <code>key/value</code> 标签定义的，具有相同的名字以及标签属于相同时序。时序的名字由 <code>ASCII</code> 字符、数字、下划线、以及冒号组成，它必须满足正则表达式 <code>[a-zA-Z_:][a-zA-Z0-9_:]*</code>, 其名字应该具有语义化，一般表示一个可以度量的指标，例如： <code>http_requests_total</code>, 可以表示 <code>http</code> 请求的总数。</p>
-<p>时序的标签可以使 <code>Prometheus</code> 的数据更加丰富，能够区分具体不同的实例，例如 <code>http_requests_total{method=&quot;POST&quot;}</code> 可以表示所有 <code>Http</code> 中的 <code>POST</code> 请求。标签名称由 <code>ASCII</code> 字符，数字，以及下划线组成， 其中 <code>__</code> 开头属于 <code>Prometheus</code> 保留，标签的值可以是任何 <code>Unicode</code> 字符，支持中文。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&lt;metric</span> <span class="string">name&gt;&#123;&lt;label</span> <span class="string">name&gt;=&lt;label</span> <span class="string">value&gt;,</span> <span class="string">...&#125;</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="数据可视化"><a href="#数据可视化" class="headerlink" title="数据可视化"></a>数据可视化</h3><p><code>Prometheus UI</code> 提供了快速验证 <code>PromQL</code> 以及临时可视化支持的能力，而在大多数场景下引入监控系统通常还需要构建可以长期使用的监控数据可视化面板（ <a href="https://grafana.com/grafana/dashboards" target="_blank" rel="noopener"><strong>Dashboard</strong></a> ）。这时用户可以考虑使用第三方的可视化工具如<code>Grafana</code>，<a href="https://grafana.com/" target="_blank" rel="noopener"><strong>Grafana</strong></a> 是一个开源的可视化平台，并且提供了对 <code>Prometheus</code> 的完整支持。</p>
-<p>安装 <code>Grafana</code>（使用向导：安装 -&gt; 添加数据源 -&gt; 创建 Dashboard -&gt; 邀请成员 -&gt; 安装应用和插件）</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">docker方式：</span></span><br><span class="line"><span class="string">docker</span> <span class="string">run</span> <span class="bullet">-d</span> <span class="bullet">-p</span> <span class="number">3000</span><span class="string">:3000</span> <span class="string">grafana/grafana</span></span><br><span class="line"></span><br><span class="line"><span class="string">二进制包方式：</span></span><br><span class="line"><span class="string">wget</span> <span class="attr">https://dl.grafana.com/oss/release/grafana-6.3.3.linux-amd64.tar.gz</span></span><br><span class="line"><span class="string">tar</span> <span class="bullet">-zxvf</span> <span class="string">grafana-6.3.3.linux-amd64.tar.gz</span></span><br><span class="line"></span><br><span class="line"><span class="string">rpm方式：</span></span><br><span class="line"><span class="string">wget</span> <span class="attr">https://dl.grafana.com/oss/release/grafana-6.3.3-1.x86_64.rpm</span> </span><br><span class="line"><span class="string">sudo</span> <span class="string">yum</span> <span class="string">localinstall</span> <span class="string">grafana-6.3.3-1.x86_64.rpm</span> </span><br><span class="line"></span><br><span class="line"><span class="string">Pie</span> <span class="string">Chart插件：</span></span><br><span class="line"><span class="string">grafana-cli</span> <span class="string">plugins</span> <span class="string">install</span> <span class="string">grafana-piechart-panel</span></span><br></pre></td></tr></table></figure>
-
-<p>访问 <a href="http://10.133.0.53:3000/" target="_blank" rel="noopener"><strong>http://10.133.0.53:3000</strong></a> 就可以进入到 <code>Grafana</code> 的界面中，默认情况下使用账户 <code>admin/admin</code> 进行登录</p>
-<h3 id="任务和实例"><a href="#任务和实例" class="headerlink" title="任务和实例"></a>任务和实例</h3><p>在 <code>Prometheus</code> 中，每一个暴露监控样本数据的 <code>HTTP</code> 服务称为一个实例。例如在当前主机上运行的 <code>node_exporter</code> 可以被称为一个<strong>实例</strong>（<code>Instance</code>）。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">scrape_configs:</span></span><br><span class="line"><span class="attr">  - job_name:</span> <span class="string">'prometheus'</span></span><br><span class="line"><span class="attr">    static_configs:</span></span><br><span class="line"><span class="attr">      - targets:</span> <span class="string">['localhost:9090']</span></span><br><span class="line"><span class="attr">  - job_name:</span> <span class="string">'node'</span></span><br><span class="line"><span class="attr">    static_configs:</span></span><br><span class="line"><span class="attr">      - targets:</span> <span class="string">['localhost:9100']</span></span><br></pre></td></tr></table></figure>
-
-<p>而一组用于相同采集目的的实例，或者同一个采集进程的多个副本则通过一个<strong>任务</strong>（<code>Job</code>）进行管理。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">*</span> <span class="attr">job:</span> <span class="string">node</span></span><br><span class="line">    <span class="string">*</span> <span class="string">instance</span> <span class="number">2</span><span class="string">:</span> <span class="number">1.2</span><span class="number">.3</span><span class="number">.4</span><span class="string">:9100</span></span><br><span class="line">    <span class="string">*</span> <span class="string">instance</span> <span class="number">4</span><span class="string">:</span> <span class="number">5.6</span><span class="number">.7</span><span class="number">.8</span><span class="string">:9100</span></span><br></pre></td></tr></table></figure>
-
-<p>当前在每一个 <code>Job</code> 中主要使用了静态配置（<code>static_configs</code>）的方式定义监控目标，<code>Prometheus</code> 还支持与 <code>Consul</code>、<code>Kubernetes</code> 等进行集成实现自动发现实例，并从这些实例上获取监控数据。可以访问 <a href="http://10.133.0.53:9090/targets" target="_blank" rel="noopener"><strong>targets</strong></a> 直接查看当前所有的任务以及每个任务对应的实例信息。</p>
-<h2 id="服务发现"><a href="#服务发现" class="headerlink" title="服务发现"></a>服务发现</h2><h3 id="Push-vs-Pull"><a href="#Push-vs-Pull" class="headerlink" title="Push vs Pull"></a>Push vs Pull</h3><p><img src="https://github.com/huiraoo/prometheus-book/raw/master/sd/static/pulls_vs_push.png" alt="Push"></p>
-<p>如上所示，展示了 <code>Push</code> 系统和 <code>Pull</code> 系统的核心差异。相较于 <code>Push</code> 模式，<code>Pull</code> 模式的优点可以简单总结为以下几点：</p>
-<ul>
-<li>只要 <code>exporter</code> 在运行，你可以在任何地方（比如在本地），搭建你的监控系统；</li>
-<li>你可以更容易的查看监控目标实例的健康状态，并且可以快速定位故障；</li>
-<li>更利于构建 <code>DevOps</code> 文化的团队；</li>
-<li>松耦合的架构模式更适合于云原生的部署环境。</li>
-</ul>
-<h3 id="Consul"><a href="#Consul" class="headerlink" title="Consul"></a>Consul</h3><p><a href="https://www.consul.io" target="_blank" rel="noopener"><strong>Consul</strong></a>：由 <code>HashiCorp</code> 开发的一个支持多数据中心的分布式服务发现和键值对存储服务的开源软件，被大量应用于基于微服务的软件架构当中，使用 <code>Golang</code> 语言开发。</p>
-<h4 id="安装-1"><a href="#安装-1" class="headerlink" title="安装"></a>安装</h4><p>下载<a href="https://www.consul.io/downloads.html" target="_blank" rel="noopener"><strong>二进制包</strong></a></p>
-<h4 id="与-Prometheus-集成"><a href="#与-Prometheus-集成" class="headerlink" title="与 Prometheus 集成"></a>与 Prometheus 集成</h4><h2 id="PromQL"><a href="#PromQL" class="headerlink" title="PromQL"></a>PromQL</h2><p>PromQL（<code>Prometheus Query Language</code>），是 <code>Prometheus</code> 自己开发的数据查询 <code>DSL</code> 语言，<code>PromQL</code> 作为<code>Prometheus</code> 的核心能力除了实现数据的对外查询和展现，同时告警监控也是依赖 <code>PromQL</code> 实现的。</p>
-<h3 id="时间序列"><a href="#时间序列" class="headerlink" title="时间序列"></a>时间序列</h3><p>Prometheus 可以采集到当前主机所有监控指标的样本数据，例如：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># HELP node_cpu Seconds the cpus spent in each mode.</span></span><br><span class="line"><span class="comment"># TYPE node_cpu counter</span></span><br><span class="line"><span class="string">node_cpu&#123;cpu="cpu0",mode="idle"&#125;</span> <span class="number">362812.7890625</span></span><br><span class="line"><span class="comment"># HELP node_load1 1m load average.</span></span><br><span class="line"><span class="comment"># TYPE node_load1 gauge</span></span><br><span class="line"><span class="string">node_load1</span> <span class="number">3.0703125</span></span><br></pre></td></tr></table></figure>
-
-<p>其中非 # 开头的每一行表示当前 node_exporter 采集到的一个监控样本：node_cpu 和 node_load1 表明了当前指标的名称、大括号中的标签则反映了当前样本的一些特征和维度、浮点数则是该监控样本的具体值。</p>
-<h3 id="样本"><a href="#样本" class="headerlink" title="样本"></a>样本</h3><p>Prometheus 会将所有采集到的样本数据以时间序列（time-series）的方式保存在内存数据库中，并且定时保存到硬盘上。如下所示，可以将 time-series 理解为一个以时间为 Y 轴的数字矩阵：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">^</span></span><br><span class="line"><span class="string">│</span>   <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span>   <span class="string">.</span> <span class="string">.</span>   <span class="string">node_cpu&#123;cpu="cpu0",mode="idle"&#125;</span></span><br><span class="line"><span class="string">│</span>     <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span>   <span class="string">node_cpu&#123;cpu="cpu0",mode="system"&#125;</span></span><br><span class="line"><span class="string">│</span>     <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span>   <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span>   <span class="string">node_load1&#123;&#125;</span></span><br><span class="line"><span class="string">│</span>     <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span>   <span class="string">.</span> <span class="string">.</span>  </span><br><span class="line"><span class="string">v</span></span><br><span class="line">  <span class="string">&lt;------------------</span> <span class="string">时间</span> <span class="bullet">----------------&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>在 time-series 中的每一个点称为一个样本（sample），样本由以下三部分组成：</p>
-<ul>
-<li>指标 (metric)：metric name 和描述当前样本特征的 label sets。</li>
-<li>时间戳 (timestamp)：一个精确到毫秒的时间戳。</li>
-<li>样本值 (value)： 一个 folat64 的浮点型数据表示当前样本的值。</li>
-</ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&lt;---------------</span> <span class="string">metric</span> <span class="bullet">---------------------&gt;&lt;-timestamp</span> <span class="bullet">-&gt;&lt;-value-&gt;</span></span><br><span class="line"><span class="string">http_request_total&#123;status="200",</span> <span class="string">method="GET"&#125;@1434417560938</span> <span class="string">=&gt;</span> <span class="number">94355</span></span><br><span class="line"><span class="string">http_request_total&#123;status="200",</span> <span class="string">method="GET"&#125;@1434417561287</span> <span class="string">=&gt;</span> <span class="number">94334</span></span><br><span class="line"></span><br><span class="line"><span class="string">http_request_total&#123;status="404",</span> <span class="string">method="GET"&#125;@1434417560938</span> <span class="string">=&gt;</span> <span class="number">38473</span></span><br><span class="line"><span class="string">http_request_total&#123;status="404",</span> <span class="string">method="GET"&#125;@1434417561287</span> <span class="string">=&gt;</span> <span class="number">38544</span></span><br><span class="line"></span><br><span class="line"><span class="string">http_request_total&#123;status="200",</span> <span class="string">method="POST"&#125;@1434417560938</span> <span class="string">=&gt;</span> <span class="number">4748</span></span><br><span class="line"><span class="string">http_request_total&#123;status="200",</span> <span class="string">method="POST"&#125;@1434417561287</span> <span class="string">=&gt;</span> <span class="number">4785</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="指标-Metric"><a href="#指标-Metric" class="headerlink" title="指标 (Metric)"></a>指标 (Metric)</h3><p>在形式上，所有的指标 (Metric) 都通过如下格式标示：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&lt;metric</span> <span class="string">name&gt;&#123;&lt;label</span> <span class="string">name&gt;=&lt;label</span> <span class="string">value&gt;,</span> <span class="string">...&#125;</span></span><br></pre></td></tr></table></figure>
-
-<p>指标名称（metric name）：反映监控样本的含义。</p>
-<p>标签（label）：反映当前样本的特征维度。</p>
-<p>指标类型：Counter（计数器）、Gauge（仪表盘）、Histogram（直方图）、Summary（摘要）</p>
-<p>Counter：只增不减的计数器</p>
-<p>Gauge：可增可减的仪表盘</p>
-<p>使用 Histogram 和 Summary 分析数据分布情况</p>
-<h2 id="告警"><a href="#告警" class="headerlink" title="告警"></a>告警</h2>
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/21/mysql-index/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/08/21/mysql-index/" class="post-title-link" itemprop="url">MySQL · 索引</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-21 16:34:04" itemprop="dateCreated datePublished" datetime="2019-08-21T16:34:04+08:00">2019-08-21</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-13 18:44:56" itemprop="dateModified" datetime="2019-10-13T18:44:56+08:00">2019-10-13</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/21/mysql-lock/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/08/21/mysql-lock/" class="post-title-link" itemprop="url">MySQL · 锁机制</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-21 16:33:53" itemprop="dateCreated datePublished" datetime="2019-08-21T16:33:53+08:00">2019-08-21</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-13 19:13:37" itemprop="dateModified" datetime="2019-10-13T19:13:37+08:00">2019-10-13</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>锁</strong>：是计算机协调多个进程或线程并发访问某一资源的机制。</p>
-<p><strong>MySQL锁机制</strong>：相对其他数据库而言，MySQL 的锁机制比较简单，其最显著的特点是不同的存储引擎支持不同的锁机制。MyISAM 和 MEMORY 存储引擎采用的是表级锁（table-level locking）；InnoDB 存储引擎既支持行级锁（row-level locking），也支持表级锁，但默认情况下是采用行级锁。</p>
-<p>①  表级锁：开销小，加锁快；不会出现死锁；锁定粒度大，发生锁冲突的概率最高,并发度最低。  </p>
-<p>②  行级锁：开销大，加锁慢；会出现死锁；锁定粒度最小，发生锁冲突的概率最低,并发度也最高。</p>
-<p>从上述特点可见，很难笼统地说哪种锁更好，只能就具体应用的特点来说哪种锁更合适！仅从锁的角度来说：表级锁更适合于以查询为主，只有少量按索引条件更新数据的应用，如 Web 应用；而行级锁则更适合于有大量按索引条件并发更新少量不同数据，同时又有并发查询的应用，如一些在线事务处理（OLTP）系统。由于 BDB 已经被 InnoDB 取代，即将成为历史（所以现在基本都在使用 InnoDB 存储引擎）。</p>
-<p>如何查看表锁情况？可查看两个变量：</p>
-<p><strong>Table_locks_immediate</strong>：立刻获得表锁的次数</p>
-<p><strong>Table_locks_waited</strong>：需要等待表锁的次数，如果等待表锁的次数占比较大，说明表锁可能是潜在瓶颈。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show status like 'Table_locks%';</span><br><span class="line">+<span class="comment">-----------------------+---------+</span></span><br><span class="line">| Variable_name         | Value   |</span><br><span class="line">+<span class="comment">-----------------------+---------+</span></span><br><span class="line">| Table_locks_immediate | 1789993 |</span><br><span class="line">| Table_locks_waited    | 0       |</span><br><span class="line">+<span class="comment">-----------------------+---------+</span></span><br><span class="line">2 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-
-<p>表级锁的两种模式：</p>
-<ul>
-<li><p>表共享读锁（Table Read Lock）</p>
-</li>
-<li><p>表独占写锁（Table Write Lock）</p>
-</li>
-</ul>
-<h3 id="InnoDB"><a href="#InnoDB" class="headerlink" title="InnoDB"></a>InnoDB</h3><p>如果 InnoDB_row_lock_waits 和 InnoDB_row_lock_time_avg 的值比较高，表示锁争用情况比较严重。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show status like 'InnoDB_row_lock%';</span><br><span class="line">+<span class="comment">-------------------------------+-------+</span></span><br><span class="line">| Variable_name                 | Value |</span><br><span class="line">+<span class="comment">-------------------------------+-------+</span></span><br><span class="line">| Innodb_row_lock_current_waits | 0     |</span><br><span class="line">| Innodb_row_lock_time          | 0     |</span><br><span class="line">| Innodb_row_lock_time_avg      | 0     |</span><br><span class="line">| Innodb_row_lock_time_max      | 0     |</span><br><span class="line">| Innodb_row_lock_waits         | 0     |</span><br><span class="line">+<span class="comment">-------------------------------+-------+</span></span><br><span class="line">5 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-
-<p>InnoDB 实现了一下两种类型的行锁：  </p>
-<ul>
-<li>共享锁(S)：允许一个事务去多一行，阻止其它事务获得相同数据集的排他锁。  </li>
-<li>排他锁(X): 允许获得排他锁的事务更新数据，阻止其它事务获得相同数据集的共享锁和排他写锁。</li>
-</ul>
-<p>另外，为了允许行锁和表锁共存，实现多粒度锁机制，InnoDB 还有两种内部使用的意向锁（Intention Locks），这两种意向锁都是表锁。（感觉与MyISAM 的表锁机制类似）  </p>
-<ul>
-<li>意向共享锁（IS）：事务打算给数据行加行共享锁，事务在给一个数据行加共享锁前必须先取得该表的 IS 锁。  </li>
-<li>意向排他锁（IX）：事务打算给数据行加行排他锁，事务在给一个数据行加排他锁前必须先取得该表的 IX 锁。</li>
-</ul>
-<p><strong>InnoDB行锁模式兼容性列表</strong>：</p>
-<table>
-<thead>
-<tr>
-<th align="left">请求锁模式矩阵结果表示是否兼容 当前锁模式</th>
-<th align="left">X</th>
-<th align="left">IX</th>
-<th align="left">S</th>
-<th align="left">IS</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">X</td>
-<td align="left">冲突</td>
-<td align="left">冲突</td>
-<td align="left">冲突</td>
-<td align="left">冲突</td>
-</tr>
-<tr>
-<td align="left">IX</td>
-<td align="left">冲突</td>
-<td align="left">兼容</td>
-<td align="left">冲突</td>
-<td align="left">兼容</td>
-</tr>
-<tr>
-<td align="left">S</td>
-<td align="left">冲突</td>
-<td align="left">冲突</td>
-<td align="left">兼容</td>
-<td align="left">兼容</td>
-</tr>
-<tr>
-<td align="left">IS</td>
-<td align="left">冲突</td>
-<td align="left">兼容</td>
-<td align="left">兼容</td>
-<td align="left">兼容</td>
-</tr>
-</tbody></table>
-<h3 id="死锁（DeadLock"><a href="#死锁（DeadLock" class="headerlink" title="死锁（DeadLock)"></a>死锁（DeadLock)</h3><h3 id="避免死锁的方法"><a href="#避免死锁的方法" class="headerlink" title="避免死锁的方法"></a><strong>避免死锁的方法</strong></h3><ol>
-<li>在应用中，如果不同的程序会并发存取多个表，应尽量约定以相同的顺序来访问表，这样可以大大降低产生死锁的机会。在下面的例子中，由于两个 session 访问两个表的顺序不同，发生死锁的机会就非常高！但如果以相同的顺序来访问，死锁就可以避免。  </li>
-<li>在程序以批量方式处理数据的时候，如果事先对数据排序，保证每个线程按固定的顺序来处理记录，也可以大大降低出现死锁的可能。  </li>
-<li>在事务中，如果要更新记录，应该直接申请足够级别的锁，即排他锁，而不应先申请共享锁，更新时再申请排他锁，因为当用户申请排他锁时，其他事务可能又已经获得了相同记录的共享锁，从而造成锁冲突，甚至死锁。  </li>
-<li>在 REPEATABLE-READ 隔离级别下，如果两个线程同时对相同条件记录用 SELECT…FOR UPDATE 加排他锁，在没有符合该条件记录情况下，两个线程都会加锁成功。程序发现记录尚不存在，就试图插入一条新记录，如果两个线程都这么做，就会出现死锁。这种情况下，将隔离级别改成 READ COMMITTED，就可避免问题。  </li>
-<li>当隔离级别为 READ COMMITTED 时，如果两个线程都先执行 SELECT…FOR UPDATE，判断是否存在符合条件的记录，如果没有，就插入记录。此时，只有一个线程能插入成功，另一个线程会出现锁等待，当第 1 个线程提交后，第 2 个线程会因主键重出错，但虽然这个线程出错了，却会获得一个排他锁！这时如果有第 3 个线程又来申请排他锁，也会出现死锁。</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/19/books/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/08/19/books/" class="post-title-link" itemprop="url">读书笔记 · 深入理解计算机系统</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-19 11:09:11" itemprop="dateCreated datePublished" datetime="2019-08-19T11:09:11+08:00">2019-08-19</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-13 19:12:57" itemprop="dateModified" datetime="2019-10-13T19:12:57+08:00">2019-10-13</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/19/redis/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/08/19/redis/" class="post-title-link" itemprop="url">Redis</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-19 11:07:15" itemprop="dateCreated datePublished" datetime="2019-08-19T11:07:15+08:00">2019-08-19</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-13 19:13:58" itemprop="dateModified" datetime="2019-10-13T19:13:58+08:00">2019-10-13</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">$ wget http://download.redis.io/releases/redis-<span class="number">5.0</span>.<span class="number">5</span>.tar.gz</span><br><span class="line">$ tar xzf redis-<span class="number">5.0</span>.<span class="number">5</span>.tar.gz</span><br><span class="line">$ cd redis-<span class="number">5.0</span>.<span class="number">5</span></span><br><span class="line">$ make</span><br><span class="line"></span><br><span class="line">$ cd src</span><br><span class="line">$ ./redis-server</span><br><span class="line">$ ./redis-server ../redis.conf</span><br><span class="line"></span><br><span class="line">$ ps -ef | grep redis</span><br><span class="line">root     <span class="number">112021</span>      <span class="number">1</span>  <span class="number">0</span> <span class="number">15</span>:<span class="number">02</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> ./redis-server *:<span class="number">6379</span></span><br><span class="line">root     <span class="number">112563</span>  <span class="number">82349</span>  <span class="number">0</span> <span class="number">15</span>:<span class="number">04</span> pts/<span class="number">0</span>    <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> grep --color=auto redis</span><br></pre></td></tr></table></figure>
-
-<p><strong>redis.conf</strong> 是一个默认的配置文件，我们可以根据需要使用自己的配置文件。</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ cd src</span><br><span class="line">$ ./redis-cli</span><br><span class="line">redis&gt; set foo bar</span><br><span class="line">OK</span><br><span class="line">redis&gt; get foo</span><br><span class="line"><span class="string">"bar"</span></span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/12/foster/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/08/12/foster/" class="post-title-link" itemprop="url">新员工培养</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-12 09:26:09" itemprop="dateCreated datePublished" datetime="2019-08-12T09:26:09+08:00">2019-08-12</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-13 19:13:08" itemprop="dateModified" datetime="2019-10-13T19:13:08+08:00">2019-10-13</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="第一周（2019-08-12）"><a href="#第一周（2019-08-12）" class="headerlink" title="第一周（2019/08/12）"></a>第一周（2019/08/12）</h2><p><strong>本周学习内容：</strong><br>1、数据库基础概念及 <code>MySQL</code> 简介。<br>2、<code>Linux</code> 常用命令。<br>3、<code>Linux</code> 下安装 <code>MySQL 5.7</code> 版本数据库。<br>4、操作 <code>MySQL</code> 常用工具，学会对新增用户进行授权。<br>5、搭建个人技术博客，每日工作日报通过博客文章形式发送。</p>
-<p><strong>本周输出：</strong><br>1、学习总结：<a href="https://mino-yn.github.io/blog/archives/" target="_blank" rel="noopener">https://mino-yn.github.io/blog/archives/</a><br>2、<code>MySQL</code> 运维工单2个。</p>
-<h2 id="第二周（2019-08-19）"><a href="#第二周（2019-08-19）" class="headerlink" title="第二周（2019/08/19）"></a>第二周（2019/08/19）</h2><p><strong>本周学习内容：</strong><br>1、<code>MySQL</code> 数据库备份工具 <code>XtraBackup</code> 的学习实践。<br>2、增、删、改、查常用 <code>SQL</code> 语句操作及语法。<br>3、<code>MySQL</code> 常用内置函数的使用：<code>COUNT()</code>、<code>MAX()</code>、<code>MIN()</code>、<code>SUM()</code> 等。</p>
-<p><strong>本周输出：</strong><br>1、学习总结：<a href="https://mino-yn.github.io/blog/archives/" target="_blank" rel="noopener">https://mino-yn.github.io/blog/archives/</a><br>2、<code>MySQL</code> 运维工单2个。</p>
-<h2 id="第三周（2019-08-26）"><a href="#第三周（2019-08-26）" class="headerlink" title="第三周（2019/08/26）"></a>第三周（2019/08/26）</h2><p><strong>本周学习内容：</strong><br>1、<code>MySQL</code> 数据库备份工具 <code>mysqldump</code> 的学习与实践。<br>2、配置 <code>SSH</code> 互信的原理与实践<br>3、<code>MySQL</code> 高级查询：联结、组合查询、子查询等<br>4、<code>MySQL</code> 存储过程、游标、触发器等的使用</p>
-<p><strong>本周工作输出：</strong><br>1、学习总结：<a href="https://mino-yn.github.io/blog/archives/" target="_blank" rel="noopener">https://mino-yn.github.io/blog/archives/</a><br>2、<code>MySQL</code> 运维工单4个。</p>
-<h2 id="8月份培养计划"><a href="#8月份培养计划" class="headerlink" title="8月份培养计划"></a>8月份培养计划</h2><table>
-<thead>
-<tr>
-<th>月</th>
-<th>目标</th>
-<th>周</th>
-<th>工作任务</th>
-<th>具体要求</th>
-<th>完成情况</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>8月</td>
-<td>1. 快速融入工作环境，完成角色转换 2. 工学结合，处理5%工单 3. 培养沟通展示能力，月度总结汇报 4. 培养良好文档习惯，搭建知识博客</td>
-<td>week1</td>
-<td>1. 了解工作内容及常用工具（HeidiSQL/XtraBackup） 2. 熟悉数据库相关基本概念</td>
-<td>搭建个人博客，日报上传</td>
-<td><strong>OK</strong></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>week2</td>
-<td>1. 安装、卸载、启动、停止MySQL数据库进程服务 2. 了解MySQL常用的几种登陆方式 3. 编写5篇技术总结文档，并发布到博客</td>
-<td>1. 处理本周安装数据库的工单 2. 输出5篇技术文档</td>
-<td><strong>OK</strong></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>week3</td>
-<td>1. MySQL用户管理和权限管理 2. 编写10篇技术总结文档，并发布到博客</td>
-<td>1. 处理本周授权、安装数据库等工单 2. 输出10篇技术文档</td>
-<td><strong>OK</strong></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>week4</td>
-<td>月度总结并汇报</td>
-<td>1. 本月累计处理工单5% 2. 本月累计输出15篇技术文档</td>
-<td></td>
-</tr>
-</tbody></table>
-<p><img src="http://ww1.sinaimg.cn/large/006y8mN6ly1g6dgf80ua8j30u011stlx.jpg" alt="培养计划（杨楠）"></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/06/data-structure/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/08/06/data-structure/" class="post-title-link" itemprop="url">数据结构与算法</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-06 15:28:51" itemprop="dateCreated datePublished" datetime="2019-08-06T15:28:51+08:00">2019-08-06</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-13 21:40:53" itemprop="dateModified" datetime="2019-10-13T21:40:53+08:00">2019-10-13</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>数据结构</strong>：是指一组数据的存储结构，它解决的是如何更快、更省地存储数据的问题。最常用、最基础数据结构有数组、链表、栈、队列、散列表、二叉树、堆、图。</p>
-<p><strong>算法</strong>：</p>
-<h2 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h2><h3 id="线性表"><a href="#线性表" class="headerlink" title="线性表"></a>线性表</h3><p>n个数据元素的有限序列。</p>
-<h4 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h4><p>数据连续储存在内存空间中，数据的访问简单，添加和删除数据较为麻烦。</p>
-<h3 id="链表"><a href="#链表" class="headerlink" title="链表"></a>链表</h3><h4 id="静态链表"><a href="#静态链表" class="headerlink" title="静态链表"></a>静态链表</h4><h4 id="单链表"><a href="#单链表" class="headerlink" title="单链表"></a>单链表</h4><h4 id="循环链表"><a href="#循环链表" class="headerlink" title="循环链表"></a>循环链表</h4><h4 id="双向链表"><a href="#双向链表" class="headerlink" title="双向链表"></a>双向链表</h4><h3 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h3><p>后进先出的数据结构形式</p>
-<h3 id="队列"><a href="#队列" class="headerlink" title="队列"></a>队列</h3><p>先进先出的数据结构形式</p>
-<h3 id="树"><a href="#树" class="headerlink" title="树"></a>树</h3><h3 id="哈希表"><a href="#哈希表" class="headerlink" title="哈希表"></a>哈希表</h3><h3 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h3><h3 id="图"><a href="#图" class="headerlink" title="图"></a>图</h3><h2 id="学习资料"><a href="#学习资料" class="headerlink" title="学习资料"></a>学习资料</h2><p><a href="http://asdfghjkl.xyz/2019/05/24/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%E4%B9%8B%E7%BE%8E/" target="_blank" rel="noopener">数据结构与算法之美</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><a class="page-number" href="/blog/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/blog/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/7/">7</a><a class="extend next" rel="next" href="/blog/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><a class="page-number" href="/blog/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/blog/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/8/">8</a><a class="extend next" rel="next" href="/blog/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -2244,7 +2178,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">67</span>
+                    <span class="site-state-item-count">75</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
