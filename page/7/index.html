@@ -323,6 +323,920 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/17/mysql-install/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/17/mysql-install/" class="post-title-link" itemprop="url">MySQL · 安装部署</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-17 16:52:38" itemprop="dateCreated datePublished" datetime="2019-07-17T16:52:38+08:00">2019-07-17</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-13 19:13:36" itemprop="dateModified" datetime="2019-10-13T19:13:36+08:00">2019-10-13</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>mysql</strong>：<code>MySQL</code> 客户端访问管理工具。</p>
+<p><strong>mysqld</strong>：这个可执行文件就代表着 <code>MySQL</code> 服务器程序，运行这个可执行文件就可以直接启动一个服务器进程。</p>
+<p><strong>mysqld</strong> 启动配置文件优先级：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/etc/my.cnf -&gt; /etc/mysql/my.cnf -&gt; /usr/etc/my.cnf -&gt; ~/.my.cnf</span><br></pre></td></tr></table></figure>
+
+<p><strong>mysqld_safe</strong>：是一个启动脚本，它会间接的调用 <code>mysqld</code>，而且还顺便启动了另外一个监控进程，这个监控进程在服务器进程挂了的时候，可以帮助重启它。使用 <code>mysqld_safe</code> 启动 <code>mysqld</code> 时，<code>mysqld_safe</code> 可以使用参数选项，此时可以使用其他配置文件，相当于 <code>mysqld_safe</code> 把参数传递给 <code>mysqld</code>。</p>
+<p><strong>mysql.server</strong>：也是一个启动脚本，主要作用就是为了方便启动和关闭 <code>mysqld</code> 服务，只能使用默认的 <code>/etc/my.cnf</code> 配置文件，<code>mysql.server</code> 调用 <code>mysqld_safe</code>，然后 <code>mysql_safe</code> 调用了 <code>mysqld</code>。</p>
+<h2 id="MySQL-5-7"><a href="#MySQL-5-7" class="headerlink" title="MySQL 5.7"></a>MySQL 5.7</h2><p>（1）下载软件包</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ groupadd mysql</span><br><span class="line">$ useradd -g mysql mysql -s /sbin/nologin</span><br><span class="line"></span><br><span class="line">$ scp mysql-<span class="number">5.7</span>.<span class="number">23</span>-el7-x86_64.tar.gz root@x.x.x.x:/usr/local/src/</span><br><span class="line">$ tar -zxvf mysql-<span class="number">5.7</span>.<span class="number">23</span>-el7-x86_64.tar.gz -C /usr/local/</span><br><span class="line">$ ln -s /usr/local/mysql-<span class="number">5.7</span>.<span class="number">23</span>-el7-x86_64 /usr/local/mysql</span><br></pre></td></tr></table></figure>
+
+<p>（2）配置文件 <code>my.cnf</code></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">port                      = <span class="number">3306</span></span><br><span class="line">socket                    = /<span class="keyword">data</span>/mysql/mysql.sock</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">port                      = <span class="number">3306</span></span><br><span class="line">socket                    = /<span class="keyword">data</span>/mysql/mysql.sock</span><br><span class="line">pid_file                  = /<span class="keyword">data</span>/mysql/mysql.pid</span><br><span class="line">basedir                   = /usr/local/mysql</span><br><span class="line">datadir                   = /<span class="keyword">data</span>/mysql</span><br><span class="line">character_set_server      = utf8</span><br><span class="line"></span><br><span class="line"><span class="comment"># LOG</span></span><br><span class="line">slow_query_log            = <span class="number">1</span></span><br><span class="line">long_query_time           = <span class="number">5</span></span><br><span class="line">log_error                 = /<span class="keyword">data</span>/mysql/error.log</span><br><span class="line">slow_query_log_file       = /<span class="keyword">data</span>/mysql/slow.log</span><br><span class="line"></span><br><span class="line"><span class="comment"># INNODB</span></span><br><span class="line">innodb_data_home_dir      = /<span class="keyword">data</span>/mysql</span><br><span class="line">innodb_buffer_pool_size   = <span class="number">10240</span>M</span><br><span class="line">innodb_log_file_size      = <span class="number">1</span>G</span><br><span class="line">innodb_data_file_path     = ibdata1:<span class="number">1</span>G:autoextend</span><br><span class="line"></span><br><span class="line"><span class="comment"># OTHER</span></span><br><span class="line">max_connections           = <span class="number">3000</span></span><br><span class="line">interactive_timeout       = <span class="number">600</span></span><br><span class="line">wait_timeout              = <span class="number">600</span></span><br><span class="line">lower_case_table_names    = <span class="number">1</span></span><br><span class="line">log_timestamps            = SYSTEM</span><br><span class="line">explicit_defaults_for_timestamp = <span class="number">1</span></span><br><span class="line">skip-ssl</span><br><span class="line">skip-name-resolve</span><br><span class="line"></span><br><span class="line"><span class="comment"># REPLICATION</span></span><br><span class="line">server-id                 = <span class="number">3306100</span></span><br><span class="line">log-bin                   = /<span class="keyword">data</span>/mysql/mysql-bin</span><br><span class="line">sync_binlog               = <span class="number">0</span></span><br><span class="line">max_binlog_size           = <span class="number">1024</span>M</span><br><span class="line">binlog-format             = row</span><br><span class="line">expire_logs_days          = <span class="number">7</span></span><br></pre></td></tr></table></figure>
+
+<p>（3）创建数据目录</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p /<span class="keyword">data</span>/mysql</span><br><span class="line">$ chown -R mysql:mysql /usr/local/mysql</span><br><span class="line">$ chown -R mysql:mysql /<span class="keyword">data</span>/mysql</span><br></pre></td></tr></table></figure>
+
+<p>（4）初始化</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd /usr/local/mysql-tdds/bin</span><br><span class="line">$ ./mysqld --defaults-file=/etc/my-tdds.cnf --user=mysql --initialize</span><br></pre></td></tr></table></figure>
+
+<p>（5）启动</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ /usr/local/mysql-tdds/bin</span><br><span class="line">$ ./mysqld_safe --defaults-file=/etc/my.cnf --user=mysql <span class="number">2</span>&gt;&amp;<span class="number">1</span>&gt; /dev/null &amp;</span><br></pre></td></tr></table></figure>
+
+<p>（6）开启防火墙端口</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ firewall-cmd --zone=public --add-port=<span class="number">3306</span>/tcp --permanent</span><br><span class="line">$ firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<p>（7）设置开机自启动</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ cd /usr/local/mysql/bin</span><br><span class="line">$ cp mysql mysqladmin mysqlbinlog mysqld mysqld_safe mysqldump /usr/bin/</span><br><span class="line"></span><br><span class="line">$ vi /usr/local/mysql/support-files/mysql.server</span><br><span class="line">mysqld_pid_file_path=/<span class="keyword">data</span>/mysql/mysql.pid</span><br><span class="line"></span><br><span class="line">$ cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld</span><br><span class="line">$ chmod +x /etc/init.d/mysqld</span><br><span class="line">$ chkconfig --add mysqld</span><br><span class="line">$ chkconfig mysqld on</span><br><span class="line">$ chkconfig --list</span><br></pre></td></tr></table></figure>
+
+<p>（8）设置用户</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">$ cat /data/mysql/error.log | grep password</span><br><span class="line"></span><br><span class="line"><span class="comment"># root账号</span></span><br><span class="line"><span class="keyword">SET</span> <span class="keyword">PASSWORD</span> = <span class="string">'Haier@123'</span>;</span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">USER</span> <span class="string">'root'</span>@<span class="string">'localhost'</span> <span class="keyword">PASSWORD</span> <span class="keyword">EXPIRE</span> <span class="keyword">NEVER</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># sre账号</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">USER</span> <span class="string">'sre'</span>@<span class="string">'%'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="keyword">PASSWORD</span> <span class="string">'*66CC8D8F94978869E17ABDA6FD2E1A5D817E619E'</span>;</span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">all</span> <span class="keyword">privileges</span> <span class="keyword">on</span> *.* <span class="keyword">to</span> <span class="string">'sre'</span>@<span class="string">'%'</span> <span class="keyword">WITH</span> <span class="keyword">GRANT</span> <span class="keyword">OPTION</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># hdm账号</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">USER</span> <span class="string">'hdm'</span>@<span class="string">'%'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="keyword">PASSWORD</span> <span class="string">'*14533888C6CA3952B3957903FF7E69469C7E3A2B'</span>;</span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">SELECT</span>, <span class="keyword">SHOW</span> <span class="keyword">DATABASES</span>, PROCESS, <span class="keyword">REPLICATION</span> <span class="keyword">SLAVE</span>, <span class="keyword">REPLICATION</span> <span class="keyword">CLIENT</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'hdm'</span>@<span class="string">'%'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">flush</span> <span class="keyword">privileges</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">user</span>,host,authentication_string <span class="keyword">from</span> mysql.user;</span><br></pre></td></tr></table></figure>
+
+<h2 id="MySQL-5-6"><a href="#MySQL-5-6" class="headerlink" title="MySQL 5.6"></a>MySQL 5.6</h2><p>（1）下载软件包</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ groupadd mysql</span><br><span class="line">$ useradd -g mysql mysql -s /sbin/nologin</span><br><span class="line"></span><br><span class="line">$ tar -zxvf mysql-<span class="number">5.6</span>.<span class="number">27</span>-el7-x86_64.tar.gz -C /usr/local/</span><br><span class="line">$ ln -s mysql-<span class="number">5.6</span>.<span class="number">27</span>-el7-x86_64 mysql</span><br></pre></td></tr></table></figure>
+
+<p>（2）配置文件 <code>my.cnf</code></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[client]</span></span><br><span class="line"><span class="string">port</span>                      <span class="string">=</span> <span class="number">3306</span></span><br><span class="line"><span class="string">socket</span>                    <span class="string">=</span> <span class="string">/data/mysql/mysql.sock</span></span><br><span class="line"></span><br><span class="line"><span class="string">[mysqld]</span></span><br><span class="line"><span class="string">port</span>                      <span class="string">=</span> <span class="number">3306</span></span><br><span class="line"><span class="string">socket</span>                    <span class="string">=</span> <span class="string">/data/mysql/mysql.sock</span></span><br><span class="line"><span class="string">pid_file</span>                  <span class="string">=</span> <span class="string">/data/mysql/mysql.pid</span></span><br><span class="line"><span class="string">basedir</span>                   <span class="string">=</span> <span class="string">/usr/local/mysql</span></span><br><span class="line"><span class="string">datadir</span>                   <span class="string">=</span> <span class="string">/data/mysql</span></span><br><span class="line"><span class="string">character_set_server</span>      <span class="string">=</span> <span class="string">utf8</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># LOG</span></span><br><span class="line"><span class="string">slow_query_log</span>            <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">long_query_time</span>           <span class="string">=</span> <span class="number">5</span></span><br><span class="line"><span class="string">log_error</span>                 <span class="string">=</span> <span class="string">/data/mysql/error.log</span></span><br><span class="line"><span class="string">slow_query_log_file</span>       <span class="string">=</span> <span class="string">/data/mysql/slow.log</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># INNODB</span></span><br><span class="line"><span class="string">innodb_data_home_dir</span>      <span class="string">=</span> <span class="string">/data/mysql</span></span><br><span class="line"><span class="string">innodb_buffer_pool_size</span>   <span class="string">=</span> <span class="number">10240</span><span class="string">M</span></span><br><span class="line"><span class="string">innodb_log_file_size</span>      <span class="string">=</span> <span class="number">1</span><span class="string">G</span></span><br><span class="line"><span class="string">innodb_data_file_path</span>     <span class="string">=</span> <span class="attr">ibdata1:1G:autoextend</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># OTHER</span></span><br><span class="line"><span class="string">max_connections</span>           <span class="string">=</span> <span class="number">3000</span></span><br><span class="line"><span class="string">interactive_timeout</span>       <span class="string">=</span> <span class="number">600</span></span><br><span class="line"><span class="string">wait_timeout</span>              <span class="string">=</span> <span class="number">600</span></span><br><span class="line"><span class="string">lower_case_table_names</span>    <span class="string">=</span> <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># REPLICATION</span></span><br><span class="line"><span class="string">server-id</span>                 <span class="string">=</span> <span class="number">3306100</span></span><br><span class="line"><span class="string">log-bin</span>                   <span class="string">=</span> <span class="string">/data/mysql/mysql-bin</span></span><br><span class="line"><span class="string">sync_binlog</span>               <span class="string">=</span> <span class="number">0</span></span><br><span class="line"><span class="string">max_binlog_size</span>           <span class="string">=</span> <span class="number">1024</span><span class="string">M</span></span><br><span class="line"><span class="string">binlog-format</span>             <span class="string">=</span> <span class="string">row</span></span><br><span class="line"><span class="string">expire_logs_days</span>          <span class="string">=</span> <span class="number">7</span></span><br></pre></td></tr></table></figure>
+
+<p>（3）创建数据目录</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir -p /<span class="keyword">data</span>/mysql</span><br><span class="line">$ chown mysql:mysql -R /usr/local/mysql</span><br><span class="line">$ chown mysql:mysql -R /<span class="keyword">data</span>/mysql</span><br></pre></td></tr></table></figure>
+
+<p>（4）初始化</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ /usr/local/mysql/scripts/mysql_install_db  --basedir=/usr/local/mysql --defaults-file=/etc/my.cnf --user=mysql</span><br></pre></td></tr></table></figure>
+
+<p>（5）启动</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ /usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql <span class="number">2</span>&gt;&amp;<span class="number">1</span> &gt; /dev/null &amp;</span><br></pre></td></tr></table></figure>
+
+<p>（6）开启防火墙端口</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ firewall-cmd --zone=public --add-port=<span class="number">3306</span>/tcp --permanent</span><br><span class="line">$ firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<p>（7）设置开机自启动</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ cd /usr/local/mysql/bin</span><br><span class="line">$ cp mysql mysqladmin mysqlbinlog mysqld mysqld_safe mysqldump /usr/bin/</span><br><span class="line"></span><br><span class="line">$ vi /usr/local/mysql/support-files/mysql.server</span><br><span class="line">mysqld_pid_file_path=/<span class="keyword">data</span>/mysql/mysql.pid</span><br><span class="line"></span><br><span class="line">$ cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld</span><br><span class="line">$ chmod +x /etc/init.d/mysqld</span><br><span class="line">$ chkconfig --add mysqld</span><br><span class="line">$ chkconfig mysqld on</span><br></pre></td></tr></table></figure>
+
+<p>（8）重置密码</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql</span><br><span class="line"><span class="keyword">update</span> mysql.user <span class="keyword">set</span> <span class="keyword">password</span>=<span class="keyword">password</span>(<span class="string">'Haier@123'</span>) <span class="keyword">where</span> <span class="keyword">user</span>=<span class="string">'root'</span>;</span><br><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> mysql.user <span class="keyword">where</span> <span class="keyword">user</span>!=<span class="string">'root'</span> <span class="keyword">or</span> host!=<span class="string">'localhost'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">flush</span> <span class="keyword">privileges</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">user</span>,host,<span class="keyword">password</span> <span class="keyword">from</span> mysql.user;</span><br></pre></td></tr></table></figure>
+
+<h2 id="MySQL-主从模式"><a href="#MySQL-主从模式" class="headerlink" title="MySQL 主从模式"></a>MySQL 主从模式</h2><h3 id="在线搭建主从"><a href="#在线搭建主从" class="headerlink" title="在线搭建主从"></a>在线搭建主从</h3><p>（1）创建复制用户</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GRANT</span> <span class="keyword">REPLICATION</span> <span class="keyword">SLAVE</span>, <span class="keyword">REPLICATION</span> <span class="keyword">CLIENT</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'repl'</span>@<span class="string">'x.x.x.%'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="string">'Changeme_123'</span>;</span><br></pre></td></tr></table></figure>
+
+<p>（2）修改配置参数</p>
+<ul>
+<li>主库 <code>my.cnf</code> 文件</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">server_id</span>         <span class="string">=</span> <span class="number">3306100</span></span><br><span class="line"><span class="string">log_bin</span>           <span class="string">=</span> <span class="string">mysql-bin</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>备库 <code>my.cnf</code> 文件</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">server_id</span>         <span class="string">=</span> <span class="number">3306101</span></span><br><span class="line"><span class="string">log_bin</span>           <span class="string">=</span> <span class="string">mysql-bin</span></span><br><span class="line"><span class="string">relay_log</span>         <span class="string">=</span> <span class="string">relay-log</span></span><br><span class="line"><span class="string">read_only</span>         <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">log_slave_updates</span> <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">innodb_flush_log_at_trx_commit</span> <span class="string">=</span> <span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>Tips</strong>：修改配置，需要重启 <code>mysqld</code> 服务生效</p>
+</blockquote>
+<p>（3）主库数据迁移至从库</p>
+<p>（4）配置复制链路</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 主库查看复制点</span></span><br><span class="line">mysql&gt; show master status;</span><br><span class="line">+<span class="comment">------------------+----------+--------------+------------------+-------------------+</span></span><br><span class="line">| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |</span><br><span class="line">+<span class="comment">------------------+----------+--------------+------------------+-------------------+</span></span><br><span class="line">| mysql-bin.000002 |     3778 |              |                  |                   |</span><br><span class="line">+<span class="comment">------------------+----------+--------------+------------------+-------------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 从库搭建复制链路</span></span><br><span class="line"><span class="keyword">CHANGE</span> <span class="keyword">MASTER</span> <span class="keyword">TO</span></span><br><span class="line">MASTER_HOST=<span class="string">'x.x.x.x'</span>,</span><br><span class="line">MASTER_USER=<span class="string">'repl'</span>,</span><br><span class="line">MASTER_PASSWORD=<span class="string">'Changeme_123'</span>,</span><br><span class="line">MASTER_PORT=<span class="number">3306</span>,</span><br><span class="line">MASTER_LOG_FILE=<span class="string">'mysql-bin.000002'</span>,</span><br><span class="line">MASTER_LOG_POS=<span class="number">3778</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 验证是否成功</span></span><br><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.138.98.179</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-bin.000002</span><br><span class="line">          Read_Master_Log_Pos: 3778</span><br><span class="line">               Relay_Log_File: relay-log.000002</span><br><span class="line">                Relay_Log_Pos: 1621</span><br><span class="line">        Relay_Master_Log_File: mysql-bin.000002</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">            ...</span><br></pre></td></tr></table></figure>
+
+<h3 id="在线搭建从库"><a href="#在线搭建从库" class="headerlink" title="在线搭建从库"></a>在线搭建从库</h3><p>（1）主从库服务器，<a href="https://huiraoo.github.io/blog/2019/06/18/mysql-xtrabackup/"><strong>安装 XtraBackup</strong></a></p>
+<p>（2）<a href="https://huiraoo.github.io/blog/2019/07/08/linux-ssh/"><strong>配置主从互信</strong></a></p>
+<p>（3）备份主库</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ innobackupex --defaults-file=/etc/my.cnf --user=<span class="string">'xx'</span> --password=<span class="string">'xx'</span> --no-timestamp /<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
+
+<p>（4）传输到从库</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ scp -r /<span class="keyword">data</span>/backup/* root@x.x.x.x:/<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
+
+<p>（5）恢复数据到从库</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ mysqladmin -uroot -p<span class="string">'xx'</span> shutdown</span><br><span class="line">$ innobackupex --apply-log /<span class="keyword">data</span>/backup</span><br><span class="line">$ mv mysql mysql_bak</span><br><span class="line">$ mkdir mysql</span><br><span class="line">$ innobackupex --copy-back /<span class="keyword">data</span>/backup</span><br><span class="line">$ chown -R mysql:mysql mysql</span><br><span class="line">$ /usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql &gt;/dev/null &amp;</span><br></pre></td></tr></table></figure>
+
+<p>（6）建立复制关系</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ cat xtrabackup_binlog_info</span><br><span class="line">mysql-binlog.000297	900834433</span><br><span class="line"></span><br><span class="line"><span class="keyword">CHANGE</span> <span class="keyword">MASTER</span> <span class="keyword">TO</span> </span><br><span class="line">MASTER_HOST=<span class="string">'x.x.x.x'</span>,</span><br><span class="line">MASTER_USER=<span class="string">'repl'</span>,</span><br><span class="line">MASTER_PASSWORD=<span class="string">'Changeme_123'</span>,</span><br><span class="line">MASTER_PORT=<span class="number">3306</span>,</span><br><span class="line">MASTER_LOG_FILE=<span class="string">'mysql-binlog.000297'</span>, </span><br><span class="line">MASTER_LOG_POS=<span class="number">900834433</span>,</span><br><span class="line">MASTER_CONNECT_RETRY=<span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">start</span> <span class="keyword">slave</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="MySQL-启停"><a href="#MySQL-启停" class="headerlink" title="MySQL 启停"></a>MySQL 启停</h2><h3 id="停止"><a href="#停止" class="headerlink" title="停止"></a>停止</h3><ul>
+<li>使用 <code>init.d</code>，<code>mysqld</code> 脚本来自于 <code>/usr/local/mysql/support-files/mysql.server</code></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ /etc/init.d/mysqld stop</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用 <code>mysqladmin</code></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mysqladmin -u<span class="string">'xx'</span> -p<span class="string">'xx'</span> shutdown</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用 <code>service</code></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl stop mysqld</span><br><span class="line">$ service mysql stop</span><br></pre></td></tr></table></figure>
+
+<h3 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h3><ul>
+<li>使用 <code>init.d</code></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ /etc/init.d/mysqld start</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用 <code>mysqld_safe</code></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mysqld_safe --defaults-file=/etc/my.cnf --user=mysql &amp;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>使用 <code>service</code></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl start mysqld</span><br><span class="line">$ service mysql start</span><br></pre></td></tr></table></figure>
+
+<h3 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h3><p><strong>现象</strong>：使用 <code>mysqld_safe</code> 启动失败，启动错误日志未记录 <code>error.log</code>，报错如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Starting MySQL. ERROR! The server quit without updating PID file (/usr/local/mysql/data/COSMOPlat-WMS-App01.pid)</span><br></pre></td></tr></table></figure>
+
+<p><strong>原因</strong>：经检查发现，数据库安装时是以 <code>haieradmin</code> 用户启动，默认使用 <code>mysql</code> 用户启动，启动失败。</p>
+<p><strong>解决</strong>：使用 <code>haieradmin</code> 用户启动成功。</p>
+<blockquote>
+<p>Tips：在操作生产环境时，需要先拷贝 <code>mysqld</code> 进程信息，以免启停失败。</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/16/nginx/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/16/nginx/" class="post-title-link" itemprop="url">Nginx</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-16 18:11:56" itemprop="dateCreated datePublished" datetime="2019-07-16T18:11:56+08:00">2019-07-16</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-13 19:13:51" itemprop="dateModified" datetime="2019-10-13T19:13:51+08:00">2019-10-13</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Nginx/" itemprop="url" rel="index"><span itemprop="name">Nginx</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p><a href="http://nginx.org/" target="_blank" rel="noopener"><strong>Nginx</strong></a>：是一款自由的、开源的、高性能的 HTTP 服务器和反向代理服务器，同时也是一个 IMAP、POP3、SMTP 代理服务器，它可以作为一个 HTTP 服务器进行网站的发布处理，另外也可以作为反向代理进行负载均衡的实现。</p>
+<p><strong>代理</strong>：代理就是一个代表、一个渠道。涉及到两个角色，一个是被代理角色，一个是目标角色，被代理角色通过这个代理访问目标角色完成一些任务的过程称为代理操作过程。如同生活中的专卖店，客人到 adidas 专卖店买了一双鞋，这个专卖店就是代理，被代理角色就是 adidas 厂家，目标角色就是用户。</p>
+<h3 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h3><p>在如今的网络环境下，我们如果由于技术需要要去访问国外的某些网站，此时你会发现位于国外的某网站我们通过浏览器是没有办法访问的，此时大家可能都会用一个操作翻墙进行访问，翻墙的方式主要是找到一个可以访问国外网站的代理服务器，我们将请求发送给代理服务器，代理服务器去访问国外的网站，然后将访问到的数据传递给我们，这种代理模式称为正向代理。</p>
+<p>正向代理最大的特点是客户端非常明确要访问的服务器地址，服务器只清楚请求来自哪个代理服务器，而不清楚来自哪个具体的客户端，正向代理模式屏蔽或者隐藏了真实客户端信息。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133811.png" alt></p>
+<p>客户端必须设置正向代理服务器，当然前提是要知道正向代理服务器的 IP 地址，还有代理程序的端口。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133807.png" alt></p>
+<p><strong>总结来说</strong>：正向代理，”它代理的是客户端，代客户端发出请求”，是一个位于客户端和原始服务器（origin server）之间的服务器，为了从原始服务器取得内容，客户端向代理发送一个请求并指定目标（原始服务器），然后代理向原始服务器转交请求并将获得的内容返回给客户端，客户端必须要进行一些特别的设置才能使用正向代理。</p>
+<p>正向代理的用途：</p>
+<ul>
+<li>访问原来无法访问的资源，如 Google</li>
+<li>可以做缓存，加速访问资源</li>
+<li>对客户端访问授权，上网进行认证</li>
+<li>代理可以记录用户访问记录（上网行为管理），对外隐藏用户信息</li>
+</ul>
+<h3 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h3><p>多个客户端给服务器发送的请求，Nginx 服务器接收到之后，按照一定的规则分发给了后端的业务处理服务器进行处理了。此时，请求的来源也就是客户端是明确的，但是请求具体由哪台服务器处理的并不明确了，Nginx 扮演的就是一个反向代理角色。客户端是无感知代理的存在的，反向代理对外都是透明的，访问者并不知道自己访问的是一个代理。因为客户端不需要任何配置就可以访问。</p>
+<p>反向代理，”它代理的是服务端，代服务端接收请求”，主要用于服务器集群分布式部署的情况下，反向代理隐藏了服务器的信息。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133801.png" alt></p>
+<p>反向代理的作用：</p>
+<ul>
+<li>保证内网的安全，通常将反向代理作为公网访问地址，Web服务器是内网</li>
+<li>负载均衡，通过反向代理服务器来优化网站的负载</li>
+</ul>
+<p><strong>项目场景</strong>：通常情况下，我们在实际项目操作时，正向代理和反向代理很有可能会存在在一个应用场景中，正向代理代理客户端的请求去访问目标服务器，目标服务器是一个反向单利服务器，反向代理了多台真实的业务处理服务器。具体的拓扑图如下：</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133752.png" alt></p>
+<p>二者之间的区别：</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133744.png" alt></p>
+<p>在正向代理中，Proxy 和 Client 同属于一个 LAN（图中方框内），隐藏了客户端信息；</p>
+<p>在反向代理中，Proxy 和 Server 同属于一个LAN（图中方框内），隐藏了服务端信息；</p>
+<p>实际上，Proxy 在两种代理中做的事情都是替服务器代为收发请求和响应，不过从结构上看正好左右互换了一下，所以把后出现的那种代理方式称为反向代理了。</p>
+<h3 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h3><p>这里提到的客户端发送的、Nginx反向代理服务器接收到的请求数量，就是我们说的负载量。请求数量按照一定的规则进行分发到不同的服务器处理的规则，就是一种均衡规则。所以，将服务器接收到的请求按照规则分发的过程，称为负载均衡。</p>
+<p>负载均衡在实际项目操作过程中，有硬件负载均衡和软件负载均衡两种，硬件负载均衡也称为硬负载，如F5负载均衡，相对造价昂贵成本较高，但是数据的稳定性安全性等等有非常好的保障，如中国移动中国联通这样的公司才会选择硬负载进行操作；更多的公司考虑到成本原因，会选择使用软件负载均衡，软件负载均衡是利用现有的技术结合主机硬件实现的一种消息队列分发机制。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133716.png" alt></p>
+<h3 id="几种-web-服务器对比"><a href="#几种-web-服务器对比" class="headerlink" title="几种 web 服务器对比"></a>几种 web 服务器对比</h3><table>
+<thead>
+<tr>
+<th><strong>对比项 \ 服务器</strong></th>
+<th><strong>Apache</strong></th>
+<th><strong>Nginx</strong></th>
+<th><strong>Lighttpd</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Proxy代理</td>
+<td>非常好</td>
+<td>非常好</td>
+<td>一般</td>
+</tr>
+<tr>
+<td>Rewriter</td>
+<td>好</td>
+<td>非常好</td>
+<td>一般</td>
+</tr>
+<tr>
+<td>Fcgi</td>
+<td>不好</td>
+<td>好</td>
+<td>非常好</td>
+</tr>
+<tr>
+<td>热部署</td>
+<td>不支持</td>
+<td>支持</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>系统压力</td>
+<td>很大</td>
+<td>很小</td>
+<td>比较小</td>
+</tr>
+<tr>
+<td>稳定性</td>
+<td>好</td>
+<td>非常好</td>
+<td>不好</td>
+</tr>
+<tr>
+<td>安全性</td>
+<td>好</td>
+<td>一般</td>
+<td>一般</td>
+</tr>
+<tr>
+<td>静态文件处理</td>
+<td>一般</td>
+<td>非常好</td>
+<td>好</td>
+</tr>
+<tr>
+<td>反向代理</td>
+<td>一般</td>
+<td>非常好</td>
+<td>一般</td>
+</tr>
+</tbody></table>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><blockquote>
+<p>yum方式安装</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm</span><br><span class="line">yum install -y nginx</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>安装路径</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">whereis nginx</span><br><span class="line">nginx: /usr/sbin/nginx /usr/lib64/nginx /etc/nginx /usr/share/nginx /usr/share/man/man8/nginx.8.gz</span><br><span class="line"></span><br><span class="line">(1) Nginx配置路径：/etc/nginx/nginx.conf</span><br><span class="line">(2) PID目录：/var/run/nginx.pid</span><br><span class="line">(3) 错误日志：/var/log/nginx/error.log</span><br><span class="line">(4) 访问日志：/var/log/nginx/access.log</span><br><span class="line">(5) 默认站点目录：/usr/share/nginx/html</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">        listen       80;</span><br><span class="line">        server_name  zentao.smocer.top;</span><br><span class="line"></span><br><span class="line">        access_log  /var/log/nginx/zentao.access.log;</span><br><span class="line"></span><br><span class="line">        location / &#123;</span><br><span class="line">          try_files /_not_exists_ @backend;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        location @backend &#123;</span><br><span class="line">           proxy_set_header X-Forwarded-For $remote_addr;</span><br><span class="line">           proxy_set_header Host            $http_host;</span><br><span class="line">           proxy_set_header X-Forwarded-Proto $scheme;</span><br><span class="line">           </span><br><span class="line">        proxy_pass http://10.133.0.53:8080;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><blockquote>
+<p>启动</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>测试 Nginx 配置</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -t</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>重启</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -s reload</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>查询进程</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef | grep nginx</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>停止服务</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -s stop</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/15/mysql-questions/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/15/mysql-questions/" class="post-title-link" itemprop="url">MySQL · 案例集锦</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-15 09:42:42" itemprop="dateCreated datePublished" datetime="2019-07-15T09:42:42+08:00">2019-07-15</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-13 19:13:42" itemprop="dateModified" datetime="2019-10-13T19:13:42+08:00">2019-10-13</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="数据库连接不上"><a href="#数据库连接不上" class="headerlink" title="数据库连接不上"></a>数据库连接不上</h2><h3 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h3><p>项目经理火急火燎的反馈，说数据库连接不上了，请求排查问题原因。</p>
+<h3 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h3><p>1）<code>Navicate</code> 是否能够连上数据库 ？</p>
+<p>2）登录服务器，查看 <code>mysqld</code> 进程是否存在，如果进程不存在，可能是服务器断电导致进程未自启动。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ ssh haieradmin@<span class="number">10.138</span>.<span class="number">40.223</span> -p <span class="number">18022</span></span><br><span class="line">$ ssh haieradmin@<span class="number">10.138</span>.<span class="number">16.192</span></span><br><span class="line">$ ssh haieradmin@x.x.x.x (ssh root@x.x.x.x)  <span class="string">'Haier,123/Haier@123/Changeme_123'</span></span><br><span class="line"></span><br><span class="line">$ ps -ef | grep mysqld</span><br><span class="line">root      <span class="number">64511</span>  <span class="number">64440</span>  <span class="number">0</span> <span class="number">10</span>:<span class="number">27</span> pts/<span class="number">2</span>    <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> grep --color=auto mysqld</span><br><span class="line">root      <span class="number">79355</span>      <span class="number">1</span>  <span class="number">0</span> Aug31 ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> /bin/sh /usr/local/mysql/bin/mysqld_safe --datadir=/<span class="keyword">data</span>/mysql --pid-file=/<span class="keyword">data</span>/mysql/mysql.pid</span><br><span class="line">mysql     <span class="number">79981</span>  <span class="number">79355</span> <span class="number">99</span> Aug31 ?        <span class="number">2</span>-<span class="number">01</span>:<span class="number">38</span>:<span class="number">14</span> /usr/local/mysql/bin/mysqld --basedir=/usr/local/mysql --datadir=/<span class="keyword">data</span>/mysql --plugin-dir=/usr/local/mysql/lib/plugin --user=mysql --log-error=/<span class="keyword">data</span>/mysql/error.log --pid-file=/<span class="keyword">data</span>/mysql/mysql.pid --socket=/<span class="keyword">data</span>/mysql/mysql.sock --port=<span class="number">3306</span></span><br></pre></td></tr></table></figure>
+
+<p>3）登录<code>mysql</code>，查看线程状态，查看是否有锁占用，或者线程大量阻塞情况。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -S /<span class="keyword">data</span>/mysql/mysql.sock -usre -p<span class="string">'sre@@p$i'</span></span><br><span class="line">mysql&gt; show processlist;</span><br></pre></td></tr></table></figure>
+
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><ul>
+<li>如果是第一种原因，启动 <code>mysql</code> 进程</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ cd /etc/init.d</span><br><span class="line">$ ./mysqld stop/start</span><br><span class="line"></span><br><span class="line">$ cd /usr/local/mysql/support-files</span><br><span class="line">$ ./mysql.server stop/start</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>如果是第二种原因，删除正在执行的锁表线程</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 杀掉ID为1的线程, 关闭连接</span><br><span class="line">kill id; </span><br><span class="line"></span><br><span class="line"># 查询出时间大于10的线程, 复制查询结果，批量执行</span><br><span class="line">select concat(&apos;kill &apos;, id, &apos;;&apos;) from information_schema.processlist where time &gt; 10;</span><br></pre></td></tr></table></figure>
+
+<h2 id="系统查询速度慢"><a href="#系统查询速度慢" class="headerlink" title="系统查询速度慢"></a>系统查询速度慢</h2><h3 id="问题现象-1"><a href="#问题现象-1" class="headerlink" title="问题现象"></a>问题现象</h3><h3 id="原因分析-1"><a href="#原因分析-1" class="headerlink" title="原因分析"></a>原因分析</h3><h3 id="解决方法-1"><a href="#解决方法-1" class="headerlink" title="解决方法"></a>解决方法</h3><h2 id="备份失败"><a href="#备份失败" class="headerlink" title="备份失败"></a>备份失败</h2><h3 id="现象描述"><a href="#现象描述" class="headerlink" title="现象描述"></a>现象描述</h3><p>据备份供应商反映，昨天晚上 22:00 <code>XX系统</code>，从库备份失败，使用的备份工具是 <code>mysqldump</code>，请求协助定位备份失败原因。</p>
+<h3 id="原因分析-2"><a href="#原因分析-2" class="headerlink" title="原因分析"></a>原因分析</h3><p>（1）检查从库两个线程 <code>Slave_IO_Running</code> 和 <code>Slave_SQL_Running</code> 均是 <strong>Yes</strong>，说明主从复制链路正常，但是 <code>Seconds_Behind_Master</code> 不断增大，且主从数据延迟有不断扩大的趋势。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.133.0.51</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-binlog.000232</span><br><span class="line">          Read_Master_Log_Pos: 3108253</span><br><span class="line">               Relay_Log_File: relay-log.000004</span><br><span class="line">                Relay_Log_Pos: 169851605</span><br><span class="line">        Relay_Master_Log_File: mysql-binlog.000229</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">              Replicate_Do_DB: </span><br><span class="line">          Replicate_Ignore_DB: </span><br><span class="line">           Replicate_Do_Table: </span><br><span class="line">       Replicate_Ignore_Table: </span><br><span class="line">      Replicate_Wild_Do_Table: </span><br><span class="line">  Replicate_Wild_Ignore_Table: </span><br><span class="line">                   Last_Errno: 0</span><br><span class="line">                   Last_Error: </span><br><span class="line">                 Skip_Counter: 0</span><br><span class="line">          Exec_Master_Log_Pos: 169851386</span><br><span class="line">              Relay_Log_Space: 3270427001</span><br><span class="line">              Until_Condition: None</span><br><span class="line">               Until_Log_File: </span><br><span class="line">                Until_Log_Pos: 0</span><br><span class="line">           Master_SSL_Allowed: No</span><br><span class="line">           Master_SSL_CA_File: </span><br><span class="line">           Master_SSL_CA_Path: </span><br><span class="line">              Master_SSL_Cert: </span><br><span class="line">            Master_SSL_Cipher: </span><br><span class="line">               Master_SSL_Key: </span><br><span class="line">        Seconds_Behind_Master: 42302</span><br><span class="line">Master_SSL_Verify_Server_Cert: No</span><br><span class="line">              ....</span><br><span class="line">       </span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p>（2）检查当前数据库线程状态，未发现有明显异常。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show processlist;</span><br><span class="line">+-------+-------------+-------------------+--------------------+---------+--------+----------------------------------+--------------------------------+</span><br><span class="line">| Id    | User        | Host              | db                 | Command | Time   | State                            | Info                           |</span><br><span class="line">+-------+-------------+-------------------+--------------------+---------+--------+----------------------------------+--------------------------------+</span><br><span class="line">|     1 | system user |                   | NULL               | Connect | 172777 | Waiting for master to send event | NULL                           |</span><br><span class="line">|     2 | system user |                   | NULL               | Connect | 678456 | Reading event from the relay log | NULL                           |</span><br><span class="line">|  4345 | cvbak       | localhost         | NULL               | Query   | 130546 | Waiting for table flush          | FLUSH /*!40101 LOCAL */ TABLES |</span><br><span class="line">| 17662 | root        | localhost         | NULL               | Query   |      0 | starting                         | show processlist               |</span><br><span class="line">| 17671 | hdm         | 10.133.0.52:37170 | information_schema | Sleep   |      1 |                                  | NULL                           |</span><br><span class="line">+-------+-------------+-------------------+--------------------+---------+--------+----------------------------------+--------------------------------+</span><br></pre></td></tr></table></figure>
+
+<p>（3）检查当前正在使用的表：<code>show open tables where In_use=1;</code> 发现有一张表一直处于 <code>In_use</code> 状态。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show open tables where In_use=1;</span><br><span class="line">+<span class="comment">----------+---------------------------+--------+-------------+</span></span><br><span class="line">| Database | Table                     | In_use | Name_locked |</span><br><span class="line">+<span class="comment">----------+---------------------------+--------+-------------+</span></span><br><span class="line">| tdmetl   | odsepg_zrfc_zco_zzfymx_sw |      1 |           0 |</span><br><span class="line">+<span class="comment">----------+---------------------------+--------+-------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p>（4）根据 <code>Relay_Log_Pos</code> 解析 <code>relay-log.000004</code>，查看当时正在执行的操作是 <code>Delete_rows</code>，操作的表是 <code>tdmetl</code>.<code>odsepg_zrfc_zco_zzfymx_sw</code>。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># mysqlbinlog -vvv --base64-output=decode-rows relay-log.000004 --start-position=169851605 | more</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># at 169851605</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169851451 CRC32 0x6683bf99 	Anonymous_GTID	last_committed=1831	sequence_number=1832	rbr_</span></span><br><span class="line"><span class="string">only=yes</span></span><br><span class="line"><span class="string">/*!50718</span> <span class="string">SET</span> <span class="string">TRANSACTION</span> <span class="string">ISOLATION</span> <span class="string">LEVEL</span> <span class="string">READ</span> <span class="string">COMMITTED*//*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@SESSION.GTID_NEXT=</span> <span class="string">'ANONYMOUS'</span><span class="string">/*!*/;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># at 169851670</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169851525 CRC32 0x9d910e5d 	Query	thread_id=1254417	exec_time=0	error_code=0</span></span><br><span class="line"><span class="string">SET</span> <span class="string">TIMESTAMP=1563393778/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.pseudo_thread_id=1254417/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.foreign_key_checks=1,</span> <span class="string">@@session.sql_auto_is_null=0,</span> <span class="string">@@session.unique_checks=1,</span> <span class="string">@@session.autocommit=1/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.sql_mode=1436549128/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.auto_increment_increment=1,</span> <span class="string">@@session.auto_increment_offset=1/*!*/;</span></span><br><span class="line"><span class="string">/*!\C</span> <span class="string">utf8</span> <span class="string">*//*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.character_set_client=33,@@session.collation_connection=33,@@session.collation_server=33/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.lc_time_names=0/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.collation_database=DEFAULT/*!*/;</span></span><br><span class="line"><span class="string">BEGIN</span></span><br><span class="line"><span class="string">/*!*/;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># at 169851744</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169851626 CRC32 0x6b8bbd2d 	Table_map: `tdmetl`.`odsepg_zrfc_zco_zzfymx_sw` mapped to number 170</span></span><br><span class="line"><span class="number">018</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># at 169851845</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169859832 CRC32 0x338e105a 	Delete_rows: table id 170018</span></span><br></pre></td></tr></table></figure>
+
+<p>（5）检查表结构，发现该表数据量很大且无主键。由此基本确定其问题根本原因：<strong>对无主键的表进行删除或者更新，导致从库夯住</strong>。该表数据量：77961221条。</p>
+<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g6873jkiw5j30yf0gigpp.jpg" alt="image-20190822092437992"></p>
+<h3 id="解决方法-2"><a href="#解决方法-2" class="headerlink" title="解决方法"></a>解决方法</h3><p>（1）表添加自增主键。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">'xxxx'</span> <span class="keyword">ADD</span> <span class="keyword">id</span> <span class="built_in">bigint</span>(<span class="number">10</span>) <span class="keyword">UNSIGNED</span> primary <span class="keyword">key</span> AUTO_INCREMENT;</span><br></pre></td></tr></table></figure>
+
+<p>（2）大表删除使用 <code>truncate</code> 命令。</p>
+<h3 id="建议"><a href="#建议" class="headerlink" title="建议"></a>建议</h3><ul>
+<li>避免无 <code>where</code> 条件的 <code>delete</code> 或 <code>update</code> 操作大表，如果需要全表删除，使用 <code>truncate</code> 操作。</li>
+<li>在 <code>binlog row</code> 模式下表结构最好能有主键。</li>
+</ul>
+<h2 id="告警：主从复制中断"><a href="#告警：主从复制中断" class="headerlink" title="告警：主从复制中断"></a>告警：主从复制中断</h2><h3 id="问题现象-2"><a href="#问题现象-2" class="headerlink" title="问题现象"></a>问题现象</h3><p>监控系统，检测到<code>xx项目</code>主从复制中断，并发送了告警</p>
+<h3 id="原因分析-3"><a href="#原因分析-3" class="headerlink" title="原因分析"></a>原因分析</h3><p>1）登录所报告警数据库，查看复制状态</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">ssh haieradmin@10.138.8.216</span><br><span class="line">ssh root@10.159.37.148</span><br><span class="line">ssh haieradmin@10.159.44.168</span><br><span class="line"></span><br><span class="line">MariaDB [(none)]&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.133.8.96</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-bin.002660</span><br><span class="line">          Read_Master_Log_Pos: 343075905</span><br><span class="line">               Relay_Log_File: relay-log-bin.003429</span><br><span class="line">                Relay_Log_Pos: 555</span><br><span class="line">        Relay_Master_Log_File: mysql-bin.001741</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: No</span><br></pre></td></tr></table></figure>
+
+<p>经检查 <code>Slave_SQL_Running</code> 为 <strong>No</strong>，原因一般都很明显，记录在 <code>Last_Error</code>，根据报错原因选择合适地解决方法，最常用的解决办法是跳过这一条正在执行的 SQL。</p>
+<h3 id="解决方法-3"><a href="#解决方法-3" class="headerlink" title="解决方法"></a>解决方法</h3><p>（1）登陆 <code>10.133.0.53</code></p>
+<p>（2）执行下面操作</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">pt-slave-restart -h 'x.x.x.x' -u'xx' -p'xx' -P 3306</span><br><span class="line"></span><br><span class="line"><span class="comment">#一般是事务回滚造成的</span></span><br><span class="line"><span class="keyword">stop</span> <span class="keyword">slave</span>;</span><br><span class="line"><span class="keyword">set</span> <span class="keyword">GLOBAL</span> SQL_SLAVE_SKIP_COUNTER=<span class="number">1</span>;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">slave</span>;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">************************* 1. row ***************************</span><br><span class="line">               Slave_IO_State: </span><br><span class="line">                  Master_Host: 10.135.22.70</span><br><span class="line">                  Master_User: repluser</span><br><span class="line">                  Master_Port: 3308</span><br><span class="line">                Connect_Retry: 10</span><br><span class="line">              Master_Log_File: mysql-bin.001935</span><br><span class="line">          Read_Master_Log_Pos: 6587</span><br><span class="line">               Relay_Log_File: relay-log.001487</span><br><span class="line">                Relay_Log_Pos: 4</span><br><span class="line">        Relay_Master_Log_File: mysql-bin.001935</span><br><span class="line">             Slave_IO_Running: No</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">              Replicate_Do_DB: </span><br><span class="line">          Replicate_Ignore_DB: </span><br><span class="line">           Replicate_Do_Table: </span><br><span class="line">       Replicate_Ignore_Table: </span><br><span class="line">      Replicate_Wild_Do_Table: </span><br><span class="line">  Replicate_Wild_Ignore_Table: test.%</span><br><span class="line">                   Last_Errno: 0</span><br><span class="line">                   Last_Error: </span><br><span class="line">                 Skip_Counter: 0</span><br><span class="line">          Exec_Master_Log_Pos: 6587</span><br><span class="line">              Relay_Log_Space: 107</span><br><span class="line">              Until_Condition: None</span><br><span class="line">               Until_Log_File: </span><br><span class="line">                Until_Log_Pos: 0</span><br><span class="line">           Master_SSL_Allowed: No</span><br><span class="line">           Master_SSL_CA_File: </span><br><span class="line">           Master_SSL_CA_Path: </span><br><span class="line">              Master_SSL_Cert: </span><br><span class="line">            Master_SSL_Cipher: </span><br><span class="line">               Master_SSL_Key: </span><br><span class="line">        Seconds_Behind_Master: NULL</span><br><span class="line">Master_SSL_Verify_Server_Cert: No</span><br><span class="line">                Last_IO_Errno: 1236</span><br><span class="line">                Last_IO_Error: Got fatal error 1236 from master when reading data from binary log: 'Could not find first log file name in binary log index file'</span><br><span class="line">               Last_SQL_Errno: 0</span><br><span class="line">               Last_SQL_Error: </span><br><span class="line">  Replicate_Ignore_Server_Ids: </span><br><span class="line">             Master_Server_Id: 1</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Slave_IO_Running: No</span><br><span class="line">Slave_SQL_Running: Yes</span><br><span class="line">Last_IO_Error: Got fatal error 1236 from master when reading data from binary log: 'Could not find first log file name in binary log index file'</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@hop02 mzjh]<span class="comment"># ll | grep mysql-bin</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073742013</span> Sep <span class="number">12</span> <span class="number">14</span>:<span class="number">55</span> mysql-bin.<span class="number">001948</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073742073</span> Sep <span class="number">13</span> <span class="number">11</span>:<span class="number">53</span> mysql-bin.<span class="number">001949</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073742120</span> Sep <span class="number">14</span> <span class="number">08</span>:<span class="number">39</span> mysql-bin.<span class="number">001950</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073859355</span> Sep <span class="number">15</span> <span class="number">06</span>:<span class="number">21</span> mysql-bin.<span class="number">001951</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1074054892</span> Sep <span class="number">16</span> <span class="number">06</span>:<span class="number">18</span> mysql-bin.<span class="number">001952</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1075243641</span> Sep <span class="number">17</span> <span class="number">06</span>:<span class="number">18</span> mysql-bin.<span class="number">001953</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1074801420</span> Sep <span class="number">18</span> <span class="number">06</span>:<span class="number">16</span> mysql-bin.<span class="number">001954</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1075257243</span> Sep <span class="number">19</span> <span class="number">06</span>:<span class="number">16</span> mysql-bin.<span class="number">001955</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql   <span class="number">619405162</span> Sep <span class="number">19</span> <span class="number">13</span>:<span class="number">32</span> mysql-bin.<span class="number">001956</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1072898197</span> Sep <span class="number">20</span> <span class="number">09</span>:<span class="number">44</span> mysql-bin.<span class="number">001957</span></span><br><span class="line">-rw-r-----. <span class="number">1</span> mysql mysql         <span class="number">190</span> Sep <span class="number">19</span> <span class="number">13</span>:<span class="number">32</span> mysql-bin.index</span><br></pre></td></tr></table></figure>
+
+<p>从库在主库找不到 binlog 文件</p>
+<p><strong>原因</strong></p>
+<p>该错误发生在从库的io进程从主库拉取日志时，发现主库的mysql_bin.index文件中第一个文件不存在。出现此类报错可能是由于你的slave 由于某种原因停止了好长一段是时间，当你重启slave 复制的时候，在主库上找不到相应的binlog ,会报此类错误。或者是由于某些设置主库上的binlog被删除了，导致从库获取不到对应的binglog file。</p>
+<h2 id="主从复制延迟"><a href="#主从复制延迟" class="headerlink" title="主从复制延迟"></a>主从复制延迟</h2><h3 id="风险"><a href="#风险" class="headerlink" title="风险"></a>风险</h3><ul>
+<li>备库复制夯住，会导致备份失败（flush tables with read lock 900s 超时）</li>
+<li>以 Slave 为基准进行的备份，数据不是最新的有延迟</li>
+<li>异常情况下，主从HA无法切换，HA需要检查数据的一致性，延迟时主备不一致</li>
+</ul>
+<h3 id="场景-amp-解决方法"><a href="#场景-amp-解决方法" class="headerlink" title="场景 &amp; 解决方法"></a>场景 &amp; 解决方法</h3><ul>
+<li>无主键、无索引或索引区分度不高</li>
+</ul>
+<p><strong>现象</strong>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">a.</span> <span class="string">show</span> <span class="string">slave</span> <span class="string">status，</span> <span class="string">显示position一直没有变</span></span><br><span class="line"><span class="string">b.</span> <span class="string">show</span> <span class="string">open</span> <span class="string">tables</span> <span class="string">where</span> <span class="string">In_use=1，</span> <span class="string">显示某个表一直是in_use为</span> <span class="number">1</span></span><br><span class="line"><span class="string">c.</span> <span class="string">show</span> <span class="string">create</span> <span class="string">table，查看表结构可以看到无主键，或者无任何索引，或者索引区分度很差</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>解决方法</strong>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">a.</span> <span class="string">找到表区分度比较高的几个字段,</span> <span class="string">可以使用这个方法判断：</span></span><br><span class="line"><span class="string">select</span> <span class="string">count(*)</span> <span class="string">from</span> <span class="string">xx;</span></span><br><span class="line"><span class="string">select</span> <span class="string">count(*)</span> <span class="string">from</span> <span class="string">(select</span> <span class="string">distinct</span> <span class="string">xx</span> <span class="string">from</span> <span class="string">xxx)</span> <span class="string">t;</span></span><br><span class="line"><span class="string">如果2个查询count(*)的结果差不多，说明可以对这些字段加索引</span></span><br><span class="line"></span><br><span class="line"><span class="string">b.</span> <span class="string">备库</span> <span class="string">stop</span> <span class="string">slave;</span></span><br><span class="line"><span class="string">可能会执行比较久，因为需要回滚事务。</span></span><br><span class="line"></span><br><span class="line"><span class="string">c.</span> <span class="string">备库</span></span><br><span class="line"><span class="string">set</span> <span class="string">sql_log_bin=0;</span></span><br><span class="line"><span class="string">alter</span> <span class="string">table</span> <span class="string">xx</span> <span class="string">add</span> <span class="string">key</span> <span class="string">xx(xx);</span></span><br><span class="line"><span class="string">alter</span> <span class="string">table</span> <span class="string">'xxxx'</span> <span class="string">add</span> <span class="string">id</span> <span class="string">int(10)</span> <span class="string">unsigned</span> <span class="string">primary</span> <span class="string">key</span> <span class="string">AUTO_INCREMENT;</span></span><br><span class="line"></span><br><span class="line"><span class="string">d.</span> <span class="string">备库</span> <span class="string">start</span> <span class="string">slave</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>主库上有大事务，导致从库延时</li>
+</ul>
+<p><strong>现象</strong>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">解析binlog文件，发现一直打印的是Write_rows</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>解决方法</strong>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">事前防范：与开发沟通，增加缓存，异步写入数据库,减少业务直接对db的大事务写入</span></span><br><span class="line"><span class="string">事中补救：调整数据库中io相关的参数比如innodb_flush_log_at_trx_commit和sync_binlog，或者打开并行复制功能</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>库写入频繁，从库压力跟不上导致延时</li>
+</ul>
+<p><strong>现象</strong>：</p>
+<p>此类原因的主要现象是数据库的 <code>IUD</code> 操作非常多，<code>slave</code> 由于 <code>sql_thread</code> 单线程的原因追不上主库。</p>
+<p><strong>解决方法</strong>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">a.</span> <span class="string">升级从库的硬件配置，比如</span> <span class="string">ssd,fio</span></span><br><span class="line"><span class="string">b.</span> <span class="string">使用@丁奇的预热工具</span> <span class="bullet">-relay</span> <span class="string">fetch</span></span><br><span class="line"><span class="string">在备库sql线程执行更新之前，预先将相应的数据加载到内存中,并不能提高sql_thread线程执行sql的能力，</span> <span class="string">也不能加快io_thread线程读取日志的速度。</span></span><br><span class="line"><span class="string">c.</span> <span class="string">使用多线程复制</span> <span class="string">阿里MySQL团队实现的方案</span> <span class="bullet">--</span> <span class="string">基于行的并行复制。</span></span><br><span class="line"><span class="string">该方案允许对同一张表进行修改的两个事务并行执行，只要这两个事务修改了表中的不同的行。</span></span><br><span class="line"><span class="string">这个方案可以达到事务间更高的并发度，但是局限是必须使用Row格式的binlog。</span></span><br><span class="line"><span class="string">因为只有使用Row格式的binlog才可以知道一个事务所修改的行的范围，而使用Statement格式的binlog只能知道修改的表对象。</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>大量 <code>myisam</code> 表，在备份时导致 <code>slave</code> 延时</li>
+</ul>
+<p><strong>现象</strong>：</p>
+<p>由于 <code>xtrabackup</code> 工具备份到最后会执行 <code>flash tables with read lock</code>，对数据库进行锁表以便进行一致性备份，然后对于 <code>myisam</code> 锁表，会阻碍 <code>salve_sql_thread</code> 运行进而导致夯住。</p>
+<p><strong>解决方法</strong>：</p>
+<p>修改表结构为 <code>InnoDB</code> 存储引擎的表</p>
+<h2 id="表碎片"><a href="#表碎片" class="headerlink" title="表碎片"></a>表碎片</h2><p>表碎片是 <code>MySQL</code> 运维过程中比较常见的问题，碎片的存在十分影响数据库的性能。</p>
+<h3 id="判断方法"><a href="#判断方法" class="headerlink" title="判断方法"></a>判断方法</h3><p>MySQL 的碎片是否产生，通过查看</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show table status from table_name\G;</span><br></pre></td></tr></table></figure>
+
+<p>这个命令中 <code>Data_free</code> 字段，如果该字段不为 0，则产生了数据碎片。</p>
+<h3 id="产生原因"><a href="#产生原因" class="headerlink" title="产生原因"></a>产生原因</h3><p><strong>1. 经常进行 delete 操作</strong></p>
+<p>经常进行 <code>delete</code> 操作，产生空白空间，如果进行新的插入操作，MySQL 将尝试利用这些留空的区域，但仍然无法将其彻底占用，久而久之就产生了碎片；</p>
+<p><strong>2. update 更新</strong></p>
+<p><code>update</code> 更新可变长度的字段(例如：<code>varchar</code> 类型)，将长的字符串更新成短的。之前存储的内容长，后来存储是短的，即使后来插入新数据，那么有一些空白区域还是没能有效利用的。</p>
+<h3 id="产生影响"><a href="#产生影响" class="headerlink" title="产生影响"></a>产生影响</h3><ol>
+<li><p>由于碎片空间是不连续的，导致这些空间不能充分被利用；</p>
+</li>
+<li><p>由于碎片的存在，导致数据库的磁盘 <code>I/O</code> 操作变成离散随机读写，加重了磁盘 <code>I/O</code> 的负担。</p>
+</li>
+</ol>
+<h3 id="清理办法"><a href="#清理办法" class="headerlink" title="清理办法"></a>清理办法</h3><ul>
+<li><p>MyISAM：<code>optimize table</code> 表名；（OPTIMIZE 可以整理数据文件，并重排索引）</p>
+</li>
+<li><p>InnoDB：</p>
+<p>（1）重建表存储引擎：<code>ALTER TABLE tablename ENGINE = InnoDB;</code></p>
+<p>（2）进行一次数据的导入导出</p>
+</li>
+</ul>
+<p><strong>碎片清理的性能对比：</strong></p>
+<p>引用我之前一个生产库的数据，对比一下清理前后的 SQL 执行速度差异：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">select</span> <span class="string">count(*)</span> <span class="string">from</span> <span class="string">test.twitter_11;</span></span><br><span class="line"><span class="string">修改前：1</span> <span class="string">row</span> <span class="string">in</span> <span class="string">set</span> <span class="string">(7.37</span> <span class="string">sec)</span></span><br><span class="line"><span class="string">修改后：1</span> <span class="string">row</span> <span class="string">in</span> <span class="string">set</span> <span class="string">(1.28</span> <span class="string">sec)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>通过对比，可以看到碎片清理前后，节省了很多空间，SQL执行效率更快。所以，<strong>在日常运维工作中，应该对表碎片进行定期清理，保证数据库有稳定的性能。</strong></p>
+<h2 id="触发器创建失败"><a href="#触发器创建失败" class="headerlink" title="触发器创建失败"></a>触发器创建失败</h2><h3 id="问题现象-3"><a href="#问题现象-3" class="headerlink" title="问题现象"></a>问题现象</h3><p>创建触发器，报错提示”1419”</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">ERROR</span> <span class="number">1419</span> <span class="string">(HY000):</span> <span class="string">You</span> <span class="string">do</span> <span class="string">not</span> <span class="string">have</span> <span class="string">the</span> <span class="string">SUPER</span> <span class="string">privilege</span> <span class="string">and</span></span><br><span class="line"><span class="string">binary</span> <span class="string">logging</span> <span class="string">is</span> <span class="string">enabled</span> <span class="string">(you</span> <span class="string">*might*</span> <span class="string">want</span> <span class="string">to</span> <span class="string">use</span> <span class="string">the</span> <span class="string">less</span> <span class="string">safe</span> <span class="string">log_bin_trust_routine_creators</span> <span class="string">variable)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="原因分析-4"><a href="#原因分析-4" class="headerlink" title="原因分析"></a>原因分析</h3><p>有些操作要禁止掉对 SUPER 权限的要求，要处理可以设置 <code>log_bin_trust_routine_creators</code> 全局系统变量为 <code>1</code>，默认地，这个变量值为 <code>0</code>。</p>
+<h3 id="解决方法-4"><a href="#解决方法-4" class="headerlink" title="解决方法"></a>解决方法</h3><p>直接在数据库进行修改，也可以在启动服务器之时用 <code>--log-bin-trust-routine-creators</code> 选项来设置允许这个变量。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SET GLOBAL log_bin_trust_routine_creators = 1;</span><br></pre></td></tr></table></figure>
+
+<h2 id="删除线程"><a href="#删除线程" class="headerlink" title="删除线程"></a>删除线程</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/sh</span></span><br><span class="line">while :</span><br><span class="line">do</span><br><span class="line">  n=`mysqladmin processlist -h 127.0.0.1 -uroot -pHaier@123|grep -i sleep |wc -l`</span><br><span class="line">  date=`date +%Y%m%d\[%H:%M:%S]`</span><br><span class="line">  echo $n</span><br><span class="line"></span><br><span class="line">  if [ "$n" -gt 10 ]</span><br><span class="line">  then</span><br><span class="line">  for i in `mysqladmin processlist -h 127.0.0.1 -uroot -pHaier@123|grep -i Query |awk '&#123;print $2&#125;'`</span><br><span class="line">  do</span><br><span class="line">     mysqladmin -h 127.0.0.1 -uroot -pHaier@123 kill $i</span><br><span class="line">  done</span><br><span class="line">  echo "sleep is too many I killed it " &gt;&gt; /data/sleep.log</span><br><span class="line">  echo "$date : $n" &gt;&gt; /data/sleep.log</span><br><span class="line">  fi</span><br><span class="line">  sleep 1</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/12/mysql-ops/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2030,745 +2944,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/05/mysql-sql/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/05/mysql-sql/" class="post-title-link" itemprop="url">MySQL · SQL</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-05 17:39:23" itemprop="dateCreated datePublished" datetime="2019-07-05T17:39:23+08:00">2019-07-05</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-09-24 18:10:35" itemprop="dateModified" datetime="2019-09-24T18:10:35+08:00">2019-09-24</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="开发类"><a href="#开发类" class="headerlink" title="开发类"></a>开发类</h2><h3 id="库"><a href="#库" class="headerlink" title="库"></a>库</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">进入库：</span><br><span class="line"><span class="keyword">use</span> <span class="string">'dbname'</span>            </span><br><span class="line"></span><br><span class="line">创建数据库：</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">database</span> <span class="string">'dbname'</span></span><br><span class="line"></span><br><span class="line">删除数据库：</span><br><span class="line"><span class="keyword">drop</span> <span class="keyword">database</span> <span class="string">'dbname'</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="表"><a href="#表" class="headerlink" title="表"></a>表</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建表</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> tabname <span class="keyword">where</span> <span class="string">'条件'</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 插入</span></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> tabname(field1,field2) <span class="keyword">values</span>(value1,value2)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除</span></span><br><span class="line"><span class="keyword">delete</span> <span class="keyword">from</span> tabname <span class="keyword">where</span> <span class="string">'条件'</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 更新</span></span><br><span class="line"><span class="keyword">update</span> tabname <span class="keyword">set</span> field1=value1 <span class="keyword">where</span> <span class="string">'条件'</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改表名</span></span><br><span class="line">mysql&gt; <span class="keyword">rename</span> <span class="keyword">table</span> oldname <span class="keyword">to</span> newname;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建测试表</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`testdemo`</span> (</span><br><span class="line">	<span class="string">`id`</span> <span class="built_in">bigint</span> <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">	<span class="string">`name`</span> <span class="built_in">char</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span>,</span><br><span class="line">  <span class="string">`address`</span> <span class="built_in">varchar</span>(<span class="number">50</span>),</span><br><span class="line">	<span class="string">`age`</span> <span class="built_in">tinyint</span> <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="number">0</span>,</span><br><span class="line">	<span class="string">`gmt_create`</span> datetime <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">CURRENT_TIMESTAMP</span>,</span><br><span class="line">	<span class="string">`gmt_modified`</span> datetime <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">CURRENT_TIMESTAMP</span> <span class="keyword">ON</span> <span class="keyword">UPDATE</span> <span class="keyword">CURRENT_TIMESTAMP</span>,</span><br><span class="line">	PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="comment"># 表结构</span></span><br><span class="line">mysql&gt; desc test;</span><br><span class="line">+<span class="comment">--------------+---------------------+------+-----+-------------------+-----------------------------+</span></span><br><span class="line">| Field        | Type                | Null | Key | Default           | Extra                       |</span><br><span class="line">+<span class="comment">--------------+---------------------+------+-----+-------------------+-----------------------------+</span></span><br><span class="line">| id           | bigint(20) unsigned | NO   | PRI | NULL              | auto_increment              |</span><br><span class="line">| name         | char(20)            | NO   |     | NULL              |                             |</span><br><span class="line">| age          | tinyint(3) unsigned | NO   |     | 0                 |                             |</span><br><span class="line">| gmt_create   | datetime            | NO   |     | CURRENT_TIMESTAMP |                             |</span><br><span class="line">| gmt_modified | datetime            | NO   |     | CURRENT_TIMESTAMP | on <span class="keyword">update</span> <span class="keyword">CURRENT_TIMESTAMP</span> |</span><br><span class="line">+<span class="comment">--------------+---------------------+------+-----+-------------------+-----------------------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 表数据</span></span><br><span class="line">mysql&gt; <span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">test</span>(<span class="keyword">name</span>,age) <span class="keyword">values</span>(<span class="string">'raohui'</span>,<span class="number">29</span>);</span><br><span class="line">mysql&gt; insert into test(name,age) values('yangnan',22);</span><br><span class="line">mysql&gt; select * from test;</span><br><span class="line">+<span class="comment">----+---------+-----+---------------------+---------------------+</span></span><br><span class="line">| id | name    | age | gmt_create          | gmt_modified        |</span><br><span class="line">+<span class="comment">----+---------+-----+---------------------+---------------------+</span></span><br><span class="line">|  1 | raohui  |  29 | 2019-09-24 16:19:13 | 2019-09-24 16:29:16 |</span><br><span class="line">|  2 | yangnan |  22 | 2019-09-24 16:19:24 | 2019-09-24 16:19:24 |</span><br><span class="line">+<span class="comment">----+---------+-----+---------------------+---------------------+</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">创建索引：</span><br><span class="line"><span class="keyword">create</span> [<span class="keyword">unique</span>] <span class="keyword">index</span> idx_name <span class="keyword">on</span> tabname(<span class="keyword">col</span>…)</span><br><span class="line"></span><br><span class="line">删除索引：</span><br><span class="line"><span class="keyword">drop</span> <span class="keyword">index</span> idx_name</span><br><span class="line"></span><br><span class="line">添加自增主键：</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> tabname <span class="keyword">add</span> <span class="keyword">id</span> <span class="built_in">bigint</span>(<span class="number">10</span>) primary <span class="keyword">key</span> AUTO_INCREMENT;</span><br></pre></td></tr></table></figure>
-
-<h3 id="视图"><a href="#视图" class="headerlink" title="视图"></a>视图</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">创建视图：</span><br><span class="line"><span class="keyword">create</span> <span class="keyword">view</span> viewname <span class="keyword">as</span> <span class="keyword">select</span> <span class="keyword">statement</span></span><br><span class="line"></span><br><span class="line">删除视图：</span><br><span class="line"><span class="keyword">drop</span> <span class="keyword">view</span> viewname</span><br><span class="line"></span><br><span class="line">查询视图：</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> (<span class="keyword">SELECT</span> a,b,c <span class="keyword">FROM</span> a) T <span class="keyword">where</span> t.a &gt; <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
-
-<h3 id="函数"><a href="#函数" class="headerlink" title="函数"></a>函数</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 总数</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">count</span> <span class="keyword">as</span> totalcount <span class="keyword">from</span> tabname</span><br><span class="line"></span><br><span class="line"><span class="comment"># 求和</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">sum</span>(field1) <span class="keyword">as</span> sumvalue <span class="keyword">from</span> tabname</span><br><span class="line"></span><br><span class="line"><span class="comment"># 平均</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">avg</span>(field1) <span class="keyword">as</span> avgvalue <span class="keyword">from</span> tabname</span><br><span class="line"></span><br><span class="line"><span class="comment"># 最大</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">max</span>(field1) <span class="keyword">as</span> maxvalue <span class="keyword">from</span> tabname</span><br><span class="line"></span><br><span class="line"><span class="comment"># 最小</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">min</span>(field1) <span class="keyword">as</span> <span class="keyword">minvalue</span> <span class="keyword">from</span> tabname</span><br></pre></td></tr></table></figure>
-
-<h3 id="复杂查询"><a href="#复杂查询" class="headerlink" title="复杂查询"></a>复杂查询</h3><h4 id="LIKE"><a href="#LIKE" class="headerlink" title="LIKE"></a>LIKE</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> table1 <span class="keyword">where</span> field1 <span class="keyword">like</span> ’%value1%’</span><br></pre></td></tr></table></figure>
-
-<h4 id="UNION"><a href="#UNION" class="headerlink" title="UNION"></a>UNION</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">select</span> a.a, a.b, a.c, b.c, b.d, b.f <span class="keyword">from</span> a <span class="keyword">LEFT</span> <span class="keyword">OUT</span> <span class="keyword">JOIN</span> b <span class="keyword">ON</span> a.a = b.c</span><br></pre></td></tr></table></figure>
-
-<h4 id="子查询"><a href="#子查询" class="headerlink" title="子查询"></a>子查询</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> a,b,c <span class="keyword">from</span> a <span class="keyword">where</span> d <span class="keyword">IN</span> (<span class="keyword">select</span> d <span class="keyword">from</span> b ) </span><br><span class="line"></span><br><span class="line">或者: </span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> a,b,c <span class="keyword">from</span> a <span class="keyword">where</span> d <span class="keyword">IN</span> (<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>)</span><br></pre></td></tr></table></figure>
-
-<h4 id="BETWEEN-AND"><a href="#BETWEEN-AND" class="headerlink" title="BETWEEN AND"></a>BETWEEN AND</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> table1 <span class="keyword">where</span> <span class="built_in">time</span> <span class="keyword">between</span> time1 <span class="keyword">and</span> time2</span><br></pre></td></tr></table></figure>
-
-<h4 id="IN"><a href="#IN" class="headerlink" title="IN"></a>IN</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> table1 <span class="keyword">where</span> a [<span class="keyword">not</span>] <span class="keyword">in</span> (‘值<span class="number">1</span>’,’值<span class="number">2</span>’,’值<span class="number">4</span>’,’值<span class="number">6</span>’)</span><br></pre></td></tr></table></figure>
-
-<h4 id="LIMIT"><a href="#LIMIT" class="headerlink" title="LIMIT"></a>LIMIT</h4><h4 id="DISTINCT"><a href="#DISTINCT" class="headerlink" title="DISTINCT"></a>DISTINCT</h4><h4 id="GROUP-BY"><a href="#GROUP-BY" class="headerlink" title="GROUP BY"></a>GROUP BY</h4><h4 id="ORDER-BY"><a href="#ORDER-BY" class="headerlink" title="ORDER BY"></a>ORDER BY</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> tabname <span class="keyword">order</span> <span class="keyword">by</span> field1,field2 [<span class="keyword">desc</span>]</span><br></pre></td></tr></table></figure>
-
-<h2 id="运维类"><a href="#运维类" class="headerlink" title="运维类"></a>运维类</h2><h3 id="统计信息"><a href="#统计信息" class="headerlink" title="统计信息"></a>统计信息</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查询所有库数据量并排序</span></span><br><span class="line"><span class="keyword">SELECT</span> table_schema, <span class="keyword">CONCAT</span>(</span><br><span class="line"><span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(data_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> data_size, <span class="keyword">CONCAT</span>(</span><br><span class="line"><span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(index_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> index_size</span><br><span class="line"><span class="keyword">FROM</span> information_schema.tables</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> table_schema</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="keyword">SUM</span>(data_length) <span class="keyword">DESC</span>;</span><br><span class="line"></span><br><span class="line">+<span class="comment">--------------------+------------+------------+</span></span><br><span class="line">| table_schema       | data_size  | index_size |</span><br><span class="line">+<span class="comment">--------------------+------------+------------+</span></span><br><span class="line">| csomo-barcode      | 51872.64MB | 49203.56MB |</span><br><span class="line">| cosmodb            | 30257.57MB | 13855.68MB |</span><br><span class="line">| cosmo_im_1001      | 19769.54MB | 6251.67MB  |</span><br><span class="line">| cosmoimbase        | 17594.54MB | 18239.81MB |</span><br><span class="line">| cosmo_im_1004      | 3141.99MB  | 4099.13MB  |</span><br><span class="line">| cosmo_im_1012      | 1524.87MB  | 1592.03MB  |</span><br><span class="line">| cosmo_im_1010      | 1464.20MB  | 2176.00MB  |</span><br><span class="line">| cosmo_im_1016      | 1092.29MB  | 1543.65MB  |</span><br><span class="line">| cosmo_im_1009      | 793.96MB   | 1612.11MB  |</span><br><span class="line">| cosmo_im_1003      | 662.42MB   | 1417.97MB  |</span><br><span class="line">| cosmo_im_1006      | 200.44MB   | 288.24MB   |</span><br><span class="line">| cosmo_im_1047      | 184.14MB   | 90.46MB    |</span><br><span class="line">| cosmo_im_1038      | 32.15MB    | 46.03MB    |</span><br><span class="line">| mysql              | 22.60MB    | 0.14MB     |</span><br><span class="line">| test               | 7.06MB     | 0.03MB     |</span><br><span class="line">| information_schema | 0.00MB     | 0.00MB     |</span><br><span class="line">| performance_schema | 0.00MB     | 0.00MB     |</span><br><span class="line">+<span class="comment">--------------------+------------+------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询单个表数据量</span></span><br><span class="line"><span class="keyword">select</span> table_name,table_rows <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> TABLE_SCHEMA = <span class="string">'xx'</span> <span class="keyword">and</span> table_name=<span class="string">'xx'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询单个库中表数据排序</span></span><br><span class="line"><span class="keyword">select</span> table_name,table_rows <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> TABLE_SCHEMA= <span class="string">'employees'</span> <span class="keyword">order</span> <span class="keyword">by</span> table_rows <span class="keyword">desc</span>;</span><br><span class="line">+<span class="comment">----------------------+------------+</span></span><br><span class="line">| table_name           | table_rows |</span><br><span class="line">+<span class="comment">----------------------+------------+</span></span><br><span class="line">| salaries             |    2838426 |</span><br><span class="line">| titles               |     441772 |</span><br><span class="line">| dept_emp             |     331570 |</span><br><span class="line">| employees            |     299600 |</span><br><span class="line">| dept_manager         |         24 |</span><br><span class="line">| departments          |          9 |</span><br><span class="line">| current_dept_emp     |       NULL |</span><br><span class="line">| dept_emp_latest_date |       NULL |</span><br><span class="line">+<span class="comment">----------------------+------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询单个库中表排序</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">CONCAT</span>(table_schema,<span class="string">'.'</span>,table_name) <span class="keyword">AS</span> <span class="string">'Table Name'</span>, table_rows <span class="keyword">AS</span> <span class="string">'Rows'</span>, <span class="keyword">CONCAT</span>(<span class="keyword">ROUND</span>(data_length/(<span class="number">1024</span>*<span class="number">1024</span>),<span class="number">2</span>),<span class="string">'M'</span>) <span class="keyword">AS</span> <span class="string">'Data Size'</span>,<span class="keyword">CONCAT</span>(<span class="keyword">ROUND</span>(index_length/(<span class="number">1024</span>*<span class="number">1024</span>),<span class="number">2</span>),<span class="string">'M'</span>) <span class="keyword">AS</span> <span class="string">'Index Size'</span>, <span class="keyword">CONCAT</span>(<span class="keyword">ROUND</span>((data_length+index_length)/(<span class="number">1024</span>*<span class="number">1024</span>),<span class="number">2</span>),<span class="string">'M'</span>) <span class="keyword">AS</span><span class="string">'Total'</span><span class="keyword">FROM</span> information_schema.TABLES <span class="keyword">WHERE</span> TABLE_SCHEMA= <span class="string">'employees'</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="comment">--total DESC;</span></span><br><span class="line">+<span class="comment">--------------------------------+---------+-----------+------------+--------+</span></span><br><span class="line">| <span class="keyword">Table</span> <span class="keyword">Name</span>                     | <span class="keyword">Rows</span>    | <span class="keyword">Data</span> <span class="keyword">Size</span> | <span class="keyword">Index</span> <span class="keyword">Size</span> | Total  |</span><br><span class="line">+<span class="comment">--------------------------------+---------+-----------+------------+--------+</span></span><br><span class="line">| employees.salaries             | <span class="number">2838426</span> | <span class="number">95.63</span>M    | <span class="number">0.00</span>M      | <span class="number">95.63</span>M |</span><br><span class="line">| employees.titles               |  <span class="number">441772</span> | <span class="number">19.56</span>M    | <span class="number">0.00</span>M      | <span class="number">19.56</span>M |</span><br><span class="line">| employees.dept_emp             |  <span class="number">331570</span> | <span class="number">11.52</span>M    | <span class="number">5.52</span>M      | <span class="number">17.03</span>M |</span><br><span class="line">| employees.employees            |  <span class="number">299600</span> | <span class="number">14.52</span>M    | <span class="number">0.00</span>M      | <span class="number">14.52</span>M |</span><br><span class="line">| employees.dept_manager         |      <span class="number">24</span> | <span class="number">0.02</span>M     | <span class="number">0.02</span>M      | <span class="number">0.03</span>M  |</span><br><span class="line">| employees.departments          |       <span class="number">9</span> | <span class="number">0.02</span>M     | <span class="number">0.02</span>M      | <span class="number">0.03</span>M  |</span><br><span class="line">| employees.current_dept_emp     |    <span class="literal">NULL</span> | <span class="literal">NULL</span>      | <span class="literal">NULL</span>       | <span class="literal">NULL</span>   |</span><br><span class="line">| employees.dept_emp_latest_date |    <span class="literal">NULL</span> | <span class="literal">NULL</span>      | <span class="literal">NULL</span>       | <span class="literal">NULL</span>   |</span><br><span class="line">+<span class="comment">--------------------------------+---------+-----------+------------+--------+</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="复制"><a href="#复制" class="headerlink" title="复制"></a>复制</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 取消复制</span></span><br><span class="line"><span class="keyword">stop</span> <span class="keyword">slave</span>;</span><br><span class="line"><span class="keyword">reset</span> <span class="keyword">slave</span> <span class="keyword">all</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 建立复制</span></span><br><span class="line"><span class="keyword">CHANGE</span> <span class="keyword">MASTER</span> <span class="keyword">TO</span> </span><br><span class="line">MASTER_HOST=<span class="string">'10.133.7.18'</span>,</span><br><span class="line">MASTER_USER=<span class="string">'repl'</span>,</span><br><span class="line">MASTER_PASSWORD=<span class="string">'Changeme_123'</span>,</span><br><span class="line">MASTER_PORT=<span class="number">3306</span>,</span><br><span class="line">MASTER_LOG_FILE=<span class="string">'mysql-binlog.000297'</span>, </span><br><span class="line">MASTER_LOG_POS=<span class="number">900834433</span>,</span><br><span class="line">MASTER_CONNECT_RETRY=<span class="number">10</span>;</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/05/mysql-toolkit/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/05/mysql-toolkit/" class="post-title-link" itemprop="url">MySQL · 运维工具 · Percona Toolkit</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-05 15:28:49" itemprop="dateCreated datePublished" datetime="2019-07-05T15:28:49+08:00">2019-07-05</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-18 17:26:55" itemprop="dateModified" datetime="2019-10-18T17:26:55+08:00">2019-10-18</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://github.com/percona/percona-toolkit" target="_blank" rel="noopener"><strong>Percona Toolkit</strong></a> 包含多种用于 <code>MySQL</code> 数据库管理的工具，使用 <code>Perl</code> 语言编写。</p>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>①  安装</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ wget http://devops-files.oss-cn-qingdao.aliyuncs.com/percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-el7-x86_64-bundle.tar</span><br><span class="line">$ tar xvf percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-el7-x86_64-bundle.tar</span><br><span class="line">$ rpm -ivh percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br><span class="line"></span><br><span class="line">warning: percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64.rpm: Header V4 RSA/SHA256 Signature, key ID <span class="number">8507</span>efa5: NOKEY</span><br><span class="line">error: Failed dependencies:</span><br><span class="line">	perl(DBD::mysql) &gt;= <span class="number">1.0</span> is needed by percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64</span><br><span class="line">	perl(IO::Socket::SSL) is needed by percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64</span><br><span class="line">	perl(Digest::MD5) is needed by percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64</span><br></pre></td></tr></table></figure>
-
-<p>②  解决依赖</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ yum -y install perl-DBD-MySQL</span><br><span class="line">$ yum -y install perl-Digest-MD5</span><br><span class="line">$ yum -y install perl-IO-Socket-SSL</span><br><span class="line">$ yum -y install perl-TermReadKey</span><br><span class="line">$ rpm -ivh percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br><span class="line"></span><br><span class="line">$ pt-archiver --help</span><br><span class="line">Usage: pt-archiver [OPTIONS] --source DSN --where WHERE</span><br></pre></td></tr></table></figure>
-
-<h2 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h2><table>
-<thead>
-<tr>
-<th>命令</th>
-<th>作用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>pt-align</td>
-<td>对齐其他工具的输出</td>
-</tr>
-<tr>
-<td><strong>pt-archiver</strong></td>
-<td>将表数据归档到另一个表或文件中</td>
-</tr>
-<tr>
-<td>pt-config-diff</td>
-<td>比较配置文件和参数</td>
-</tr>
-<tr>
-<td>pt-deadlock-logger</td>
-<td>提取和记录 <code>mysql</code> 死锁信息</td>
-</tr>
-<tr>
-<td>pt-diskstats</td>
-<td>查看系统磁盘状态</td>
-</tr>
-<tr>
-<td>pt-duplicate-key-checker</td>
-<td>列出并删除重复的索引和外键</td>
-</tr>
-<tr>
-<td>pt-fifo-split</td>
-<td>模拟切割文件并输出</td>
-</tr>
-<tr>
-<td>pt-find</td>
-<td>查找表并执行命令</td>
-</tr>
-<tr>
-<td>pt-fingerprint</td>
-<td>将查询转成密文</td>
-</tr>
-<tr>
-<td>pt-fk-error-logger</td>
-<td>提取和记录外键信息</td>
-</tr>
-<tr>
-<td>pt-heartbeat</td>
-<td>监控复制延迟</td>
-</tr>
-<tr>
-<td><strong>pt-index-usage</strong></td>
-<td>分析日志中索引使用情况，并出报告</td>
-</tr>
-<tr>
-<td>pt-ioprofile</td>
-<td>查询进程 <code>IO</code> 并打印活动表</td>
-</tr>
-<tr>
-<td>pt-kill</td>
-<td><code>kill</code> 掉符合条件的 <code>sql</code></td>
-</tr>
-<tr>
-<td>pt-mext</td>
-<td>并行查看 <code>status</code> 样本信息</td>
-</tr>
-<tr>
-<td>pt-mysql-summary</td>
-<td>对 <code>mysql</code> 配置和 <code>status</code> 进行汇总</td>
-</tr>
-<tr>
-<td><strong>pt-online-schema-change</strong></td>
-<td>在线修改表结构</td>
-</tr>
-<tr>
-<td>pt-pmp</td>
-<td>为查询结果跟踪，并汇总跟踪结果</td>
-</tr>
-<tr>
-<td><strong>pt-query-digest</strong></td>
-<td>分析查询日志，并产生报告</td>
-</tr>
-<tr>
-<td>pt-secure-collect</td>
-<td>收集、打包、加密数据</td>
-</tr>
-<tr>
-<td>pt-show-grants</td>
-<td>规范化和打印权限</td>
-</tr>
-<tr>
-<td>pt-sift</td>
-<td>浏览由 <code>pt-stalk</code> 创建的文件</td>
-</tr>
-<tr>
-<td>pt-slave-delay</td>
-<td>设定从落后主的时间</td>
-</tr>
-<tr>
-<td>pt-slave-find</td>
-<td>查找和打印所有复制层级关系</td>
-</tr>
-<tr>
-<td><strong>pt-slave-restart</strong></td>
-<td>监控 <code>salve</code> 错误，并尝试重启 <code>salve</code></td>
-</tr>
-<tr>
-<td>pt-stalk</td>
-<td>出现问题时，收集诊断数据</td>
-</tr>
-<tr>
-<td><strong>pt-summary</strong></td>
-<td>收集和显示系统概况</td>
-</tr>
-<tr>
-<td>pt-table-checksum</td>
-<td>校验主从复制一致性</td>
-</tr>
-<tr>
-<td>pt-table-sync</td>
-<td>高效同步表数据</td>
-</tr>
-<tr>
-<td>pt-table-usage</td>
-<td>分析日志中查询并分析表使用情况</td>
-</tr>
-<tr>
-<td>pt-upgrade</td>
-<td>在多个服务器上执行查询，并比较不同</td>
-</tr>
-<tr>
-<td>pt-variable-advisor</td>
-<td>分析参数，并提出建议</td>
-</tr>
-<tr>
-<td>pt-visual-explain</td>
-<td>格式化执行计划</td>
-</tr>
-</tbody></table>
-<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><h3 id="pt-archiver"><a href="#pt-archiver" class="headerlink" title="pt-archiver"></a>pt-archiver</h3><p><strong>简介</strong>：<code>pt-archiver</code> 是 <code>Percona</code> 官方提供的归档工具，用于归档大型表中的记录到另一个表或文件。</p>
-<p><strong>功能</strong>：</p>
-<ul>
-<li>归档到操作系统文件</li>
-<li>归档到同实例不同库下的表（<strong>tips</strong>：归档操作前，目标表要存在）</li>
-<li>归档到不同实例下的表（<strong>tips</strong>：归档操作前，目标表要存在）</li>
-</ul>
-<p><strong>实战</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">pt-archiver --source h=<span class="number">10.138</span>.<span class="number">228.231</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'xxx'</span>,D=matomo,t=matomo_log_link_visit_action --charset=utf8 --dest h=<span class="number">10.138</span>.<span class="number">228.231</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'xxx'</span>,D=matomo,t=matomo_log_link_visit_action_history --where <span class="string">"server_time &lt; '2019-01-01'"</span> --limit <span class="number">1000</span> --commit-each --bulk-insert --no-version-check</span><br><span class="line"></span><br><span class="line"><span class="comment"># h=10.138.228.231               -- 数据库实例地址</span></span><br><span class="line"><span class="comment"># P=3306                         -- 数据库实例端口</span></span><br><span class="line"><span class="comment"># u=sre                          -- 数据库实例用户</span></span><br><span class="line"><span class="comment"># p=xxx                          -- 数据库实例用户密码</span></span><br><span class="line"><span class="comment"># D=matomo                       -- 数据库实例数据库</span></span><br><span class="line"><span class="comment"># t=matomo_log_link_visit_action -- 数据库实例表名称</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --source                       -- 指定要被归档的数据源</span></span><br><span class="line"><span class="comment"># --charset=utf8                 -- 使用的字符集，需与表字符集一致</span></span><br><span class="line"><span class="comment"># --file                         -- 指定目标操作系统文件名</span></span><br><span class="line"><span class="comment"># --dest                         -- 指定归档到的目标表</span></span><br><span class="line"><span class="comment"># --where "id &gt; 3008"            -- 指定 where 过滤条件，过滤出要归档的数据</span></span><br><span class="line"><span class="comment"># --limit 1000                   -- 每条语句读取和归档的数据行数，默认是 1</span></span><br><span class="line"><span class="comment"># --commit-each                  -- 每次获取和归档数据后，commit提交</span></span><br><span class="line"><span class="comment"># --no-version-check             -- 不做版本检查</span></span><br><span class="line"><span class="comment"># --bulk-insert                  -- 批量插入数据，会自动启用 --bulk-delete --commit-each，每次插入行数通过--limit 选项指定</span></span><br><span class="line"><span class="comment"># --statistics                   -- 显示 pt-archiver 本次操作的统计信息。</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="pt-online-schema-change"><a href="#pt-online-schema-change" class="headerlink" title="pt-online-schema-change"></a>pt-online-schema-change</h3><p><strong>简介</strong>：提供在线修改表结构等功能，可以避免在修改表结构的过程中阻塞应用对表数据的访问。</p>
-<h3 id="pt-query-digest"><a href="#pt-query-digest" class="headerlink" title="pt-query-digest"></a>pt-query-digest</h3><p><strong>简介</strong>：提供慢日志分析功能，可以统计出查询执行时间、次数、占比等，并把分析结果输出到文件中，然后借助分析结果找出问题进行优化。</p>
-<p>①  分析慢查询日志</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pt-query-digest  slow.log &gt; slow_report.log</span><br></pre></td></tr></table></figure>
-
-<p>②  分析最近 12 个小时内的查询</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pt-query-digest --since=<span class="number">12</span>h  slow.log &gt; slow_report.log</span><br></pre></td></tr></table></figure>
-
-<p>③  分析最近 1 个月内的查询</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pt-query-digest dzspdb-slow.log --since <span class="string">'2019-06-08 10:00:00'</span> --until <span class="string">'2019-07-08 10:00:00'</span> &gt; dzsp_slow_report.log</span><br></pre></td></tr></table></figure>
-
-<h3 id="pt-slave-restart"><a href="#pt-slave-restart" class="headerlink" title="pt-slave-restart"></a>pt-slave-restart</h3><p><strong>功能</strong>：</p>
-<p><strong>原理</strong>：</p>
-<p><strong>用法</strong>：</p>
-<h3 id="pt-index-usage"><a href="#pt-index-usage" class="headerlink" title="pt-index-usage"></a>pt-index-usage</h3><p><strong>功能</strong>：从日志当中分析索引的使用情况，检测多余的索引</p>
-<p><strong>原理</strong>：通过 <code>EXPLAIN</code> 慢查询日志中的 <code>SQL</code>，然后用执行计划和数据库中的索引做对比，看哪些索引没有被利用。</p>
-<p><strong>用法</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pt-index-usage /<span class="keyword">data</span>/mysql/slow.log  -u <span class="string">'xx'</span> -p <span class="string">'xx'</span> -S /tmp/mysql.sock</span><br></pre></td></tr></table></figure>
-
-<h3 id="pt-show-grants"><a href="#pt-show-grants" class="headerlink" title="pt-show-grants"></a>pt-show-grants</h3><p><strong>功能</strong>：导出 <code>mysql.user</code> 权限</p>
-<p><strong>原理</strong>：</p>
-<ul>
-<li>先查找所有 <code>user</code> 和 <code>host</code></li>
-<li>然后逐个执行 <code>show grants</code></li>
-</ul>
-<p><strong>用法</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pt-show-grants -u <span class="string">'xx'</span> -p <span class="string">'xx'</span> -S /tmp/mysql.sock</span><br></pre></td></tr></table></figure>
-
-<p><strong>显示</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">-- Grants dumped by pt-show-grants</span><br><span class="line">-- Dumped from server Localhost via UNIX socket, MySQL <span class="number">5.7</span>.<span class="number">23</span>-log at <span class="number">2019</span>-<span class="number">10</span>-<span class="number">18</span> <span class="number">15</span>:<span class="number">56</span>:<span class="number">29</span></span><br><span class="line">-- Grants <span class="keyword">for</span> <span class="string">'hdm'</span><span class="string">@'%'</span></span><br><span class="line"><span class="string">CREATE USER IF NOT EXISTS 'hdm'@'%';</span></span><br><span class="line"><span class="string">ALTER USER 'hdm'@'%' IDENTIFIED WITH 'mysql_native_password' AS '*14533888C6CA3952B3957903FF7E69469C7E3A2B' REQUIRE NONE PASSWORD EXPIRE DEFAULT ACCOUNT UNLOCK;</span></span><br><span class="line"><span class="string">GRANT PROCESS, REPLICATION CLIENT, REPLICATION SLAVE, SELECT, SHOW DATABASES ON *.* TO 'hdm'@'%';</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">-- Grants for 'monitor'@'10.138.228.%'</span></span><br><span class="line"><span class="string">CREATE USER IF NOT EXISTS 'monitor'@'10.138.228.%';</span></span><br><span class="line"><span class="string">ALTER USER 'monitor'@'10.138.228.%' IDENTIFIED WITH 'mysql_native_password' AS '*67C7E9852A88EE023433F77C5C63AF9DD730667B' REQUIRE NONE PASSWORD EXPIRE DEFAULT ACCOUNT UNLOCK;</span></span><br><span class="line"><span class="string">GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO 'monitor'@'10.138.228.%';</span></span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/04/ielts/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/04/ielts/" class="post-title-link" itemprop="url">备考雅思</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-04 14:56:41" itemprop="dateCreated datePublished" datetime="2019-07-04T14:56:41+08:00">2019-07-04</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-13 19:13:10" itemprop="dateModified" datetime="2019-10-13T19:13:10+08:00">2019-10-13</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/其他/" itemprop="url" rel="index"><span itemprop="name">其他</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="报名"><a href="#报名" class="headerlink" title="报名"></a>报名</h2><p><a href="https://ielts.etest.net.cn" target="_blank" rel="noopener">报名入口</a></p>
-<p>考试费用：￥2020</p>
-<p>转考费用：￥420</p>
-<h2 id="资料"><a href="#资料" class="headerlink" title="资料"></a>资料</h2><p>《剑桥雅思官方真题》</p>
-<p>《剑桥雅思真题精讲》</p>
-<p>《7天搞定雅思高频核心词》</p>
-<p>《雅思词汇真经》</p>
-<p>《顾家北手把手教你雅思写作》</p>
-<p>《雅思王听力真题语料库》</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2817,7 +2992,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">75</span>
+                    <span class="site-state-item-count">78</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
