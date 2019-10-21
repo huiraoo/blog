@@ -323,6 +323,171 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/21/mysql-delete-bigtable/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/21/mysql-delete-bigtable/" class="post-title-link" itemprop="url">MySQL · 快速删除大表</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-21 11:23:48 / 修改时间：13:58:27" itemprop="dateCreated datePublished" datetime="2019-10-21T11:23:48+08:00">2019-10-21</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>生产环境有一张日志表 <code>schedule_task_error_log</code> ，数据量超过 <code>5000w</code>，想通过 <code>drop</code> 删除但是速度很慢。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql <span class="number">5.1</span>K Jan  <span class="number">8</span>  <span class="number">2018</span> schedule_task_error_log.frm</span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">36</span>G May <span class="number">16</span> <span class="number">18</span>:<span class="number">14</span> schedule_task_error_log.ibd</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-21-114430.jpg" alt></p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p><strong>前提</strong>：MySQL 开启了<strong>独立表空间</strong>，MySQL <code>5.6.7</code> 之后默认开启。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">MariaDB&gt; show variables like 'innodb_file_per_table';</span><br><span class="line">+<span class="comment">-----------------------+-------+</span></span><br><span class="line">| Variable_name         | Value |</span><br><span class="line">+<span class="comment">-----------------------+-------+</span></span><br><span class="line">| innodb_file_per_table | ON    |</span><br><span class="line">+<span class="comment">-----------------------+-------+</span></span><br></pre></td></tr></table></figure>
+
+<p>MySQL 在删除大表的时候为什么慢？</p>
+<ul>
+<li><code>Buffer Pool</code> 页面清除过程（拥有 <code>InnoDB</code> 全局锁）</li>
+<li>删除 <code>ibd</code> 磁盘文件过程</li>
+</ul>
+<p><strong>方案</strong>：利用了 <code>Linux</code> 中 <strong>硬链接</strong> 减少 <code>DDL</code> 时间，加快锁释放，来进行快速删除。</p>
+<h2 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h2><p><strong>1. 建立硬连接</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ ln schedule_task_error_log.ibd schedule_task_error_log.ibd.hdlk</span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql <span class="number">5.1</span>K Jan  <span class="number">8</span>  <span class="number">2018</span> schedule_task_error_log.frm</span><br><span class="line">-rw-rw----. <span class="number">2</span> mysql mysql  <span class="number">36</span>G May <span class="number">16</span> <span class="number">18</span>:<span class="number">14</span> schedule_task_error_log.ibd</span><br><span class="line">-rw-rw----. <span class="number">2</span> mysql mysql  <span class="number">36</span>G May <span class="number">16</span> <span class="number">18</span>:<span class="number">14</span> schedule_task_error_log.ibd.hdlk</span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql <span class="number">5.8</span>K Mar <span class="number">14</span>  <span class="number">2018</span> user_operation_syslog.frm</span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql <span class="number">272</span>K Feb <span class="number">13</span>  <span class="number">2019</span> user_operation_syslog.ibd</span><br></pre></td></tr></table></figure>
+
+<p><strong>2. drop table</strong></p>
+<p>再看物理文件的引用数变为 1，然后我们可以另外找时间手动删除物理文件。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">MariaDB&gt; drop table schedule_task_error_log;</span><br><span class="line">Query OK, <span class="number">0</span> rows affected (<span class="number">0.78</span> sec)</span><br><span class="line"></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">36</span>G May <span class="number">16</span> <span class="number">18</span>:<span class="number">14</span> schedule_task_error_log.ibd.hdlk</span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql <span class="number">5.8</span>K Mar <span class="number">14</span>  <span class="number">2018</span> user_operation_syslog.frm</span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql <span class="number">272</span>K Feb <span class="number">13</span>  <span class="number">2019</span> user_operation_syslog.ibd</span><br></pre></td></tr></table></figure>
+
+<p><strong>3. 删除物理文件</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rm -rf schedule_task_error_log.ibd.hdlk</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/20/redis/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1602,151 +1767,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/19/pt-query-digest/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/19/pt-query-digest/" class="post-title-link" itemprop="url">Percona Toolkit · 慢日志分析工具 pt-query-digest</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-19 09:52:23 / 修改时间：11:51:33" itemprop="dateCreated datePublished" datetime="2019-10-19T09:52:23+08:00">2019-10-19</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h4 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h4><p>提供慢日志分析功能，可以统计出查询执行时间、次数、占比等，并把分析结果输出到文件中，然后借助分析结果找出问题进行优化。</p>
-<h4 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h4><h4 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h4><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 分析慢查询日志</span></span><br><span class="line">$ pt-query-digest slow.log &gt; slow_report.log</span><br><span class="line"></span><br><span class="line"><span class="comment"># 分析最近12个小时内的查询</span></span><br><span class="line">$ pt-query-digest --since=<span class="number">12</span>h  slow.log &gt; slow_report.log</span><br><span class="line"></span><br><span class="line"><span class="comment"># 分析最近1个月内的查询</span></span><br><span class="line">$ pt-query-digest slow.log --since <span class="string">'2019-06-08 10:00:00'</span> --until <span class="string">'2019-07-08 10:00:00'</span> &gt; slow_report.log</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1795,7 +1815,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">77</span>
+                    <span class="site-state-item-count">78</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
