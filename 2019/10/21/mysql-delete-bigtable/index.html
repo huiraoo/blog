@@ -104,7 +104,7 @@
 <meta property="og:description" content="背景生产环境有一张日志表 schedule_task_error_log ，数据量超过 5000w，想通过 drop 删除但是速度很慢。 12-rw-rw----. 1 mysql mysql 5.1K Jan  8  2018 schedule_task_error_log.frm-rw-rw----. 1 mysql mysql  36G May 16 18:14 schedule_task_">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-21-114430.jpg">
-<meta property="og:updated_time" content="2019-10-21T06:06:01.221Z">
+<meta property="og:updated_time" content="2019-10-21T06:09:47.345Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL · 快速删除大表">
 <meta name="twitter:description" content="背景生产环境有一张日志表 schedule_task_error_log ，数据量超过 5000w，想通过 drop 删除但是速度很慢。 12-rw-rw----. 1 mysql mysql 5.1K Jan  8  2018 schedule_task_error_log.frm-rw-rw----. 1 mysql mysql  36G May 16 18:14 schedule_task_">
@@ -368,7 +368,7 @@
                 
               
 
-              <time title="创建时间：2019-10-21 11:23:48 / 修改时间：14:06:01" itemprop="dateCreated datePublished" datetime="2019-10-21T11:23:48+08:00">2019-10-21</time>
+              <time title="创建时间：2019-10-21 11:23:48 / 修改时间：14:09:47" itemprop="dateCreated datePublished" datetime="2019-10-21T11:23:48+08:00">2019-10-21</time>
             
 
             
@@ -427,7 +427,7 @@
 <li>删除 <code>ibd</code> 磁盘文件过程</li>
 </ul>
 <p><strong>方案</strong>：利用了 <code>Linux</code> 中 <strong>硬链接</strong> 减少 <code>DDL</code> 时间，加快锁释放，来进行快速删除。</p>
-<h2 id="实战"><a href="#实战" class="headerlink" title="实战"></a>实战</h2><p><strong>1. 建立硬连接</strong></p>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p><strong>1. 建立硬连接</strong></p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ ln schedule_task_error_log.ibd schedule_task_error_log.ibd.hdlk</span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql <span class="number">5.1</span>K Jan  <span class="number">8</span>  <span class="number">2018</span> schedule_task_error_log.frm</span><br><span class="line">-rw-rw----. <span class="number">2</span> mysql mysql  <span class="number">36</span>G May <span class="number">16</span> <span class="number">18</span>:<span class="number">14</span> schedule_task_error_log.ibd</span><br><span class="line">-rw-rw----. <span class="number">2</span> mysql mysql  <span class="number">36</span>G May <span class="number">16</span> <span class="number">18</span>:<span class="number">14</span> schedule_task_error_log.ibd.hdlk</span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql <span class="number">5.8</span>K Mar <span class="number">14</span>  <span class="number">2018</span> user_operation_syslog.frm</span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql <span class="number">272</span>K Feb <span class="number">13</span>  <span class="number">2019</span> user_operation_syslog.ibd</span><br></pre></td></tr></table></figure>
 
 <p><strong>2. drop table</strong></p>
@@ -698,7 +698,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原理"><span class="nav-number">2.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实战"><span class="nav-number">3.</span> <span class="nav-text">实战</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原理"><span class="nav-number">2.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实践"><span class="nav-number">3.</span> <span class="nav-text">实践</span></a></li></ol></div>
             
 
           </div>
