@@ -323,6 +323,911 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/22/db-design/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/22/db-design/" class="post-title-link" itemprop="url">浅谈数据库设计</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-22 10:13:19" itemprop="dateCreated datePublished" datetime="2019-07-22T10:13:19+08:00">2019-07-22</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-13 19:13:04" itemprop="dateModified" datetime="2019-10-13T19:13:04+08:00">2019-10-13</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/数据库/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="数据库是否需要设计-？"><a href="#数据库是否需要设计-？" class="headerlink" title="数据库是否需要设计 ？"></a>数据库是否需要设计 ？</h3><p>1）减少数据冗余<br>2）节约数据查询时间</p>
+<p>系统硬件资源有限，精细化管理</p>
+<p>（云计算：可扩展、成本）</p>
+<p>如何进行数据库设计：</p>
+<p>逻辑设计：根据数据实体之间的逻辑关系对表进行设计</p>
+<p>物理设计：根据所使用的数据库特点进行表结构设计</p>
+<h3 id="数据库设计步骤"><a href="#数据库设计步骤" class="headerlink" title="数据库设计步骤"></a>数据库设计步骤</h3><p>1）需求分析</p>
+<p>2）概念结构设计</p>
+<p>3）逻辑结构设计</p>
+<p>4）物理结构设计</p>
+<p>5）实施</p>
+<p>6）运行和维护</p>
+<p><img src="http://ww4.sinaimg.cn/large/006tNc79ly1g5sb1tpulbj30ns0rmq4b.jpg" alt="img"></p>
+<p>范式化和反范式化：</p>
+<p>反范式化设计就是为了性能和读取效率的考虑而适当的对数据库设计范式进行违反，而允许存在少量数据冗余。换句话来说反范式化就是使用空间换时间。</p>
+<p>范式化的优点：<br> 1.可以减少数据冗余。<br> 2.范式化的更新操作比反范式化要快。<br> 3.范式化的表同样比反范式化的表要小。</p>
+<p>范式化的缺点：<br> 1.关联查询。<br> 2.更难于索引优化。</p>
+<p>反范式化优点：<br> 1.减少表的关联。<br> 2.更好的索引优化，覆盖索引。</p>
+<p>反范式化缺点：<br> 1.存在数据冗余及数据维护异常。<br> 2.对数据的修改需要更多的成本。</p>
+<h3 id="逻辑设计"><a href="#逻辑设计" class="headerlink" title="逻辑设计"></a>逻辑设计</h3><p>E-R 模型图</p>
+<h3 id="物理设计"><a href="#物理设计" class="headerlink" title="物理设计"></a>物理设计</h3><p>数据库类型的设计</p>
+<table>
+<thead>
+<tr>
+<th>数据库类型</th>
+<th>成本</th>
+<th>开发语言</th>
+<th>支持系统</th>
+<th>业务场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Oracle</td>
+<td>商业型</td>
+<td>php，java，python等</td>
+<td>windows/liunx系统</td>
+<td>企业级</td>
+</tr>
+<tr>
+<td>SQLServer</td>
+<td>商业型</td>
+<td>.NET，C#等</td>
+<td>只支持windows系统</td>
+<td>企业级</td>
+</tr>
+<tr>
+<td>MySQL</td>
+<td>开源型</td>
+<td>php，java，python等</td>
+<td>windows/liunx系统</td>
+<td>中小型</td>
+</tr>
+<tr>
+<td>PgSQL</td>
+<td>开源型</td>
+<td>php，java，python等</td>
+<td>windows/liunx系统</td>
+<td>中小型</td>
+</tr>
+</tbody></table>
+<p>存储引擎的设计</p>
+<table>
+<thead>
+<tr>
+<th>存储引擎</th>
+<th>索引</th>
+<th>事务</th>
+<th>锁粒度</th>
+<th>主要应用</th>
+<th>忌用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MyISAM</td>
+<td>支持</td>
+<td>不支持</td>
+<td>支持并发插入的表级锁</td>
+<td>select，insert高负载</td>
+<td>读写并用</td>
+</tr>
+<tr>
+<td>InnoDB</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持MVCC的行级锁</td>
+<td>事务处理</td>
+<td>无</td>
+</tr>
+<tr>
+<td>MEMORY</td>
+<td>支持</td>
+<td>不支持</td>
+<td>表锁</td>
+<td>中间计算，静态数据</td>
+<td>大型数据集，持久性存储</td>
+</tr>
+<tr>
+<td>Archive</td>
+<td>不支持</td>
+<td>不支持</td>
+<td>行级锁</td>
+<td>日志记录，聚合分析，只支持select，insert操作</td>
+<td>随机读取，删除</td>
+</tr>
+</tbody></table>
+<p>列的设计</p>
+<p><strong>char</strong> vs <strong>varchar</strong> ？</p>
+<p>char：适用于数据长度差不多一致，波动较小，最大数据长度小于50字节。</p>
+<p>varchar：适用于数据长度变化较大，不能预知其具体长度的数据。</p>
+<p><strong>decimal</strong> vs <strong>float</strong> ？</p>
+<p>decimal：用于存储精确数据，精度最高，但是占用空间很大。</p>
+<p>float：用于存储非精确数据，会丢失数据精度，占用空间比decimal小。</p>
+<p><strong>int</strong> vs <strong>timestamp</strong> vs <strong>datetime</strong> ？</p>
+<table>
+<thead>
+<tr>
+<th>字段类型</th>
+<th>存储空间</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>TINYINT</td>
+<td>1个字节</td>
+</tr>
+<tr>
+<td>SMALLINT</td>
+<td>2个字节</td>
+</tr>
+<tr>
+<td>MEDIUMINY</td>
+<td>3个字节</td>
+</tr>
+<tr>
+<td>INT</td>
+<td>4个字节</td>
+</tr>
+<tr>
+<td>BINGINT</td>
+<td>8个字节</td>
+</tr>
+<tr>
+<td>DATE</td>
+<td>3个字节</td>
+</tr>
+<tr>
+<td>DATETIME</td>
+<td>8个字节</td>
+</tr>
+<tr>
+<td>TIMESTAMP</td>
+<td>4个字节</td>
+</tr>
+<tr>
+<td>CHAR(M)</td>
+<td>M字节，1&lt;= M &lt;=255</td>
+</tr>
+<tr>
+<td>VARCHAR(M)</td>
+<td>L+1字节，在此 L &lt; = M 和  1 &lt;=M &lt;= 255</td>
+</tr>
+<tr>
+<td>FLOAT</td>
+<td>4字节</td>
+</tr>
+<tr>
+<td>DOUBLE</td>
+<td>8字节</td>
+</tr>
+<tr>
+<td>DECIMAL</td>
+<td>对DECIMAL(M,D) ，如果M&gt;D，为M+2否则为D+2</td>
+</tr>
+</tbody></table>
+<p>主键与外键的设计</p>
+<p>主键是实体的高度抽象，主键与外键的配对，表示实体之间的连接</p>
+<p>范式设计</p>
+<p><strong>第一范式</strong>：1NF是对属性的原子性约束，要求属性具有原子性，不可再分解；</p>
+<p><strong>第二范式</strong>：2NF是对记录的惟一性约束，要求记录有惟一标识，即实体的惟一性；</p>
+<p><strong>第三范式</strong>：3NF是对字段冗余性的约束，即任何字段不能由其他字段派生出来，它要求字段没有冗余。</p>
+<p>基本表及其字段之间的关系, 应尽量满足第三范式。但是，满足第三范式的数据库设计，往往不是最好的设计。为了提高数据库的运行效率，常常需要降低范式标准：适当增加冗余，达到以空间换时间的目的。</p>
+<p><strong>降低范式：增加字段，允许冗余</strong></p>
+<p>E-R图的标准是：结构清晰、关联简洁、实体个数适中、属性分配合理、没有低级冗余</p>
+<p><strong>查询速度从快到慢如下：bigint &gt; date &gt; timestamp &gt; time &gt; datetime</strong></p>
+<p>三少原则</p>
+<p>1）数据库表个数越少越好。</p>
+<p>2）表中组合主键的字段个数越少越好。主键的作用，一是建主键索引，二是做为子表的外键，所以组合主键的字段个数少了，不仅节省了运行时间，而且节省了索引存储空间。</p>
+<p>3）一个表中的字段个数越少越好。</p>
+<p>数据库设计的实用原则是：在数据冗余和处理速度之间找到合适的平衡点。“三少”是一个整体概念，综合观点，不能孤立某一个原则。该原则是相对的，不是绝对的。</p>
+<p>“垃圾堆”、“大杂院”</p>
+<p>推荐使用触发器吗 ？</p>
+<p>推荐使用存储过程吗 ？</p>
+<p>数据库设计步骤：</p>
+<p>1.需求分析：全面了解产品设计的存储需求。存取需求是指数据库要存储什么样的数据，这些数据具有什么特点。数据处理需是指如何对数据库进行读取和写入以及对数据的响应时间有什么样的要求，数据的安全性和完整性需求是数据的生命周期。<br>2.进行逻辑设计和物理设计。<br>3.维护优化。</p>
+<p><strong>总结</strong>：</p>
+<p>在给定的系统硬件和系统软件条件下，提高数据库系统的运行效率的办法是：</p>
+<p>（1）在数据库物理设计时，降低范式，增加冗余, 少用触发器, 多用存储过程。</p>
+<p>（2）当计算非常复杂、而且记录条数非常巨大时(例如一千万条)，复杂计算要先在数据库外面，以文件系统方式用C++语言计算处理完成之后，最后才入库追加到表中去。这是电信计费系统设计的经验。</p>
+<p>（3）发现某个表的记录太多，例如超过一千万条，则要对该表进行水平分割。水平分割的做法是，以该表主键PK的某个值为界线，将该表的记录水平分割为两个表。若发现某个表的字段太多，例如超过八十个，则垂直分割该表，将原来的一个表分解为两个表。</p>
+<p>（4）对数据库管理系统DBMS进行系统优化，即优化各种系统参数，如缓冲区个数。</p>
+<p>（5）在使用面向数据的SQL语言进行程序设计时，尽量采取优化算法。</p>
+<p>总之，要提高数据库的运行效率，必须从数据库系统级优化、数据库设计级优化、程序实现级优化，这三个层次上同时下功夫。</p>
+<h3 id="维护优化"><a href="#维护优化" class="headerlink" title="维护优化"></a>维护优化</h3><p>表的水平、垂直拆分、索引维护</p>
+<p>数据库：数据的存储和读取</p>
+<p>一个大型应用系统的数据库设计？</p>
+<p>关系型数据库：Oracle、SQL Server、MySQL、PostgreSQL</p>
+<p>扩展：TiDB</p>
+<p>非关系型数据库：</p>
+<p>Redis</p>
+<p>MongoDB</p>
+<p>Elasticsearch</p>
+<p>TigerGraph</p>
+<p>大规模系统数据存储方案？</p>
+<p>大规模系统数据运维能力？</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/22/mysql-develop/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/22/mysql-develop/" class="post-title-link" itemprop="url">MySQL · 开发篇</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-22 09:57:58" itemprop="dateCreated datePublished" datetime="2019-07-22T09:57:58+08:00">2019-07-22</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-13 19:13:23" itemprop="dateModified" datetime="2019-10-13T19:13:23+08:00">2019-10-13</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="选择合适的数据类型？"><a href="#选择合适的数据类型？" class="headerlink" title="选择合适的数据类型？"></a>选择合适的数据类型？</h2><p><strong>如何选择合适的数据类型？</strong></p>
+<p><strong>如何编写高质量的SQL？</strong></p>
+<p><strong>Druid + Mybatis + MySQL</strong></p>
+<p>MySQL 开发设计规范</p>
+<p>SQL 审核</p>
+<p>开发的难点：如何建表？如何写SQL？Index优化？</p>
+<p>数据库规范已制定好，如何保证开发人员必须按照规范来开发？</p>
+<p>第一、定期给开发培训开发规范，让开发能更了解。</p>
+<p>第二、还是在流程上规范，比如把我们日常通用的建表和字段策略固化到程序，做成自动化审核系统。</p>
+<p>这两方面结合，效果会比较好。</p>
+<h2 id="百万级数据量"><a href="#百万级数据量" class="headerlink" title="百万级数据量"></a>百万级数据量</h2><p>这个阶段的性能问题开始显露，优化几乎是最重要的，因为到后期千万级，甚至亿级别的阶段，数据库几乎无法动弹，可调整性很低。</p>
+<p><strong>字段优化</strong></p>
+<ul>
+<li>表字段 not null，因为 null 值很难查询优化且占用额外的索引空间，推荐默认数字 0</li>
+<li>数据状态类型的字段，比如 status, type 等，尽量不要定义负数，如 -1。因为这样可以加上 UNSIGNED，数值容量就会扩大一倍</li>
+<li>可以的话用 TINYINT、SMALLINT 等代替 INT，尽量不使用 BIGINT，因为占的空间更小</li>
+<li>字符串类型的字段会比数字类型占的空间更大，所以尽量用整型代替字符串，很多场景是可以通过编码逻辑来实现用整型代替的</li>
+<li>字符串类型长度不要随意设置，保证满足业务的前提下尽量小</li>
+<li>用整型来存 IP</li>
+<li>单表不要有太多字段，建议在20以内</li>
+<li>为能预见的字段提前预留，因为数据量越大，修改数据结构越耗时</li>
+</ul>
+<p><strong>索引优化</strong></p>
+<p>索引，空间换时间的优化策略，基本上根据业务需求设计好索引，足以应付百万级的数据量，养成使用 <strong>explain</strong> 的习惯。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">既不能绝大多数都相同，又不能只有极少数相同</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>一个常识：索引并不是越多越好，索引是会降低数据写入性能的。</li>
+<li>索引字段长度尽量短，这样能够节省大量索引空间。</li>
+<li>取消外键，可交由程序来约束，性能更好。</li>
+<li>复合索引的匹配最左列规则，索引的顺序和查询条件保持一致，尽量去除没必要的单列索引。</li>
+<li>值分布较少的字段（不重复的较少）不适合建索引，比如像性别这种只有两三个值的情况字段建立索引意义不大。</li>
+<li>需要排序的字段建议加上索引，因为索引是会排序的，能提高查询性能。</li>
+<li>字符串字段使用前缀索引，不使用全字段索引，可大幅减小索引空间。</li>
+</ul>
+<p><strong>sql优化</strong></p>
+<ul>
+<li><p>查询不使用 select *，尽量查询带索引的字段，避免回表</p>
+</li>
+<li><p>尽量使用 limit 对查询数量进行限制</p>
+</li>
+<li><p>查询字段尽量落在索引上，尤其是复合索引，顺序很重要</p>
+</li>
+<li><p>拆分大的 delete / insert 操作，一方面会锁表，影响其他业务操作，还有一方面是 MySQL 对 sql 长度也是有限制的</p>
+</li>
+<li><p>不建议使用 MySQL 的函数，计算等，可先由程序处理，从上面提的一些点会发现，能交由程序处理的尽量不要把压力转至数据库上</p>
+</li>
+<li><p>查询 count，性能：count(1) = count(*) &gt; count(主键) &gt; count(其他字段)</p>
+</li>
+<li><p>查询操作符能用 between 则不用 in，能用 in 则不用 or</p>
+</li>
+<li><p>避免使用 != 或＜＞、IS NULL 或 IS NOT NULL、IN ，NOT IN等这样的操作符，因为这些查询无法使用索引</p>
+</li>
+<li><p>sql 尽量简单，少用 join，不建议两个 join 以上。</p>
+</li>
+</ul>
+<h2 id="千万级数据量"><a href="#千万级数据量" class="headerlink" title="千万级数据量"></a>千万级数据量</h2><p>到了这个阶段的数据量，数据本身已经有很大的价值了，数据除了满足常规业务需求外，还会有一些数据分析的需求。而这个时候数据可变动性不高，基本上不会考虑修改原有结构，一般会考虑从分区，分表，分库三方面做优化。</p>
+<p><strong>分区</strong></p>
+<p>分区是根据一定的规则，数据库把一个表分解成多个更小的、更容易管理的部分，是一种水平划分。对应用来说是完全透明的，不影响应用的业务逻辑，即不用修改代码。因此能存更多的数据，查询，删除也支持按分区来操作，从而达到优化的目的。如果有考虑分区，可以提前做准备，避免下列一些限制：</p>
+<ul>
+<li>一个表最多只能有1024个分区（mysql5.6之后支持8192个分区）。</li>
+<li>如果分区字段中有主键或者唯一索引列，那么所有主键列和唯一索引列都必须包含进来，如果表中有主键或唯一索引，那么分区键必须是主键或唯一索引。</li>
+<li>分区表中无法使用外键约束。</li>
+<li>NULL值会使分区过滤无效。</li>
+<li>目前mysql不支持空间类型和临时表类型进行分区。不支持全文索引。</li>
+<li>所有分区必须使用相同的存储引擎。</li>
+</ul>
+<p>分区可按以下四种类型分区：</p>
+<ul>
+<li>RANGE表分区：范围表分区，按照一定的范围值来确定每个分区包含的数据;</li>
+<li>LIST表分区：列表表分区，按照一个一个确定的值来确定每个分区包含的数据;</li>
+<li>HASH表分区：哈希表分区，按照一个自定义的函数返回值来确定每个分区包含的数据;</li>
+<li>KEY表分区 ：key表分区，与哈希表分区类似，只是用MySQL自己的HASH函数来确定每个分区包含的数据。</li>
+</ul>
+<p><strong>分表</strong></p>
+<p>分表分水平分表和垂直分表。</p>
+<p>水平分表即拆分成数据结构相同的各个小表，如拆分成 table<em>1, table</em>2…，从而缓解数据库读写压力。</p>
+<p>垂直分表即将一些字段分出去形成一个新表，各个表数据结构不相同，可以优化高并发下锁表的情况。</p>
+<p>可想而知，分表的话，程序的逻辑是需要做修改的，所以，一般是在项目初期时，预见到大数据量的情况，才会考虑分表。后期阶段不建议分表，成本很大</p>
+<p><strong>分库</strong></p>
+<p>分库一般是主从模式，一个数据库服务器主节点复制到一个或多个从节点多个数据库，主库负责写操作，从库负责读操作，从而达到主从分离，高可用，数据备份等优化目的。</p>
+<p>当然，主从模式也会有一些缺陷，主从同步延迟，binlog 文件太大导致的问题等等，这里不细讲（笔者也学不动了）。</p>
+<h2 id="亿级数据量"><a href="#亿级数据量" class="headerlink" title="亿级数据量"></a>亿级数据量</h2><p>理论上，MySQL 绝对是可以支撑这个级别数据的，但是现在大部分公司数据库性能水平完全取决于开发人员能力。当然一些公司有 DBA 把关，如没有上述的优化习惯，大多情况到这个阶段，MySQL 数据库性能已经接近崩溃临界点，甚至有些都到不了这个阶段。</p>
+<p>技术选型</p>
+<p>如何写优质的 SQL？</p>
+<p>SQL 审核</p>
+<p>索引设计</p>
+<p>如何在一个大表添加索引？</p>
+<p>是否需要产品化？</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/18/mysql-duplicate/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/18/mysql-duplicate/" class="post-title-link" itemprop="url">MySQL · 复制</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-18 17:03:56" itemprop="dateCreated datePublished" datetime="2019-07-18T17:03:56+08:00">2019-07-18</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-13 19:13:25" itemprop="dateModified" datetime="2019-10-13T19:13:25+08:00">2019-10-13</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>MySQL 的复制功能是构建基于大规模、高性能应用的基础，同时也是高可用性、可扩展性、灾难恢复、备份以及数据仓库等工作的基础。</p>
+<p><strong>复制能解决什么问题？</strong></p>
+<p>复制解决的基本问题：是让一台服务器的数据与其他服务器保持同步。其他扩展功能：</p>
+<ul>
+<li>数据分布：复制的开销很小，通常不会对带宽造成很大的压力，可以通过远程复制来构建不同的数据中心。</li>
+<li>负载均衡：通过复制可以将读操作分布到多个服务器上，读写分离。</li>
+<li>备份：对备份来说，复制是一项很有意义的技术补充，但复制既不是备份也不能够取代备份。</li>
+<li>高可用性和故障切换：复制能避免 MySQL 单点失败，设计良好的故障切换系统能显著地缩短宕机时间。</li>
+</ul>
+<h2 id="复制原理"><a href="#复制原理" class="headerlink" title="复制原理"></a>复制原理</h2><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134142.png" alt></p>
+<p>（1）主库把数据更改记录到二进制日志（<em>Binary Log</em>）。</p>
+<p>（2）备库将主库的日志复制到自己的中继日志（<em>Relay Log</em>）。</p>
+<p>（3）备库读取中继日志中的事件，将其重放到备库数据之上。</p>
+<p>这种架构有一个缺陷：在主库上并发运行的查询在备库只能串行化执行，因为只有一个 SQL 线程来重放中继日志中的事件，这是很多工作负载的性能瓶颈所在。</p>
+<h3 id="复制方式"><a href="#复制方式" class="headerlink" title="复制方式"></a>复制方式</h3><p>MySQL支持两种复制方式：基于行的复制（MySQL 5.1版本支持）和基于语句的复制（MySQL 3.23版本支持），这两种复制方式都是通过在主库上记录二进制日志、在备库重放日志的方式来实现异步的数据复制。</p>
+<p>MySQL 复制大部分是向后兼容的，对于小版本号的升级，通常也是兼容的。</p>
+<h3 id="复制文件"><a href="#复制文件" class="headerlink" title="复制文件"></a>复制文件</h3><p><code>mysql-bin.index</code>：二进制日志的索引文件，开启二进制日志时就会产生，该文件记录磁盘上的二进制日志文件，每一行包含了二进制文件的文件名。MySQL 依赖这个文件，除非在这个文件里有记录，否则识别不了二进制日志文件。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@ptdsmapp04 mysql]# cat mysql-bin.index</span><br><span class="line">/data/mysql/mysql-bin.000014</span><br><span class="line">/data/mysql/mysql-bin.000015</span><br><span class="line">/data/mysql/mysql-bin.000016</span><br></pre></td></tr></table></figure>
+
+<p><code>relay-log.index</code>：中继日志的索引文件，和 mysql-bin.index 作用类似。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@ptdsmapp04 mysql]# cat relay-log.index</span><br><span class="line">./relay-log.000016</span><br><span class="line">./relay-log.000017</span><br></pre></td></tr></table></figure>
+
+<p><code>master.info</code>：这个文件用于保存备库连接到主库所需要的信息，格式为纯文本（每行一个值）。此文件不能删除，否则备库在重启后无法连接到主库。这个文件以文本的方式记录了复制用户的密码，所以要注意此文件的权限控制。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">[root@ptdsmapp04 mysql]# cat master.info </span><br><span class="line">25</span><br><span class="line">mysql-binlog.000234</span><br><span class="line">933317366</span><br><span class="line">10.133.0.51</span><br><span class="line">repl</span><br><span class="line">Changeme_123</span><br><span class="line">3306</span><br><span class="line">60</span><br><span class="line">0</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line">30.000</span><br><span class="line"></span><br><span class="line">0</span><br><span class="line">e1db90f2-fce1-11e8-86d2-005056b1d631</span><br><span class="line">86400</span><br><span class="line"></span><br><span class="line">0</span><br></pre></td></tr></table></figure>
+
+<p><code>relay-log.info</code>：这个文件包含了当前备库复制的二进制日志和中继日志坐标，同样也不能删除这个文件，否则在备库重启后将无法从哪个位置开始复制，可能会导致重放已经执行过的语句。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@ptdsmapp04 mysql]# cat relay-log.info </span><br><span class="line">7</span><br><span class="line">./relay-log.000017</span><br><span class="line">933317585</span><br><span class="line">mysql-binlog.000234</span><br><span class="line">933317366</span><br><span class="line">0</span><br><span class="line">0</span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置复制"><a href="#配置复制" class="headerlink" title="配置复制"></a>配置复制</h2><p>分为三步：</p>
+<ul>
+<li>每台服务器上创建复制用户</li>
+<li>配置主库和备库</li>
+<li>通知备库连接到主库并从主库复制数据</li>
+</ul>
+<h3 id="创建复制用户"><a href="#创建复制用户" class="headerlink" title="创建复制用户"></a>创建复制用户</h3><p>主库和备库都创建该用户：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GRANT</span> <span class="keyword">REPLICATION</span> <span class="keyword">SLAVE</span>, <span class="keyword">REPLICATION</span> <span class="keyword">CLIENT</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'repl'</span>@<span class="string">'x.x.x.%'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="string">'Changeme_123'</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="配置主库和备库"><a href="#配置主库和备库" class="headerlink" title="配置主库和备库"></a>配置主库和备库</h3><blockquote>
+<p>主库 <code>my.cnf</code> 文件</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">server_id</span>         <span class="string">=</span> <span class="number">10</span></span><br><span class="line"><span class="string">log_bin</span>           <span class="string">=</span> <span class="string">mysql-bin</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>备库 <code>my.cnf</code> 文件</p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">server_id</span>         <span class="string">=</span> <span class="number">20</span></span><br><span class="line"><span class="string">log_bin</span>           <span class="string">=</span> <span class="string">mysql-bin</span></span><br><span class="line"><span class="string">sync_binlog</span>       <span class="string">=</span> <span class="number">0</span></span><br><span class="line"><span class="string">relay_log</span>         <span class="string">=</span> <span class="string">relay-log</span></span><br><span class="line"><span class="string">read_only</span>         <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">log_slave_updates</span> <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">innodb_flush_log_at_trx_commit</span> <span class="string">=</span> <span class="number">2</span></span><br><span class="line"><span class="string">skip_slave_start</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>Tips</strong>：修改配置文件，需要重启 mysqld 服务生效</p>
+<h3 id="同步主备数据并启动复制"><a href="#同步主备数据并启动复制" class="headerlink" title="同步主备数据并启动复制"></a>同步主备数据并启动复制</h3><p>（1）克隆数据到备库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">主库全局只读锁：</span><br><span class="line">flush tables with read lock;</span><br><span class="line"></span><br><span class="line">备份主库：</span><br><span class="line">mysqldump -uroot -pHaier@123 -A --triggers --routines --events --single-transaction --master-data=2 &gt; master.sql</span><br><span class="line"></span><br><span class="line">传到从库：</span><br><span class="line">scp master.sql haieradmin@x.x.x.x:/tmp</span><br><span class="line"></span><br><span class="line">从库导入数据：</span><br><span class="line">mysql -uroot -p&apos;xx&apos; &lt; master.sql</span><br></pre></td></tr></table></figure>
+
+<p>（2）配置复制关系</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">CHANGE MASTER TO</span><br><span class="line">MASTER_HOST=&apos;10.133.0.51&apos;,</span><br><span class="line">MASTER_USER=&apos;repl&apos;,</span><br><span class="line">MASTER_PASSWORD=&apos;Changeme_123&apos;,</span><br><span class="line">MASTER_PORT=3306,</span><br><span class="line">MASTER_LOG_FILE=&apos;mysql-binlog.000232&apos;,</span><br><span class="line">MASTER_LOG_POS=3108253;</span><br></pre></td></tr></table></figure>
+
+<p>（3）启动复制</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">start slave;</span><br><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.133.0.51</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-binlog.000234</span><br><span class="line">          Read_Master_Log_Pos: 744390811</span><br><span class="line">               Relay_Log_File: relay-log.000017</span><br><span class="line">                Relay_Log_Pos: 744391030</span><br><span class="line">        Relay_Master_Log_File: mysql-binlog.000234</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">                            ...</span><br><span class="line">                 Skip_Counter: 0</span><br><span class="line">          Exec_Master_Log_Pos: 744390811</span><br><span class="line">                            ...</span><br><span class="line">        Seconds_Behind_Master: 0</span><br></pre></td></tr></table></figure>
+
+<p>（4）检查复制线程</p>
+<p>主库上可以看到由备库 I/O 线程向主库发起的连接：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show processlist\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">     Id: 1257405</span><br><span class="line">   User: repl</span><br><span class="line">   Host: 10.133.0.52:46102</span><br><span class="line">     db: NULL</span><br><span class="line">Command: Binlog Dump</span><br><span class="line">   Time: 79824</span><br><span class="line">  State: Master has sent all binlog to slave; waiting for more updates</span><br><span class="line">   Info: NULL</span><br></pre></td></tr></table></figure>
+
+<p>备库上也可以看到两个线程，一个是 I/O 线程，一个是 SQL 线程：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show processlist\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">     Id: 55</span><br><span class="line">   User: system user</span><br><span class="line">   Host: </span><br><span class="line">     db: NULL</span><br><span class="line">Command: Connect</span><br><span class="line">   Time: 79927</span><br><span class="line">  State: Waiting for master to send event</span><br><span class="line">   Info: NULL</span><br><span class="line">*************************** 2. row ***************************</span><br><span class="line">     Id: 56</span><br><span class="line">   User: system user</span><br><span class="line">   Host: </span><br><span class="line">     db: NULL</span><br><span class="line">Command: Connect</span><br><span class="line">   Time: 3681</span><br><span class="line">  State: Slave has read all relay log; waiting for more updates</span><br><span class="line">   Info: NULL</span><br></pre></td></tr></table></figure>
+
+<p>（5）主库解锁</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">unlock tables;</span><br></pre></td></tr></table></figure>
+
+<h2 id="参数详解"><a href="#参数详解" class="headerlink" title="参数详解"></a>参数详解</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.133.0.51</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-binlog.000234</span><br><span class="line">          Read_Master_Log_Pos: 744390811</span><br><span class="line">               Relay_Log_File: relay-log.000017</span><br><span class="line">                Relay_Log_Pos: 744391030</span><br><span class="line">        Relay_Master_Log_File: mysql-binlog.000234</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">              Replicate_Do_DB: </span><br><span class="line">          Replicate_Ignore_DB: </span><br><span class="line">           Replicate_Do_Table: </span><br><span class="line">       Replicate_Ignore_Table: </span><br><span class="line">      Replicate_Wild_Do_Table: </span><br><span class="line">  Replicate_Wild_Ignore_Table: </span><br><span class="line">                   Last_Errno: 0</span><br><span class="line">                   Last_Error:</span><br><span class="line">                 Skip_Counter: 0</span><br><span class="line">          Exec_Master_Log_Pos: 744390811</span><br><span class="line">          ...</span><br><span class="line">        Seconds_Behind_Master: 0</span><br></pre></td></tr></table></figure>
+
+<p><strong>Slave_IO_Running：Yes</strong>，从库 I/O 线程负责请求和接收主库传递的 bin-log 信息</p>
+<p><strong>Slave_SQL_Running：Yes</strong>，从库 SQL 线程负责重放 relay-log 信息</p>
+<p><code>Master_Log_File</code>：当前主库的 bin-log 日志文件名</p>
+<p><code>Read_Master_Log_Pos</code>：正在读取主库当前 bin-log 中 position 位置</p>
+<p><code>Exec_Master_Log_Pos</code>：执行到主库 bin-log 中 position 位置</p>
+<p><code>Relay_Log_File</code>：</p>
+<p><code>Relay_Log_Pos</code>：</p>
+<p><code>Relay_Master_Log_File</code>：</p>
+<p><code>Seconds_Behind_Master</code>：</p>
+<p>Master_Log_File = Relay_Master_Log_File，Read_Master_Log_Pos = Exec_Master_Log_Pos：说明从库无延迟</p>
+<h3 id="主从延时问题"><a href="#主从延时问题" class="headerlink" title="主从延时问题"></a>主从延时问题</h3><p>原因：一般都会做读写分离，其实从库压力反而比主库大／从库读写压力大非常容易导致延时。</p>
+<p>解决方案：</p>
+<ul>
+<li>首先定位延时瓶颈</li>
+<li>如果是IO压力，可以通过升级硬件解决，比如替换SSD等</li>
+<li>如果IO和CPU都不是瓶颈，非常有可能是SQL单线程问题，解决方案可以考虑刚才提到的并行复制方案</li>
+<li>如果还有问题，可以考虑sharding拆分方案</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/17/mysql-install/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1920,7 +2825,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/blog/2019/07/11/mysql-tuning/" class="post-title-link" itemprop="url">MySQL · 调优系列合集</a>
+                <a href="/blog/2019/07/11/mysql-tuning/" class="post-title-link" itemprop="url">MySQL · 调优系列</a>
               
             
           </h1>
@@ -1962,7 +2867,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-10-21 10:23:04" itemprop="dateModified" datetime="2019-10-21T10:23:04+08:00">2019-10-21</time>
+                <time title="修改时间：2019-10-21 14:14:05" itemprop="dateModified" datetime="2019-10-21T14:14:05+08:00">2019-10-21</time>
               
             
           </span>
@@ -2218,737 +3123,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/10/front/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/10/front/" class="post-title-link" itemprop="url">前端学习笔记</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-10 11:22:20" itemprop="dateCreated datePublished" datetime="2019-07-10T11:22:20+08:00">2019-07-10</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-13 19:13:08" itemprop="dateModified" datetime="2019-10-13T19:13:08+08:00">2019-10-13</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/其他/" itemprop="url" rel="index"><span itemprop="name">其他</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="前端学习路径"><a href="#前端学习路径" class="headerlink" title="前端学习路径"></a>前端学习路径</h2><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134136.png" alt="前端技能图谱"></p>
-<h2 id="如何搭建-一个-vue-项目？"><a href="#如何搭建-一个-vue-项目？" class="headerlink" title="如何搭建 一个 vue 项目？"></a>如何搭建 一个 vue 项目？</h2><h3 id="安装-node-环境"><a href="#安装-node-环境" class="headerlink" title="安装 node 环境"></a>安装 node 环境</h3><blockquote>
-<p>下载 <a href="http://nodejs.cn/download/" target="_blank" rel="noopener">Node.js</a></p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> node -v</span><br><span class="line">v10.15.3</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span> npm -v</span><br><span class="line">6.10.0</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>安装淘宝镜像，提高效率</p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> npm install -g cnpm --registry=https://registry.npm.taobao.org</span><br><span class="line">C:\Users\01510886\AppData\Roaming\npm\cnpm -&gt; C:\Users\01510886\AppData\Roaming\npm\node_modules\cnpm\bin\cnpm</span><br><span class="line">+cnpm@6.1.0</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> cnpm -v</span><br><span class="line">cnpm@6.1.0 (C:\Users\01510886\AppData\Roaming\npm\node_modules\cnpm\lib\parse_argv.js)</span><br><span class="line">npm@6.10.0 (C:\Users\01510886\AppData\Roaming\npm\node_modules\cnpm\node_modules\npm\lib\npm.js)</span><br><span class="line">node@10.15.3 (D:\software\nodejs\node.exe)</span><br><span class="line">npminstall@3.22.1 (C:\Users\01510886\AppData\Roaming\npm\node_modules\cnpm\node_modules\npminstall\lib\index.js)</span><br><span class="line">prefix=C:\Users\01510886\AppData\Roaming\npm</span><br><span class="line">win32 x64 6.1.7601</span><br><span class="line">registry=https://r.npm.taobao.org</span><br></pre></td></tr></table></figure>
-
-<h3 id="搭建-vue-项目环境"><a href="#搭建-vue-项目环境" class="headerlink" title="搭建 vue 项目环境"></a>搭建 vue 项目环境</h3><blockquote>
-<p>安装 vue-cli</p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span> npm install --global vue-cli</span><br><span class="line"></span><br><span class="line"><span class="meta">$</span> vue list</span><br><span class="line">  Available official templates:</span><br><span class="line">  ★  browserify - A full-featured Browserify + vueify setup with hot-reload, linting &amp; unit testing.</span><br><span class="line">  ★  browserify-simple - A simple Browserify + vueify setup for quick prototyping.</span><br><span class="line">  ★  pwa - PWA template for vue-cli based on the webpack template</span><br><span class="line">  ★  simple - The simplest possible Vue setup in a single HTML file</span><br><span class="line">  ★  webpack - A full-featured Webpack + vue-loader setup with hot reload, linting, testing &amp; css extraction.</span><br><span class="line">  ★  webpack-simple - A simple Webpack + vue-loader setup for quick prototyping.</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>创建一个基于 webpack 模板的新项目</p>
-</blockquote>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line">$ vue init webpack vue-test</span><br><span class="line"></span><br><span class="line">? Project name (vue-test)</span><br><span class="line">? Project name vue-test</span><br><span class="line">? Project description (A Vue.js project)</span><br><span class="line">? Project description A Vue.js project</span><br><span class="line">? Author (raohui &lt;raohui@haier.com&gt;)</span><br><span class="line">? Author raohui &lt;raohui@haier.com&gt;</span><br><span class="line">? Vue build standalone</span><br><span class="line">? Install vue-router? (Y/n) Y</span><br><span class="line">? Install vue-router? Yes</span><br><span class="line">? Use ESLint to lint your code? (Y/n) n</span><br><span class="line">? Use ESLint to lint your code? No</span><br><span class="line">? Set up unit tests (Y/n) n</span><br><span class="line">? Set up unit tests No</span><br><span class="line">? Setup e2e tests with Nightwatch? (Y/n) n</span><br><span class="line">? Setup e2e tests with Nightwatch? No</span><br><span class="line">? Should we run `npm install` <span class="keyword">for</span> you after the project has been created? (recom</span><br><span class="line">? Should we run `npm install` <span class="keyword">for</span> you after the project has been created? (recom</span><br><span class="line">mended) npm</span><br><span class="line"></span><br><span class="line">   vue-cli · Generated <span class="string">"vue-test"</span>.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># Installing project dependencies ...</span></span><br><span class="line"><span class="comment"># ========================</span></span><br><span class="line"></span><br><span class="line">npm WARN deprecated extract-text-webpack-plugin@<span class="number">3.0</span>.<span class="number">2</span>: Deprecated. Please use https://github.com/webpack-contrib/mini-css-extract-plugin</span><br><span class="line">npm WARN deprecated browserslist@<span class="number">2.11</span>.<span class="number">3</span>: Browserslist <span class="number">2</span> could fail on reading Browserslist &gt;<span class="number">3.0</span> config used <span class="keyword">in</span> other tools.</span><br><span class="line">npm WARN deprecated bfj-node4@<span class="number">5.3</span>.<span class="number">1</span>: <span class="keyword">Switch</span> to the `bfj` package <span class="keyword">for</span> fixes and new features!</span><br><span class="line">npm WARN deprecated flatten@<span class="number">1.0</span>.<span class="number">2</span>: I wrote this module a very long time ago; you should use something else.</span><br><span class="line">npm WARN deprecated browserslist@<span class="number">1.7</span>.<span class="number">7</span>: Browserslist <span class="number">2</span> could fail on reading Browserslist &gt;<span class="number">3.0</span> config used <span class="keyword">in</span> other tools.</span><br><span class="line"></span><br><span class="line">&gt; core-js@<span class="number">2.6</span>.<span class="number">9</span> postinstall D:\vue\vue-test\node_modules\core-js</span><br><span class="line">&gt; node scripts/postinstall || echo <span class="string">"ignore"</span></span><br><span class="line"></span><br><span class="line">Thank you <span class="keyword">for</span> using core-js ( https://github.com/zloirock/core-js ) <span class="keyword">for</span> polyfilling JavaScript standard library!</span><br><span class="line"></span><br><span class="line">The project needs your help! Please consider supporting of core-js on Open Collective or Patreon:</span><br><span class="line">&gt; https://opencollective.com/core-js</span><br><span class="line">&gt; https://www.patreon.com/zloirock</span><br><span class="line"></span><br><span class="line">Also, the author of core-js ( https://github.com/zloirock ) is looking <span class="keyword">for</span> a good job -)</span><br><span class="line"></span><br><span class="line">&gt; uglifyjs-webpack-plugin@<span class="number">0.4</span>.<span class="number">6</span> postinstall D:\vue\vue-test\node_modules\webpack\node_modules\uglifyjs-webpack-plugin</span><br><span class="line">&gt; node lib/post_install.js</span><br><span class="line"></span><br><span class="line">npm notice created a lockfile as package-lock.json. You should commit this file.</span><br><span class="line">npm WARN ajv-keywords@<span class="number">3.4</span>.<span class="number">1</span> requires a peer of ajv@^<span class="number">6.9</span>.<span class="number">1</span> but none is installed. You must install peer dependencies yourself.</span><br><span class="line">npm WARN optional SKIPPING OPTIONAL DEPENDENCY: fsevents@<span class="number">1.2</span>.<span class="number">9</span> (node_modules\fsevents):</span><br><span class="line">npm WARN notsup SKIPPING OPTIONAL DEPENDENCY: Unsupported platform <span class="keyword">for</span> fsevents@<span class="number">1.2</span>.<span class="number">9</span>: wanted &#123;<span class="string">"os"</span>:<span class="string">"darwin"</span>,<span class="string">"arch"</span>:<span class="string">"any"</span>&#125; (current: &#123;<span class="string">"os"</span>:<span class="string">"win32"</span>,<span class="string">"arch"</span>:<span class="string">"x64"</span>&#125;)</span><br><span class="line"></span><br><span class="line">added <span class="number">1208</span> packages from <span class="number">669</span> contributors and audited <span class="number">11766</span> packages <span class="keyword">in</span> <span class="number">196.113</span>s</span><br><span class="line">found <span class="number">10</span> vulnerabilities (<span class="number">6</span> moderate, <span class="number">4</span> high)</span><br><span class="line">  run `npm audit fix` to fix them, or `npm audit` <span class="keyword">for</span> details</span><br><span class="line"></span><br><span class="line"><span class="comment"># Project initialization finished!</span></span><br><span class="line"><span class="comment"># ========================</span></span><br><span class="line"></span><br><span class="line">To get started:</span><br><span class="line"></span><br><span class="line">  cd vue-test</span><br><span class="line">  npm run dev</span><br><span class="line"></span><br><span class="line">Documentation can be found at https://vuejs-templates.github.io/webpack</span><br><span class="line"></span><br><span class="line">tips:</span><br><span class="line">npm install -g npm （升级npm至最新版本）</span><br><span class="line">npm cache clean --force  (出现报错可清除缓存)</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>启动项目</p>
-</blockquote>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ cd vue-test</span><br><span class="line">$ npm run dev</span><br><span class="line"></span><br><span class="line">&gt; vue-test@<span class="number">1.0</span>.<span class="number">0</span> dev D:\vue\vue-test</span><br><span class="line">&gt; webpack-dev-server --inline --progress --config build/webpack.dev.conf.js</span><br><span class="line"></span><br><span class="line"> <span class="number">13</span>% building modules <span class="number">26</span>/<span class="number">33</span> modules <span class="number">7</span> active ...ue-test\src\components\HelloWorld.vue&#123; parser: <span class="string">"babylon"</span> &#125; is deprecated; we now treat it as &#123; parser: <span class="string">"babel"</span> &#125;.</span><br><span class="line"> <span class="number">95</span>% emitting DONE  Compiled successfully <span class="keyword">in</span> <span class="number">11954</span>ms14:<span class="number">06</span>:<span class="number">01</span></span><br><span class="line"></span><br><span class="line"> I  Your application is running here: http://localhost:<span class="number">8080</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="vue-项目目录解析"><a href="#vue-项目目录解析" class="headerlink" title="vue 项目目录解析"></a>vue 项目目录解析</h3><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134137.png" alt="vue"></p>
-<p><strong>build</strong>：构建脚本目录</p>
-<p><strong>config</strong>：项目配置目录</p>
-<p><strong>node_modules</strong>：npm 加载的项目依赖目录</p>
-<p><strong>src</strong>：开发目录，基本上要做的事情都集中在这个目录，里面包含几个目录和文件：</p>
-<ul>
-<li>assets：资源目录，放置一些图片或者公共 js、公共 css，这里的资源会被 webpack 构建</li>
-<li>components：组件目录，我们写的组件就放在这个目录里面</li>
-<li>router：前端路由，我们需要配置的路由路径写在 index.js 里面</li>
-<li>App.vue：根组件</li>
-<li>main.js：入口 js 文件</li>
-</ul>
-<p><strong>static</strong>：静态资源目录，如图片、字体等，不会被 webpack 构建</p>
-<p><strong>index.html</strong>：首页入口文件，可以添加一些 meta 信息等</p>
-<p><strong>package.json</strong>：npm 包配置文件，定义了项目的 npm 脚本，依赖包等信息</p>
-<h3 id="开发-Frist-vue-项目"><a href="#开发-Frist-vue-项目" class="headerlink" title="开发 Frist.vue 项目"></a>开发 Frist.vue 项目</h3><blockquote>
-<p>1）components 目录下新建一个 views 目录，并新建组件 First.vue</p>
-</blockquote>
-<blockquote>
-<p>2）router 目录下的 index.js 配置路由路径</p>
-</blockquote>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> Vue <span class="keyword">from</span> <span class="string">'vue'</span></span><br><span class="line"><span class="keyword">import</span> Router <span class="keyword">from</span> <span class="string">'vue-router'</span></span><br><span class="line"><span class="keyword">import</span> HelloWorld <span class="keyword">from</span> <span class="string">'@/components/HelloWorld'</span></span><br><span class="line"><span class="keyword">import</span> First <span class="keyword">from</span> <span class="string">'@/components/views/First'</span></span><br><span class="line"></span><br><span class="line">Vue.use(Router)</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">new</span> Router(&#123;</span><br><span class="line"></span><br><span class="line">  routes: [</span><br><span class="line">    &#123;</span><br><span class="line">      path: <span class="string">'/'</span>,</span><br><span class="line">      name: <span class="string">'HelloWorld'</span>,</span><br><span class="line">      component: HelloWorld</span><br><span class="line">    &#125;,&#123;</span><br><span class="line">      path: <span class="string">'/first'</span>,</span><br><span class="line">      name: <span class="string">'First'</span>,</span><br><span class="line">      component: First</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>3）First.vue 文件 template 写 html，script 写 js，style 写 css</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div class=&quot;first-app&quot;&gt;</span><br><span class="line">        &#123;&#123;msg&#125;&#125;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">export default &#123;</span><br><span class="line">    name: &quot;First&quot;,</span><br><span class="line">    data() &#123;</span><br><span class="line">        return &#123;</span><br><span class="line">            msg: &quot;Welcome to FirstApp&quot;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">&lt;style&gt;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>4）<a href="http://localhost:8080/#/first，查看页面效果" target="_blank" rel="noopener">http://localhost:8080/#/first，查看页面效果</a></p>
-</blockquote>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/08/linux-ssh/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/08/linux-ssh/" class="post-title-link" itemprop="url">SSH</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-08 17:55:43" itemprop="dateCreated datePublished" datetime="2019-07-08T17:55:43+08:00">2019-07-08</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-13 19:13:11" itemprop="dateModified" datetime="2019-10-13T19:13:11+08:00">2019-10-13</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="SSH-协议"><a href="#SSH-协议" class="headerlink" title="SSH 协议"></a>SSH 协议</h2><h3 id="SSH"><a href="#SSH" class="headerlink" title="SSH"></a>SSH</h3><p><a href="https://www.ssh.com/" target="_blank" rel="noopener"><strong>SSH</strong></a>（Secure Shell Protocol，安全外壳协议），是建立在应用层和传输层基础上的 <strong>一种加密的网络安全传输协议</strong>。</p>
-<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g679gryzmvj30i609ftc4.jpg" alt="img"></p>
-<h3 id="OpenSSH"><a href="#OpenSSH" class="headerlink" title="OpenSSH"></a>OpenSSH</h3><p><a href="http://www.openssh.com/" target="_blank" rel="noopener"><strong>OpenSSH</strong></a>：是基于 <a href="https://baike.baidu.com/item/SSH" target="_blank" rel="noopener">SSH</a> 协议实现使用最广泛的 <strong>免费开源软件</strong>。</p>
-<p><strong>优点</strong>：</p>
-<ul>
-<li>安全可靠</li>
-<li>便捷</li>
-</ul>
-<p><strong><a href="http://www.openssh.com/" target="_blank" rel="noopener">OpenSSH</a> 套件工具</strong>：</p>
-<p><strong>ssh</strong>：远程登录</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">语法：ssh</span> <span class="string">[-l</span> <span class="string">login_name]</span> <span class="string">[-p</span> <span class="string">port]</span> <span class="string">[user@host]</span></span><br><span class="line"></span><br><span class="line"><span class="string">示例：</span></span><br><span class="line"><span class="string">ssh</span> <span class="number">192.168</span><span class="number">.0</span><span class="number">.11</span>                       <span class="comment"># 不指定用户，默认使用当前宿主用户的用户名登录</span></span><br><span class="line"><span class="string">ssh</span> <span class="string">root@192.168.0.11</span>                  <span class="comment"># 指定用户登录</span></span><br><span class="line"><span class="string">ssh</span> <span class="string">root@192.168.0.11</span> <span class="bullet">-p</span> <span class="number">2222</span>          <span class="comment"># 指定端口，默认端口22</span></span><br><span class="line"><span class="string">ssh</span> <span class="string">root@192.168.0.11</span> <span class="string">"ls /usr/local"</span>  <span class="comment"># 远程登录后执行某命令</span></span><br><span class="line"></span><br><span class="line"><span class="string">备注：配置文件/etc/ssh/sshd_config，修改ssh登录端口和禁止root登录，可以防止被端口扫描</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>sshd</strong>：服务端进程服务</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">服务端修改文件配置：vim</span> <span class="string">/etc/ssh/sshd_config</span> </span><br><span class="line"><span class="string">配置完成之后要重启服务：systemctl</span> <span class="string">restart</span> <span class="string">sshd.service</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>scp</strong>：Secure Copy，远程安全拷贝文件和目录（加密）</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">语法：scp</span> <span class="string">[-P</span> <span class="string">port]</span> <span class="string">[file|folder]</span> <span class="string">[user@host]:[remote_folder]</span></span><br><span class="line"></span><br><span class="line"><span class="string">示例：</span></span><br><span class="line"><span class="string">scp</span> <span class="string">mysql.sh</span> <span class="string">user@host:/tmp</span>      <span class="comment"># 本地文件拷贝到远程目录</span></span><br><span class="line"><span class="string">scp</span> <span class="bullet">-r</span> <span class="string">mysqldata</span> <span class="string">user@host:/tmp</span>  <span class="comment"># 本地目录拷贝到远程目录</span></span><br><span class="line"><span class="string">scp</span> <span class="string">root@host:/tmp</span> <span class="string">file</span>          <span class="comment"># 文件下载</span></span><br><span class="line"><span class="string">scp</span> <span class="bullet">-P</span> <span class="number">10022</span> <span class="string">/usr/local/src/mysql-5.7.23-el7-x86_64.tar.gz</span> <span class="string">root@10.200.62.4:/tmp</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>sftp</strong>：Secure File Transfer Protocol，安全文件传输命令行工具，使用方式和 <code>ftp</code> 类似，但它使用 <code>SSH</code> 作为底层传输协议，安全性比 <code>ftp</code> 好很多。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">语法：sftp</span> <span class="bullet">-oPort=&lt;port&gt;</span> <span class="string">&lt;user&gt;@&lt;host&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="string">常用命令：</span></span><br><span class="line"><span class="string">help/?：打印帮助信息。</span></span><br><span class="line"><span class="string">pwd：查看远程服务器当前目录</span></span><br><span class="line"><span class="string">cd</span> <span class="string">&lt;dir&gt;：将远程服务器的当前目录更改为&lt;dir&gt;</span></span><br><span class="line"><span class="string">ls：显示远程服务器上当前目录的文件名</span></span><br><span class="line"><span class="string">ls</span> <span class="bullet">-l：显示远程服务器上当前目录的文件详细列表</span></span><br><span class="line"><span class="string">get</span> <span class="string">&lt;file&gt;：下载指定文件</span> <span class="string">&lt;file&gt;</span></span><br><span class="line"><span class="string">put</span> <span class="string">&lt;file&gt;：上传指定文件&lt;file&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="string">示例：</span></span><br><span class="line"><span class="string">[iteblog@www.iteblog.com</span> <span class="string">~]$</span> <span class="string">sftp</span> <span class="bullet">-oPort=22</span> <span class="string">iteblog@sftp.iteblog.com</span></span><br><span class="line"><span class="string">Connecting</span> <span class="string">to</span> <span class="string">sftp.iteblog.com...</span></span><br><span class="line"><span class="string">iteblog@sftp.iteblog.com's</span> <span class="attr">password:</span> </span><br><span class="line"><span class="string">sftp&gt;</span> <span class="string">ls</span> <span class="string">/</span></span><br><span class="line"><span class="string">/iteblog.txt</span>  </span><br><span class="line"><span class="string">sftp&gt;</span> <span class="string">ls</span> <span class="bullet">-l</span> <span class="string">/iteblog.txt</span></span><br><span class="line"><span class="bullet">-</span><span class="string">rw-r--r--</span>    <span class="number">2</span> <span class="number">50049</span>    <span class="number">50049</span>        <span class="number">4096</span> <span class="string">Jun</span> <span class="number">21</span> <span class="number">03</span><span class="string">:23</span> <span class="string">/iteblog.txt</span></span><br><span class="line"><span class="string">sftp&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>也可以使用 <code>FileZilla</code> 连接 <code>SFTP</code> 服务器：主机IP地址、用户名、密码、端口，端口默认为 <code>22</code>。</p>
-<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g6797j8u3kj30ng0l9400.jpg" alt="img"></p>
-<p><strong>ssh-keygen</strong>：生成密钥的工具</p>
-<ul>
-<li><code>-t</code>：指定生成密钥类型（<code>rsa</code>、<code>dsa</code> 等）</li>
-<li><code>-P</code>：指定 密语，用于确保私钥的安全</li>
-<li><code>-f</code>：指定存放密钥的文件（公钥文件默认和私钥同目录下，不同的是存放公钥的文件名需要加上后缀 .pub）</li>
-<li><code>-C</code> 用来添加注释</li>
-</ul>
-<p><code>~/.ssh</code> 目录下有四个文件：</p>
-<ul>
-<li><code>id_rsa</code>：私钥文件</li>
-<li><code>id_rsa.pub</code>：公钥文件</li>
-<li><code>authorized_keys</code>：保存已授权的客户端公钥</li>
-<li><code>known_hosts</code>：保存已认证的远程主机 ID</li>
-</ul>
-<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g67aallbz9j30ip0d4gm2.jpg" alt="img"></p>
-<blockquote>
-<p>需要注意的是：一台主机可能既是 Client，也是 Server。所以会同时拥有 authorized_keys 和 known_hosts。</p>
-</blockquote>
-<h2 id="SSH-工作原理"><a href="#SSH-工作原理" class="headerlink" title="SSH 工作原理"></a>SSH 工作原理</h2><h3 id="对称加密与非对称加密"><a href="#对称加密与非对称加密" class="headerlink" title="对称加密与非对称加密"></a>对称加密与非对称加密</h3><h4 id="对称加密"><a href="#对称加密" class="headerlink" title="对称加密"></a>对称加密</h4><p><strong>含义</strong>：加密与解密使用同一套秘钥。</p>
-<p><strong>问题</strong>：考虑到数量庞大的 Client 端，很难保证密钥不被泄露，如何安全的保存密钥 ？</p>
-<p><img src="http://ww3.sinaimg.cn/large/006y8mN6ly1g679ssfaapj30l805agls.jpg" alt="img"></p>
-<p><img src="http://ww1.sinaimg.cn/large/006y8mN6ly1g679t6uz1wj30l805bdfr.jpg" alt="img"></p>
-<h4 id="非对称加密"><a href="#非对称加密" class="headerlink" title="非对称加密"></a>非对称加密</h4><p><strong>含义</strong>：加密与解决密码不同，存在两个密钥，<strong>“公钥”</strong> 和 <strong>“私钥”</strong>。</p>
-<blockquote>
-<p>两个密钥的特性：公钥加密后的密文，只能通过对应的私钥进行解密，而通过公钥推理出私钥的可能性微乎其微。</p>
-</blockquote>
-<p><img src="http://ww4.sinaimg.cn/large/006y8mN6ly1g679yam73pj30ft0f2t9b.jpg" alt="img"></p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">远程</span> <span class="string">Server</span> <span class="string">收到</span> <span class="string">Client</span> <span class="string">端用户</span> <span class="string">TopGun</span> <span class="string">的登录请求，Server</span> <span class="string">把自己的公钥发给用户。</span></span><br><span class="line"><span class="string">Client</span> <span class="string">使用这个公钥，将密码进行加密。</span></span><br><span class="line"><span class="string">Client</span> <span class="string">将加密的密码发送给</span> <span class="string">Server端。</span></span><br><span class="line"><span class="string">远程</span> <span class="string">Server</span> <span class="string">用自己的私钥，解密登录密码，然后验证其合法性。</span></span><br><span class="line"><span class="string">若验证结果，给</span> <span class="string">Client</span> <span class="string">相应的响应。</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="图解公钥与私钥"><a href="#图解公钥与私钥" class="headerlink" title="图解公钥与私钥"></a>图解公钥与私钥</h3><p><strong>公钥</strong>：可以通过网络传输，别人可以随意截获的密钥。</p>
-<p><strong>私钥</strong>：不能通过网络进行传输，也防止别人截获的密钥。</p>
-<p><strong>交互过程</strong>：</p>
-<p>（1）鲍勃有两把钥匙，一把是公钥，另一把是私钥。</p>
-<p><img src="http://ww3.sinaimg.cn/large/006y8mN6ly1g67d4qd12bj30fa08n0ss.jpg" alt="PubKey1"></p>
-<p>（2）鲍勃把公钥送给他的朋友们 – 帕蒂、道格、苏珊每人一把</p>
-<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g67d7hmtayj30go07pq35.jpg" alt="PubKey2"></p>
-<p>（3）苏珊要给鲍勃写一封保密的信，她写完后用鲍勃的公钥加密，就可以达到保密的效果。</p>
-<p><img src="http://ww1.sinaimg.cn/large/006y8mN6ly1g67d7j9fh9j30go06vglp.jpg" alt="PubKey3"></p>
-<p>（4）鲍勃收信后，用私钥解密，就看到了信件内容。这里要强调的是，只要鲍勃的私钥不泄露，这封信就是安全的，即使落在别人手里，也无法解密。</p>
-<p><img src="http://ww4.sinaimg.cn/large/006y8mN6ly1g67d8c1zbkj30go07o0su.jpg" alt="PubKey4"></p>
-<p>（5）鲍勃给苏珊回信，决定采用”数字签名”。他写完后先用 <code>Hash</code> 函数，生成信件的摘要（digest）。 </p>
-<p><img src="http://ww4.sinaimg.cn/large/006y8mN6ly1g67d8o5r1gj30fa083q32.jpg" alt="PubKey5"></p>
-<p>（6）然后，鲍勃使用私钥，对这个摘要加密，生成”数字签名”（signature）。</p>
-<p><img src="http://ww3.sinaimg.cn/large/006y8mN6ly1g67d8zicuyj30fa06t3yd.jpg" alt="PubKey6"></p>
-<p>（7）鲍勃将这个签名，附在信件下面，一起发给苏珊。</p>
-<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g67d9eeclrj30fa08g0sv.jpg" alt="PubKey7"></p>
-<p>（8）苏珊收信后，取下数字签名，用鲍勃的公钥解密，得到信件的摘要。由此证明，这封信确实是鲍勃发出的。</p>
-<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g67daaqp9rj30fa04qt8k.jpg" alt="PubKey8"> </p>
-<p>（9）苏珊再对信件本身使用 <code>Hash</code> 函数，将得到的结果，与上一步得到的摘要进行对比。如果两者一致，就证明这封信未被修改过。 </p>
-<p><img src="http://ww1.sinaimg.cn/large/006y8mN6ly1g67datch4wj30fa088aa9.jpg" alt="PubKey9"></p>
-<p>（10）复杂的情况出现了，道格想欺骗苏珊，他偷偷使用了苏珊的电脑，用自己的公钥换走了鲍勃的公钥。此时，苏珊实际拥有的是道格的公钥，但是还以为这是鲍勃的公钥。因此，道格就可以冒充鲍勃，用自己的私钥做成”数字签名”，写信给苏珊，让苏珊用假的鲍勃公钥进行解密。</p>
-<p><img src="http://ww1.sinaimg.cn/large/006y8mN6ly1g67dbdl39tj30fa07kaa4.jpg" alt="PubKey10"></p>
-<p>（11）后来，苏珊感觉不对劲，发现自己无法确定公钥是否真的属于鲍勃。她想到了一个办法，要求鲍勃去找”证书中心”（Certificate Authority，简称 CA），为公钥做认证。证书中心用自己的私钥，对鲍勃的公钥和一些相关信息一起加密，生成”数字证书”（Digital Certificate）。</p>
-<p><img src="http://ww1.sinaimg.cn/large/006y8mN6ly1g67dbuly0kj30i20bvt8u.jpg" alt="PubKey11"></p>
-<p>（12）鲍勃拿到数字证书以后，就可以放心了。以后再给苏珊写信，只要在签名的同时，再附上数字证书就行了。 </p>
-<p><img src="http://ww4.sinaimg.cn/large/006y8mN6ly1g67dcfjhntj30f90bywex.jpg" alt="PubKey12"></p>
-<p>（13）苏珊收信后，用 CA 的公钥解开数字证书，就可以拿到鲍勃真实的公钥了，然后就能证明”数字签名”是否真的是鲍勃签的。 </p>
-<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g67dcphc58j30fa09wdfv.jpg" alt="PubKey13"></p>
-<h3 id="两种安全验证方式"><a href="#两种安全验证方式" class="headerlink" title="两种安全验证方式"></a>两种安全验证方式</h3><h4 id="基于口令的安全验证（用户名-密码）"><a href="#基于口令的安全验证（用户名-密码）" class="headerlink" title="基于口令的安全验证（用户名/密码）"></a>基于口令的安全验证（用户名/密码）</h4><ul>
-<li>客户端发送登录请求 <code>ssh user@host</code>；</li>
-<li>服务器接受请求，将服务器的公钥 <code>id_rsa.pub</code> 发送给客户端；</li>
-<li>客户端输入密码，密码使用 <code>id_rsa.pub</code> 加密后发送给服务器（敏感信息安全传输）；</li>
-<li>服务器接受加密后的密码，使用服务器私钥 <code>id_rsa</code> 解密，匹配认证密码是否合法（如果合法！登录成功）；</li>
-<li>客户端生成会话数据加密 <code>sess_key</code>，使用 <code>id_rsa.pub</code> 加密后传输给服务器（会话密钥）；</li>
-<li>服务器获取到后使用 <code>id_rsa</code> 解密，得到 <code>sess_key</code>；</li>
-<li>客户端和服务器通过 <code>sess_key</code> 进行会话数据安全传输。</li>
-</ul>
-<h4 id="基于密钥的安全验证"><a href="#基于密钥的安全验证" class="headerlink" title="基于密钥的安全验证"></a>基于密钥的安全验证</h4><p>简单地说，就是客户端自己生成公钥私钥（通常采用 <code>ssh-keygen</code> 程序生成），然后将公钥以某种方式（通常是手动添加）保存到服务器 <code>~/.ssh/authorized_keys</code> 文件中，以后服务器都会接受客户端传过来的经过会话密钥加密过的公钥，然后解密得到公钥之后和本地 <code>authorized_keys</code> 配置的公钥是否相等，如果是则允许登陆。</p>
-<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><ul>
-<li><code>SSH</code> 是安全的加密协议，用于远程连接 <code>Linux</code> 服务器；</li>
-<li><code>SSH</code> 的默认端口是 <code>22</code>，安全协议版本是 <code>SSH2</code>；</li>
-<li><code>SSH</code> 服务器端主要包含2个服务功能 <code>SSH</code> 连接和 <code>SFTP</code> 服务器；</li>
-<li><code>SSH</code> 客户端包含 <code>ssh</code> 连接命令和远程拷贝 <code>scp</code> 命令等。</li>
-</ul>
-<h2 id="SSH-实践"><a href="#SSH-实践" class="headerlink" title="SSH 实践"></a>SSH 实践</h2><h3 id="设置免密登录"><a href="#设置免密登录" class="headerlink" title="设置免密登录"></a>设置免密登录</h3><h4 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h4><p><img src="http://ww3.sinaimg.cn/large/006y8mN6ly1g67a12hm04j30rs0jcjtl.jpg" alt="img"></p>
-<p><strong>认证流程</strong>：</p>
-<ol>
-<li><code>Client</code> 将自己的公钥存放在 <code>Server</code> 上，追加在文件 <code>authorized_keys</code> 中。</li>
-<li><code>Server</code> 端接收到 <code>Client</code> 的连接请求后，会在 <code>authorized_keys</code> 中匹配到 <code>Client</code> 的公钥 <code>pubKey</code>，并生成随机数 <code>R</code>，用 <code>Client</code> 的公钥对该随机数进行加密得到 <code>pubKey(R)</code>，然后将加密后信息发送给 <code>Client</code>。</li>
-<li><code>Client</code> 端通过私钥进行解密得到随机数 <code>R</code>，然后对随机数 <code>R</code> 和本次会话的 <code>SessionKey</code> 利用 <code>MD5</code> 生成摘要 <code>Digest1</code>，发送给 <code>Server</code> 端。</li>
-<li><code>Server</code> 端会也会对 <code>R</code> 和 <code>SessionKey</code> 利用同样摘要算法生成 <code>Digest2</code>。</li>
-<li><code>Server</code> 端会最后比较 <code>Digest1</code> 和 <code>Digest2</code> 是否相同，完成认证过程。</li>
-</ol>
-<h4 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h4><p>（1）获取客户端公钥：<code>~/.ssh/id_rsa.pub</code></p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># cat ~/.ssh/id_rsa.pub</span></span><br><span class="line"><span class="string">ssh-rsa</span> <span class="string">AAAAB3NzaC1yc2EAAAADAQABAAABAQCp7KnYj1baMhQn4FPfV6YiMogWw5cu57kfGoZYMdp8KNyJ5zmqz7UZUfmURYeoiMQB7v8oY3zVq13X8Gmmw/rzROS/vR/mqSbbnSruHh+x42oVtjZz67/UtFLTO1DT/+YmT+XkrkuI2Cx6CxWFQgThLXMNStYif3Rl0+aKC7Gb0hlPwoNT+UPHMLAW7Y2x+R7I8Tdvt75jSI4TANq8QzG+/Iy9tZiG80VC2KbgGdTkDLDZrIoftfVWihm4Ec29uJocpbxMRNpMTb7yn12ySWbY7mJ2fpqGAh+s1toF94ASPfg4Hlv6Y6lx2QumePKKIGQh1bWEOirxKljUbVfqD6NF</span> <span class="string">root@hlhtapp29</span></span><br></pre></td></tr></table></figure>
-
-<p>（2）将公钥部署到服务端： <code>~/.ssh/authorized_keys</code> </p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># vi ~/.ssh/authorized_keys</span></span><br><span class="line"><span class="string">ssh-rsa</span> <span class="string">AAAAB3NzaC1yc2EAAAADAQABAAABAQCp7KnYj1baMhQn4FPfV6YiMogWw5cu57kfGoZYMdp8KNyJ5zmqz7UZUfmURYeoiMQB7v8oY3zVq13X8Gmmw/rzROS/vR/mqSbbnSruHh+x42oVtjZz67/UtFLTO1DT/+YmT+XkrkuI2Cx6CxWFQgThLXMNStYif3Rl0+aKC7Gb0hlPwoNT+UPHMLAW7Y2x+R7I8Tdvt75jSI4TANq8QzG+/Iy9tZiG80VC2KbgGdTkDLDZrIoftfVWihm4Ec29uJocpbxMRNpMTb7yn12ySWbY7mJ2fpqGAh+s1toF94ASPfg4Hlv6Y6lx2QumePKKIGQh1bWEOirxKljUbVfqD6NF</span> <span class="string">root@hlhtapp29</span></span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>备注：若服务端不存在 <code>authorized_keys</code> 文件，执行 ssh-keygen 命令，生成公匙和私匙，没有特殊需要的话，输完这个命令后直接连按回车，就会自动把文件生成到 ~/.ssh/ 文件夹中了。</p>
-</blockquote>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ssh-keygen</span></span><br><span class="line">Generating public/private rsa key pair.</span><br><span class="line">Enter file <span class="keyword">in</span> which to save the key (/root/.ssh/id_rsa): </span><br><span class="line">/root/.ssh/id_rsa already exists.</span><br><span class="line">Overwrite (y/n)? y</span><br><span class="line">Enter passphrase (empty <span class="keyword">for</span> no passphrase): </span><br><span class="line">Enter same passphrase again: </span><br><span class="line">Your identification has been saved <span class="keyword">in</span> /root/.ssh/id_rsa.</span><br><span class="line">Your public key has been saved <span class="keyword">in</span> /root/.ssh/id_rsa.pub.</span><br><span class="line">The key fingerprint is:</span><br><span class="line">SHA256:<span class="number">4</span>qHMkrfb8bchDuoYV1DjGFy3JYzegeCidBa5yRvmBAU root@CSB-service-<span class="number">2</span></span><br><span class="line">The key<span class="string">'s randomart image is:</span></span><br><span class="line"><span class="string">+---[RSA 2048]----+</span></span><br><span class="line"><span class="string">| Eo++o++o .      |</span></span><br><span class="line"><span class="string">| . oo=ooo+       |</span></span><br><span class="line"><span class="string">| .+o*.....       |</span></span><br><span class="line"><span class="string">|..oO .. .        |</span></span><br><span class="line"><span class="string">|. + o + S        |</span></span><br><span class="line"><span class="string">|   * + o         |</span></span><br><span class="line"><span class="string">|  + * + . .      |</span></span><br><span class="line"><span class="string">|   * + = ...     |</span></span><br><span class="line"><span class="string">|  ..=.. o...     |</span></span><br><span class="line"><span class="string">+----[SHA256]-----+</span></span><br><span class="line"><span class="string">You have mail in /var/spool/mail/root</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="服务器初始化"><a href="#服务器初始化" class="headerlink" title="服务器初始化"></a>服务器初始化</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># /bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ $(id -u) != <span class="string">"0"</span> ]; then</span><br><span class="line">errorLog <span class="string">"错误：请用root账户运行此脚本"</span></span><br><span class="line"><span class="keyword">exit</span> <span class="number">1</span></span><br><span class="line">fi</span><br><span class="line">echo <span class="string">"提升权限..."</span></span><br><span class="line"><span class="keyword">if</span> [[ ! `cat /etc/sudoers | grep -v grep | grep haieradmin` ]] ; then</span><br><span class="line">    echo <span class="string">"需要提升权限。。。"</span></span><br><span class="line">    sed -i <span class="string">'/## Allow root to run any commands anywhere / a\haieradmin ALL=(ALL) NOPASSWD:ALL'</span> /etc/sudoers</span><br><span class="line">    <span class="keyword">if</span> [[ ! `cat /etc/sudoers | grep -v grep | grep haieradmin` ]] ; then</span><br><span class="line">        echo <span class="string">"权限提升失败..."</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        echo <span class="string">"权限提升成功..."</span></span><br><span class="line">    fi</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    echo <span class="string">"haieradmin已经是sudoers"</span></span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">echo <span class="string">"开启22端口访问..."</span></span><br><span class="line">firewall-cmd --permanent --zone=public --add-port=<span class="number">22</span>/tcp</span><br><span class="line">firewall-cmd --reload</span><br><span class="line"></span><br><span class="line">echo <span class="string">"删除hosts.deny..."</span></span><br><span class="line">sed -i <span class="string">'s/sshd:all/ /g'</span> /etc/hosts.deny</span><br><span class="line"></span><br><span class="line">echo <span class="string">"追加hosts.allow..."</span></span><br><span class="line"><span class="keyword">if</span> [[ `cat /etc/hosts.allow | grep -v <span class="number">10.138</span>.*.*` ]]; then</span><br><span class="line">    echo <span class="string">"追加10.138.*.*"</span></span><br><span class="line">    echo <span class="string">"sshd:10.138.*.*"</span> &gt;&gt; /etc/hosts.allow</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
-
-<h3 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h3><p><strong>问题</strong>：CentOS 7.3 配置 SSH 免密码登录后仍要输入密码的解决方法？</p>
-<p><strong>原因分析</strong>：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> tail /var/<span class="built_in">log</span>/secure -n 20</span></span><br><span class="line">Authentication refused: bad ownership or modes for directory /home/haieradmin</span><br></pre></td></tr></table></figure>
-
-<p>sshd 为了安全，对属主的目录和文件权限有所要求，如果权限不对，则ssh的免密码登陆不生效。</p>
-<ul>
-<li>.ssh 目录权限为 700</li>
-<li>rsa_id.pub 及 authorized_keys 权限一般为 644</li>
-<li>rsa_id 权限必须为 600</li>
-</ul>
-<p><strong>解决方法</strong>：检测目录权限，把不符合要求的按要求设置权限即可。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/08/tidb/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/08/tidb/" class="post-title-link" itemprop="url">TiDB</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-08 10:54:05" itemprop="dateCreated datePublished" datetime="2019-07-08T10:54:05+08:00">2019-07-08</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-13 19:14:01" itemprop="dateModified" datetime="2019-10-13T19:14:01+08:00">2019-10-13</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/TiDB/" itemprop="url" rel="index"><span itemprop="name">TiDB</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://pingcap.com/" target="_blank" rel="noopener"><strong>TiDB</strong></a> 是一款定位于在线事务处理/在线分析处理（ HTAP: Hybrid Transactional/Analytical Processing）的融合型数据库产品，实现了一键水平伸缩，强一致性的多副本数据安全，分布式事务，实时 OLAP 等重要特性。同时兼容 MySQL 协议和生态，迁移便捷，运维成本极低。</p>
-<p><a href="https://pingcap.com/docs-cn/v3.0/" target="_blank" rel="noopener"><strong>文档</strong></a> | <a href="https://github.com/pingcap/tidb" target="_blank" rel="noopener"><strong>代码</strong></a> | <a href="https://pingcap.com/community-cn/" target="_blank" rel="noopener"><strong>社区</strong></a></p>
-<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p><strong>安装依赖包</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ yum -y install libtool zlib-devel autoconf readline-devel readline libuuid-devel zlib-devel automake libuuid readline-devel readline ncurses-devel.x86_64 ncurses.x86_64 gcc-c++ vim wget net-tools svn libstdc++.so.<span class="number">6</span> glibc.i686 unzip make lrzsz libtool zlib-devel autoconf readline-devel readline libuuid-devel zlib-devel automake libuuid readline-devel readline ncurses-devel.x86_64 ncurses.x86_64 gcc-c++ vim wget net-tools svn libstdc++.so.<span class="number">6</span> libcurl-dev libcurl-devel expat-devel perl-ExtUtils-CBuilder perl-ExtUtils-MakeMaker zip git gcc openssl-devel libnl3-devel net-snmp-devel libnfnetlink-devel zlib zlib-devel openssl openssl-devel tree lrzsz tree net-tools nmap vim bash-completion lsof dos2unix nc telnet ntp wget rng-tools psmisc screen pcre pcre-devel</span><br></pre></td></tr></table></figure>
-
-<p><strong>安装 TiDB</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ cd /usr/local/</span><br><span class="line">$ wget http://download.pingcap.org/tidb-latest-linux-amd64.tar.gz</span><br><span class="line">$ tar -xzf tidb-latest-linux-amd64.tar.gz  /usr/local</span><br><span class="line">$ mkdir -p /<span class="keyword">data</span>/tidb</span><br><span class="line">$ cd /usr/local/tidb-latest-linux-amd64</span><br><span class="line">$ ln -s /usr/local/tidb-latest-linux-amd64/bin/pd-tso-bench /usr/bin</span><br><span class="line">$ ln -s /usr/local/tidb-latest-linux-amd64/bin/tikv-server /usr/bin/</span><br><span class="line">$ ln -s /usr/local/tidb-latest-linux-amd64/bin/tidb-server /usr/bin/</span><br><span class="line">$ ln -s /usr/local/tidb-latest-linux-amd64/bin/pd-server /usr/bin/</span><br><span class="line">$ ln -s /usr/local/tidb-latest-linux-amd64/bin/pd-ctl /usr/bin/</span><br></pre></td></tr></table></figure>
-
-<p><strong>启动 PD</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd bin</span><br><span class="line">$ ./pd-server -data-dir=/<span class="keyword">data</span>/tidb/pd -log-file=/<span class="keyword">data</span>/tidb/log/pd.log -name=pd1 &amp;</span><br></pre></td></tr></table></figure>
-
-<p><strong>启动 TiKV</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ./tikv-server --pd=<span class="string">"127.0.0.1:2379"</span> --data-dir=/<span class="keyword">data</span>/tidb/tikv --log-file=/<span class="keyword">data</span>/tidb/log/tikv.log &amp;</span><br></pre></td></tr></table></figure>
-
-<p><strong>连接 TiDB</strong></p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -h 127.0.0.1 -P 4000 -u root</span><br><span class="line"></span><br><span class="line">Welcome to the MySQL monitor.  Commands <span class="keyword">end</span> <span class="keyword">with</span> ; or \g.</span><br><span class="line">Your MySQL connection id is 12</span><br><span class="line">Server version: 5.7.25-TiDB-v3.0.0-rc.1-290-g21d2590ac MySQL Community Server (Apache License 2.0)</span><br><span class="line"></span><br><span class="line">Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.</span><br><span class="line"></span><br><span class="line">Oracle is a registered trademark of Oracle Corporation and/or its</span><br><span class="line">affiliates. Other names may be trademarks of their respective</span><br><span class="line">owners.</span><br><span class="line"></span><br><span class="line">Type '<span class="keyword">help</span>;' or '\h' for help. <span class="keyword">Type</span> <span class="string">'\c'</span> <span class="keyword">to</span> <span class="keyword">clear</span> the <span class="keyword">current</span> <span class="keyword">input</span> statement.</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">show</span> <span class="keyword">databases</span>;</span><br><span class="line">+<span class="comment">--------------------+</span></span><br><span class="line">| Database           |</span><br><span class="line">+<span class="comment">--------------------+</span></span><br><span class="line">| INFORMATION_SCHEMA |</span><br><span class="line">| PERFORMANCE_SCHEMA |</span><br><span class="line">| mysql              |</span><br><span class="line">| test               |</span><br><span class="line">+<span class="comment">--------------------+</span></span><br><span class="line">4 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-
-<p><strong>修改root密码</strong></p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; use mysql; </span><br><span class="line">mysql&gt; update user set password=PASSWORD("Changeme_123") where User='root';</span><br><span class="line">mysql&gt; flush privileges;</span><br></pre></td></tr></table></figure>
-
-<p><strong>设置远程可访问</strong></p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; grant all privileges on *.* to 'root'@'%' identified by 'Changeme_123';</span><br><span class="line">mysql&gt; flush privileges;</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/6/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/blog/page/8/">8</a><a class="extend next" rel="next" href="/blog/page/8/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/page/6/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/blog/page/8/">8</a><a class="page-number" href="/blog/page/9/">9</a><a class="extend next" rel="next" href="/blog/page/8/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -2992,7 +3171,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">78</span>
+                    <span class="site-state-item-count">81</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
