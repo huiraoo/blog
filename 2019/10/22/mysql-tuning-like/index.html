@@ -103,7 +103,7 @@
 <meta property="og:site_name" content="Rao&#39;s Blog">
 <meta property="og:description" content="背景模糊查询：使用 like %% 类 SQL 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152# 生产环境执行的SQLSELECT &apos;&apos; AS batch_fail_id, &apos;&apos; AS uuid_Fail, b.send_goods_No, b.test_">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-22T12:56:12.673Z">
+<meta property="og:updated_time" content="2019-10-22T12:56:48.130Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL · 调优案例 · 千万级大表模糊查询">
 <meta name="twitter:description" content="背景模糊查询：使用 like %% 类 SQL 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849505152# 生产环境执行的SQLSELECT &apos;&apos; AS batch_fail_id, &apos;&apos; AS uuid_Fail, b.send_goods_No, b.test_">
@@ -366,7 +366,7 @@
                 
               
 
-              <time title="创建时间：2019-10-22 10:54:49 / 修改时间：20:56:12" itemprop="dateCreated datePublished" datetime="2019-10-22T10:54:49+08:00">2019-10-22</time>
+              <time title="创建时间：2019-10-22 10:54:49 / 修改时间：20:56:48" itemprop="dateCreated datePublished" datetime="2019-10-22T10:54:49+08:00">2019-10-22</time>
             
 
             
@@ -421,7 +421,7 @@
 
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加索引</span></span><br><span class="line">mysql&gt; ALTER TABLE t_batch ADD INDEX idx_delete_status (delete_status);</span><br><span class="line">Query OK, 0 rows affected (2 min 47.24 sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行计划</span></span><br><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br><span class="line">| id | select_type  | table      | type | possible_keys     | key               | key_len | ref   | rows    | Extra                              |</span><br><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br><span class="line">|  1 | PRIMARY      | b          | ref  | idx_delete_status | idx_delete_status | 9       | const | 5130952 | Using index condition; Using where |</span><br><span class="line">|  2 | UNION        | f          | ref  | idx_delete_status | idx_delete_status | 9       | const |   20469 | Using index condition; Using where |</span><br><span class="line">| NULL | UNION RESULT | &lt;union1,2&gt; | ALL  | NULL              | NULL              | NULL    | NULL  |    NULL | Using temporary; Using filesort    |</span><br><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br><span class="line">3 rows in <span class="keyword">set</span> (<span class="number">0.07</span> sec)</span><br></pre></td></tr></table></figure>
 
-<p><strong>模糊查询对比</strong>：</p>
+<p><strong>模糊查询方法对比</strong>：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">① mtl_no like <span class="string">'%0594A%'</span></span><br><span class="line"><span class="number">10</span> rows <span class="keyword">in</span> set (<span class="number">1</span> min <span class="number">26.92</span> sec)</span><br><span class="line"></span><br><span class="line">② locate(<span class="string">'0594A'</span>, mtl_no) &gt; <span class="number">0</span></span><br><span class="line"><span class="number">10</span> rows <span class="keyword">in</span> set (<span class="number">32.71</span> sec)</span><br><span class="line"></span><br><span class="line">③ instr(mtl_no,<span class="string">'0594A'</span>) &gt; <span class="number">0</span></span><br><span class="line"><span class="number">10</span> rows <span class="keyword">in</span> set (<span class="number">32.72</span> sec)</span><br></pre></td></tr></table></figure>
 
 <p><strong>结论：</strong></p>
