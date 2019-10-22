@@ -96,17 +96,17 @@
 
 
 
-  <meta name="description" content="问题现象查询表 mqm.t_batch 总行数 1234567891011121314151617# information_schema.tablesmysql&amp;gt; select table_name,table_rows from information_schema.tables where TABLE_SCHEMA = &apos;mqm&apos; and table_name=&apos;t_batch&apos;;+-">
+  <meta name="description" content="问题现象查询表 mqm.t_batch 总行数，发现两种方式查询的结果不一致。 1234567891011121314151617# information_schema.tablesmysql&amp;gt; select table_name,table_rows from information_schema.tables where TABLE_SCHEMA = &apos;mqm&apos; and table_n">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL · 案例分析 · information_schema.tables 与 count(*) 查询数不一致">
 <meta property="og:url" content="https://huiraoo.github.io/blog/2019/10/22/mysql-case-rows/index.html">
 <meta property="og:site_name" content="Rao&#39;s Blog">
-<meta property="og:description" content="问题现象查询表 mqm.t_batch 总行数 1234567891011121314151617# information_schema.tablesmysql&amp;gt; select table_name,table_rows from information_schema.tables where TABLE_SCHEMA = &apos;mqm&apos; and table_name=&apos;t_batch&apos;;+-">
+<meta property="og:description" content="问题现象查询表 mqm.t_batch 总行数，发现两种方式查询的结果不一致。 1234567891011121314151617# information_schema.tablesmysql&amp;gt; select table_name,table_rows from information_schema.tables where TABLE_SCHEMA = &apos;mqm&apos; and table_n">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-22T12:21:33.612Z">
+<meta property="og:updated_time" content="2019-10-22T13:00:26.734Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL · 案例分析 · information_schema.tables 与 count(*) 查询数不一致">
-<meta name="twitter:description" content="问题现象查询表 mqm.t_batch 总行数 1234567891011121314151617# information_schema.tablesmysql&amp;gt; select table_name,table_rows from information_schema.tables where TABLE_SCHEMA = &apos;mqm&apos; and table_name=&apos;t_batch&apos;;+-">
+<meta name="twitter:description" content="问题现象查询表 mqm.t_batch 总行数，发现两种方式查询的结果不一致。 1234567891011121314151617# information_schema.tablesmysql&amp;gt; select table_name,table_rows from information_schema.tables where TABLE_SCHEMA = &apos;mqm&apos; and table_n">
 
 
 
@@ -366,7 +366,7 @@
                 
               
 
-              <time title="创建时间：2019-10-22 11:25:04 / 修改时间：20:21:33" itemprop="dateCreated datePublished" datetime="2019-10-22T11:25:04+08:00">2019-10-22</time>
+              <time title="创建时间：2019-10-22 11:25:04 / 修改时间：21:00:26" itemprop="dateCreated datePublished" datetime="2019-10-22T11:25:04+08:00">2019-10-22</time>
             
 
             
@@ -412,12 +412,12 @@
       
 
       
-        <h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><p>查询表 <code>mqm.t_batch</code> 总行数</p>
+        <h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><p>查询表 <code>mqm.t_batch</code> 总行数，发现两种方式查询的结果不一致。</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># information_schema.tables</span></span><br><span class="line">mysql&gt; select table_name,table_rows from information_schema.tables where TABLE_SCHEMA = 'mqm' and table_name='t_batch';</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">| table_name | table_rows |</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">| t_batch    |    9527271 |</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.02</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># count(*)</span></span><br><span class="line">mysql&gt; <span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> t_batch;</span><br><span class="line">+<span class="comment">----------+</span></span><br><span class="line">| count(*) |</span><br><span class="line">+<span class="comment">----------+</span></span><br><span class="line">| 10474287 |</span><br><span class="line">+<span class="comment">----------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">21.52</span> sec)</span><br></pre></td></tr></table></figure>
 
 <h2 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h2><p>默认情况下，MySQL 对表进行增删操作时，是不会自动更新 <code>information_schema.tables</code> 表 <code>table_rows</code> 字段，只有 <code>10%</code> 的行数发生变化才会自动收集，执行 <code>ANALYZE TABLE &#39;table_name&#39;</code> 后会统计所有表数据，结果和 <code>count(*)</code> 一致。</p>
 <blockquote>
-<p>Tips：生产环境中不建议使用，因为会锁表！</p>
+<p><strong>Tips</strong>：生产环境中不建议使用，因为会锁表！</p>
 </blockquote>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; ANALYZE TABLE t_batch;</span><br><span class="line">+<span class="comment">-------------+---------+----------+----------+</span></span><br><span class="line">| Table       | Op      | Msg_type | Msg_text |</span><br><span class="line">+<span class="comment">-------------+---------+----------+----------+</span></span><br><span class="line">| mqm.t_batch | <span class="keyword">analyze</span> | <span class="keyword">status</span>   | OK       |</span><br><span class="line">+<span class="comment">-------------+---------+----------+----------+</span></span><br><span class="line"><span class="number">1</span> <span class="keyword">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">3.85</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">select</span> table_name,table_rows <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> TABLE_SCHEMA = <span class="string">'mqm'</span> <span class="keyword">and</span> table_name=<span class="string">'t_batch'</span>;</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">| table_name | table_rows |</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">| t_batch    |   10261904 |</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.07</span> sec)</span><br></pre></td></tr></table></figure>
 
