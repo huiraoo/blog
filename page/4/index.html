@@ -323,6 +323,2406 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/10/aliyun-rds/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/10/aliyun-rds/" class="post-title-link" itemprop="url">阿里云 · RDS</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-10 16:46:51" itemprop="dateCreated datePublished" datetime="2019-10-10T16:46:51+08:00">2019-10-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-20 00:09:04" itemprop="dateModified" datetime="2019-10-20T00:09:04+08:00">2019-10-20</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>介绍</strong>：阿里云 <code>RDS</code>（Relational Database Service）是一种<strong>稳定可靠</strong>、<strong>可弹性伸缩</strong>的在线数据库服务。</p>
+<p><strong>功能</strong>：提供<strong>容灾</strong>、<strong>备份</strong>、<strong>恢复</strong>、<strong>监控</strong>、<strong>报警</strong>、<strong>高可用</strong>、<strong>迁移</strong>等全套解决方案，彻底解决数据库运维的烦恼。</p>
+<p><strong>数据库</strong>：支持 <code>MySQL</code>、<code>SQL Server</code>、<code>PostgreSQL</code>、 <code>MariaDB</code> 等引擎。</p>
+<p><strong>优势</strong>：便宜易用（按需变配，灵活计费）、高性能（最佳实践，CloudDBA）、灾备设计（自动备份，异地容灾）、高安全性（防 <code>DDoS</code> 攻击，链路加密，访问控制，安全审计）。</p>
+<table>
+<thead>
+<tr>
+<th align="left">对比项</th>
+<th align="left">云数据库 RDS</th>
+<th align="left">本地 IDC 自建</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">服务可用性</td>
+<td align="left">高可用架构</td>
+<td align="left">需自行搭建主备复制，保障高可用</td>
+</tr>
+<tr>
+<td align="left">数据可靠性</td>
+<td align="left">自动主备复制、数据备份、日志备份</td>
+<td align="left">需自行热备、冷备</td>
+</tr>
+<tr>
+<td align="left">系统安全性</td>
+<td align="left">防 <code>DDoS</code> 攻击，及时修复各种数据库安全漏洞</td>
+<td align="left">自行修复数据库安全漏洞</td>
+</tr>
+<tr>
+<td align="left">数据库备份</td>
+<td align="left">自动备份</td>
+<td align="left">自行实现，需要寻找备份存储以及定期演练</td>
+</tr>
+<tr>
+<td align="left">软硬件投入</td>
+<td align="left">无软硬件投入，按需付费</td>
+<td align="left">服务器成本相对较高</td>
+</tr>
+<tr>
+<td align="left">系统托管</td>
+<td align="left">无托管费用</td>
+<td align="left">服务器有托管费用</td>
+</tr>
+<tr>
+<td align="left">维护成本</td>
+<td align="left">无需专职运维</td>
+<td align="left">需要 DBA 专职运维</td>
+</tr>
+<tr>
+<td align="left">部署扩容</td>
+<td align="left">即时开通，弹性扩容</td>
+<td align="left">需要硬件采购、安装部署等工作，周期较长</td>
+</tr>
+<tr>
+<td align="left">资源利用率</td>
+<td align="left">按实际结算，100% 利用率</td>
+<td align="left">业务有高峰期和低峰期，资源利用率低</td>
+</tr>
+</tbody></table>
+<p><strong>基本概念</strong>：</p>
+<ul>
+<li><strong>实例</strong>：一个独立占用物理内存的数据库服务进程，用户可以设置不同的内存大小、磁盘空间和数据库类型。</li>
+<li><strong>数据库</strong>：在一个实例下创建的逻辑单元，一个实例可以创建多个数据库，数据库在实例内的命名唯一。</li>
+<li><strong>地域</strong>：是指物理的数据中心。</li>
+<li><strong>可用区</strong>：是指在同一地域内，电力和网络互相独立的物理区域。</li>
+<li><strong>连接数</strong>：实例当前总连接数，包括活跃连接数和总连接数。</li>
+<li><strong>IOPS</strong>：实例的每秒 <code>I/O</code> 请求次数，单位：次/秒，衡量随机访问的性能。</li>
+</ul>
+<h2 id="流程"><a href="#流程" class="headerlink" title="流程"></a>流程</h2><p><strong>选型</strong>（owner：架构师）-&gt;  申请（owner：项目经理）-&gt;  交付（owner：云管理）-&gt;  <strong>运维</strong>（owner：DBA）</p>
+<h2 id="选型"><a href="#选型" class="headerlink" title="选型"></a>选型</h2><h3 id="产品系列"><a href="#产品系列" class="headerlink" title="产品系列"></a>产品系列</h3><table>
+<thead>
+<tr>
+<th align="left">系列</th>
+<th align="left">说明</th>
+<th align="left">适用场景</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">基础版</td>
+<td align="left">单节点实例，可实现超高的性价比，请参见<a href="https://help.aliyun.com/document_detail/48980.html#concept-nyq-cvw-5db" target="_blank" rel="noopener">基础版</a></td>
+<td align="left">个人学习 / 开发测试</td>
+</tr>
+<tr>
+<td align="left">高可用版</td>
+<td align="left">一主一备高可用架构，适合 <code>80%</code> 以上用户场景</td>
+<td align="left">大中型企业生产数据库</td>
+</tr>
+<tr>
+<td align="left">三节点企业版</td>
+<td align="left">一主两备三节点架构，提供金融级可靠性，请参见<a href="https://help.aliyun.com/document_detail/51701.html#concept-yqy-zvw-5db" target="_blank" rel="noopener">三节点企业版</a></td>
+<td align="left">大型企业核心数据库</td>
+</tr>
+</tbody></table>
+<p><strong>功能对比</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">功能</th>
+<th align="left">基础版</th>
+<th align="left">高可用版（推荐）</th>
+<th align="left">三节点企业版（原金融版）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"></td>
+<td align="left">MySQL 5.7 / 8.0</td>
+<td align="left">MySQL 5.5 / 5.6 / 5.7 / 8.0</td>
+<td align="left">MySQL 5.6 / 5.7</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/102074.html#concept-sp4-jgl-jgb" target="_blank" rel="noopener">监控与报警</a></td>
+<td align="left">支持</td>
+<td align="left">支持</td>
+<td align="left">支持</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/43185.html#concept-pdr-k2f-vdb" target="_blank" rel="noopener">IP白名单</a></td>
+<td align="left">支持</td>
+<td align="left">支持</td>
+<td align="left">支持</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/98818.html#concept-l1m-xgn-ydb" target="_blank" rel="noopener">备份与恢复</a></td>
+<td align="left">支持</td>
+<td align="left">支持</td>
+<td align="left">支持</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/96063.html#concept-lfl-xmn-wdb" target="_blank" rel="noopener">参数设置</a></td>
+<td align="left">支持</td>
+<td align="left">支持</td>
+<td align="left">支持</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/96122.html#concept-ujc-hz4-ydb" target="_blank" rel="noopener">日志管理</a></td>
+<td align="left"><strong>不支持</strong></td>
+<td align="left">支持</td>
+<td align="left">支持</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/96054.html#task-ftz-42j-wdb" target="_blank" rel="noopener">主备库切换</a></td>
+<td align="left"><strong>不支持</strong></td>
+<td align="left">支持</td>
+<td align="left">支持</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/96120.html#concept-ack-rv4-ydb" target="_blank" rel="noopener">SSL</a></td>
+<td align="left"><strong>不支持</strong></td>
+<td align="left">支持</td>
+<td align="left">支持</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/96121.html#task-jrp-dw4-ydb" target="_blank" rel="noopener">透明数据加密</a></td>
+<td align="left"><strong>不支持</strong></td>
+<td align="left">支持</td>
+<td align="left">支持</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/96124.html#concept-fqw-r5x-wdb" target="_blank" rel="noopener">性能优化</a></td>
+<td align="left"><strong>不支持</strong></td>
+<td align="left">支持</td>
+<td align="left">支持</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/96053.html#concept-zwp-gdj-wdb" target="_blank" rel="noopener">迁移可用区</a></td>
+<td align="left"><strong>不支持</strong></td>
+<td align="left">支持</td>
+<td align="left">支持</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/96073.html#concept-ptl-fl4-wdb" target="_blank" rel="noopener">读写分离</a></td>
+<td align="left"><strong>不支持</strong></td>
+<td align="left">支持</td>
+<td align="left">支持</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/26136.html#concept-cst-z45-vdb" target="_blank" rel="noopener">只读实例</a></td>
+<td align="left"><strong>不支持</strong></td>
+<td align="left"><strong>支持（另计费）</strong></td>
+<td align="left"><strong>支持（另计费）</strong></td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/96123.html#task-msp-gz1-mfb" target="_blank" rel="noopener">SQL洞察</a></td>
+<td align="left"><strong>不支持</strong></td>
+<td align="left"><strong>支持（另计费）</strong></td>
+<td align="left"><strong>支持（免费使用）</strong></td>
+</tr>
+</tbody></table>
+<h3 id="存储类型"><a href="#存储类型" class="headerlink" title="存储类型"></a>存储类型</h3><table>
+<thead>
+<tr>
+<th align="left">存储类型</th>
+<th align="left">说明</th>
+<th align="left">支持系列</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">本地 <code>SSD</code> 盘</td>
+<td align="left">与数据库引擎位于同一节点，<code>I/O</code> 延时低</td>
+<td align="left">高可用版 / 三节点企业版</td>
+</tr>
+<tr>
+<td align="left"><code>SSD</code> 云盘</td>
+<td align="left">基于分布式存储架构的弹性块存储设备，实现计算与存储分离</td>
+<td align="left">基础版</td>
+</tr>
+<tr>
+<td align="left"><code>ESSD</code> 云盘</td>
+<td align="left">增强型 <code>SSD</code> 云盘，是阿里云全新推出的超高性能云盘产品</td>
+<td align="left">高可用版 / 三节点企业版</td>
+</tr>
+</tbody></table>
+<p><strong>特性对比</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">对比项</th>
+<th align="left">本地 SSD 盘（推荐）</th>
+<th align="left">SSD 云盘</th>
+<th align="left">ESSD 云盘</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">I/O 性能</td>
+<td align="left">★★★★★</td>
+<td align="left">★★★★</td>
+<td align="left">★★★★★</td>
+</tr>
+<tr>
+<td align="left">功能完备度</td>
+<td align="left">★★★★★</td>
+<td align="left">★★★</td>
+<td align="left">★★★</td>
+</tr>
+<tr>
+<td align="left">规格配置灵活性</td>
+<td align="left">★★★</td>
+<td align="left">★★★★★</td>
+<td align="left">★★★★★</td>
+</tr>
+<tr>
+<td align="left">弹性扩展能力</td>
+<td align="left">★★★</td>
+<td align="left">★★★★★</td>
+<td align="left">★★★★★</td>
+</tr>
+</tbody></table>
+<p><strong>功能对比</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">对比项</th>
+<th align="left">本地 SSD 盘</th>
+<th align="left">SSD 云盘 / ESSD 云盘</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">最大存储容量</td>
+<td align="left">6 TB</td>
+<td align="left">6 TB</td>
+</tr>
+<tr>
+<td align="left">网络类型</td>
+<td align="left">经典网络和 <code>VPC</code></td>
+<td align="left">经典网络和 <code>VPC</code></td>
+</tr>
+<tr>
+<td align="left">弹性升降级</td>
+<td align="left">支持，时间为小时级别，取决于数据量大小</td>
+<td align="left">支持，一般只需要 <code>10</code> 分钟</td>
+</tr>
+<tr>
+<td align="left">迁移可用区</td>
+<td align="left">支持</td>
+<td align="left">开发中</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/26136.html#concept-cst-z45-vdb" target="_blank" rel="noopener">只读实例</a></td>
+<td align="left">支持</td>
+<td align="left">部分引擎支持</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/51073.html#concept-ptl-fl4-wdb" target="_blank" rel="noopener">读写分离</a></td>
+<td align="left">支持</td>
+<td align="left">部分引擎支持</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/26197.html#concept-njf-cr4-ydb" target="_blank" rel="noopener">SQL审计</a></td>
+<td align="left">支持</td>
+<td align="left">开发中</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/59980.html#concept-wpx-tqn-wdb" target="_blank" rel="noopener">CloudDBA</a></td>
+<td align="left">支持</td>
+<td align="left">部分引擎支持</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/32474.html#concept-ack-rv4-ydb" target="_blank" rel="noopener">SSL加密</a> 和 <a href="https://help.aliyun.com/document_detail/33510.html#concept-jrp-dw4-ydb" target="_blank" rel="noopener">TDE</a></td>
+<td align="left">支持</td>
+<td align="left">部分引擎支持</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/26206.html#concept-l1m-xgn-ydb" target="_blank" rel="noopener">备份方式</a></td>
+<td align="left">物理 &amp; 逻辑备份</td>
+<td align="left">快照备份</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/44088.html#concept-vrh-qp4-ydb" target="_blank" rel="noopener">按备份集恢复</a></td>
+<td align="left">支持</td>
+<td align="left">支持</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/44088.html#concept-vrh-qp4-ydb" target="_blank" rel="noopener">按时间点恢复</a></td>
+<td align="left">支持</td>
+<td align="left">支持</td>
+</tr>
+</tbody></table>
+<h3 id="实例规格"><a href="#实例规格" class="headerlink" title="实例规格"></a>实例规格</h3><p>通用型 vs 独享型</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-11-163310.png" alt></p>
+<table>
+<thead>
+<tr>
+<th align="left">规格族</th>
+<th align="left">规格代码</th>
+<th align="left">CPU / 内存</th>
+<th align="left">存储空间</th>
+<th align="left">最大连接数</th>
+<th align="left">IOPS</th>
+<th align="left">包月价</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">通用型</td>
+<td align="left">rds.mysql.c1.xlarge</td>
+<td align="left">8 核 32GB</td>
+<td align="left">500GB</td>
+<td align="left">8000</td>
+<td align="left">12000</td>
+<td align="left">￥1480.00</td>
+</tr>
+<tr>
+<td align="left"><strong>独享型（推荐）</strong></td>
+<td align="left">mysql.x4.xlarge.2</td>
+<td align="left">8 核 32GB</td>
+<td align="left">500GB</td>
+<td align="left">5000</td>
+<td align="left">9000</td>
+<td align="left">￥1800.00</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="left">规格代码</th>
+<th align="left">CPU核数</th>
+<th align="left">内存（GB）</th>
+<th align="left">连接数</th>
+<th align="left">IOPS</th>
+<th align="left">TPS</th>
+<th align="left">QPS</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.x8.medium.2</td>
+<td align="left">2</td>
+<td align="left">16</td>
+<td align="left">2500</td>
+<td align="left">4500</td>
+<td align="left">391</td>
+<td align="left">7054</td>
+</tr>
+<tr>
+<td align="left">mysql.x8.large.2</td>
+<td align="left">4</td>
+<td align="left">32</td>
+<td align="left">5000</td>
+<td align="left">9000</td>
+<td align="left">794</td>
+<td align="left">14297</td>
+</tr>
+<tr>
+<td align="left">mysql.x8.xlarge.2</td>
+<td align="left">8</td>
+<td align="left">64</td>
+<td align="left">10000</td>
+<td align="left">18000</td>
+<td align="left">1541</td>
+<td align="left">27751</td>
+</tr>
+<tr>
+<td align="left">mysql.x8.2xlarge.2</td>
+<td align="left">16</td>
+<td align="left">128</td>
+<td align="left">20000</td>
+<td align="left">36000</td>
+<td align="left">2672</td>
+<td align="left">48102</td>
+</tr>
+<tr>
+<td align="left">rds.mysql.st.d13</td>
+<td align="left">30</td>
+<td align="left">220</td>
+<td align="left">64000</td>
+<td align="left">20000</td>
+<td align="left">3693</td>
+<td align="left">65508</td>
+</tr>
+</tbody></table>
+<h3 id="网络类型"><a href="#网络类型" class="headerlink" title="网络类型"></a>网络类型</h3><ul>
+<li><strong>经典网络</strong>：实例之间不通过网络进行隔离，只能依靠实例自身的白名单策略来阻挡非法访问。</li>
+<li><strong>专有网络</strong>： <code>VPC</code> 是一种隔离的网络环境，安全性和性能均高于传统的经典网络，<strong>推荐使用专有网络</strong>。</li>
+</ul>
+<h3 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a>最佳实践</h3><table>
+<thead>
+<tr>
+<th>选项</th>
+<th>配置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>地域</td>
+<td>华北 1（青岛）</td>
+</tr>
+<tr>
+<td>数据库版本</td>
+<td>MySQL 5.7</td>
+</tr>
+<tr>
+<td>系列</td>
+<td>高可用版</td>
+</tr>
+<tr>
+<td>存储类型</td>
+<td>本地 SSD 盘</td>
+</tr>
+<tr>
+<td>可用区</td>
+<td>可用区 C / 可用区 B</td>
+</tr>
+<tr>
+<td>网络类型</td>
+<td>专有网络</td>
+</tr>
+<tr>
+<td>规格</td>
+<td>8 核 32G（独享套餐）</td>
+</tr>
+<tr>
+<td>存储空间</td>
+<td>500GB</td>
+</tr>
+</tbody></table>
+<h2 id="运维"><a href="#运维" class="headerlink" title="运维"></a>运维</h2><h3 id="开通服务"><a href="#开通服务" class="headerlink" title="开通服务"></a>开通服务</h3><p><strong>登录</strong>：<a href="https://signin.aliyun.com/login.htm" target="_blank" rel="noopener">入口</a></p>
+<p><strong>RAM账号</strong>：raohui@1596633715004367.onaliyun.com</p>
+<h3 id="快速使用"><a href="#快速使用" class="headerlink" title="快速使用"></a>快速使用</h3><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-11-092550.png" alt></p>
+<p><strong>创建实例</strong>：云管理团队提供</p>
+<p><strong>设置白名单</strong>：将通用白名单模式切换为高安全白名单模式，拥有更高的安全性</p>
+<table>
+<thead>
+<tr>
+<th>网络类型</th>
+<th>白名单</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>专有网络</td>
+<td>10.138.0.0/16,10.153.0.0/16,10.163.0.0/16,10.133.0.0/16,10.190.0.0/16</td>
+</tr>
+</tbody></table>
+<p><strong>创建数据库</strong>：推荐库名与应用名称尽量一致，由小写字母、数字、下划线或中划线组成，默认字符集 <code>utf8</code></p>
+<p><strong>创建账号</strong></p>
+<table>
+<thead>
+<tr>
+<th>账号类型</th>
+<th>说明</th>
+<th>权限</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>高权限账号</td>
+<td>拥有实例下所有数据库的所有权限，一个实例中只能创建一个</td>
+<td><a href="https://help.aliyun.com/document_detail/96089.html?spm=a2c4g.11186623.6.674.41cb2f36ofYQv8#section-qgv-4q5-tfb" target="_blank" rel="noopener">列表</a></td>
+</tr>
+<tr>
+<td>普通账号</td>
+<td>四种类型权限：<strong>只读</strong> / <strong>读写</strong> / 仅DDL / 仅DML</td>
+<td><a href="https://help.aliyun.com/document_detail/96089.html?spm=a2c4g.11186623.6.674.41cb2f36ofYQv8#section-qgv-4q5-tfb" target="_blank" rel="noopener">列表</a></td>
+</tr>
+</tbody></table>
+<p><strong>密码</strong>：由大写字母、小写字母、数字、特殊字符中的任意三种组成，特殊字符为 <code>!@#$%^&amp;*()_+-=</code></p>
+<h3 id="监控告警"><a href="#监控告警" class="headerlink" title="监控告警"></a>监控告警</h3><p><strong>监控</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">实例类型</th>
+<th align="left">5秒/次</th>
+<th align="left">60秒/次</th>
+<th align="left">300秒/次</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">基础版</td>
+<td align="left">不支持</td>
+<td align="left">免费支持</td>
+<td align="left"><strong>默认配置</strong></td>
+</tr>
+<tr>
+<td align="left">高可用版、三节点企业版：内存 &lt; 8G</td>
+<td align="left">不支持</td>
+<td align="left">免费支持</td>
+<td align="left"><strong>默认配置</strong></td>
+</tr>
+<tr>
+<td align="left">高可用版、三节点企业版：内存 &gt;= 8G</td>
+<td align="left">付费支持</td>
+<td align="left"><strong>默认配置</strong></td>
+<td align="left">免费支持</td>
+</tr>
+</tbody></table>
+<p><strong>告警</strong>：<a href="https://huiraoo.github.io/blog/2019/10/09/mysql-hdm/">统一告警</a>，需要自行<a href="https://help.aliyun.com/document_detail/96113.html?spm=a2c4g.11186623.2.26.5a2849eat7zURd#concept-ir2-twp-wdb" target="_blank" rel="noopener">设置报警规则</a></p>
+<h3 id="备份恢复"><a href="#备份恢复" class="headerlink" title="备份恢复"></a>备份恢复</h3><table>
+<thead>
+<tr>
+<th>备份方式</th>
+<th>默认</th>
+<th>存储</th>
+<th>恢复</th>
+<th>计费</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>默认备份</td>
+<td>开启</td>
+<td>实例所在地域</td>
+<td><a href="https://help.aliyun.com/document_detail/96147.html?spm=a2c4g.11186623.2.18.1f4148ceRRiyUY#concept-vrh-qp4-ydb" target="_blank" rel="noopener">当前地域的新实例或原实例</a></td>
+<td>免费额度 = 50% * 存储空间</td>
+</tr>
+<tr>
+<td>跨地域备份</td>
+<td>关闭</td>
+<td>另一个地域</td>
+<td>源地域或目的地域的新实例</td>
+<td>存储 0.001元/GB/小时 + <a href="https://help.aliyun.com/document_detail/70005.html?spm=a2c4g.11186623.2.19.1f4148ceRRiyUY#h2-rds-3" target="_blank" rel="noopener">流量费</a></td>
+</tr>
+</tbody></table>
+<p>默认备份</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-12-093300.png" alt></p>
+<h3 id="异地容灾"><a href="#异地容灾" class="headerlink" title="异地容灾"></a>异地容灾</h3><p><strong>场景</strong>：对于数据可靠性有强需求的业务场景或是有监管需求的金融业务场景。</p>
+<ul>
+<li><a href="https://help.aliyun.com/document_detail/26137.html?spm=a2c4g.11186623.2.11.438719bbr36Auk#concept-bpb-gw5-vdb" target="_blank" rel="noopener">灾备实例</a>：通过<a href="https://help.aliyun.com/document_detail/26592.html" target="_blank" rel="noopener">数据传输服务</a>（<code>DTS</code>）实现主实例和异地灾备实例之间的实时同步，灾备实例与主实例配置完全相同，当主实例所在区域发生突发性自然灾害等状况，主节点（<code>Master</code>）和备节点（<code>Slave</code>）均无法连接时，可将异地灾备实例切换为主实例，在应用端修改数据库链接地址后，即可快速恢复应用的业务访问，<strong>计费：灾备实例 + DTS</strong>。</li>
+<li><a href="https://help.aliyun.com/document_detail/120824.html?spm=a2c4g.11186623.2.12.438719bbxQlAAm#concept-405443" target="_blank" rel="noopener">跨地域备份</a>：自动将本地备份文件复制到另一个地域的 <code>OSS</code> 上，文件可保留 <code>7~1825</code> 天，即最多保留 <code>5</code> 年，<strong>计费：存储（0.001元/GB/小时） + <a href="https://help.aliyun.com/document_detail/70005.html?spm=a2c4g.11186623.2.19.1f4148ceRRiyUY#h2-rds-3" target="_blank" rel="noopener">流量费</a>。</strong></li>
+</ul>
+<h3 id="高可用"><a href="#高可用" class="headerlink" title="高可用"></a>高可用</h3><p>购买时建议选择<strong>高可用版</strong>，或更高的<strong>三节点企业版</strong>，高可用版实例有一个备实例，三节点企业版实例有两个备实例，主备实例的数据会实时同步，业务只能访问主实例，备实例仅作为备份形式存在，不提供业务访问。</p>
+<ul>
+<li><strong>自动切换</strong>：实例默认为自动切换，当主实例出现故障无法访问时，会实现秒级自动切换到备实例。</li>
+<li><strong>手动切换</strong>：即使自动切换是开启状态，也可以手动进行主备切换。</li>
+</ul>
+<p>单可用区</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-12-094143.png" alt></p>
+<p>多可用区</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-12-094215.png" alt></p>
+<h3 id="读写分离"><a href="#读写分离" class="headerlink" title="读写分离"></a>读写分离</h3><p><strong>场景</strong>：在对数据库有少量写请求，但有大量读请求的应用场景下，单个实例可能无法承受读取压力，甚至对业务产生影响，为了分担数据库压力，创建<a href="https://help.aliyun.com/document_detail/26136.html?spm=a2c4g.11186623.6.599.179411b2DWRQex" target="_blank" rel="noopener">只读实例</a>，满足大量的数据库读取需求，增加应用的吞吐量。</p>
+<p><strong>原理</strong>：创建只读实例时会从备实例复制数据，数据与主实例一致，主实例的数据更新也会在主实例完成操作后立即自动同步到所有只读实例，也可以在只读实例上设置<a href="https://help.aliyun.com/document_detail/96056.html#task-dk2-kjq-p2b" target="_blank" rel="noopener">只读实例延时复制</a>。</p>
+<p>只读实例 vs 主备实例 vs 灾备实例</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-12-101600.png" alt></p>
+<h3 id="数据安全"><a href="#数据安全" class="headerlink" title="数据安全"></a>数据安全</h3><p>提供了多样化的安全加固功能来保障用户数据的安全，其中包括但不限于：</p>
+<p>① <strong>网络</strong>：<code>IP</code> 白名单、<code>VPC</code> 网络、<code>SSL</code>（安全套接层协议）</p>
+<p>② <strong>存储</strong>：<code>TDE</code>（透明数据加密）、自动备份</p>
+<p>③ <strong>容灾</strong>：同城容灾（多可用区实例）、异地容灾（两地多中心)</p>
+<p><strong>白名单</strong>：可以让实例得到高级别的访问安全保护，建议定期维护。</p>
+<ul>
+<li>默认的 <code>IP</code> 白名单只包含默认地址 <code>127.0.0.1</code>，表示任何设备均无法访问该 <code>RDS</code> 实例</li>
+<li><code>0.0.0.0/0</code> 表示允许任何设备访问 <code>RDS</code> 实例，请谨慎使用</li>
+<li>高安全白名单模式下，经典网络白名单分组适用于公网访问，如果有公网设备要访问 <code>RDS</code> 实例，请将公网设备 <code>IP</code> 地址添加到经典网络白名单分组</li>
+</ul>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-12-103244.png" alt></p>
+<p><strong>SSL加密</strong>：<code>SSL</code> 在传输层对网络连接进行加密，能提升通信链路数据的安全性和完整性，但会同时增加网络连接响应时间，开通 <code>SSL</code> 加密后，应用或者客户端连接 <code>RDS</code> 时需要配置 <code>SSL CA</code> 证书。</p>
+<p><strong>透明数据加密 TDE</strong>：TDE（Transparent Data Encryption）可对数据文件执行实时 <code>I/O</code> 加密和解密，数据在写入磁盘之前进行加密，从磁盘读入内存时进行解密。<code>TDE</code> 不会增加数据文件的大小，开发人员无需更改任何应用程序，即可使用 <code>TDE</code> 功能。</p>
+<p><strong>云盘加密</strong>：阿里云免费提供云盘加密功能，基于块存储对整个数据盘进行加密，即使数据备份泄露也无法解密，最大限度保护数据安全，而且加密不会影响业务，应用程序也无需修改。</p>
+<h3 id="诊断优化"><a href="#诊断优化" class="headerlink" title="诊断优化"></a>诊断优化</h3><p><strong>日志管理</strong>：错误日志、慢日志、主备切换日志，帮助故障定位分析</p>
+<ul>
+<li><p><strong>错误日志</strong>：记录 <code>1</code> 个月内数据库运行出错的日志。</p>
+</li>
+<li><p><strong>慢日志</strong>：对 <code>1</code> 个月内数据库中执行时间超过 <code>1</code> 秒（可以在<a href="https://help.aliyun.com/document_detail/96063.html#concept-lfl-xmn-wdb" target="_blank" rel="noopener">参数设置</a> 中修改 <code>long_query_time</code> 来设置）的 <code>SQL</code> 语句进行统计汇总，控制台每分钟更新一次，实时的慢日志明细可以查看 <code>mysql.slow_log</code> 表。</p>
+</li>
+<li><p><strong>主备切换日志</strong>：该功能适用于高可用版、三节点企业版。</p>
+</li>
+</ul>
+<p><strong>优化分析</strong>：CloudDBA（<a href="https://help.aliyun.com/document_detail/128450.html?spm=a2c4g.11186623.6.738.2c523e41D3xODK" target="_blank" rel="noopener">慢SQL</a>、<a href="https://help.aliyun.com/document_detail/128449.html?spm=a2c4g.11186623.6.737.277517b6vOn3F3" target="_blank" rel="noopener">实时会话</a>、<a href="https://help.aliyun.com/document_detail/128456.html?spm=a2c4g.11186623.6.744.684d491fBOr7tL" target="_blank" rel="noopener">SQL优化</a>、<a href="https://help.aliyun.com/document_detail/128452.html?spm=a2c4g.11186623.6.740.34ca35a6nvMLEO" target="_blank" rel="noopener">空间分析</a>、<a href="https://help.aliyun.com/document_detail/128455.html?spm=a2c4g.11186623.6.743.222b650aIRkmEW" target="_blank" rel="noopener">死锁</a>、<a href="https://help.aliyun.com/document_detail/128453.html?spm=a2c4g.11186623.6.741.2ff835a6XmFXQu" target="_blank" rel="noopener">诊断报告</a>）</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/10/aliyun-dbgateway/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/10/aliyun-dbgateway/" class="post-title-link" itemprop="url">阿里云 · 数据库网关</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-10 16:10:41" itemprop="dateCreated datePublished" datetime="2019-10-10T16:10:41+08:00">2019-10-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-13 23:14:57" itemprop="dateModified" datetime="2019-10-13T23:14:57+08:00">2019-10-13</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>数据库网关</strong>（Database Gateway，<code>DG</code>）无需本地开通公网端口，将本地数据库与云服务连接起来，且可以与阿里云产品（如：数据传输服务 <code>DTS</code>，数据库备份 <code>DBS</code>，数据管理 <code>DMS</code>，混合数据库管理 <code>HDM</code> 等）集成使用，提供安全、可靠、低成本的私网数据库接入能力。</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>通过数据库网关，可以使用应用程序或云服务访问并管理本地 <code>IDC</code> 数据库和其他云厂商数据库。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-10-161400.png" alt></p>
+<p><strong>工作原理</strong>：</p>
+<p>① 本地安装一个<strong>数据库网关代理</strong>（database gateway agent）</p>
+<p>② 网关代理负责与<strong>数据库网关云端服务</strong>（database gateway cloud service）建立安全的、可信任的通道，不同账号、不同网关所建立的通道彼此隔离</p>
+<p>③ 通道建立后，当在云端使用数据库产品（如 <code>HDM</code>、<code>DBS</code>）需要访问该网络内的本地数据库时，数据库产品会通过已建立好的通道，访问至本地网络</p>
+<h2 id="DBGateway"><a href="#DBGateway" class="headerlink" title="DBGateway"></a>DBGateway</h2><p>是 <code>HDM</code> 的一个组件，部署在用户环境中的 <code>Daemon</code> 程序，它负责进行数据库性能数据的采集、计算，不读取用户业务数据，并且通过加密压缩的方式进行通信。</p>
+<p><strong>目录结构</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── bin</span><br><span class="line">│   ├── dbgateway</span><br><span class="line">│   └── dbgateway-manager</span><br><span class="line">├── conf</span><br><span class="line">│   ├── dbgateway.conf</span><br><span class="line">│   └── server.crt</span><br><span class="line">└── log</span><br><span class="line">    ├── dbgateway.err</span><br><span class="line">    ├── dbgateway.log</span><br><span class="line">    └── dbgateway_manager.log</span><br></pre></td></tr></table></figure>
+
+<p><strong>常用命令</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 重启 </span></span><br><span class="line">/opt/dbgateway/bin/dbgateway-manager -d restart</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动 </span></span><br><span class="line">/opt/dbgateway/bin/dbgateway-manager -d start</span><br><span class="line"></span><br><span class="line"><span class="comment"># 停止 </span></span><br><span class="line">/opt/dbgateway/bin/dbgateway-manager -d stop</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除</span></span><br><span class="line">rm -rf /opt/dbgateway</span><br></pre></td></tr></table></figure>
+
+<h2 id="API参考"><a href="#API参考" class="headerlink" title="API参考"></a>API参考</h2><table>
+<thead>
+<tr>
+<th align="left">API</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123415.html#concept-861901" target="_blank" rel="noopener">CreateGateway</a></td>
+<td align="left">创建网关</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123570.html#concept-878728" target="_blank" rel="noopener">ModifyGateway</a></td>
+<td align="left">修改网关</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123572.html#concept-878734" target="_blank" rel="noopener">DeleteGateway</a></td>
+<td align="left">删除网关</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123575.html#concept-878745" target="_blank" rel="noopener">StopGateway</a></td>
+<td align="left">停止网关</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123579.html#concept-878753" target="_blank" rel="noopener">CreateGatewayVerifyCode</a></td>
+<td align="left">生成线下安装网关时需要的验证码</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123581.html#concept-878756" target="_blank" rel="noopener">DownloadGatewayProgram</a></td>
+<td align="left">返回网关程序的下载地址</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123590.html#concept-878811" target="_blank" rel="noopener">ConnectDatabase</a></td>
+<td align="left">通过网关连接数据库</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123703.html#concept-895452" target="_blank" rel="noopener">GetUserDatabases</a></td>
+<td align="left">返回用户数据库列表信息</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123602.html#concept-878845" target="_blank" rel="noopener">AddDatabase</a></td>
+<td align="left">添加数据库</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123604.html#concept-878851" target="_blank" rel="noopener">ModifyDatabase</a></td>
+<td align="left">修改数据库</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123600.html#concept-878841" target="_blank" rel="noopener">DeleteDatabase</a></td>
+<td align="left">删除数据库</td>
+</tr>
+</tbody></table>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/09/aliyun-hdm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/09/aliyun-hdm/" class="post-title-link" itemprop="url">阿里云 · HDM</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-09 14:29:06" itemprop="dateCreated datePublished" datetime="2019-10-09T14:29:06+08:00">2019-10-09</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-20 00:09:02" itemprop="dateModified" datetime="2019-10-20T00:09:02+08:00">2019-10-20</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>混合云数据库管理 （Hybrid Cloud Database Management， 简称 <a href="https://www.aliyun.com/product/hdm" target="_blank" rel="noopener"><strong>HDM</strong></a>) ，帮助企业打通混合云数据库架构，提供<strong>多环境</strong>、<strong>多数据库</strong>的统一<strong>监控</strong>、<strong>报警</strong>、<strong>运维</strong>、<strong>管理</strong>的能力，<a href="https://help.aliyun.com/product/63907.html?spm=a2c4g.750001.list.48.4cc17b13Z8O4eh" target="_blank" rel="noopener">帮助文档</a>。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-09-162000.png" alt></p>
+<p><strong>核心功能</strong>：集群管理、统一监控、统一告警、<code>Dashboard</code>、故障诊断、性能优化、安全审计、诊断报告等</p>
+<p><strong>目前支持数据库</strong>：<code>MySQL</code>、<code>Redis</code>、<code>MongoDB</code>、<code>PostgreSQL</code> </p>
+<p><strong>支持环境</strong>：</p>
+<table>
+<thead>
+<tr>
+<th align="left">环境</th>
+<th align="center">统一接入</th>
+<th align="right">统一监控</th>
+<th align="right">统一告警</th>
+<th align="right">集群管理</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">阿里云 <code>RDS</code></td>
+<td align="center">支持</td>
+<td align="right">支持</td>
+<td align="right">支持</td>
+<td align="right">支持</td>
+</tr>
+<tr>
+<td align="left">阿里云 <code>ECS</code> 自建数据库</td>
+<td align="center">支持</td>
+<td align="right">支持</td>
+<td align="right">支持</td>
+<td align="right">支持</td>
+</tr>
+<tr>
+<td align="left">本地 <code>IDC</code> 自建数据库</td>
+<td align="center">支持</td>
+<td align="right">支持</td>
+<td align="right">支持</td>
+<td align="right">支持</td>
+</tr>
+<tr>
+<td align="left">其他云数据库</td>
+<td align="center">支持</td>
+<td align="right">支持</td>
+<td align="right">支持</td>
+<td align="right">支持</td>
+</tr>
+</tbody></table>
+<p><strong>目标用户</strong>：DBA</p>
+<p><strong>登录地址</strong>：<a href="https://signin.aliyun.com/login.htm" target="_blank" rel="noopener">入口</a></p>
+<p><strong>RAM账号</strong>：sre@1596633715004367.onaliyun.com</p>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><h3 id="开通服务"><a href="#开通服务" class="headerlink" title="开通服务"></a>开通服务</h3><p><a href="https://help.aliyun.com/knowledge_detail/66674.html?spm=a2c4g.11186623.2.12.7ac677adzLmyV7" target="_blank" rel="noopener">手册</a></p>
+<h3 id="实例接入"><a href="#实例接入" class="headerlink" title="实例接入"></a>实例接入</h3><p><strong>接入方式</strong>：<a href="https://help.aliyun.com/document_detail/65405.html?spm=a2c4g.11186623.6.552.58c5b105ScOBwq" target="_blank" rel="noopener">阿里云 RDS</a>、<a href="https://help.aliyun.com/document_detail/65407.html?spm=a2c4g.11186623.6.553.6aa210edll0oBP" target="_blank" rel="noopener">阿里云 ECS 自建数据库</a>、<a href="https://help.aliyun.com/document_detail/65406.html?spm=a2c4g.11186623.6.554.29e19c69mPchPY" target="_blank" rel="noopener">本地 IDC 自建数据库</a>、<a href="https://help.aliyun.com/document_detail/99480.html?spm=a2c4g.11186623.6.555.51a5cf58DNb8ol" target="_blank" rel="noopener">账号直连</a></p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-09-172707.png" alt></p>
+<p><strong>功能对比</strong>：</p>
+<table>
+<thead>
+<tr>
+<th align="left">功能</th>
+<th align="right">直连接入</th>
+<th align="center">集中模式接入</th>
+<th align="center">主机模式接入（推荐）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">数据库监控指标</td>
+<td align="right">支持</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td align="left">实时性能</td>
+<td align="right">支持</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td align="left">实时会话</td>
+<td align="right">支持</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td align="left">空间分析</td>
+<td align="right">支持</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td align="left">SQL诊断</td>
+<td align="right">支持</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td align="left">慢请求分析</td>
+<td align="right">支持</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td align="left">主机监控指标</td>
+<td align="right"><em>不支持</em></td>
+<td align="center"><em>不支持</em></td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td align="left">请求诊断</td>
+<td align="right"><em>不支持</em></td>
+<td align="center"><em>不支持</em></td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td align="left">全量请求分析</td>
+<td align="right"><em>不支持</em></td>
+<td align="center"><em>不支持</em></td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td align="left">请求响应时间</td>
+<td align="right"><em>不支持</em></td>
+<td align="center"><em>不支持</em></td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td align="left">安全审计</td>
+<td align="right"><em>不支持</em></td>
+<td align="center"><em>不支持</em></td>
+<td align="center">支持</td>
+</tr>
+</tbody></table>
+<p><strong>接入步骤</strong>：</p>
+<blockquote>
+<p>第一步：选择网络类型</p>
+</blockquote>
+<ul>
+<li>如果是有公网的自建数据库，请选择“公网（经典网络）”。</li>
+<li>如果是通过专线／<code>VPN</code> 方式连接阿里云 <code>VPC</code> 的本地 <code>IDC</code> 或者其他云，请选择“专有网络”。</li>
+</ul>
+<blockquote>
+<p>第二步：部署网关</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo wget -O install-dbgateway http://hdm-dbgateway-cn-hangzhou.oss-cn-hangzhou.aliyuncs.com/DBGateway/install-dbgateway &amp;&amp; sudo /bin/bash install-dbgateway --id idc_iQn5Df7QC5docekj --token <span class="number">70</span>EE4B0C444E215700BEFD8B14DB026EF6A958FBE42DACDEE304FC91880A933D --endpoint master-hdm-cn-hangzhou.aliyuncs.com --region default --native</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>第三步：授权验证</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">USER</span> <span class="string">'hdm'</span>@<span class="string">'%'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="keyword">PASSWORD</span> <span class="string">'Hdm@123!'</span>;</span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">SHOW</span> <span class="keyword">DATABASES</span>, PROCESS, <span class="keyword">REPLICATION</span> <span class="keyword">SLAVE</span>, <span class="keyword">REPLICATION</span> <span class="keyword">CLIENT</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'hdm'</span>@<span class="string">'%'</span>;</span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">SELECT</span> <span class="keyword">ON</span> *.*  <span class="keyword">TO</span> <span class="string">'hdm'</span>@<span class="string">'%'</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>三种网络连接方式</strong>：</p>
+<p><strong>专线</strong></p>
+<ul>
+<li>专线是指阿里云接入点和本地数据中心之间的网络线路的抽象。</li>
+<li>您需要通过一条租用的运营商专线将本地 <code>IDC</code> 连接到阿里云接入点，建立专线连接。</li>
+<li>物理专线的私网连接不通过公网，因此与传统的公网相比，专线连接更加安全、可靠、速度更快、延迟更低。</li>
+</ul>
+<p><strong>VPN</strong></p>
+<p><code>VPN</code> 网关是一款基于互联网通信技术，通过加密通道将企业数据中心和阿里云专有网络安全可靠地连接起来的服务。</p>
+<p><strong>互联网</strong></p>
+<p>本地 <code>IDC</code> 直接通过互联网和阿里云公有云互联，<code>HDM</code> 会对数据访问链路进行加密，用户无需担心安全问题。</p>
+<h3 id="统一监控"><a href="#统一监控" class="headerlink" title="统一监控"></a>统一监控</h3><h4 id="MySQL-Server"><a href="#MySQL-Server" class="headerlink" title="MySQL Server"></a>MySQL Server</h4><p><strong>TPS/QPS</strong></p>
+<p>QPS (Queries Per Second)，每秒 <code>SQL</code> 语句执行次数</p>
+<p>TPS (Transactions Per Second)，每秒事务操作次数</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.tps</td>
+<td align="left">Per Second</td>
+<td align="left">计算公式：(Com_commit + Com_rollback) / Uptime</td>
+</tr>
+<tr>
+<td align="left">mysql.qps</td>
+<td align="left">Per Second</td>
+<td align="left">计算公式：Questions / Uptime</td>
+</tr>
+</tbody></table>
+<p><strong>会话连接</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.threads_created</td>
+<td align="left">Count</td>
+<td align="left">当前新创建的线程</td>
+</tr>
+<tr>
+<td align="left">mysql.threads_cached</td>
+<td align="left">Count</td>
+<td align="left">当前 <code>cached</code> 线程</td>
+</tr>
+<tr>
+<td align="left"><strong>mysql.threads_connected</strong></td>
+<td align="left">Count</td>
+<td align="left">当前全部线程数</td>
+</tr>
+<tr>
+<td align="left">mysql.threads_rejected</td>
+<td align="left">Count</td>
+<td align="left">当前 <code>rejected</code> 线程</td>
+</tr>
+<tr>
+<td align="left"><strong>mysql.threads_running</strong></td>
+<td align="left">Count</td>
+<td align="left">当前活跃线程数</td>
+</tr>
+</tbody></table>
+<p><strong>执行次数</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.insert_ps</td>
+<td align="left">Per Second</td>
+<td align="left">平均每秒 <code>insert</code> 语句执行次数</td>
+</tr>
+<tr>
+<td align="left">mysql.select_ps</td>
+<td align="left">Per Second</td>
+<td align="left">平均每秒 <code>select</code> 语句执行次数</td>
+</tr>
+<tr>
+<td align="left">mysql.update_ps</td>
+<td align="left">Per Second</td>
+<td align="left">平均每秒 <code>update</code> 语句执行次数</td>
+</tr>
+<tr>
+<td align="left">mysql.delete_ps</td>
+<td align="left">Per Second</td>
+<td align="left">平均每秒 <code>delete</code> 语句执行次数</td>
+</tr>
+<tr>
+<td align="left">mysql.replace_ps</td>
+<td align="left">Per Second</td>
+<td align="left">平均每秒 <code>replace</code> 语句执行次数</td>
+</tr>
+</tbody></table>
+<p><strong>流量吞吐</strong>（单位：<code>KB</code>）</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.bytes_received</td>
+<td align="left">KByte</td>
+<td align="left">平均每秒从所有客户端接收到的字节数</td>
+</tr>
+<tr>
+<td align="left">mysql.bytes_sent</td>
+<td align="left">KByte</td>
+<td align="left">平均每秒发送给所有客户端的字节数</td>
+</tr>
+</tbody></table>
+<h4 id="InnoDB-存储引擎"><a href="#InnoDB-存储引擎" class="headerlink" title="InnoDB 存储引擎"></a>InnoDB 存储引擎</h4><p><strong>InnoDB Buffer Pool 命中率</strong>（%）</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.innodb_bp_dirty_pct</td>
+<td align="left">%</td>
+<td align="left">脏页比率：Innodb_buffer_pool_pages_dirty / Innodb_buffer_pool_pages_data * 100%</td>
+</tr>
+<tr>
+<td align="left">mysql.innodb_bp_hit</td>
+<td align="left">%</td>
+<td align="left">读缓存命中率：(Innodb_buffer_pool_read_requests - Innodb_buffer_pool_reads) / Innodb_buffer_pool_read_requests * 100%</td>
+</tr>
+<tr>
+<td align="left"><strong>mysql.innodb_bp_usage_pct</strong></td>
+<td align="left">%</td>
+<td align="left">使用率：innodb_buffer_pool_pages_data / ( innodb_buffer_pool_pages_data + innodb_buffer_pool_pages_free ) * 100%</td>
+</tr>
+</tbody></table>
+<p><strong>InnoDB Data 读写吞吐量</strong>（单位：<code>KB</code>）</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.innodb_data_written</td>
+<td align="left">KByte</td>
+<td align="left"><code>InnoDB</code> 平均每秒写字节数</td>
+</tr>
+<tr>
+<td align="left">mysql.innodb_data_read</td>
+<td align="left">KByte</td>
+<td align="left"><code>InnoDB</code> 平均每秒读字节数</td>
+</tr>
+</tbody></table>
+<p><strong>InnoDB Row Operations</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.innodb_rows_deleted</td>
+<td align="left">Per Second</td>
+<td align="left"><code>InnoDB</code> 平均每秒删除的行数</td>
+</tr>
+<tr>
+<td align="left">mysql.innodb_rows_read</td>
+<td align="left">Per Second</td>
+<td align="left"><code>InnoDB</code> 平均每秒读取的行数</td>
+</tr>
+<tr>
+<td align="left">mysql.innodb_rows_inserted</td>
+<td align="left">Per Second</td>
+<td align="left"><code>InnoDB</code> 平均每秒插入的行数</td>
+</tr>
+<tr>
+<td align="left">mysql.innodb_rows_updated</td>
+<td align="left">Per Second</td>
+<td align="left"><code>InnoDB</code> 平均每秒更新的行数</td>
+</tr>
+</tbody></table>
+<h4 id="MySQL-服务进程"><a href="#MySQL-服务进程" class="headerlink" title="MySQL 服务进程"></a>MySQL 服务进程</h4><p><strong>MySQL CPU 利用率</strong>（%）</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.cpu_usage</td>
+<td align="left">%</td>
+<td align="left">MySQL 服务进程 <code>CPU</code> 使用率（ <code>200%</code> 代表使用 2 个 <code>CPU Core</code>）</td>
+</tr>
+</tbody></table>
+<p><strong>MySQL 内存使用量</strong>（单位：<code>GB</code>）</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.mem_used</td>
+<td align="left">GByte</td>
+<td align="left">MySQL 服务进程内存使用量</td>
+</tr>
+</tbody></table>
+<p><strong>MySQL 存储空间使用量</strong>（单位：<code>GB</code>）</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.storage.data.used</td>
+<td align="left">GByte</td>
+<td align="left">数据文件目录的空间使用量</td>
+</tr>
+<tr>
+<td align="left">mysql.storage.log.used</td>
+<td align="left">GByte</td>
+<td align="left">日志文件目录的空间使用量</td>
+</tr>
+</tbody></table>
+<h4 id="主机"><a href="#主机" class="headerlink" title="主机"></a>主机</h4><p><strong>主机 Load 负载</strong></p>
+<p>在 <code>UNIX</code> 系统中，系统负载是对当前 <code>CPU</code> 工作量的度量，被定义为特定时间间隔内运行队列中的平均线程数对于单个 <code>CPU</code>，有人认为如果 <code>Load</code> 超过 <code>0.7</code> 就算是超出正常范围了，这个值越低越好，负载过高会导致机器无法处理其他请求及操作，甚至导致宕机。</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">load1</td>
+<td align="left">Count</td>
+<td align="left">主机负载 <code>load1</code></td>
+</tr>
+</tbody></table>
+<p><strong>主机 CPU 利用率</strong>（%）</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>单位</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>host.cpu.user_usage</td>
+<td>Count</td>
+<td>系统 <code>CPU user</code> 利用率</td>
+</tr>
+<tr>
+<td>host.cpu.si_usage</td>
+<td>Count</td>
+<td>系统 <code>CPU</code> 软中断利用率</td>
+</tr>
+<tr>
+<td><strong>host.cpu.usage</strong></td>
+<td>Count</td>
+<td>系统 <code>CPU</code> 利用率</td>
+</tr>
+<tr>
+<td>host.cpu.hi_usage</td>
+<td>Count</td>
+<td>系统 <code>CPU</code> 硬中断利用率</td>
+</tr>
+<tr>
+<td>host.cpu.iowait_usage</td>
+<td>Count</td>
+<td>系统 <code>CPU iowait</code> 利用率</td>
+</tr>
+<tr>
+<td>host.cpu.sys_usage</td>
+<td>Count</td>
+<td>系统 <code>CPU sys</code> 利用率</td>
+</tr>
+</tbody></table>
+<p><strong>主机内存使用量</strong>（单位：<code>MB</code>）</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>单位</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>mem.buffers</td>
+<td>MByte</td>
+<td>系统 <code>IO Buffer</code> 占用内存大小</td>
+</tr>
+<tr>
+<td><strong>mem.used</strong></td>
+<td>MByte</td>
+<td>系统已用内存</td>
+</tr>
+<tr>
+<td>mem.cached</td>
+<td>MByte</td>
+<td>系统 <code>Page Cache</code> 占用内存大小</td>
+</tr>
+<tr>
+<td>gw.pidstat.mem_used</td>
+<td>MByte</td>
+<td><code>DBGateway</code> 内存使用量</td>
+</tr>
+<tr>
+<td>mem.swap_used</td>
+<td>MByte</td>
+<td>系统 <code>swap</code> 使用大小</td>
+</tr>
+<tr>
+<td><strong>mem.total</strong></td>
+<td>MByte</td>
+<td>系统总可用内存</td>
+</tr>
+</tbody></table>
+<p><strong>主机网络吞吐</strong>（单位：<code>KB</code>）</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>单位</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>net.recv</td>
+<td>KByte</td>
+<td>网卡每秒接收数据量</td>
+</tr>
+<tr>
+<td>net.send</td>
+<td>KByte</td>
+<td>网卡每秒发送数据量</td>
+</tr>
+</tbody></table>
+<h3 id="统一告警"><a href="#统一告警" class="headerlink" title="统一告警"></a>统一告警</h3><p><strong>告警功能</strong>：配置模版、触发规则、屏蔽告警、解除屏蔽、告警订阅等</p>
+<p><strong>告警配置</strong>：告警模板  -&gt;  告警联系组  -&gt;  关联资源，告警模板默认配置 <code>8</code> 条告警，可自定义</p>
+<table>
+<thead>
+<tr>
+<th>告警项</th>
+<th>告警规则</th>
+<th>发送间隔</th>
+<th>告警类型</th>
+<th>告警对象</th>
+<th>通知方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>主机 <code>CPU</code> 使用率</td>
+<td>连续 <code>3</code> 次 ≥  <code>90</code></td>
+<td><code>30</code> 分钟</td>
+<td>阈值告警</td>
+<td>联系组</td>
+<td>短信 / 邮件 / 钉钉</td>
+</tr>
+<tr>
+<td>主机内存使用率</td>
+<td>连续 <code>3</code> 次 ≥  <code>95</code></td>
+<td><code>30</code> 分钟</td>
+<td>阈值告警</td>
+<td>联系组</td>
+<td>短信 / 邮件 / 钉钉</td>
+</tr>
+<tr>
+<td>主机网络发送带宽使用率</td>
+<td>连续 <code>3</code> 次 ≥  <code>95</code></td>
+<td><code>30</code> 分钟</td>
+<td>阈值告警</td>
+<td>联系组</td>
+<td>短信 / 邮件 / 钉钉</td>
+</tr>
+<tr>
+<td>主机网络接收带宽使用率</td>
+<td>连续 <code>3</code> 次 ≥  <code>95</code></td>
+<td><code>30</code> 分钟</td>
+<td>阈值告警</td>
+<td>联系组</td>
+<td>短信 / 邮件 / 钉钉</td>
+</tr>
+<tr>
+<td>数据库无法连接</td>
+<td>连续 <code>3</code> 次</td>
+<td><code>30</code> 分钟</td>
+<td>事件告警</td>
+<td>联系组</td>
+<td>短信 / 邮件 / 钉钉</td>
+</tr>
+<tr>
+<td><code>MySQL</code> 复制中断</td>
+<td>连续 <code>3</code> 次</td>
+<td><code>30</code> 分钟</td>
+<td>事件告警</td>
+<td>联系组</td>
+<td>短信 / 邮件 / 钉钉</td>
+</tr>
+<tr>
+<td><code>MySQL</code> 复制延迟</td>
+<td>连续 <code>3</code> 次 ≥  <code>1800</code></td>
+<td><code>30</code> 分钟</td>
+<td>阈值告警</td>
+<td>联系组</td>
+<td>短信 / 邮件 / 钉钉</td>
+</tr>
+<tr>
+<td><code>MySQL</code> 活跃会话数</td>
+<td>连续 <code>3</code> 次 ≥  <code>100</code></td>
+<td><code>30</code> 分钟</td>
+<td>阈值告警</td>
+<td>联系组</td>
+<td>短信 / 邮件 / 钉钉</td>
+</tr>
+</tbody></table>
+<h3 id="问题诊断"><a href="#问题诊断" class="headerlink" title="问题诊断"></a>问题诊断</h3><p><strong>实例会话</strong>：原理是执行 <code>show processlist</code>，查看活跃会话和全部会话，可快速诊断阻塞的 <code>SQL</code>，紧急情况下先结束会话，释放资源。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-10-112617.png" alt></p>
+<p><strong>拓扑结构</strong></p>
+<blockquote>
+<p>注意：目前实例拓扑仅支持 <code>MySQL</code></p>
+</blockquote>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-140100.png" alt></p>
+<p><strong>性能快照</strong></p>
+<p>与告警规则关联，通过自动触发方式产生性能快照，保存异常现场，方便 DBA 排查数据库异常。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">场景示例：</span><br><span class="line">MySQL数据库凌晨<span class="number">1</span>点发生了CPU <span class="number">90</span>%的告警，导致正常业务响应时间变长，但是等DBA登录数据库上进行排查，异常已经消失，从监控历史上只能看到CPU飙高、活跃会话增长，没有慢SQL。在这种缺少数据、缺少现场的情况下，没有办法确认根本原因，同样的问题可能会持续发生，影响业务可用性。</span><br></pre></td></tr></table></figure>
+
+<h3 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h3><p><strong>慢 SQL</strong>：架构设计、SQL分析  [<a href="https://help.aliyun.com/document_detail/87374.html?spm=a2c4g.11186623.6.577.5e2f690dVvEL0F" target="_blank" rel="noopener">样本</a> | <a href="https://help.aliyun.com/document_detail/102635.html?spm=a2c4g.11186623.6.568.62631a4cLlP0XJ" target="_blank" rel="noopener">优化</a>]</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-10-111910.png" alt></p>
+<p><strong>死锁</strong></p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-10-145357.png" alt></p>
+<p>可通过以下手段降低死锁发生的概率：</p>
+<ul>
+<li>如果不同程序会并发存取多个表，尽量约定以相同的顺序访问表，可以大大降低死锁机会；</li>
+<li>为表添加合理的索引，如果不走索引将会为表的每一行记录加锁，死锁的概率就会大大增大；</li>
+<li>避免大事务，尽量将大事务拆成多个小事务来处理；大事务占用资源多，耗时长，与其他事务冲突的概率也会变高；</li>
+<li>在同一个事务中，尽可能做到一次锁定所需要的所有资源，减少死锁产生概率；</li>
+<li>对于非常容易产生死锁的业务部分，可以尝试使用升级锁定颗粒度，通过表级锁定来减少死锁产生的概率。</li>
+</ul>
+<p><strong>空间分析</strong>：可以查看每张表的占用空间、索引空间、碎片率等，点击表名可以查看表结构和索引，异常条件：</p>
+<ul>
+<li>实例的空间使用率大于 <code>90%</code>。</li>
+<li>实例的库表总空间（物理）剩余可用天数估计不足 <code>7</code> 天。</li>
+<li>实例可回收空间大于 <code>60GB</code>，且碎片率大于 <code>5%</code>。</li>
+<li>单表大于 <code>6G</code>，并且碎片率大于 <code>30%</code>。</li>
+<li>单表大于 <code>50GB</code>。</li>
+<li>单表行数大于 <code>500w</code>，且平均行长大于 <code>10KB</code>。</li>
+</ul>
+<h3 id="安全审计"><a href="#安全审计" class="headerlink" title="安全审计"></a>安全审计</h3><p><code>HDM</code> 的安全审计功能，采用旁路的技术，采集并分析对数据库服务器的各类操作行为，实时地、智能地解析对数据库服务器的各种操作，自动识别<strong>高危 SQL</strong>、<strong>SQL 注入</strong>、<strong>新增访问来源</strong>等风险。</p>
+<p><strong>高危 SQL</strong></p>
+<p>在 <code>HDM</code> 中，会根据预设的规则库，自动识别三种类型的高危 <code>SQL</code> ：</p>
+<p>① <code>DDL</code>（新建表、修改表结构、修改索引、重命名表等操作)；</p>
+<p>② 全表更新（例如全表 <code>Update</code> 、全表 <code>Delete</code> 等)；</p>
+<p>③ 大请求，默认规则是满足下面三个条件中的任意一个：</p>
+<ul>
+<li>扫描行数 &gt;= <code>100w</code></li>
+<li>返回行数 &gt;= <code>10w</code></li>
+<li>更新行数 &gt;= <code>10w</code></li>
+</ul>
+<p><strong>SQL 注入</strong></p>
+<p>所谓 <code>SQL</code> 注入，就是通过把 <code>SQL</code> 命令插入到 <code>Web</code> 表单提交或输入域名或页面请求的查询字符串，最终达到欺骗服务器执行恶意的 <code>SQL</code> 命令，严重危害数据库的健康。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">示例：</span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">'xx'</span> <span class="keyword">FROM</span> <span class="string">'xx'</span> <span class="keyword">WHERE</span> <span class="number">1</span> = <span class="number">1</span> <span class="keyword">AND</span> <span class="number">1</span> = <span class="number">1</span></span><br><span class="line">- <span class="keyword">Where</span> 子句中连续出现两个常量运算表达式</span><br><span class="line">- <span class="keyword">Where</span> 子句中有部分条件总为真</span><br></pre></td></tr></table></figure>
+
+<p><strong>新增访问来源</strong></p>
+<p>和历史的访问来源纪录进行对比，自动识别新增的访问来源，帮助用户确认是否存在未知的机器在访问或者读取数据库，默认规则是过去<strong>七天</strong>没有出现过的访问来源，即为新增访问来源。</p>
+<h3 id="诊断报告"><a href="#诊断报告" class="headerlink" title="诊断报告"></a>诊断报告</h3><p><strong>功能</strong>：支持用户<strong>创建</strong>、<strong>查看</strong>、<strong>下载</strong>诊断报告</p>
+<p><strong>要求</strong>：诊断时间必须小于 <code>24小时</code></p>
+<p><strong>内容</strong>：实例信息、健康状况（<code>CPU</code> / 连接数 / 活跃会话 / <code>QPS</code> / <code>TPS</code>）、告警列表、活跃会话列表、Top5 慢 SQL、Top5 表空间、死锁分析、性能趋势（<code>CPU</code> / 网络 / 内存 / <code>QPS and TPS</code> / 会话 / 空间变化）</p>
+<h3 id="容量评估"><a href="#容量评估" class="headerlink" title="容量评估"></a>容量评估</h3><blockquote>
+<p>限制：目前仅支持 <code>MySQL RDS</code></p>
+</blockquote>
+<p><strong>功能</strong>：容量建议 | 容量评估（<code>CPU</code> / 内存 / <code>IOPS</code> / 活跃会话 / 存储空间）</p>
+<h2 id="FA-amp-Q"><a href="#FA-amp-Q" class="headerlink" title="FA&amp;Q"></a>FA&amp;Q</h2><p>① 有些数据库服务器未连接外网，<code>dbgateway</code> 无法下载，实例如何接入？</p>
+<p>通过搭建代理服务器 <a href="http://www.squid-cache.org/" target="_blank" rel="noopener"><strong>Squid</strong></a> 进行下载，原理如下图：</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-09-073606.jpg" alt="squid"></p>
+<p><strong>搭建代理服务器</strong></p>
+<blockquote>
+<p>青岛代理服务器地址：<code>10.133.0.53:3128</code></p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装squid</span></span><br><span class="line">yum -y install squid</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置自启动</span></span><br><span class="line">systemctl enable squid.service</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置squid</span></span><br><span class="line">vim /etc/squid/squid.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动squid</span></span><br><span class="line">systemctl start squid.service</span><br></pre></td></tr></table></figure>
+
+<p><strong>实例接入 HDM</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 增加代理</span></span><br><span class="line">echo  <span class="string">"</span></span><br><span class="line"><span class="string">http_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">https_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">ssl_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">tls_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">ftp_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">tcp_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">export http_proxy</span></span><br><span class="line"><span class="string">export https_proxy</span></span><br><span class="line"><span class="string">export ssl_proxy</span></span><br><span class="line"><span class="string">export ftp_proxy</span></span><br><span class="line"><span class="string">export tcp_proxy</span></span><br><span class="line"><span class="string">export tls_proxy"</span> &gt;&gt; /etc/profile ;  source /etc/profile</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改wget代理配置文件</span></span><br><span class="line">echo <span class="string">"</span></span><br><span class="line"><span class="string">https_proxy=http://10.133.0.53:3128/</span></span><br><span class="line"><span class="string">http_proxy=http://10.133.0.53:3128/</span></span><br><span class="line"><span class="string">ftp_proxy=http://10.133.0.53:3128/"</span> &gt;&gt; /etc/wgetrc ;  source /etc/wgetrc</span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载install-dbgateway</span></span><br><span class="line">sudo wget -O install-dbgateway http://hdm-dbgateway-cn-hangzhou.oss-cn-hangzhou.aliyuncs.com/DBGateway/install-dbgateway &amp;&amp; sudo /bin/bash install-dbgateway --id idc_zqSS2oMpeyKubndD --token <span class="number">3</span>E24C01713C83B7328F9A2F4C411078DC820E63FAFBC058F6635FAC5B0B4B7F2 --endpoint master-hdm-cn-hangzhou.aliyuncs.com --region default --native</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改install-dbgateway</span></span><br><span class="line">注释以下代码</span><br><span class="line">curl -v --connect-timeout <span class="number">3</span> --silent $&#123;endpoint&#125;:<span class="number">80</span> --output -</span><br><span class="line"><span class="keyword">if</span> [ $? != <span class="number">0</span> -a $? != <span class="number">52</span> ]; then</span><br><span class="line">       echo <span class="string">"Error! Can not connect to $&#123;endpoint&#125;:80, please check your network environment."</span></span><br><span class="line">       <span class="keyword">exit</span> <span class="number">1</span></span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"><span class="comment"># 完成接入</span></span><br><span class="line">sudo /bin/bash install-dbgateway --id idc_zqSS2oMpeyKubndD --token <span class="number">3</span>E24C01713C83B7328F9A2F4C411078DC820E63FAFBC058F6635FAC5B0B4B7F2 --endpoint master-hdm-cn-hangzhou.aliyuncs.com --region default --native</span><br></pre></td></tr></table></figure>
+
+<p>② 实例接入后，显示的 <code>IP</code> 不是真实的业务 <code>IP</code> ？</p>
+<p>经与阿里云开发沟通，新版本在 <code>/opt/dbgateway/conf/dbgateway.conf</code> 中添加 <code>gateway.local.ip=</code>  配置项，<code>dbgateway</code> 优先使用配置中的 <code>ip</code> 。</p>
+<p>③ 服务器断电启动后，<code>dbgateway</code> 服务未自动重启？</p>
+<p>暂不支持</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/29/mysql-datadir/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/29/mysql-datadir/" class="post-title-link" itemprop="url">MySQL · 数据目录</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-29 10:56:15 / 修改时间：14:05:33" itemprop="dateCreated datePublished" datetime="2019-09-29T10:56:15+08:00">2019-09-29</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>文件系统</strong>：操作系统用来管理磁盘的功能，像 <code>InnoDB</code>、 <code>MyISAM</code> 这样的存储引擎都是把表存储在文件系统上。</p>
+<p><strong>安装目录</strong>：用来存储关于控制客户端程序和服务器程序的命令（如 <code>mysql</code>，<code>mysqld</code>，<code>mysqld_safe</code> 等）。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like 'basedir';</span><br><span class="line">+<span class="comment">---------------+-------------------------------------+</span></span><br><span class="line">| Variable_name | Value                               |</span><br><span class="line">+<span class="comment">---------------+-------------------------------------+</span></span><br><span class="line">| basedir       | /usr/local/mysql-5.7.23-el7-x86_64/ |</span><br><span class="line">+<span class="comment">---------------+-------------------------------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p><strong>数据目录</strong>：用来存储 <code>MySQL</code> 在运行过程中产生的数据。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like 'datadir';</span><br><span class="line">+<span class="comment">---------------+-------------------+</span></span><br><span class="line">| Variable_name | Value             |</span><br><span class="line">+<span class="comment">---------------+-------------------+</span></span><br><span class="line">| datadir       | /data/mysql-tdds/ |</span><br><span class="line">+<span class="comment">---------------+-------------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p><strong>系统数据库</strong></p>
+<ul>
+<li><p><code>mysql</code></p>
+<p>它存储了 <code>MySQL</code> 的用户账户和权限信息，一些存储过程、事件的定义信息，一些运行过程中产生的日志信息，一些帮助信息以及时区信息等。</p>
+</li>
+<li><p><code>information_schema</code></p>
+<p>存储了 <code>MySQL</code> 服务器维护的所有其他数据库的信息，比如有表、视图、触发器、列、索引等信息，这些并不是真实的用户数据，而是一些描述性信息，有时候也称之为元数据。</p>
+</li>
+<li><p><code>performance_schema</code></p>
+<p>存储了 <code>MySQL</code> 服务器运行过程中的一些状态信息，算是对 <code>MySQL</code> 服务器的一个性能监控。包括统计最近执行了哪些语句，在执行过程的每个阶段都花费了多长时间，内存的使用情况等。</p>
+</li>
+<li><p><code>sys</code></p>
+<p>主要是通过视图的形式把 <code>information_schema</code> 和 <code>performance_schema</code> 结合起来，让程序员可以更方便的了解 <code>MySQL</code> 服务器的一些性能。</p>
+</li>
+</ul>
+<h2 id="数据目录结构"><a href="#数据目录结构" class="headerlink" title="数据目录结构"></a>数据目录结构</h2><h3 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h3><p>每个数据库都对应数据目录下的一个子目录，或者说对应一个文件夹。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show databases;</span><br><span class="line">+<span class="comment">--------------------+</span></span><br><span class="line">| Database           |</span><br><span class="line">+<span class="comment">--------------------+</span></span><br><span class="line">| information_schema |</span><br><span class="line">| employees          |</span><br><span class="line">| mysql              |</span><br><span class="line">| performance_schema |</span><br><span class="line">| sys                |</span><br><span class="line">| test               |</span><br><span class="line">+<span class="comment">--------------------+</span></span><br><span class="line">6 rows in <span class="keyword">set</span> (<span class="number">0.01</span> sec)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── auto.cnf</span><br><span class="line">├── employees</span><br><span class="line">├── error.log</span><br><span class="line">├── ib_buffer_pool</span><br><span class="line">├── ibdata1</span><br><span class="line">├── ib_logfile0</span><br><span class="line">├── ib_logfile1</span><br><span class="line">├── ibtmp1</span><br><span class="line">├── master.info</span><br><span class="line">├── mysql</span><br><span class="line">├── mysql-bin.<span class="number">000001</span></span><br><span class="line">├── mysql-bin.index</span><br><span class="line">├── mysql.pid</span><br><span class="line">├── performance_schema</span><br><span class="line">├── slow.log</span><br><span class="line">├── sys</span><br><span class="line">└── test</span><br></pre></td></tr></table></figure>
+
+<h3 id="表"><a href="#表" class="headerlink" title="表"></a>表</h3><p><strong>InnoDB表</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── db.opt</span><br><span class="line">├── test.frm</span><br><span class="line">└── test.ibd</span><br><span class="line"></span><br><span class="line"><span class="comment"># db.opt：这个文件中包含了该数据库的各种属性，例如：数据库的字符集和比较规则</span></span><br><span class="line">default-character-set=utf8</span><br><span class="line">default-collation=utf8_general_ci</span><br><span class="line"></span><br><span class="line"><span class="comment"># 表结构文件：存储表名称、列类型、约束条件、字符集等专门用于描述表结构的文件</span></span><br><span class="line">test.frm</span><br><span class="line"></span><br><span class="line"><span class="comment"># InnoDB表数据存储文件</span></span><br><span class="line">test.ibd</span><br></pre></td></tr></table></figure>
+
+<p><strong>系统表空间（system tablespace）</strong></p>
+<p><code>ibdata1</code> 是一个自扩展文件，默认 <code>12M</code>，配置文件可配置任意大小，不够用的时候会自己增加文件大小</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">innodb_data_home_dir  = /<span class="keyword">data</span>/mysql</span><br><span class="line">innodb_data_file_path = ibdata1:<span class="number">1</span>G:autoextend</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Tips：从 <code>MySQL 5.5.7</code> 到 <code>MySQL 5.6.6</code> 之间的各个版本中，我们表中的数据都会被默认存储到这个<strong>系统表空间</strong></p>
+</blockquote>
+<p><strong>独立表空间（file-per-table tablespace）</strong></p>
+<p>在 <code>MySQL 5.6.6</code> 以及之后的版本，<code>InnoDB</code> 并不会默认的把各个表的数据存储到系统表空间中，而是为每一个表建立一个独立表空间。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">test.ibd  <span class="comment"># 用来存储test表中的数据和索引</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>innodb_file_per_table</strong>：指定使用系统表空间还是独立表空间来存储数据，该参数只对新建的表起作用，对于已经分配了表空间的表并不起作用。</p>
+<ul>
+<li><p>当 <code>innodb_file_per_table</code> 的值为 <code>0</code> 时，代表使用系统表空间</p>
+</li>
+<li><p>当 <code>innodb_file_per_table</code> 的值为 <code>1</code> 时，代表使用独立表空间</p>
+</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like 'innodb_file_per_table';</span><br><span class="line">+<span class="comment">-----------------------+-------+</span></span><br><span class="line">| Variable_name         | Value |</span><br><span class="line">+<span class="comment">-----------------------+-------+</span></span><br><span class="line">| innodb_file_per_table | ON    |</span><br><span class="line">+<span class="comment">-----------------------+-------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># test表从独立表空间移动到系统表空间</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="keyword">test</span> <span class="keyword">TABLESPACE</span> innodb_system;</span><br><span class="line"></span><br><span class="line"><span class="comment"># test表从系统表空间移动到独立表空间</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="keyword">test</span> <span class="keyword">TABLESPACE</span> innodb_file_per_table;</span><br></pre></td></tr></table></figure>
+
+<p><strong>MyISAM表</strong></p>
+<p><code>MyISAM</code> 并没有什么所谓的表空间一说，表数据都存放到对应的数据库子目录下，在 <code>MyISAM</code> 中的索引全部都是二级索引，该存储引擎的数据和索引是分开存放的，所以在文件系统中也是使用不同的文件来存储数据文件和索引文件。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">test.frm  <span class="comment"># 表结构文件</span></span><br><span class="line">test.MYD  <span class="comment"># 表数据文件</span></span><br><span class="line">test.MYI  <span class="comment"># 表索引文件</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="视图"><a href="#视图" class="headerlink" title="视图"></a>视图</h3><p>视图是虚拟的表，也就是某个查询语句的一个别名而已，所以在存储视图的时候是不需要存储真实的数据的，只需要把它的结构存储起来就行了。和表一样描述视图结构的文件也会被存储到所属数据库对应的子目录下边，只会存储一个 <code>视图名.frm</code> 的文件。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── db.opt</span><br><span class="line">├── host_summary_by_file_io.frm</span><br><span class="line">├── host_summary_by_file_io_type.frm</span><br><span class="line">├── host_summary_by_stages.frm</span><br><span class="line">├── host_summary_by_statement_latency.frm</span><br><span class="line">├── host_summary_by_statement_type.frm</span><br><span class="line">├── host_summary.frm</span><br><span class="line">├── innodb_buffer_stats_by_schema.frm</span><br><span class="line">├── innodb_buffer_stats_by_table.frm</span><br><span class="line">└── innodb_lock_waits.frm</span><br></pre></td></tr></table></figure>
+
+<h3 id="其他文件"><a href="#其他文件" class="headerlink" title="其他文件"></a>其他文件</h3><p>数据目录除了存储数据文件以外，还包括为了更好运行程序的一些额外文件，主要包括这几种类型的文件：</p>
+<p><strong>进程文件</strong></p>
+<p><code>MySQL</code> 服务器会把自己的进程 <code>ID</code> 写入到一个文件中 <code>mysql.pid</code></p>
+<p><strong>日志文件</strong></p>
+<p>在 <code>mysqld</code> 服务运行过程中，会产生各种各样的日志，例如：查询日志、错误日志、二进制日志、<code>redo</code> 日志等</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/26/mysql-innodb/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/26/mysql-innodb/" class="post-title-link" itemprop="url">MySQL · InnoDB 存储引擎</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-26 14:32:13" itemprop="dateCreated datePublished" datetime="2019-09-26T14:32:13+08:00">2019-09-26</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-20 00:11:41" itemprop="dateModified" datetime="2019-10-20T00:11:41+08:00">2019-10-20</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="InnoDB-页"><a href="#InnoDB-页" class="headerlink" title="InnoDB 页"></a>InnoDB 页</h2><p><code>InnoDB</code> 是一个将表中的数据存储到磁盘上的存储引擎，而真正处理数据的过程是发生在内存中的，所以需要把磁盘中的数据加载到内存中，如果是处理写入或修改请求的话，还需要把内存中的内容刷新到磁盘上。而我们知道读写磁盘的速度非常慢，和内存读写差了几个数量级，所以当我们想从表中获取某些记录时，<code>InnoDB</code> 存储引擎需要一条一条的把记录从磁盘上读出来么？不，那样会慢死，<code>InnoDB</code> 采取的方式是：将数据划分为若干个页，以页作为磁盘和内存之间交互的基本单位，<code>InnoDB</code> 中页的大小一般为 <code>16KB</code>。也就是在一般情况下，一次最少从磁盘中读取 <code>16KB</code> 的内容到内存中，一次最少把内存中的 <code>16KB</code> 内容刷新到磁盘中。</p>
+<blockquote>
+<p><strong>小结</strong></p>
+</blockquote>
+<ul>
+<li><p>页是 <code>MySQL</code> 中磁盘和内存交互的基本单位，也是 <code>MySQL</code> 是管理存储空间的基本单位</p>
+</li>
+<li><p>指定和修改行格式的语法：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> 表名 (列的信息) ROW_FORMAT=行格式名称</span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> 表名 ROW_FORMAT=行格式名称</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>InnoDB</code> 目前定义了 4 种行格式：<code>Compact</code>、<code>Redundant</code>、<code>Dynamic</code>、<code>Compressed</code></p>
+</li>
+<li><p>一个页一般是 <code>16KB</code>，当记录中的数据太多，当前页放不下的时候，会把多余的数据存储到其他页中，这种现象称为<strong>行溢出</strong>。</p>
+</li>
+</ul>
+<h2 id="InnoDB-数据页结构"><a href="#InnoDB-数据页结构" class="headerlink" title="InnoDB 数据页结构"></a>InnoDB 数据页结构</h2><p>InnoDB 为了不同的目的而设计了不同类型的页，我们把用于存放记录的页叫做<strong>数据页</strong>。</p>
+<p>一个数据页可以被大致划分为 7 个部分：</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-26-152320.png" alt></p>
+<ul>
+<li><code>File Header</code>，表示页的一些通用信息，占固定的 <code>38</code> 字节。</li>
+<li><code>Page Header</code>，表示数据页专有的一些信息，占固定的 <code>56</code> 个字节。</li>
+<li><code>Infimum + Supremum</code>，两个虚拟的伪记录，分别表示页中的最小和最大记录，占固定的<code>26</code>个字节。</li>
+<li><code>User Records</code>：真实存储我们插入的记录的部分，大小不固定。</li>
+<li><code>Free Space</code>：页中尚未使用的部分，大小不确定。</li>
+<li><code>Page Directory</code>：页中的某些记录相对位置，也就是各个槽在页面中的地址偏移量，大小不固定，插入的记录越多，这个部分占用的空间越多。</li>
+<li><code>File Trailer</code>：用于检验页是否完整的部分，占用固定的 <code>8</code> 个字节。</li>
+</ul>
+<p>每个记录的头信息中都有一个 <code>next_record</code> 属性，从而使页中的所有记录串联成一个单链表。</p>
+<p><code>InnoDB</code> 会把页中的记录划分为若干个组，每个组的最后一个记录的地址偏移量作为一个<strong>槽</strong>，存放在 <code>Page Directory</code> 中，所以在一个页中根据主键查找记录是非常快的，分成两步：</p>
+<ul>
+<li>通过二分法确定该记录所在的槽</li>
+<li>通过记录的next_record属性遍历该槽所在的组中的各个记录</li>
+</ul>
+<p>每个数据页的 <code>File Header</code> 部分都有上一个和下一个页的编号，所以所有的数据页会组成一个双链表。</p>
+<p>为保证从内存中同步到磁盘的页的完整性，在页的首部和尾部都会存储页中数据的校验和和页面最后修改时对应的 <code>LSN</code> 值，如果首部和尾部的校验和和 <code>LSN</code> 值校验不成功的话，就说明同步过程出现了问题。</p>
+<p>页和记录的关系：</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-26-152840.png" alt></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/25/mysql-character/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/25/mysql-character/" class="post-title-link" itemprop="url">MySQL · 字符集</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-25 16:58:31" itemprop="dateCreated datePublished" datetime="2019-09-25T16:58:31+08:00">2019-09-25</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-20 00:16:27" itemprop="dateModified" datetime="2019-10-20T00:16:27+08:00">2019-10-20</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>字符集</strong>：计算机中只能存储二进制数据，那字符串该如何存储字符串呢？是靠建立字符与二进制数据的映射关系，将一个字符映射成一个二进制数据的过程叫做<strong>编码</strong>，将一个二进制数据映射到一个字符的过程叫做<strong>解码</strong>，抽象出一个<strong>字符集</strong>的概念来描述某个字符范围的编码规则。</p>
+<p><strong>比较规则</strong>：英文名为 <code>collation</code>，用于比较两个字符的大小。</p>
+<p><strong>常用字符集</strong></p>
+<ul>
+<li><p><code>ASCII</code> 字符集</p>
+<p>共收录 <code>128</code> 个字符，包括空格、标点符号、数字、大小写字母和一些不可见字符。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'L'</span> -&gt;  <span class="number">01001100</span>（十六进制：<span class="number">0</span>x4C，十进制：<span class="number">76</span>）</span><br><span class="line"><span class="string">'M'</span> -&gt;  <span class="number">01001101</span>（十六进制：<span class="number">0</span>x4D，十进制：<span class="number">77</span>）</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>ISO 8859-1</code> 字符集</p>
+<p>共收录 <code>256</code> 个字符，是在 <code>ASCII</code> 字符集的基础上又扩充了 <code>128</code> 个西欧常用字符（包括德法两国的字母），这个字符集也有一个别名 <code>latin1</code>。</p>
+</li>
+<li><p><code>utf8</code> 字符集</p>
+<p>收录地球上能想到的所有字符，而且还在不断扩充。这种字符集兼容 <code>ASCII</code> 字符集，采用变长编码方式，编码一个字符需要使用 <code>1～4</code> 个字节，比方说这样：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'L'</span> -&gt;  <span class="number">01001100</span>（十六进制：<span class="number">0</span>x4C）</span><br><span class="line"><span class="string">'啊'</span> -&gt;  <span class="number">111001011001010110001010</span>（十六进制：<span class="number">0</span>xE5958A）</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Tips： <code>utf8</code> 只是 <code>Unicode</code> 字符集的一种编码方案，<code>Unicode</code> 字符集可以用 <code>utf8</code>、<code>utf16</code>、<code>utf32</code> 这几种编码方案，<code>utf8</code> 使用 <code>1～4</code> 个字节编码一个字符。</p>
+</blockquote>
+</li>
+</ul>
+<p><strong>查看字符集（character set/charset）</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show charset like <span class="string">'utf8%'</span>;</span><br><span class="line">+---------+---------------+--------------------+--------+</span><br><span class="line">| Charset | Description   | Default collation  | Maxlen |</span><br><span class="line">+---------+---------------+--------------------+--------+</span><br><span class="line">| utf8    | UTF-<span class="number">8</span> Unicode | utf8_general_ci    |      <span class="number">3</span> |</span><br><span class="line">| utf8mb4 | UTF-<span class="number">8</span> Unicode | utf8mb4_general_ci |      <span class="number">4</span> |</span><br><span class="line">+---------+---------------+--------------------+--------+</span><br></pre></td></tr></table></figure>
+
+<p><strong>查看比较规则（collation）</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show collation like <span class="string">'utf8%general_ci'</span>;</span><br><span class="line">+--------------------+---------+----+---------+----------+---------+</span><br><span class="line">| Collation          | Charset | Id | Default | Compiled | Sortlen |</span><br><span class="line">+--------------------+---------+----+---------+----------+---------+</span><br><span class="line">| utf8_general_ci    | utf8    | <span class="number">33</span> | Yes     | Yes      |       <span class="number">1</span> |</span><br><span class="line">| utf8mb4_general_ci | utf8mb4 | <span class="number">45</span> | Yes     | Yes      |       <span class="number">1</span> |</span><br><span class="line">+--------------------+---------+----+---------+----------+---------+</span><br></pre></td></tr></table></figure>
+
+<p><code>utf8</code> 字符集默认的比较规则是 <code>utf8_general_ci</code>，它是一种通用的比较规则，<code>_ci</code> 结尾，表示不区分大小写。</p>
+<h2 id="字符集和比较规则"><a href="#字符集和比较规则" class="headerlink" title="字符集和比较规则"></a>字符集和比较规则</h2><p><code>MySQL</code> 有四个级别的字符集和比较规则，分别是：</p>
+<ul>
+<li>服务器级别</li>
+<li>数据库级别</li>
+<li>表级别</li>
+<li>列级别</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like <span class="string">'character%'</span>;</span><br><span class="line">+--------------------------+----------------------------------------------------+</span><br><span class="line">| Variable_name            | Value                                              |</span><br><span class="line">+--------------------------+----------------------------------------------------+</span><br><span class="line">| character_set_client     | utf8                                               |</span><br><span class="line">| character_set_connection | utf8                                               |</span><br><span class="line">| character_set_database   | utf8                                               |</span><br><span class="line">| character_set_filesystem | binary                                             |</span><br><span class="line">| character_set_results    | utf8                                               |</span><br><span class="line">| character_set_server     | latin1                                             |</span><br><span class="line">| character_set_system     | utf8                                               |</span><br><span class="line">| character_sets_dir       | /usr/local/mysql-<span class="number">5.7</span>.<span class="number">23</span>-el7-x86_64/share/charsets/ |</span><br><span class="line">+--------------------------+----------------------------------------------------+</span><br></pre></td></tr></table></figure>
+
+<p><strong>character_set_server</strong>： 默认的内部操作字符集<br><strong>character_set_client</strong>： 服务器解码请求时使用的字符集<br><strong>character_set_connection</strong>：连接层字符集<br><strong>character_set_results</strong>： 服务器向客户端返回数据时使用的字符集<br><strong>character_set_database</strong>： 当前选中数据库的默认字符集<br><strong>character_set_system</strong>： 系统元数据(字段名等)字符集</p>
+<h3 id="服务器级别"><a href="#服务器级别" class="headerlink" title="服务器级别"></a>服务器级别</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 控制参数</span></span><br><span class="line">character_set_server</span><br><span class="line">collation_server</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置文件设置</span></span><br><span class="line">[client]</span><br><span class="line">default-character-<span class="keyword">set</span>  = utf8</span><br><span class="line"></span><br><span class="line">[mysql]</span><br><span class="line"><span class="keyword">default</span>-<span class="built_in">character</span>-<span class="keyword">set</span>  = utf8</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line"><span class="built_in">character</span>-<span class="keyword">set</span>-<span class="keyword">server</span>   = utf8</span><br><span class="line"><span class="keyword">collation</span>-<span class="keyword">server</span>       = utf8_general_ci</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看方法</span></span><br><span class="line">mysql&gt; <span class="keyword">SHOW</span> <span class="keyword">VARIABLES</span> <span class="keyword">LIKE</span> <span class="string">'character_set_server'</span>;</span><br><span class="line">+<span class="comment">----------------------+--------+</span></span><br><span class="line">| Variable_name        | Value  |</span><br><span class="line">+<span class="comment">----------------------+--------+</span></span><br><span class="line">| character_set_server | utf8   |</span><br><span class="line">+<span class="comment">----------------------+--------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">SHOW</span> <span class="keyword">VARIABLES</span> <span class="keyword">LIKE</span> <span class="string">'collation_server'</span>;</span><br><span class="line">+<span class="comment">------------------+-------------------+</span></span><br><span class="line">| Variable_name    | Value             |</span><br><span class="line">+<span class="comment">------------------+-------------------+</span></span><br><span class="line">| collation_server | utf8_general_ci   |</span><br><span class="line">+<span class="comment">------------------+-------------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h3 id="数据库级别"><a href="#数据库级别" class="headerlink" title="数据库级别"></a>数据库级别</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 控制参数</span></span><br><span class="line">character_set_database</span><br><span class="line">collation_database</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建语法</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">DATABASE</span> 数据库名</span><br><span class="line">    [[<span class="keyword">DEFAULT</span>] <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> 字符集名称]</span><br><span class="line">    [[<span class="keyword">DEFAULT</span>] <span class="keyword">COLLATE</span> 比较规则名称];</span><br><span class="line"></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">DATABASE</span> 数据库名</span><br><span class="line">    [[<span class="keyword">DEFAULT</span>] <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> 字符集名称]</span><br><span class="line">    [[<span class="keyword">DEFAULT</span>] <span class="keyword">COLLATE</span> 比较规则名称];</span><br><span class="line">    </span><br><span class="line"><span class="comment"># 查看方法</span></span><br><span class="line">mysql&gt; use test;</span><br><span class="line">mysql&gt; SELECT @@character_set_database, @@collation_database;</span><br><span class="line">+<span class="comment">--------------------------+----------------------+</span></span><br><span class="line">| @@character_set_database | @@collation_database |</span><br><span class="line">+<span class="comment">--------------------------+----------------------+</span></span><br><span class="line">| utf8                     | utf8_general_ci      |</span><br><span class="line">+<span class="comment">--------------------------+----------------------+</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>规则</strong></p>
+<ul>
+<li>创建数据库时，指定了 <code>CHARACTER SET</code> 或 <code>COLLATE</code>，则以对应的字符集、比较规则为准。</li>
+<li>创建数据库时，没有指定字符集、排序规则，则以 <code>character_set_server</code>、<code>collation_server</code> 为准。</li>
+<li><code>character_set_database</code> 和 <code>collation_database</code> 这两个系统变量是只读的，不能通过修改这两个变量的值而改变当前数据库的字符集和比较规则。</li>
+</ul>
+<h3 id="表级别"><a href="#表级别" class="headerlink" title="表级别"></a>表级别</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建语法</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> 表名 (列的信息)</span><br><span class="line">    [[<span class="keyword">DEFAULT</span>] <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> 字符集名称]</span><br><span class="line">    [<span class="keyword">COLLATE</span> 比较规则名称]]</span><br><span class="line"></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> 表名</span><br><span class="line">    [[<span class="keyword">DEFAULT</span>] <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> 字符集名称]</span><br><span class="line">    [<span class="keyword">COLLATE</span> 比较规则名称]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看方法</span></span><br><span class="line">mysql&gt; <span class="keyword">show</span> <span class="keyword">table</span> <span class="keyword">status</span> <span class="keyword">from</span> <span class="keyword">test</span>\G</span><br><span class="line">*************************** <span class="number">1.</span> <span class="keyword">row</span> ***************************</span><br><span class="line">           <span class="keyword">Name</span>: <span class="keyword">test</span></span><br><span class="line">         <span class="keyword">Engine</span>: <span class="keyword">InnoDB</span></span><br><span class="line">        <span class="keyword">Version</span>: <span class="number">10</span></span><br><span class="line">     Row_format: Dynamic</span><br><span class="line">           <span class="keyword">Rows</span>: <span class="number">5</span></span><br><span class="line"> Avg_row_length: <span class="number">3276</span></span><br><span class="line">    Data_length: <span class="number">16384</span></span><br><span class="line">Max_data_length: <span class="number">0</span></span><br><span class="line">   Index_length: <span class="number">0</span></span><br><span class="line">      Data_free: <span class="number">0</span></span><br><span class="line"> Auto_increment: <span class="number">6</span></span><br><span class="line">    Create_time: <span class="number">2019</span><span class="number">-09</span><span class="number">-24</span> <span class="number">18</span>:<span class="number">00</span>:<span class="number">54</span></span><br><span class="line">    Update_time: <span class="literal">NULL</span></span><br><span class="line">     Check_time: <span class="literal">NULL</span></span><br><span class="line">      <span class="keyword">Collation</span>: utf8_general_ci</span><br><span class="line">       <span class="keyword">Checksum</span>: <span class="literal">NULL</span></span><br><span class="line"> Create_options: </span><br><span class="line">        <span class="keyword">Comment</span>:</span><br></pre></td></tr></table></figure>
+
+<p><strong>规则</strong></p>
+<ul>
+<li>明确了 <code>charset_name</code>、<code>collation_name</code>，则采用 <code>charset_name</code>、<code>collation_name</code>。</li>
+<li><code>charset_name</code>、<code>collation_name</code> 均未明确，则采用数据库的字符集、比较规则设置。</li>
+</ul>
+<h3 id="列级别"><a href="#列级别" class="headerlink" title="列级别"></a>列级别</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建语法</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> 表名(</span><br><span class="line">    列名 字符串类型 [<span class="built_in">CHARACTER</span> <span class="keyword">SET</span> 字符集名称] [<span class="keyword">COLLATE</span> 比较规则名称],</span><br><span class="line">    其他列...</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> 表名 <span class="keyword">MODIFY</span> 列名 字符串类型 [<span class="built_in">CHARACTER</span> <span class="keyword">SET</span> 字符集名称] [<span class="keyword">COLLATE</span> 比较规则名称];</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看方法</span></span><br><span class="line">mysql&gt; SELECT CHARACTER_SET_NAME, COLLATION_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA="test" AND TABLE_NAME="test" AND COLUMN_NAME="name";</span><br><span class="line">+<span class="comment">--------------------+-----------------+</span></span><br><span class="line">| CHARACTER_SET_NAME | COLLATION_NAME  |</span><br><span class="line">+<span class="comment">--------------------+-----------------+</span></span><br><span class="line">| utf8               | utf8_general_ci |</span><br><span class="line">+<span class="comment">--------------------+-----------------+</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>规则</strong></p>
+<ul>
+<li>明确了 <code>charset_name</code>、<code>collation_name</code> 均明确，则采用 <code>charset_name</code>、<code>collation_name</code> 为准。</li>
+<li><code>charset_name</code>、<code>collation_name</code> 均未明确，则以表的字符集、比较规则为准。</li>
+</ul>
+<blockquote>
+<p><strong>小结</strong></p>
+</blockquote>
+<ul>
+<li>如果创建或修改列时没有显式的指定字符集和比较规则，则该列默认用表的字符集和比较规则</li>
+<li>如果创建或修改表时没有显式的指定字符集和比较规则，则该表默认用数据库的字符集和比较规则</li>
+<li>如果创建或修改数据库时没有显式的指定字符集和比较规则，则该数据库默认用服务器的字符集和比较规则</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li><strong>字符集</strong>是某个字符范围的编码规则。</li>
+<li><strong>比较规则</strong>是针对某个字符集中的字符比较大小的一种规则。</li>
+<li><code>MySQL</code> 中一个字符集可以有若干种比较规则，其中有一个默认的比较规则。</li>
+<li><code>MySQL</code> 有四个级别的字符集和比较规则，优先级排序：列 &gt; 表 &gt; 库 &gt; 服务器。</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/25/mysql-config/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1054,1020 +3454,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/20/mysql-case-replication/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/09/20/mysql-case-replication/" class="post-title-link" itemprop="url">MySQL · 案例分析 · 主从复制中断</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-09-20 09:51:44" itemprop="dateCreated datePublished" datetime="2019-09-20T09:51:44+08:00">2019-09-20</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-13 19:13:13" itemprop="dateModified" datetime="2019-10-13T19:13:13+08:00">2019-10-13</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-20-015800.png" alt="image-20190920095751451"></p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">************************* 1. row ***************************</span><br><span class="line">               Slave_IO_State: </span><br><span class="line">                  Master_Host: 10.135.22.70</span><br><span class="line">                  Master_User: repluser</span><br><span class="line">                  Master_Port: 3308</span><br><span class="line">                Connect_Retry: 10</span><br><span class="line">              Master_Log_File: mysql-bin.001935</span><br><span class="line">          Read_Master_Log_Pos: 6587</span><br><span class="line">               Relay_Log_File: relay-log.001487</span><br><span class="line">                Relay_Log_Pos: 4</span><br><span class="line">        Relay_Master_Log_File: mysql-bin.001935</span><br><span class="line">             Slave_IO_Running: No</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">              Replicate_Do_DB: </span><br><span class="line">          Replicate_Ignore_DB: </span><br><span class="line">           Replicate_Do_Table: </span><br><span class="line">       Replicate_Ignore_Table: </span><br><span class="line">      Replicate_Wild_Do_Table: </span><br><span class="line">  Replicate_Wild_Ignore_Table: test.%</span><br><span class="line">                   Last_Errno: 0</span><br><span class="line">                   Last_Error: </span><br><span class="line">                 Skip_Counter: 0</span><br><span class="line">          Exec_Master_Log_Pos: 6587</span><br><span class="line">              Relay_Log_Space: 107</span><br><span class="line">              Until_Condition: None</span><br><span class="line">               Until_Log_File: </span><br><span class="line">                Until_Log_Pos: 0</span><br><span class="line">           Master_SSL_Allowed: No</span><br><span class="line">           Master_SSL_CA_File: </span><br><span class="line">           Master_SSL_CA_Path: </span><br><span class="line">              Master_SSL_Cert: </span><br><span class="line">            Master_SSL_Cipher: </span><br><span class="line">               Master_SSL_Key: </span><br><span class="line">        Seconds_Behind_Master: NULL</span><br><span class="line">Master_SSL_Verify_Server_Cert: No</span><br><span class="line">                Last_IO_Errno: 1236</span><br><span class="line">                Last_IO_Error: Got fatal error 1236 from master when reading data from binary log: 'Could not find first log file name in binary log index file'</span><br><span class="line">               Last_SQL_Errno: 0</span><br><span class="line">               Last_SQL_Error: </span><br><span class="line">  Replicate_Ignore_Server_Ids: </span><br><span class="line">             Master_Server_Id: 1</span><br></pre></td></tr></table></figure>
-
-<h2 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h2><p>该错误发生在从库 <code>io</code> 进程从主库拉取日志时，发现主库的 <code>mysql_bin.index</code> 文件中第一个文件不存在，出现此类报错可能有两个原因：</p>
-<ul>
-<li><code>Slave</code> 由于某种原因停了好长一段是时间，当你重启 <code>slave</code> 复制的时候，在主库上找不到相应的 <code>binlog</code> 。</li>
-<li>由于某些设置主库上的 <code>binlog</code> 被删除了，导致从库获取不到对应的 <code>binlog</code>。</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@hop02 mzjh]<span class="comment"># ll | grep mysql-bin</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073742013</span> Sep <span class="number">12</span> <span class="number">14</span>:<span class="number">55</span> mysql-bin.<span class="number">001948</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073742073</span> Sep <span class="number">13</span> <span class="number">11</span>:<span class="number">53</span> mysql-bin.<span class="number">001949</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073742120</span> Sep <span class="number">14</span> <span class="number">08</span>:<span class="number">39</span> mysql-bin.<span class="number">001950</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073859355</span> Sep <span class="number">15</span> <span class="number">06</span>:<span class="number">21</span> mysql-bin.<span class="number">001951</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1074054892</span> Sep <span class="number">16</span> <span class="number">06</span>:<span class="number">18</span> mysql-bin.<span class="number">001952</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1075243641</span> Sep <span class="number">17</span> <span class="number">06</span>:<span class="number">18</span> mysql-bin.<span class="number">001953</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1074801420</span> Sep <span class="number">18</span> <span class="number">06</span>:<span class="number">16</span> mysql-bin.<span class="number">001954</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1075257243</span> Sep <span class="number">19</span> <span class="number">06</span>:<span class="number">16</span> mysql-bin.<span class="number">001955</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql   <span class="number">619405162</span> Sep <span class="number">19</span> <span class="number">13</span>:<span class="number">32</span> mysql-bin.<span class="number">001956</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1072898197</span> Sep <span class="number">20</span> <span class="number">09</span>:<span class="number">44</span> mysql-bin.<span class="number">001957</span></span><br><span class="line">-rw-r-----. <span class="number">1</span> mysql mysql         <span class="number">190</span> Sep <span class="number">19</span> <span class="number">13</span>:<span class="number">32</span> mysql-bin.index</span><br></pre></td></tr></table></figure>
-
-<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><p>为了避免数据丢失，需要重新搭建 Slave。</p>
-<blockquote>
-<p>Tips：不要使用 <code>rm -rf</code> 命令删除 <code>binlog</code> 日志文件，这样不会同步修改 <code>mysql-bin.index</code> 记录的 <code>binlog</code> 条目。在删除 <code>binlog</code> 的时候确保主库保留了从库 <code>show slave status</code> 的 <code>Relay_Master_Log_File</code> 对应的 <code>binlog</code> 日志文件。</p>
-</blockquote>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 手动清除binlog</span></span><br><span class="line">$ mysql -u root -p</span><br><span class="line">mysql&gt; PURGE MASTER LOGS TO 'mysql-bin.001950′</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/04/mysql-disaster/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/09/04/mysql-disaster/" class="post-title-link" itemprop="url">MySQL · 容灾</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-09-04 16:16:31" itemprop="dateCreated datePublished" datetime="2019-09-04T16:16:31+08:00">2019-09-04</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-20 00:05:42" itemprop="dateModified" datetime="2019-10-20T00:05:42+08:00">2019-10-20</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>数据是企业的生命线，<code>PSI</code> 线上系统数据基本都存储在青岛本地机房，缺少异地容灾能力，当出现机房级灾难场景下（如：地震、海啸、火灾等），业务连续性受到极大的影响，损失不可估量。如下图所示，目前 <code>PSI</code> 已具备前两类故障场景的覆盖能力，需要构建覆盖第三类故障场景能力，全方位保障业务数据安全，有备无患。</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-135300.png" alt></p>
-<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><ul>
-<li>保证极端场景下业务数据可恢复</li>
-<li><code>RPO</code> &lt; 2 小时，<code>RTO</code> &lt; 24 小时</li>
-</ul>
-<h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><p><strong>设计方案</strong>：如下图所示，重要系统生产数据（青岛本地机房：电信机房、联通机房、移动机房…）同步至红岛灾备数据中心，特别重要系统数据压缩存储上传至阿里云 <code>OSS</code>。</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-135600.png" alt></p>
-<p><strong>实施方案</strong>：从库实例再搭建一个从实例形成级联结构，对数据进行实时同步，主要为避免增加主库负载。</p>
-<p>实例拓扑：</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-140100.png" alt></p>
-<p>系统监控：</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-140200.png" alt></p>
-<p>①  主实例：<code>TDDS_M</code></p>
-<p>②  从实例：<code>TDDS_S</code></p>
-<p>③  灾备实例：<code>TDDS_D</code></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/28/docker/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/08/28/docker/" class="post-title-link" itemprop="url">docker</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-28 23:04:00" itemprop="dateCreated datePublished" datetime="2019-08-28T23:04:00+08:00">2019-08-28</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-13 19:13:06" itemprop="dateModified" datetime="2019-10-13T19:13:06+08:00">2019-10-13</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl start docker  // 启动docker</span><br><span class="line">$ systemctl stop docker   // 关闭docker</span><br><span class="line">$ docker restart xxx      // 重启一个容器</span><br><span class="line">$ docker stop xxx         // 停止一个容器</span><br><span class="line">$ docker rm xxx           // 删除一个容器</span><br><span class="line">$ docker rm -f xxx        // 强制删除一个容器</span><br><span class="line">$ docker log xxx          // 查看容器日志</span><br><span class="line">$ docker ps -a            // 查看容器信息</span><br><span class="line">$ docker search xxx       // 查看镜像</span><br></pre></td></tr></table></figure>
-
-<h2 id="学习资源"><a href="#学习资源" class="headerlink" title="学习资源"></a>学习资源</h2><p><a href="http://asdfghjkl.xyz/2019/04/25/%E6%B7%B1%E5%85%A5%E5%89%96%E6%9E%90Kubernetes/" target="_blank" rel="noopener">深入剖析 Kubernetes</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/28/tools/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/08/28/tools/" class="post-title-link" itemprop="url">工具</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-28 09:08:42" itemprop="dateCreated datePublished" datetime="2019-08-28T09:08:42+08:00">2019-08-28</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-21 14:44:35" itemprop="dateModified" datetime="2019-10-21T14:44:35+08:00">2019-10-21</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="htop"><a href="#htop" class="headerlink" title="htop"></a>htop</h2><p><strong>简介</strong>：<a href="https://www.runoob.com/linux/linux-comm-top.html" target="_blank" rel="noopener"><strong>top</strong></a> 是 <code>Linux</code> 下常用的监控程序，<a href="https://github.com/hishamhm/htop" target="_blank" rel="noopener"><strong>htop</strong></a> 相当于其加强版，颜色显示不同参数，且支持鼠标操作，更加简单和人性化。</p>
-<p><strong>安装</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git clone https://github.com/hishamhm/htop.git</span><br><span class="line">$ ./autogen.sh &amp;&amp; ./configure &amp;&amp; make</span><br><span class="line">$ make install</span><br></pre></td></tr></table></figure>
-
-<p><strong>使用</strong>：</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-065843.png" alt></p>
-<h2 id="mycli"><a href="#mycli" class="headerlink" title="mycli"></a>mycli</h2><p><strong>简介</strong>：<a href="https://www.mycli.net/" target="_blank" rel="noopener"><strong>mycli</strong></a> 是用于 <code>MySQL</code>、<code>MariaDB</code> 和 <code>Percona</code> 的命令行界面，具有<strong>自动补全</strong>和<strong>语法高亮</strong>功能。</p>
-<p><strong>安装</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ yum install python-pip</span><br><span class="line">$ pip install mycli</span><br></pre></td></tr></table></figure>
-
-<p><strong>使用</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">$ mycli --help</span><br><span class="line">Usage: mycli [OPTIONS] [DATABASE]</span><br><span class="line"></span><br><span class="line">  A MySQL terminal client with auto-completion and syntax highlighting.</span><br><span class="line"></span><br><span class="line">  Examples:</span><br><span class="line">    - mycli my_database</span><br><span class="line">    - mycli -u my_user -h my_host.com my_database</span><br><span class="line">    - mycli mysql://my_user@my_host.com:<span class="number">3306</span>/my_database</span><br><span class="line"></span><br><span class="line">Options:</span><br><span class="line">  -h, --host TEXT               Host address of the database.</span><br><span class="line">  -P, --port INTEGER            Port number to use <span class="keyword">for</span> connection. Honors</span><br><span class="line">                                <span class="variable">$MYSQL_TCP_PORT</span>.</span><br><span class="line">  -u, --user TEXT               User name to connect to the database.</span><br><span class="line">  -S, --socket TEXT             The socket file to use <span class="keyword">for</span> connection.</span><br><span class="line">  -p, --password TEXT           Password to connect to the database.</span><br><span class="line">  --pass TEXT                   Password to connect to the database.</span><br><span class="line">  --ssl-ca PATH                 CA file <span class="keyword">in</span> PEM format.</span><br><span class="line">  --ssl-capath TEXT             CA directory.</span><br><span class="line">  --ssl-cert PATH               X509 cert <span class="keyword">in</span> PEM format.</span><br><span class="line">  --ssl-key PATH                X509 key <span class="keyword">in</span> PEM format.</span><br><span class="line">  --ssl-cipher TEXT             SSL cipher to use.</span><br><span class="line">  --ssl-verify-server-cert      Verify server<span class="string">'s "Common Name" in its cert</span></span><br><span class="line"><span class="string">                                against hostname used when connecting. This</span></span><br><span class="line"><span class="string">                                option is disabled by default.</span></span><br><span class="line"><span class="string">  -V, --version                 Output mycli'</span>s version.</span><br><span class="line">  -v, --verbose                 Verbose output.</span><br><span class="line">  -D, --database TEXT           Database to use.</span><br><span class="line">  -d, --dsn TEXT                Use DSN configured into the [alias_dsn]</span><br><span class="line">                                section of myclirc file.</span><br><span class="line">  --list-dsn                    list of DSN configured into the [alias_dsn]</span><br><span class="line">                                section of myclirc file.</span><br><span class="line">  -R, --prompt TEXT             Prompt format (Default: <span class="string">"\t \u@\h:\d&gt; "</span>).</span><br><span class="line">  -l, --logfile FILENAME        Log every query and its results to a file.</span><br><span class="line">  --defaults-group-suffix TEXT  Read MySQL config groups with the specified</span><br><span class="line">                                suffix.</span><br><span class="line">  --defaults-file PATH          Only read MySQL options from the given file.</span><br><span class="line">  --myclirc PATH                Location of myclirc file.</span><br><span class="line">  --auto-vertical-output        Automatically <span class="keyword">switch</span> to vertical output mode</span><br><span class="line">                                <span class="keyword">if</span> the result is wider than the terminal</span><br><span class="line">                                width.</span><br><span class="line">  -t, --table                   Display batch output <span class="keyword">in</span> table format.</span><br><span class="line">  --csv                         Display batch output <span class="keyword">in</span> CSV format.</span><br><span class="line">  --warn / --no-warn            Warn before running a destructive query.</span><br><span class="line">  --local-infile BOOLEAN        Enable/disable LOAD <span class="keyword">DATA</span> LOCAL INFILE.</span><br><span class="line">  --login-path TEXT             Read this path from the login file.</span><br><span class="line">  -e, --execute TEXT            Execute command and quit.</span><br><span class="line">  --help                        Show this message and exit.</span><br></pre></td></tr></table></figure>
-
-<h2 id="shortcut"><a href="#shortcut" class="headerlink" title="shortcut"></a>shortcut</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 快捷键</span></span><br><span class="line">向下翻页：Ctrl + f</span><br><span class="line">向上翻页：Ctrl + b</span><br><span class="line">磁盘文件排序：du -h * | sort -n</span><br></pre></td></tr></table></figure>
-
-<h2 id="crontab"><a href="#crontab" class="headerlink" title="crontab"></a>crontab</h2><p><strong>简介</strong>：用来定期执行程序的命令。</p>
-<p><strong>使用</strong>：<a href="https://tool.lu/crontab/" target="_blank" rel="noopener">在线工具</a></p>
-<h2 id="typora"><a href="#typora" class="headerlink" title="typora"></a>typora</h2><p><strong>简介</strong>：<code>Markdown</code> 是一种轻量级标记语言，人们使用易读易写的纯文本格式编写文档，然后转换成有效的 <code>html</code> 文档，<code>Typora</code> 对 <code>Markdown</code> 的完美支持、丰富的主题、高效的快捷键操作，无一不令人爱不释手。</p>
-<p><strong>安装</strong>：<a href="https://www.typora.io/#download" target="_blank" rel="noopener">下载</a></p>
-<p><strong>使用</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">加粗： Ctrl/Cmd + B</span><br><span class="line">标题： Ctrl/Cmd + H</span><br><span class="line">插入链接： Ctrl/Cmd + K</span><br><span class="line">插入代码： Ctrl/Cmd + Shift + C</span><br><span class="line">行内代码： Ctrl/Cmd + Shift + K</span><br><span class="line">插入图片： Ctrl/Cmd + Shift + I</span><br><span class="line">无序列表： Ctrl/Cmd + Shift + L</span><br><span class="line">撤销： Ctrl/Cmd + Z</span><br><span class="line">一级标题：Crtl + <span class="number">1</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="禅道"><a href="#禅道" class="headerlink" title="禅道"></a>禅道</h2><p><strong>简介</strong>：<a href="https://www.zentao.net/" target="_blank" rel="noopener">禅道</a>，国产的开源项目管理软件，专注研发项目管理，内置需求管理、任务管理、<code>bug</code> 管理、缺陷管理、用例管理、计划发布等功能，实现了软件的完整生命周期管理。</p>
-<p><strong>安装</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ wget http://dl.cnezsoft.com/zentao/<span class="number">11.5</span>.<span class="number">1</span>/ZenTaoPMS.<span class="number">11.5</span>.<span class="number">1</span>.zbox_64.tar.gz</span><br><span class="line">$ tar -zxvf ZenTaoPMS.<span class="number">11.5</span>.<span class="number">1</span>.zbox_64.tar.gz -C /opt</span><br><span class="line">$ /opt/zbox/zbox start</span><br><span class="line">$ /opt/zbox/zbox -ap <span class="number">8080</span> -mp <span class="number">3307</span> （-ap：修改Apache端口，-mp：修改MySQL端口）</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启停httpd</span></span><br><span class="line">./httpd -k start</span><br><span class="line">./httpd -k stop</span><br></pre></td></tr></table></figure>
-
-<p><strong>使用</strong>：<a href="http://10.133.0.53:8080" target="_blank" rel="noopener">入口</a>    </p>
-<p>账号：<code>admin/Haier@123</code></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/27/mysql-privilege/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/08/27/mysql-privilege/" class="post-title-link" itemprop="url">MySQL · 权限管理</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-27 17:45:40" itemprop="dateCreated datePublished" datetime="2019-08-27T17:45:40+08:00">2019-08-27</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-09-19 09:02:10" itemprop="dateModified" datetime="2019-09-19T09:02:10+08:00">2019-09-19</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>创建账号</p>
-<p>修改账号权限</p>
-<p>授权</p>
-<p>删除</p>
-<p>重置密码</p>
-<p>只读：</p>
-<p>读写：</p>
-<p>DDL：</p>
-<p>DML</p>
-<p>复制</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">REPLICATION</span> <span class="string">CLIENT（客户端）、REPLICATION</span> <span class="string">SLAVE（服务端）、SUPER（管理）和</span> <span class="string">RELOAD</span></span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/27/project1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/08/27/project1/" class="post-title-link" itemprop="url">项目</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-27 15:31:42" itemprop="dateCreated datePublished" datetime="2019-08-27T15:31:42+08:00">2019-08-27</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-20 00:27:12" itemprop="dateModified" datetime="2019-10-20T00:27:12+08:00">2019-10-20</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="监控告警"><a href="#监控告警" class="headerlink" title="监控告警"></a>监控告警</h2><p><strong>背景</strong>：为了托管已上线 <code>MySQL</code> 系统，建立完善的监控体系，提升业务系统稳定性，达到以下 <code>3</code> 个目的：</p>
-<ul>
-<li><strong>告警</strong>：当系统出现或者即将出现故障时，监控系统需要迅速反应并通知管理员，从而能够对问题进行快速的处理或者提前预防问题的发生，避免出现对业务的影响。</li>
-<li><strong>故障分析与定位</strong>：当问题发生后，需要对问题进行调查和处理。通过对不同监控监控以及历史数据的分析，能够找到并解决根源问题。</li>
-<li><strong>数据可视化</strong>：通过可视化仪表盘能够直接获取系统的运行状态、资源使用情况、以及服务运行状态等直观的信息。</li>
-</ul>
-<p><strong>技术方案</strong>：[<a href="https://prometheus.io" target="_blank" rel="noopener"><strong>Prometheus</strong></a>] [<a href="https://grafana.com" target="_blank" rel="noopener"><strong>Grafana</strong></a>] [<a href="https://www.consul.io/" target="_blank" rel="noopener"><strong>Consul</strong></a>] [<a href="https://www.percona.com/doc/percona-monitoring-and-management/index.html" target="_blank" rel="noopener"><strong>PMM</strong></a>] </p>
-<h2 id="运维工单"><a href="#运维工单" class="headerlink" title="运维工单"></a>运维工单</h2><p><strong>背景</strong>：日常运维问题繁多，提高运维效率。</p>
-<p><strong>技术方案</strong>：[<a href="https://golang.google.cn/" target="_blank" rel="noopener"><strong>Golang</strong></a>] [<a href="https://cn.vuejs.org/" target="_blank" rel="noopener"><strong>Vue</strong></a>] [<a href="https://element.eleme.cn/#/" target="_blank" rel="noopener"><strong>Element UI</strong></a>] [<a href="https://www.heidisql.com/" target="_blank" rel="noopener"><strong>HeidiSQL</strong></a>] [<a href="https://www.percona.com/downloads/percona-toolkit" target="_blank" rel="noopener"><strong>Percona Toolkit</strong></a>] </p>
-<h2 id="备份"><a href="#备份" class="headerlink" title="备份"></a>备份</h2><p><strong>背景</strong>：100+ 上线项目系统（<code>MySQL</code>、<code>Oracle</code>、<code>Server SQL</code>、小型机、etc. ）之前未做备份恢复演练，也有部分上线系统未备份，存在巨大的数据安全风险，全量排查消除隐患。</p>
-<p><strong>技术方案</strong>：[<a href="https://www.commvault.com.cn/" target="_blank" rel="noopener"><strong>Commvault</strong></a>] [<a href="https://www.percona.com/software/mysql-database/percona-xtrabackup" target="_blank" rel="noopener"><strong>Percona XtraBackup</strong></a>]</p>
-<h2 id="体验优化"><a href="#体验优化" class="headerlink" title="体验优化"></a>体验优化</h2><p><strong>背景</strong>：数据库 <code>slowlog</code> 发布每周报告，需要从管理视角驱动质量提升，展现技术平台的价值。</p>
-<p><strong>技术方案</strong>：[<a href="https://www.aliyun.com/product/hdm" target="_blank" rel="noopener"><strong>HDM</strong></a>] [<a href="https://www.percona.com/downloads/percona-toolkit" target="_blank" rel="noopener"><strong>Percona Toolkit</strong></a>]</p>
-<h2 id="堡垒机"><a href="#堡垒机" class="headerlink" title="堡垒机"></a>堡垒机</h2><p><strong>背景</strong>：核心功能是用于实现对运维操作人员的<strong>权限控制</strong>与<strong>操作行为审计</strong>，<a href="http://www.openskill.cn/article/260" target="_blank" rel="noopener"><strong>工作原理</strong></a></p>
-<p><strong>技术方案</strong>：[<a href="http://www.jumpserver.org" target="_blank" rel="noopener"><strong>Jumpserver</strong></a>]</p>
-<h2 id="容灾"><a href="#容灾" class="headerlink" title="容灾"></a>容灾</h2><p><strong>背景</strong>：为解决本地机房发生重大灾难，数据不可恢复，特在红岛建立的灾备数据中心。</p>
-<p><strong>技术方案</strong>：[<strong><a href="https://huiraoo.github.io/blog/2019/09/04/mysql-disaster/">容灾</a></strong>]</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2143,9 +3529,7 @@
                     
                       
                     
-                      
-                    
-                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-count">5</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -2196,15 +3580,7 @@
                     
                       
                     
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">21</span>
+                    <span class="site-state-item-count">17</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

@@ -323,6 +323,529 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/24/mysql-backup/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/24/mysql-backup/" class="post-title-link" itemprop="url">MySQL · 备份恢复</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-24 10:00:24" itemprop="dateCreated datePublished" datetime="2019-07-24T10:00:24+08:00">2019-07-24</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-09-25 15:29:14" itemprop="dateModified" datetime="2019-09-25T15:29:14+08:00">2019-09-25</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>物理备份：直接备份数据库的数据文件，适用于大数据量，需要快速恢复的数据库。</p>
+<p>逻辑备份：备份数据库中数据结构和内容的SQL语句，适用于较小数据量或是跨版本的数据库备份恢复。</p>
+<p>目前备份方式的几个纬度：</p>
+<ul>
+<li>全量备份 VS 增量备份</li>
+<li>热备 VS 冷备</li>
+<li>物理备份 VS 逻辑备份</li>
+<li>延时备份</li>
+<li>全量binlog备份</li>
+</ul>
+<p>建议方式：</p>
+<ul>
+<li>热备＋物理备份</li>
+<li>核心业务：延时备份＋逻辑备份</li>
+<li>全量binlog备份</li>
+</ul>
+<p>主要做的几点：</p>
+<ul>
+<li>备份策略集中式调度管理</li>
+<li>xtrabackup热备</li>
+<li>备份结果统计分析</li>
+<li>备份数据一致性校验</li>
+<li>采用分布式文件系统存储备份</li>
+</ul>
+<p>备份系统采用分布式文件系统原因：</p>
+<ul>
+<li>解决存储分配的问题</li>
+<li>解决存储NFS备份效率低下问题</li>
+<li>存储集中式管理</li>
+<li>数据可靠性更好</li>
+</ul>
+<h2 id="备份方案"><a href="#备份方案" class="headerlink" title="备份方案"></a>备份方案</h2><h3 id="mysqldump"><a href="#mysqldump" class="headerlink" title="mysqldump"></a>mysqldump</h3><h3 id="XtraBackup"><a href="#XtraBackup" class="headerlink" title="XtraBackup"></a>XtraBackup</h3><h2 id="恢复实践"><a href="#恢复实践" class="headerlink" title="恢复实践"></a>恢复实践</h2><p>目前的MySQL数据恢复方案主要还是基于备份来恢复，可见备份的重要性。比如我今天下午15点删除了线上一张表，该如何恢复呢？首先确认删除语句，然后用备份扩容实例启动，假设备份时间点是凌晨3点，就还需要把凌晨3点到现在关于这个表的binlog导出来，然后应用到新扩容的实例上，确认好恢复的时间点，然后把删除表的数据导出来应用到线上。</p>
+<p><strong>关于备份，binlog备份自然不用说了，物理备份有很多方式，有没有推荐的一种，逻辑备份在量大的时候恢复速度比较慢，一般用在什么场景？</strong></p>
+<p>物理备份采用xtrabackup热备方案比较好。逻辑备份一般用在单表恢复效果会非常好。比如你删了一个2G表，但你总数据量2T，用物理备份就会要慢了，逻辑备份就非常有用了。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/23/mysql-rules/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/23/mysql-rules/" class="post-title-link" itemprop="url">MySQL · 开发规范</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-23 13:58:36" itemprop="dateCreated datePublished" datetime="2019-07-23T13:58:36+08:00">2019-07-23</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-17 10:09:07" itemprop="dateModified" datetime="2019-10-17T10:09:07+08:00">2019-10-17</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="库表规范"><a href="#库表规范" class="headerlink" title="库表规范"></a>库表规范</h2><ul>
+<li><p>存储引擎必须使用 <code>InnoDB</code></p>
+</li>
+<li><p>库名、表名、字段名必须用小写，采用下划线分隔</p>
+</li>
+<li><p>表字符集默认使用 <code>utf8</code>，必要时候使用 <code>utf8mb4</code></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 通用，无乱码风险，汉字<span class="number">3</span>字节，英文<span class="number">1</span>字节</span><br><span class="line">② utf8mb4是utf8的超集，存储<span class="number">4</span>字节，例如：表情符号时使用它</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>禁止使用存储过程、视图、触发器、事件</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 对数据库性能影响较大，能让站点层和服务层干的事情，不要交到数据库层</span><br><span class="line">② 难以调试和扩展，更没有移植性</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>禁止在数据库中存储大文件</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 例如照片，可以将大文件存储在对象存储系统，数据库中存储路径</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>禁止使用 <code>text</code>、<code>blob</code> 类型</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 会浪费更多的磁盘和内存空间，非必要的大量的大字段查询会淘汰掉热数据，导致内存命中率急剧降低，影响数据库性能</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>根据业务区分使用 <code>tinyint</code>（1 byte）、<code>smallint</code>（2 byte）、<code>int</code>（4 byte）、<code>bigint</code>（8 byte）</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 合适的字符存储长度，不但节约数据库表空间，节约索引存储，更重要的是提升检索速度</span><br><span class="line">② 整数类型指定显示宽度，例如：int(M)对大多数应用是没有意义的，他不会限制值的合法范围，对于存储和计算来说，int(<span class="number">1</span>)和int(<span class="number">20</span>)是相同的</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>对象</th>
+<th>年龄区间</th>
+<th>类型</th>
+<th>范围</th>
+<th>字节</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>人</td>
+<td>150岁之内</td>
+<td>unsigned tinyint</td>
+<td>0～255</td>
+<td>1</td>
+</tr>
+<tr>
+<td>龟</td>
+<td>数百岁</td>
+<td>unsigned smallint</td>
+<td>0～65535</td>
+<td>2</td>
+</tr>
+<tr>
+<td>恐龙化石</td>
+<td>数千万岁</td>
+<td>unsigned int</td>
+<td>0～4294967295</td>
+<td>4</td>
+</tr>
+<tr>
+<td>太阳</td>
+<td>约50亿年</td>
+<td>unsigned bigint</td>
+<td>0～2^64-1</td>
+<td>8</td>
+</tr>
+</tbody></table>
+</li>
+<li><p>根据业务区分使用 <code>char</code>、<code>varchar</code></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 字段长度固定，或者长度近似的业务场景，适合使用char，能够减少碎片，查询性能高</span><br><span class="line">② 字段长度相差较大，或者更新较少的业务场景，适合使用varchar，节省磁盘空间</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>根据业务区分使用 <code>datetime</code>、<code>timestamp</code></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 前者占用<span class="number">8</span>个字节，后者占用<span class="number">4</span>个字节，存储年使用YEAR，存储日期使用DATE，存储时间使用datetime</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>小数类型使用 <code>decimal</code>，禁止使用 <code>float</code> 和 <code>double</code></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① float和double在存储的时候，存在精度损失的问题，很可能在值的比较时，得到不正确的结果</span><br><span class="line">② decimal(M,D)，如果M&gt;D，占用字节M+<span class="number">2</span>，否则为D+<span class="number">2</span>，M是数字最大位数，D是小数点右侧数字个数</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>表必须有主键，推荐使用 <code>unsigned</code> 整数为主键</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 删除无主键的表，如果是row模式的主从架构，从库会挂住</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建是否概念字段，必须使用 <code>is_xxx</code> 的方式命名，数据类型是 <code>unsigned tinyint</code>（ 1表示是，0表示否）</p>
+</li>
+<li><p>表必备三字段：<code>id</code>，<code>gmt_create</code>，<code>gmt_modified</code></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① id必为主键，类型为unsigned bigint，单表时自增，步长为<span class="number">1</span></span><br><span class="line">② gmt_create, gmt_modified类型均为datetime，前者现在时表示主动创建，后者过去分词表示被动更新</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>字段定义必须为 <code>NOT NULL</code> ，并设默认值</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① NULL列使用索引，会影响优化器选择执行计划，很难优化</span><br><span class="line">② NULL只能采用IS NULL或者IS NOT NULL，而在使用=、!=、<span class="keyword">in</span>、not <span class="keyword">in</span>时有大坑</span><br><span class="line">③ 数值默认值设置为<span class="number">0</span>，字符串默认值设置为<span class="string">''</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用 <code>unsigned int</code> 存储 <code>IPv4</code>，不要用 <code>char(15)</code></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 节省存储空间，char(<span class="number">15</span>)占据<span class="number">16</span>个字节，unsigned int只需要<span class="number">4</span>个字节</span><br><span class="line">② int型在逻辑运算上，比char速度快</span><br><span class="line">③ ip和数字转换，函数算法：inet_aton()和inet_ntoa()</span><br><span class="line"></span><br><span class="line">mysql&gt; select inet_aton(<span class="string">'192.168.1.200'</span>);</span><br><span class="line">+----------------------------+</span><br><span class="line">| inet_aton(<span class="string">'192.168.1.200'</span>) |</span><br><span class="line">+----------------------------+</span><br><span class="line">|                 <span class="number">3232235976</span> |</span><br><span class="line">+----------------------------+</span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select inet_ntoa(<span class="string">'3232235976'</span>);</span><br><span class="line">+-------------------------+</span><br><span class="line">| inet_ntoa(<span class="string">'3232235976'</span>) |</span><br><span class="line">+-------------------------+</span><br><span class="line">| <span class="number">192.168</span>.<span class="number">1.200</span>           |</span><br><span class="line">+-------------------------+</span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>使用 <code>varchar(20)</code> 存储手机号，不要使用整数</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 牵扯到国家代号，可能出现+/-/()等字符，例如+<span class="number">86</span></span><br><span class="line">② 手机号不会用来做数学运算</span><br><span class="line">③ varchar可以模糊查询，例如：like <span class="string">'138%'</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>控制单表数据量，单表数据控制在<strong>千万级</strong></p>
+</li>
+<li><p>测试、开发、线上数据库环境必须隔离</p>
+</li>
+<li><p>数据表、数据字段要有中文注释</p>
+</li>
+</ul>
+<h2 id="SQL规范"><a href="#SQL规范" class="headerlink" title="SQL规范"></a>SQL规范</h2><ul>
+<li><p>禁止使用 <code>select *</code>，只获取必要字段</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① select*会增加cpu/io/内存/带宽的消耗</span><br><span class="line">② 指定字段能有效利用索引覆盖</span><br><span class="line">③ 指定字段查询，在表结构变更时，能保证对应用程序无影响</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>禁止在 <code>where</code> 条件列使用函数或者表达式</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 导致不能命中索引，全表扫描</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>禁止负向查询，以及 <code>%</code> 开头的模糊查询</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 负向查询条件：NOT、!=、&lt;&gt;、!&lt;、!&gt;、NOT <span class="keyword">IN</span>、NOT LIKE等，会导致全表扫描</span><br><span class="line">② %开头的模糊查询，会导致全表扫描</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>不得使用外键与级联，一切外键概念必须在应用层解决</p>
+</li>
+<li><p><code>count(*)</code> 会统计值为 <code>null</code> 的行，而 <code>count(列名)</code> 不会统计此列为 <code>null</code> 值的行</p>
+</li>
+<li><p>数据订正（<code>delete</code>、<code>update</code> 操作）时，要先 <code>select</code>，避免出现误删除，确认无误才能执行更新语句</p>
+</li>
+<li><p>推荐使用 <code>truncate</code>，速度比 <code>delete</code> 快，且使用的系统和事务日志资源少</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① truncate table在功能上与不带where子句的delete语句相同</span><br><span class="line">② truncate无事务且不触发trigger，有可能造成事故</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>避免 <code>in</code> 操作，若实在避免不了，需要仔细评估 <code>in</code> 后边的集合元素数量，控制在 <code>1000</code> 个之内</p>
+</li>
+<li><p>推荐 <code>or</code> 改写为 <code>union</code></p>
+</li>
+</ul>
+<h2 id="索引规范"><a href="#索引规范" class="headerlink" title="索引规范"></a>索引规范</h2><ul>
+<li><p>唯一索引使用 <code>uniq_[字段名]</code> 来命名，非唯一索引使用 <code>idx_[字段名]</code> 来命名</p>
+</li>
+<li><p>单张表索引数量建议控制在 <code>5</code> 个以内</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 高并发业务，太多索引会影响写性能</span><br><span class="line">② 生成执行计划时，如果索引太多，会降低性能，并可能导致MySQL选择不到最优索引</span><br><span class="line">③ 异常复杂的查询需求，可以选择ES等更为适合的方式存储</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>超过三个表禁止 <code>join</code>，需要 <code>join</code> 的字段，数据类型必须绝对一致，多表关联查询时，确保被关联的字段需要有索引</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 踩过因为join字段类型不一致，而导致全表扫描的坑</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>禁止在更新十分频繁，区分度不高的字段建立索引</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 更新会变更B+树，更新频繁的字段建立索引会大大降低数据库性能</span><br><span class="line">② 区分度：count(distinct left(列名, 索引长度))/count(*)</span><br><span class="line">③ 性别不适合建索引</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>理解组合索引最左前缀原则，避免重复建索引，如果建了 <code>(a,b,c)</code>，相当于建了 <code>(a)</code>，<code>(a,b)</code>，<code>(a,b,c)</code></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 示例：where a=? and b=? order by c; 索引：a_b_c</span><br><span class="line">② 存在非等号和等号混合判断条件时，在建索引时把等号条件的列前置。如：where a&gt;? and b=? 那么即使a的区分度更高，也必须把b放在索引的最前列</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>避免因字段类型不同造成的隐式转换，导致索引失效</p>
+</li>
+<li><p>SQL性能优化的目标：至少要达到 <code>range</code> 级别，要求是 <code>ref</code> 级别，如果可以是 <code>consts</code> 最好</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① consts单表中最多只有一个匹配行（主键或者唯一索引），在优化阶段即可读取到数据</span><br><span class="line">② ref指的是使用普通的索引（normal index）</span><br><span class="line">③ range对索引进行范围检索</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<blockquote>
+<p><strong>参考</strong></p>
+</blockquote>
+<p>《<a href="https://mp.weixin.qq.com/s/YfCORbcCX1hymXBCrZbAZg" target="_blank" rel="noopener"><strong>58到家 · MySQL军规</strong></a>》</p>
+<p>《<a href="https://www.cntofu.com/book/78/p3c-gitbook/" target="_blank" rel="noopener"><strong>阿里巴巴 · Java开发手册</strong></a>》</p>
+<p>​    </p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/23/mysql-principle/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2564,479 +3087,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/12/mysql-cookbook/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/12/mysql-cookbook/" class="post-title-link" itemprop="url">MySQL · 构建知识体系</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-12 15:25:39" itemprop="dateCreated datePublished" datetime="2019-07-12T15:25:39+08:00">2019-07-12</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-13 21:00:00" itemprop="dateModified" datetime="2019-10-13T21:00:00+08:00">2019-10-13</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="数据库基础"><a href="#数据库基础" class="headerlink" title="数据库基础"></a>数据库基础</h2><h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>OLTP、OLAP、事务、库、表、行、列、主键、外键</p>
-<p><strong>数据库</strong>：物理操作系统或其他形式文件类型的集合。在mysql下数据库文件可以是 frm，myd，myi，ibd 结尾的文件。</p>
-<p><strong>数据库实例</strong>：由数据库后台进程/线程以及一个共享内存区组成。数据库实例才是真正用来操作数据库文件的。<br>mysql数据库：是单进程多线程的程序，与sql server比较类似。也就是说，Mysql数据库实例在系统上的表现就是一个进程</p>
-<p>数据库应用主要有两类：<strong>OLAP</strong>（联机分析处理）和 <strong>OLTP</strong>（联机事务处理）</p>
-<p>OLAP的主要特点是:</p>
-<ul>
-<li>实时性要求不高</li>
-<li>数据量大</li>
-<li>并发量小</li>
-</ul>
-<p>OLTP的主要特点是:</p>
-<ul>
-<li>实时性要求高</li>
-<li>数据量小</li>
-<li>高并发</li>
-<li>要求满足ACID</li>
-</ul>
-<h3 id="DBMS-vs-NoSQL-vs-NewSQL"><a href="#DBMS-vs-NoSQL-vs-NewSQL" class="headerlink" title="DBMS vs NoSQL vs NewSQL"></a>DBMS vs NoSQL vs NewSQL</h3><ul>
-<li>Oracle，典型的高富帅；</li>
-<li>SQL Server，微软自家产品，Windows定制专款；</li>
-<li>DB2，IBM的产品，听起来挺高端；</li>
-<li>Sybase，曾经跟微软是好基友，后来关系破裂，现在家境惨淡；</li>
-<li>MySQL，大家都在用，一般错不了；</li>
-<li>PostgreSQL，学术气息有点重，其实挺不错，但知名度没有MySQL高；</li>
-<li>SQLite，嵌入式数据库，适合桌面和移动应用；</li>
-</ul>
-<h3 id="MySQL基础"><a href="#MySQL基础" class="headerlink" title="MySQL基础"></a>MySQL基础</h3><h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><h4 id="主流分支版本"><a href="#主流分支版本" class="headerlink" title="主流分支版本"></a>主流分支版本</h4><p>官方版本</p>
-<p>Percona Server</p>
-<p>MariaDB</p>
-<h2 id="核心知识点"><a href="#核心知识点" class="headerlink" title="核心知识点"></a>核心知识点</h2><h3 id="体系结构"><a href="#体系结构" class="headerlink" title="体系结构"></a>体系结构</h3><h3 id="InnoDB存储引擎"><a href="#InnoDB存储引擎" class="headerlink" title="InnoDB存储引擎"></a>InnoDB存储引擎</h3><p><img src="http://ww4.sinaimg.cn/large/006tNc79ly1g5tdauxzpzj313i0u0qag.jpg" alt></p>
-<h3 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h3><p>什么是索引？</p>
-<p>B+Tree索引和Hash索引区别？</p>
-<ul>
-<li>哈希索引适合等值查询，但是无法进行范围查询；</li>
-<li>哈希索引没办法利用索引完成排序 ；</li>
-<li>哈希索引不支持多列联合索引的最左匹配规则；</li>
-<li>如果有大量重复键值的情况下，哈希索引的效率会很低，因为存在哈希碰撞问题。</li>
-</ul>
-<p>最左前缀匹配原则</p>
-<p>查询优化器</p>
-<p>一条SQL语句的查询，可以有不同的执行方案，至于最终选择哪种方案，需要通过优化器进行选择，选择执行成本最低的方案。</p>
-<p>在一条单表查询语句真正执行之前，MySQL的查询优化器会找出执行该语句所有可能使用的方案，对比之后找出成本最低的方案。 </p>
-<p>这个成本最低的方案就是所谓的执行计划。优化过程大致如下：</p>
-<ul>
-<li>根据搜索条件，找出所有可能使用的索引；</li>
-<li>计算全表扫描的代价；</li>
-<li>计算使用不同索引执行查询的代价；</li>
-<li>对比各种执行方案的代价，找出成本最低的那一个。</li>
-</ul>
-<h3 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h3><h3 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h3><h3 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h3><h3 id="SQL"><a href="#SQL" class="headerlink" title="SQL"></a>SQL</h3><p>视图</p>
-<p>存储过程</p>
-<p>触发器</p>
-<p>事件</p>
-<p>函数</p>
-<p>分区</p>
-<h2 id="运维实践"><a href="#运维实践" class="headerlink" title="运维实践"></a>运维实践</h2><h3 id="安装部署"><a href="#安装部署" class="headerlink" title="安装部署"></a>安装部署</h3><p>安装</p>
-<p>升级</p>
-<h3 id="监控告警"><a href="#监控告警" class="headerlink" title="监控告警"></a>监控告警</h3><p>监控指标、定制告警</p>
-<h3 id="备份恢复"><a href="#备份恢复" class="headerlink" title="备份恢复"></a>备份恢复</h3><h3 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h3><h3 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h3><p>慢查询、配置优化、SQL优化、索引优化、分库分表</p>
-<h3 id="高可用"><a href="#高可用" class="headerlink" title="高可用"></a>高可用</h3><p>读写分离</p>
-<p>同城双活</p>
-<p>两地三中心架构</p>
-<h3 id="安全"><a href="#安全" class="headerlink" title="安全"></a>安全</h3><h2 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h2><p><strong>工具</strong></p>
-<p><strong>阅读源码</strong></p>
-<p><strong>数据库设计</strong></p>
-<p><strong>自动化运维</strong></p>
-<p>主键</p>
-<p>外键：外键为某个表中的一列，它包含另一个表的主键值，定义了两个表之间的关系。</p>
-<p>优点：更有效的存储和处理数据，具有很强的可伸缩性（能够适应不断增加的工作量而不失败）。</p>
-<p>代价：数据存储在多个表中，如何快速检索出数据？（联结）</p>
-<p>唯一键</p>
-<p>行</p>
-<p>列</p>
-<p>函数</p>
-<p>优点：很高效地完成一些数据处理类任务。</p>
-<p>缺点：不同DBMS之间函数定义区别大，可移植性差。函数没有SQL的可移植性强。</p>
-<p>如果决定使用函数，就需要做好注释</p>
-<p>子查询：难以阅读和调试，需要格式化SQL</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/12/db-evolution/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/12/db-evolution/" class="post-title-link" itemprop="url">国产数据库的演进历史</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-12 14:02:39" itemprop="dateCreated datePublished" datetime="2019-07-12T14:02:39+08:00">2019-07-12</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-13 19:13:05" itemprop="dateModified" datetime="2019-10-13T19:13:05+08:00">2019-10-13</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/数据库/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="1949-1979"><a href="#1949-1979" class="headerlink" title="1949-1979"></a><strong>1949-1979</strong></h2><ul>
-<li>1956年，周恩来总理亲自领导了“科学技术发展十二年规划”，标志着我国计算机事业的开始。</li>
-</ul>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134141.jpg" alt="中国仿制前苏联大型机"></p>
-<ul>
-<li>随后十年动乱，中国计算机和数据库的研究基本停滞成为空白。</li>
-<li>70年代末，关系型数据库的概念刚刚兴起，1975年微软成立，1977年 Oracle 成立（70年代是美国的黄金年代）。OLTP 联机交易处理也称为面向交易的处理过程让数据库变得重要起来，也就是说计算机不但承担的是结果的纯计算，现在要实时承担交易过程和结果记录。</li>
-</ul>
-<h2 id="1979-1989"><a href="#1979-1989" class="headerlink" title="1979-1989"></a><strong>1979-1989</strong></h2><ul>
-<li><p>1977年，中国人民大学萨师煊教授和王珊教授编著《数据库系统概论》，并召开数据库年会。</p>
-</li>
-<li><p>80年代，中美正式建交，中国信息技术建设开始和世界开始接轨。自动化还没上马，信息化更是难寻踪迹，在数据库的研发和投入上，靠的是零星的科研力量和资金。这个时期，产、学、研是三条平行线。</p>
-</li>
-</ul>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134142.jpg" alt="主流关系型数据库家谱图"></p>
-<h2 id="1989-1999"><a href="#1989-1999" class="headerlink" title="1989-1999"></a><strong>1989-1999</strong></h2><ul>
-<li>80年代以研究所和大学为主的国家投入，那么在90年代产出这样几家国产数据库公司</li>
-</ul>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134143.png" alt="90年代863研究计划"></p>
-<h2 id="1999-2009"><a href="#1999-2009" class="headerlink" title="1999-2009"></a><strong>1999-2009</strong></h2><p>90年代，改革开放掀起的热潮，开始了外资和中国市场合作的黄金十年，外资在我国空前发展阶段，Oracle 和 DB2 横扫市场所有产品。在中国数据库公司刚刚成立想开发产品追赶 Oracle 的时候，市场的需求已经迸发出来，国产产品接不住，所以市场就是 Oracle 的天下了。这样出现了死循环：</p>
-<ul>
-<li>产品初期需要不断的试错和验证的机会。</li>
-<li>客户没有时间和办法陪着试错和成长。</li>
-<li>没有客户，生态就更差，更没有办法进行产品的投入和迭代。</li>
-</ul>
-<h2 id="2009-2019"><a href="#2009-2019" class="headerlink" title="2009-2019"></a>2009-2019</h2><p>互联网崛起的这十年，国内数据库厂商：</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134144.png" alt="db"></p>
-<p><strong>去IOE</strong>：IBM小型机、Oracle数据库、EMC存储设备</p>
-<p><strong>取代品</strong>：X86服务器、MySQL数据库、分布式存储</p>
-<blockquote>
-<p>IBM大型机：IBM Z系列，目前市场无性能相当替代品，国家民生、银行电信等关键核心业务</p>
-</blockquote>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134144.jpg" alt="big"></p>
-<blockquote>
-<p>小型机：UNIX服务器，IBM 的 POWER 处理器 + AIX 操作系统，RAS（Reliability， Availability，Serviceability 高可靠性、高可用性、高服务性）特性。解决方案从处理器到平台、操作系统、中间件，再到应用软件，都出于自家门下。好处就是各层次之间能有一个较好的优化和配合，让用户在从采购到部署、再到应用和维护的过程中无需自己太过操心。反过来说，这种模式使得用户容易被厂商锁定，后续IT系统采购、维护和应用，全部处于被垄断后的弱势地位，采购后的维护和更新也只能被动接受。</p>
-</blockquote>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134145.png" alt="small"></p>
-<blockquote>
-<p>x86服务器：成本低、易扩展、易维护更新</p>
-</blockquote>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134145.jpg" alt="x86"></p>
-<ul>
-<li>ARM架构：广泛适用于移动端，优点是低功耗。</li>
-<li>x86架构：广泛用于PC端，便宜、易扩展、易集成第三方软件。</li>
-</ul>
-<p>中国IT信息技术的崛起</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134146.jpg" alt="it信息技术"></p>
-<p>国内工业级应用软件发展</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134148.jpg" alt="it信息技术"></p>
-<p>服务器演进</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134149.jpg" alt="服务器"></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3112,9 +3162,7 @@
                     
                       
                     
-                      
-                    
-                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-count">5</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -3165,15 +3213,7 @@
                     
                       
                     
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">21</span>
+                    <span class="site-state-item-count">17</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

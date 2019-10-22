@@ -323,6 +323,479 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/12/mysql-cookbook/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/12/mysql-cookbook/" class="post-title-link" itemprop="url">MySQL · 构建知识体系</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-12 15:25:39" itemprop="dateCreated datePublished" datetime="2019-07-12T15:25:39+08:00">2019-07-12</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-13 21:00:00" itemprop="dateModified" datetime="2019-10-13T21:00:00+08:00">2019-10-13</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="数据库基础"><a href="#数据库基础" class="headerlink" title="数据库基础"></a>数据库基础</h2><h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>OLTP、OLAP、事务、库、表、行、列、主键、外键</p>
+<p><strong>数据库</strong>：物理操作系统或其他形式文件类型的集合。在mysql下数据库文件可以是 frm，myd，myi，ibd 结尾的文件。</p>
+<p><strong>数据库实例</strong>：由数据库后台进程/线程以及一个共享内存区组成。数据库实例才是真正用来操作数据库文件的。<br>mysql数据库：是单进程多线程的程序，与sql server比较类似。也就是说，Mysql数据库实例在系统上的表现就是一个进程</p>
+<p>数据库应用主要有两类：<strong>OLAP</strong>（联机分析处理）和 <strong>OLTP</strong>（联机事务处理）</p>
+<p>OLAP的主要特点是:</p>
+<ul>
+<li>实时性要求不高</li>
+<li>数据量大</li>
+<li>并发量小</li>
+</ul>
+<p>OLTP的主要特点是:</p>
+<ul>
+<li>实时性要求高</li>
+<li>数据量小</li>
+<li>高并发</li>
+<li>要求满足ACID</li>
+</ul>
+<h3 id="DBMS-vs-NoSQL-vs-NewSQL"><a href="#DBMS-vs-NoSQL-vs-NewSQL" class="headerlink" title="DBMS vs NoSQL vs NewSQL"></a>DBMS vs NoSQL vs NewSQL</h3><ul>
+<li>Oracle，典型的高富帅；</li>
+<li>SQL Server，微软自家产品，Windows定制专款；</li>
+<li>DB2，IBM的产品，听起来挺高端；</li>
+<li>Sybase，曾经跟微软是好基友，后来关系破裂，现在家境惨淡；</li>
+<li>MySQL，大家都在用，一般错不了；</li>
+<li>PostgreSQL，学术气息有点重，其实挺不错，但知名度没有MySQL高；</li>
+<li>SQLite，嵌入式数据库，适合桌面和移动应用；</li>
+</ul>
+<h3 id="MySQL基础"><a href="#MySQL基础" class="headerlink" title="MySQL基础"></a>MySQL基础</h3><h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><h4 id="主流分支版本"><a href="#主流分支版本" class="headerlink" title="主流分支版本"></a>主流分支版本</h4><p>官方版本</p>
+<p>Percona Server</p>
+<p>MariaDB</p>
+<h2 id="核心知识点"><a href="#核心知识点" class="headerlink" title="核心知识点"></a>核心知识点</h2><h3 id="体系结构"><a href="#体系结构" class="headerlink" title="体系结构"></a>体系结构</h3><h3 id="InnoDB存储引擎"><a href="#InnoDB存储引擎" class="headerlink" title="InnoDB存储引擎"></a>InnoDB存储引擎</h3><p><img src="http://ww4.sinaimg.cn/large/006tNc79ly1g5tdauxzpzj313i0u0qag.jpg" alt></p>
+<h3 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h3><p>什么是索引？</p>
+<p>B+Tree索引和Hash索引区别？</p>
+<ul>
+<li>哈希索引适合等值查询，但是无法进行范围查询；</li>
+<li>哈希索引没办法利用索引完成排序 ；</li>
+<li>哈希索引不支持多列联合索引的最左匹配规则；</li>
+<li>如果有大量重复键值的情况下，哈希索引的效率会很低，因为存在哈希碰撞问题。</li>
+</ul>
+<p>最左前缀匹配原则</p>
+<p>查询优化器</p>
+<p>一条SQL语句的查询，可以有不同的执行方案，至于最终选择哪种方案，需要通过优化器进行选择，选择执行成本最低的方案。</p>
+<p>在一条单表查询语句真正执行之前，MySQL的查询优化器会找出执行该语句所有可能使用的方案，对比之后找出成本最低的方案。 </p>
+<p>这个成本最低的方案就是所谓的执行计划。优化过程大致如下：</p>
+<ul>
+<li>根据搜索条件，找出所有可能使用的索引；</li>
+<li>计算全表扫描的代价；</li>
+<li>计算使用不同索引执行查询的代价；</li>
+<li>对比各种执行方案的代价，找出成本最低的那一个。</li>
+</ul>
+<h3 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h3><h3 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h3><h3 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h3><h3 id="SQL"><a href="#SQL" class="headerlink" title="SQL"></a>SQL</h3><p>视图</p>
+<p>存储过程</p>
+<p>触发器</p>
+<p>事件</p>
+<p>函数</p>
+<p>分区</p>
+<h2 id="运维实践"><a href="#运维实践" class="headerlink" title="运维实践"></a>运维实践</h2><h3 id="安装部署"><a href="#安装部署" class="headerlink" title="安装部署"></a>安装部署</h3><p>安装</p>
+<p>升级</p>
+<h3 id="监控告警"><a href="#监控告警" class="headerlink" title="监控告警"></a>监控告警</h3><p>监控指标、定制告警</p>
+<h3 id="备份恢复"><a href="#备份恢复" class="headerlink" title="备份恢复"></a>备份恢复</h3><h3 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h3><h3 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h3><p>慢查询、配置优化、SQL优化、索引优化、分库分表</p>
+<h3 id="高可用"><a href="#高可用" class="headerlink" title="高可用"></a>高可用</h3><p>读写分离</p>
+<p>同城双活</p>
+<p>两地三中心架构</p>
+<h3 id="安全"><a href="#安全" class="headerlink" title="安全"></a>安全</h3><h2 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h2><p><strong>工具</strong></p>
+<p><strong>阅读源码</strong></p>
+<p><strong>数据库设计</strong></p>
+<p><strong>自动化运维</strong></p>
+<p>主键</p>
+<p>外键：外键为某个表中的一列，它包含另一个表的主键值，定义了两个表之间的关系。</p>
+<p>优点：更有效的存储和处理数据，具有很强的可伸缩性（能够适应不断增加的工作量而不失败）。</p>
+<p>代价：数据存储在多个表中，如何快速检索出数据？（联结）</p>
+<p>唯一键</p>
+<p>行</p>
+<p>列</p>
+<p>函数</p>
+<p>优点：很高效地完成一些数据处理类任务。</p>
+<p>缺点：不同DBMS之间函数定义区别大，可移植性差。函数没有SQL的可移植性强。</p>
+<p>如果决定使用函数，就需要做好注释</p>
+<p>子查询：难以阅读和调试，需要格式化SQL</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/12/db-evolution/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/12/db-evolution/" class="post-title-link" itemprop="url">国产数据库的演进历史</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-12 14:02:39" itemprop="dateCreated datePublished" datetime="2019-07-12T14:02:39+08:00">2019-07-12</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-13 19:13:05" itemprop="dateModified" datetime="2019-10-13T19:13:05+08:00">2019-10-13</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/数据库/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="1949-1979"><a href="#1949-1979" class="headerlink" title="1949-1979"></a><strong>1949-1979</strong></h2><ul>
+<li>1956年，周恩来总理亲自领导了“科学技术发展十二年规划”，标志着我国计算机事业的开始。</li>
+</ul>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134141.jpg" alt="中国仿制前苏联大型机"></p>
+<ul>
+<li>随后十年动乱，中国计算机和数据库的研究基本停滞成为空白。</li>
+<li>70年代末，关系型数据库的概念刚刚兴起，1975年微软成立，1977年 Oracle 成立（70年代是美国的黄金年代）。OLTP 联机交易处理也称为面向交易的处理过程让数据库变得重要起来，也就是说计算机不但承担的是结果的纯计算，现在要实时承担交易过程和结果记录。</li>
+</ul>
+<h2 id="1979-1989"><a href="#1979-1989" class="headerlink" title="1979-1989"></a><strong>1979-1989</strong></h2><ul>
+<li><p>1977年，中国人民大学萨师煊教授和王珊教授编著《数据库系统概论》，并召开数据库年会。</p>
+</li>
+<li><p>80年代，中美正式建交，中国信息技术建设开始和世界开始接轨。自动化还没上马，信息化更是难寻踪迹，在数据库的研发和投入上，靠的是零星的科研力量和资金。这个时期，产、学、研是三条平行线。</p>
+</li>
+</ul>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134142.jpg" alt="主流关系型数据库家谱图"></p>
+<h2 id="1989-1999"><a href="#1989-1999" class="headerlink" title="1989-1999"></a><strong>1989-1999</strong></h2><ul>
+<li>80年代以研究所和大学为主的国家投入，那么在90年代产出这样几家国产数据库公司</li>
+</ul>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134143.png" alt="90年代863研究计划"></p>
+<h2 id="1999-2009"><a href="#1999-2009" class="headerlink" title="1999-2009"></a><strong>1999-2009</strong></h2><p>90年代，改革开放掀起的热潮，开始了外资和中国市场合作的黄金十年，外资在我国空前发展阶段，Oracle 和 DB2 横扫市场所有产品。在中国数据库公司刚刚成立想开发产品追赶 Oracle 的时候，市场的需求已经迸发出来，国产产品接不住，所以市场就是 Oracle 的天下了。这样出现了死循环：</p>
+<ul>
+<li>产品初期需要不断的试错和验证的机会。</li>
+<li>客户没有时间和办法陪着试错和成长。</li>
+<li>没有客户，生态就更差，更没有办法进行产品的投入和迭代。</li>
+</ul>
+<h2 id="2009-2019"><a href="#2009-2019" class="headerlink" title="2009-2019"></a>2009-2019</h2><p>互联网崛起的这十年，国内数据库厂商：</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134144.png" alt="db"></p>
+<p><strong>去IOE</strong>：IBM小型机、Oracle数据库、EMC存储设备</p>
+<p><strong>取代品</strong>：X86服务器、MySQL数据库、分布式存储</p>
+<blockquote>
+<p>IBM大型机：IBM Z系列，目前市场无性能相当替代品，国家民生、银行电信等关键核心业务</p>
+</blockquote>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134144.jpg" alt="big"></p>
+<blockquote>
+<p>小型机：UNIX服务器，IBM 的 POWER 处理器 + AIX 操作系统，RAS（Reliability， Availability，Serviceability 高可靠性、高可用性、高服务性）特性。解决方案从处理器到平台、操作系统、中间件，再到应用软件，都出于自家门下。好处就是各层次之间能有一个较好的优化和配合，让用户在从采购到部署、再到应用和维护的过程中无需自己太过操心。反过来说，这种模式使得用户容易被厂商锁定，后续IT系统采购、维护和应用，全部处于被垄断后的弱势地位，采购后的维护和更新也只能被动接受。</p>
+</blockquote>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134145.png" alt="small"></p>
+<blockquote>
+<p>x86服务器：成本低、易扩展、易维护更新</p>
+</blockquote>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134145.jpg" alt="x86"></p>
+<ul>
+<li>ARM架构：广泛适用于移动端，优点是低功耗。</li>
+<li>x86架构：广泛用于PC端，便宜、易扩展、易集成第三方软件。</li>
+</ul>
+<p>中国IT信息技术的崛起</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134146.jpg" alt="it信息技术"></p>
+<p>国内工业级应用软件发展</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134148.jpg" alt="it信息技术"></p>
+<p>服务器演进</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134149.jpg" alt="服务器"></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/11/mysql-tuning/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1193,199 +1666,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/08/tidb1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/08/tidb1/" class="post-title-link" itemprop="url">TiDB</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-08 10:54:05" itemprop="dateCreated datePublished" datetime="2019-07-08T10:54:05+08:00">2019-07-08</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-13 19:14:01" itemprop="dateModified" datetime="2019-10-13T19:14:01+08:00">2019-10-13</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/TiDB/" itemprop="url" rel="index"><span itemprop="name">TiDB</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://pingcap.com/" target="_blank" rel="noopener"><strong>TiDB</strong></a> 是一款定位于在线事务处理/在线分析处理（ HTAP: Hybrid Transactional/Analytical Processing）的融合型数据库产品，实现了一键水平伸缩，强一致性的多副本数据安全，分布式事务，实时 OLAP 等重要特性。同时兼容 MySQL 协议和生态，迁移便捷，运维成本极低。</p>
-<p><a href="https://pingcap.com/docs-cn/v3.0/" target="_blank" rel="noopener"><strong>文档</strong></a> | <a href="https://github.com/pingcap/tidb" target="_blank" rel="noopener"><strong>代码</strong></a> | <a href="https://pingcap.com/community-cn/" target="_blank" rel="noopener"><strong>社区</strong></a></p>
-<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p><strong>安装依赖包</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ yum -y install libtool zlib-devel autoconf readline-devel readline libuuid-devel zlib-devel automake libuuid readline-devel readline ncurses-devel.x86_64 ncurses.x86_64 gcc-c++ vim wget net-tools svn libstdc++.so.<span class="number">6</span> glibc.i686 unzip make lrzsz libtool zlib-devel autoconf readline-devel readline libuuid-devel zlib-devel automake libuuid readline-devel readline ncurses-devel.x86_64 ncurses.x86_64 gcc-c++ vim wget net-tools svn libstdc++.so.<span class="number">6</span> libcurl-dev libcurl-devel expat-devel perl-ExtUtils-CBuilder perl-ExtUtils-MakeMaker zip git gcc openssl-devel libnl3-devel net-snmp-devel libnfnetlink-devel zlib zlib-devel openssl openssl-devel tree lrzsz tree net-tools nmap vim bash-completion lsof dos2unix nc telnet ntp wget rng-tools psmisc screen pcre pcre-devel</span><br></pre></td></tr></table></figure>
-
-<p><strong>安装 TiDB</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ cd /usr/local/</span><br><span class="line">$ wget http://download.pingcap.org/tidb-latest-linux-amd64.tar.gz</span><br><span class="line">$ tar -xzf tidb-latest-linux-amd64.tar.gz  /usr/local</span><br><span class="line">$ mkdir -p /<span class="keyword">data</span>/tidb</span><br><span class="line">$ cd /usr/local/tidb-latest-linux-amd64</span><br><span class="line">$ ln -s /usr/local/tidb-latest-linux-amd64/bin/pd-tso-bench /usr/bin</span><br><span class="line">$ ln -s /usr/local/tidb-latest-linux-amd64/bin/tikv-server /usr/bin/</span><br><span class="line">$ ln -s /usr/local/tidb-latest-linux-amd64/bin/tidb-server /usr/bin/</span><br><span class="line">$ ln -s /usr/local/tidb-latest-linux-amd64/bin/pd-server /usr/bin/</span><br><span class="line">$ ln -s /usr/local/tidb-latest-linux-amd64/bin/pd-ctl /usr/bin/</span><br></pre></td></tr></table></figure>
-
-<p><strong>启动 PD</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd bin</span><br><span class="line">$ ./pd-server -data-dir=/<span class="keyword">data</span>/tidb/pd -log-file=/<span class="keyword">data</span>/tidb/log/pd.log -name=pd1 &amp;</span><br></pre></td></tr></table></figure>
-
-<p><strong>启动 TiKV</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ./tikv-server --pd=<span class="string">"127.0.0.1:2379"</span> --data-dir=/<span class="keyword">data</span>/tidb/tikv --log-file=/<span class="keyword">data</span>/tidb/log/tikv.log &amp;</span><br></pre></td></tr></table></figure>
-
-<p><strong>连接 TiDB</strong></p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -h 127.0.0.1 -P 4000 -u root</span><br><span class="line"></span><br><span class="line">Welcome to the MySQL monitor.  Commands <span class="keyword">end</span> <span class="keyword">with</span> ; or \g.</span><br><span class="line">Your MySQL connection id is 12</span><br><span class="line">Server version: 5.7.25-TiDB-v3.0.0-rc.1-290-g21d2590ac MySQL Community Server (Apache License 2.0)</span><br><span class="line"></span><br><span class="line">Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.</span><br><span class="line"></span><br><span class="line">Oracle is a registered trademark of Oracle Corporation and/or its</span><br><span class="line">affiliates. Other names may be trademarks of their respective</span><br><span class="line">owners.</span><br><span class="line"></span><br><span class="line">Type '<span class="keyword">help</span>;' or '\h' for help. <span class="keyword">Type</span> <span class="string">'\c'</span> <span class="keyword">to</span> <span class="keyword">clear</span> the <span class="keyword">current</span> <span class="keyword">input</span> statement.</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">show</span> <span class="keyword">databases</span>;</span><br><span class="line">+<span class="comment">--------------------+</span></span><br><span class="line">| Database           |</span><br><span class="line">+<span class="comment">--------------------+</span></span><br><span class="line">| INFORMATION_SCHEMA |</span><br><span class="line">| PERFORMANCE_SCHEMA |</span><br><span class="line">| mysql              |</span><br><span class="line">| test               |</span><br><span class="line">+<span class="comment">--------------------+</span></span><br><span class="line">4 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-
-<p><strong>修改root密码</strong></p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; use mysql; </span><br><span class="line">mysql&gt; update user set password=PASSWORD("Changeme_123") where User='root';</span><br><span class="line">mysql&gt; flush privileges;</span><br></pre></td></tr></table></figure>
-
-<p><strong>设置远程可访问</strong></p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; grant all privileges on *.* to 'root'@'%' identified by 'Changeme_123';</span><br><span class="line">mysql&gt; flush privileges;</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/05/mysql-sql/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1847,187 +2127,6 @@
 <td>格式化执行计划</td>
 </tr>
 </tbody></table>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/04/ielts/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/04/ielts/" class="post-title-link" itemprop="url">备考雅思</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-04 14:56:41" itemprop="dateCreated datePublished" datetime="2019-07-04T14:56:41+08:00">2019-07-04</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-13 19:13:10" itemprop="dateModified" datetime="2019-10-13T19:13:10+08:00">2019-10-13</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/其他/" itemprop="url" rel="index"><span itemprop="name">其他</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="报名"><a href="#报名" class="headerlink" title="报名"></a>报名</h2><p><a href="https://ielts.etest.net.cn" target="_blank" rel="noopener">报名入口</a></p>
-<p>考试费用：￥2020</p>
-<p>转考费用：￥420</p>
-<h2 id="资料"><a href="#资料" class="headerlink" title="资料"></a>资料</h2><p>《剑桥雅思官方真题》</p>
-<p>《剑桥雅思真题精讲》</p>
-<p>《7天搞定雅思高频核心词》</p>
-<p>《雅思词汇真经》</p>
-<p>《顾家北手把手教你雅思写作》</p>
-<p>《雅思王听力真题语料库》</p>
 
           
         
@@ -2908,9 +3007,7 @@
                     
                       
                     
-                      
-                    
-                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-count">5</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -2961,15 +3058,7 @@
                     
                       
                     
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">21</span>
+                    <span class="site-state-item-count">17</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
