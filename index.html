@@ -323,6 +323,799 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/22/mysql-migration/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/22/mysql-migration/" class="post-title-link" itemprop="url">MySQL · 使用 XtraBackup 迁移数据库</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-22 17:37:16 / 修改时间：18:03:29" itemprop="dateCreated datePublished" datetime="2019-10-22T17:37:16+08:00">2019-10-22</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p><strong>需求</strong>：xx 项目，将生产环境数据库迁移至测试环境，迁移数据量约 <code>185GB</code></p>
+<p><strong>环境</strong>：</p>
+<ul>
+<li>生产库：<code>10.138.22.218:3100</code>，MySQL 版本 <code>5.6.27</code></li>
+<li>测试库：<code>10.138.22.192:3306</code>，MySQL 版本 <code>5.6.27</code></li>
+</ul>
+<blockquote>
+<p><strong>Tips</strong>：数据库版本要一致，且配置文件 <code>my.cnf</code> 一致。</p>
+</blockquote>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p><strong>准备</strong>：</p>
+<ul>
+<li>生产库和测试库服务器都已经 <a href="https://huiraoo.github.io/blog/2019/06/18/mysql-xtrabackup/">安装 XtraBackup</a></li>
+<li>已配置互信</li>
+</ul>
+<p><strong>1. 备份主库（约耗时 30min）</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ innobackupex --defaults-file=/etc/my.cnf --user=root --password=<span class="string">'xx'</span> --no-timestamp /<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
+
+<p><strong>2. 传输备份数据到测试服务器 （约耗时 30min）</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ scp -r /<span class="keyword">data</span>/backup/* root@<span class="number">10.138</span>.<span class="number">22.192</span>:/<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
+
+<p><strong>3. 恢复全备数据（约耗时 60min）</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ mysqladmin -S /<span class="keyword">data</span>/mysql/mysql.sock -uroot -p<span class="string">'xx'</span> shutdown</span><br><span class="line">$ innobackupex --defaults-file=/etc/my.cnf --apply-log /<span class="keyword">data</span>/backup</span><br><span class="line">$ mv mysql mysql_bak</span><br><span class="line">$ mkdir mysql</span><br><span class="line">$ innobackupex --defaults-file=/etc/my.cnf --copy-back /<span class="keyword">data</span>/backup</span><br><span class="line">$ chown -R mysql:mysql mysql</span><br><span class="line">$ /usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql &gt;/dev/null &amp;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/22/mysql-case-rows/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/22/mysql-case-rows/" class="post-title-link" itemprop="url">MySQL · 案例分析 · information_schema.tables与count(*)查询行数不一致</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-22 11:25:04 / 修改时间：14:47:51" itemprop="dateCreated datePublished" datetime="2019-10-22T11:25:04+08:00">2019-10-22</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><p>查询表 <code>mqm.t_batch</code> 总行数</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># information_schema.tables</span></span><br><span class="line">mysql&gt; select table_name,table_rows from information_schema.tables where TABLE_SCHEMA = 'mqm' and table_name='t_batch';</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">| table_name | table_rows |</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">| t_batch    |    9527271 |</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.02</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># count(*)</span></span><br><span class="line">mysql&gt; <span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> t_batch;</span><br><span class="line">+<span class="comment">----------+</span></span><br><span class="line">| count(*) |</span><br><span class="line">+<span class="comment">----------+</span></span><br><span class="line">| 10474287 |</span><br><span class="line">+<span class="comment">----------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">21.52</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h2 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h2><p>默认情况下，MySQL 对表进行增删操作时，是不会自动更新 <code>information_schema.tables</code> 表 <code>table_rows</code> 字段，只有 <code>10%</code> 的行数发生变化才会自动收集。执行 <code>ANALYZE TABLE &#39;table_name&#39;</code> 后会统计所有表数据，结果和 <code>count(*)</code> 一致。</p>
+<blockquote>
+<p>Tips：生产环境中不建议使用，因为会锁表！</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; ANALYZE TABLE t_batch;</span><br><span class="line">+<span class="comment">-------------+---------+----------+----------+</span></span><br><span class="line">| Table       | Op      | Msg_type | Msg_text |</span><br><span class="line">+<span class="comment">-------------+---------+----------+----------+</span></span><br><span class="line">| mqm.t_batch | <span class="keyword">analyze</span> | <span class="keyword">status</span>   | OK       |</span><br><span class="line">+<span class="comment">-------------+---------+----------+----------+</span></span><br><span class="line"><span class="number">1</span> <span class="keyword">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">3.85</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">select</span> table_name,table_rows <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> TABLE_SCHEMA = <span class="string">'mqm'</span> <span class="keyword">and</span> table_name=<span class="string">'t_batch'</span>;</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">| table_name | table_rows |</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">| t_batch    |   10261904 |</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.07</span> sec)</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/22/mysql-tuning-like/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/22/mysql-tuning-like/" class="post-title-link" itemprop="url">MySQL · 调优案例 · 千万级大表 like 模糊查询</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-22 10:54:49 / 修改时间：20:12:51" itemprop="dateCreated datePublished" datetime="2019-10-22T10:54:49+08:00">2019-10-22</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生产环境执行的SQL</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">''</span> <span class="keyword">AS</span> batch_fail_id, <span class="string">''</span> <span class="keyword">AS</span> uuid_Fail, b.send_goods_No, b.test_type, b.order_no</span><br><span class="line">	, b.row_no, b.bu, b.mtl_no, b.mtl_name, b.mtl_group, b.mtl_group_name</span><br><span class="line">	, b.materiel_category_id, b.materiel_category_name, b.pattern_amount</span><br><span class="line">	, b.plan_pattern_amount, b.goods_unit, b.plan_send_day, b.fact_send_Day, b.stock_Day</span><br><span class="line">	, b.supply_code, b.supply_name, b.supply_check_level, b.sap_mark_id, b.sap_mark_name</span><br><span class="line">	, b.syb_id, b.syb_name, b.check_style_id, b.check_style_name, b.check_type_id</span><br><span class="line">	, b.check_type_name, b.QC_STATUS, b.QC_STATUS_INSTR_DATE, b.QC_NO, b.factory_code</span><br><span class="line">	, b.goods_sort, b.price_unit, b.stock_price, b.LICHA, b.BSART, b.LGORT</span><br><span class="line">	, b.plan_Date, b.TEST_CONCLUSION, b.IQC_manager_id, b.IQC_manager_name, b.iqc_leader_id</span><br><span class="line">	, b.iqc_leader_name, b.test_complete_day, b.test_start_day, b.new_or_old,b.check_status_id</span><br><span class="line">	, b.is_appeal, b.is_start_check, b.standard_type, b.check_reason, b.is_stop</span><br><span class="line">	, b.check_time, b.instance_id, b.create_date <span class="keyword">AS</span> createDate, b.delete_status</span><br><span class="line"><span class="keyword">FROM</span> t_batch b</span><br><span class="line"><span class="keyword">WHERE</span> b.mtl_no <span class="keyword">LIKE</span> <span class="string">'%0594A%'</span> <span class="keyword">AND</span> b.delete_status = <span class="string">'N'</span></span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line"><span class="keyword">SELECT</span> f.batch_fail_id, f.uuid, f.send_goods_No, f.test_type, f.order_no, f.row_no, f.bu</span><br><span class="line">  , f.mtl_no, f.mtl_name, f.mtl_group, f.mtl_group_name</span><br><span class="line">  , f.materiel_category_id,f.materiel_category_name, f.pattern_amount, f.plan_pattern_amount</span><br><span class="line">	, f.goods_unit, f.plan_send_day, f.fact_send_Day, f.stock_Day, f.supply_code</span><br><span class="line">	, f.supply_name, f.supply_check_level, f.sap_mark_id, f.sap_mark_name, f.syb_id</span><br><span class="line">	, f.syb_name, f.check_style_id, f.check_style_name, f.check_type_id, f.check_type_name</span><br><span class="line">	, f.QC_STATUS, f.QC_STATUS_INSTR_DATE, f.QC_NO, f.factory_code, f.goods_sort</span><br><span class="line">	, f.price_unit, f.stock_price, f.LICHA, f.BSART, f.LGORT</span><br><span class="line">	, f.plan_Date, f.TEST_CONCLUSION, f.IQC_manager_id, f.IQC_manager_name, f.iqc_leader_id</span><br><span class="line">	, f.iqc_leader_name, f.test_complete_day, f.test_start_day, f.new_or_old</span><br><span class="line">	, f.check_status_id, f.is_appeal, f.is_start_check, f.standard_type, f.check_reason</span><br><span class="line">	, f.is_stop, f.check_time, f.instance_id, f.create_date <span class="keyword">AS</span> createDate, f.delete_status</span><br><span class="line"><span class="keyword">FROM</span> t_batch_fail f</span><br><span class="line"><span class="keyword">WHERE</span> f.mtl_no <span class="keyword">LIKE</span> <span class="string">'%0594A%'</span> <span class="keyword">AND</span> f.delete_status = <span class="string">'N'</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> createDate <span class="keyword">DESC</span></span><br><span class="line"><span class="keyword">LIMIT</span> <span class="number">0</span>, <span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 表数据量</span></span><br><span class="line">mysql&gt; <span class="keyword">select</span> table_name,table_rows,<span class="keyword">CONCAT</span>(<span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(data_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> data_size, <span class="keyword">CONCAT</span>(<span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(index_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> index_size <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> TABLE_SCHEMA = <span class="string">'mqm'</span> <span class="keyword">and</span> table_name=<span class="string">'t_batch'</span>;</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| table_name | table_rows | data_size | index_size |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| t_batch    |   10261904 | 4895.00MB | 8643.23MB  |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">+<span class="comment">--------------+------------+-----------+------------+</span></span><br><span class="line">| table_name   | table_rows | data_size | index_size |</span><br><span class="line">+<span class="comment">--------------+------------+-----------+------------+</span></span><br><span class="line">| t_batch_fail |      <span class="number">43683</span> | <span class="number">19.56</span>MB   | <span class="number">14.57</span>MB    |</span><br><span class="line">+<span class="comment">--------------+------------+-----------+------------+</span></span><br><span class="line"><span class="number">1</span> <span class="keyword">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.01</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行时间</span></span><br><span class="line"><span class="number">10</span> <span class="keyword">rows</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">1</span> <span class="keyword">min</span> <span class="number">26.92</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p><strong>Union All</strong>：对两个结果集进行并集操作，包括重复行。</p>
+<p><strong>执行计划</strong>：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br><span class="line">| id | select_type  | table      | type | possible_keys     | key               | key_len | ref   | rows    | Extra                              |</span><br><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br><span class="line">|  1 | PRIMARY      | b          | ALL  | NULL              | NULL              | NULL    | NULL  | 9527271 | Using where                        |</span><br><span class="line">|  2 | UNION        | f          | ref  | idx_delete_status | idx_delete_status | 9       | const |   20469 | Using index condition; Using where |</span><br><span class="line">| NULL | UNION RESULT | &lt;union1,2&gt; | ALL  | NULL              | NULL              | NULL    | NULL  |    NULL | Using temporary; Using filesort    |</span><br><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show table status like 't_batch'\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">           Name: t_batch</span><br><span class="line">         Engine: InnoDB</span><br><span class="line">        Version: 10</span><br><span class="line">     Row_format: Compact</span><br><span class="line">           Rows: 10261904</span><br><span class="line"> Avg_row_length: 421</span><br><span class="line">    Data_length: 4016046080</span><br><span class="line">Max_data_length: 0</span><br><span class="line">   Index_length: 5948571648</span><br><span class="line">      Data_free: 6291456</span><br><span class="line"> Auto_increment: NULL</span><br><span class="line">    Create_time: 2019-10-21 18:12:54</span><br><span class="line">    Update_time: NULL</span><br><span class="line">     Check_time: NULL</span><br><span class="line">      Collation: utf8_general_ci</span><br><span class="line">       <span class="keyword">Checksum</span>: <span class="literal">NULL</span></span><br><span class="line"> Create_options: </span><br><span class="line">        <span class="keyword">Comment</span>: 批量检验计划表</span><br><span class="line"><span class="number">1</span> <span class="keyword">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.03</span> sec)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show index from t_batch;</span><br><span class="line">+<span class="comment">---------+------------+-------------+--------------+-------------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span></span><br><span class="line">| Table   | Non_unique | Key_name    | Seq_in_index | Column_name       | Collation | Cardinality | Sub_part | Packed | Null | Index_type | <span class="keyword">Comment</span> | Index_comment |</span><br><span class="line">+<span class="comment">---------+------------+-------------+--------------+-------------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span></span><br><span class="line">| t_batch |          <span class="number">0</span> | PRIMARY     |            <span class="number">1</span> | send_goods_No     | A         |     <span class="number">9527271</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   |      | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | batch_idx01 |            <span class="number">1</span> | mtl_no            | A         |      <span class="number">250717</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | batch_idx05 |            <span class="number">1</span> | iqc_leader_id     | A         |       <span class="number">39046</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | batch_idx08 |            <span class="number">1</span> | IQC_manager_id    | A         |       <span class="number">55715</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group   |            <span class="number">1</span> | check_style_id    | A         |        <span class="number">1280</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group   |            <span class="number">2</span> | check_status_id   | A         |        <span class="number">3843</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group2  |            <span class="number">1</span> | mtl_no            | A         |      <span class="number">232372</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group2  |            <span class="number">2</span> | supply_code       | A         |      <span class="number">560427</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group2  |            <span class="number">3</span> | syb_id            | A         |      <span class="number">396969</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group2  |            <span class="number">4</span> | create_date       | A         |     <span class="number">9527271</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group2  |            <span class="number">5</span> | IQC_manager_id    | A         |     <span class="number">9527271</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group2  |            <span class="number">6</span> | check_status_id   | A         |     <span class="number">9527271</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group2  |            <span class="number">7</span> | is_start_check    | A         |     <span class="number">9527271</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group1  |            <span class="number">1</span> | order_no          | A         |     <span class="number">1190908</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group1  |            <span class="number">2</span> | row_no            | A         |     <span class="number">9527271</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group1  |            <span class="number">3</span> | factory_code      | A         |     <span class="number">9527271</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group1  |            <span class="number">4</span> | TEST_CONCLUSION   | A         |     <span class="number">9527271</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group1  |            <span class="number">5</span> | sap_mark_name     | A         |     <span class="number">9527271</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group3  |            <span class="number">1</span> | check_style_id    | A         |        <span class="number">1222</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group3  |            <span class="number">2</span> | test_complete_day | A         |     <span class="number">4763635</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group3  |            <span class="number">3</span> | create_date       | A         |     <span class="number">9527271</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group4  |            <span class="number">1</span> | supply_code       | A         |       <span class="number">59919</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group4  |            <span class="number">2</span> | test_complete_day | A         |     <span class="number">9527271</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group4  |            <span class="number">3</span> | delete_status     | A         |     <span class="number">9527271</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group5  |            <span class="number">1</span> | syb_id            | A         |       <span class="number">26318</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group5  |            <span class="number">2</span> | check_style_id    | A         |       <span class="number">59175</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group5  |            <span class="number">3</span> | create_date       | A         |     <span class="number">9527271</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group5  |            <span class="number">4</span> | delete_status     | A         |     <span class="number">9527271</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group5  |            <span class="number">5</span> | TEST_CONCLUSION   | A         |     <span class="number">9527271</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group5  |            <span class="number">6</span> | IQC_manager_id    | A         |     <span class="number">9527271</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group6  |            <span class="number">1</span> | mtl_no            | A         |      <span class="number">190545</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group6  |            <span class="number">2</span> | syb_id            | A         |      <span class="number">328526</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_group6  |            <span class="number">3</span> | delete_status     | A         |      <span class="number">226839</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">| t_batch |          <span class="number">1</span> | idx_lgort   |            <span class="number">1</span> | LGORT             | A         |     <span class="number">9527271</span> |     <span class="literal">NULL</span> | <span class="literal">NULL</span>   | YES  | BTREE      |         |               |</span><br><span class="line">+<span class="comment">---------+------------+-------------+--------------+-------------------+-----------+-------------+----------+--------+------+------------+---------+---------------+</span></span><br><span class="line"><span class="number">34</span> <span class="keyword">rows</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.06</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p><strong>千万大表添加索引</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; ALTER TABLE `t_batch` ADD INDEX `idx_delete_status` (`delete_status`);</span><br><span class="line">Query OK, 0 rows affected (2 min 47.24 sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加索引之后查询计划</span></span><br><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br><span class="line">| id | select_type  | table      | type | possible_keys     | key               | key_len | ref   | rows    | Extra                              |</span><br><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br><span class="line">|  1 | PRIMARY      | b          | ref  | idx_delete_status | idx_delete_status | 9       | const | 5130952 | Using index condition; Using where |</span><br><span class="line">|  2 | UNION        | f          | ref  | idx_delete_status | idx_delete_status | 9       | const |   20469 | Using index condition; Using where |</span><br><span class="line">| NULL | UNION RESULT | &lt;union1,2&gt; | ALL  | NULL              | NULL              | NULL    | NULL  |    NULL | Using temporary; Using filesort    |</span><br><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br><span class="line">3 rows in <span class="keyword">set</span> (<span class="number">0.07</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p><strong>模糊查询方法对比</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># mtl_no like '%0594A%'</span></span><br><span class="line"><span class="number">10</span> rows <span class="keyword">in</span> set (<span class="number">1</span> min <span class="number">26.92</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># locate('0594A', mtl_no) &gt; 0</span></span><br><span class="line"><span class="number">10</span> rows <span class="keyword">in</span> set (<span class="number">32.71</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># instr(mtl_no,'0594A') &gt; 0</span></span><br><span class="line"><span class="number">10</span> rows <span class="keyword">in</span> set (<span class="number">32.72</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p><strong>结论：</strong></p>
+<p>1）这三种方法都只能用全表扫描的方式进行查询，但 <code>locate</code> 和 <code>instr</code> 方法速度比 <code>like</code> 稍快。</p>
+<p>2）<code>like %%</code> 此类模糊查询，推荐使用搜索引擎，比如 <code>Elasticsearch</code>。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/22/confluence/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/22/confluence/" class="post-title-link" itemprop="url">Confluence</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-22 10:43:11 / 修改时间：10:43:24" itemprop="dateCreated datePublished" datetime="2019-10-22T10:43:11+08:00">2019-10-22</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/22/jira/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/22/jira/" class="post-title-link" itemprop="url">Jira</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-22 09:27:51 / 修改时间：10:45:39" itemprop="dateCreated datePublished" datetime="2019-10-22T09:27:51+08:00">2019-10-22</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>JIRA 是 Atlassian 公司的产品，Atlassian 最核心的产品仍然是 <strong>JIRA</strong> 和 <strong>Confluence</strong>，JIRA 被业界公认为最好的项目管理和开发管理工具，Confluence 被认为是最好用的企业级知识管理工具。</p>
+<h2 id="核心概念"><a href="#核心概念" class="headerlink" title="核心概念"></a>核心概念</h2><h3 id="Project（项目）"><a href="#Project（项目）" class="headerlink" title="Project（项目）"></a>Project（项目）</h3><p><strong>创建项目</strong>：项目名称、简称、URL、问题类型</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-22-100515.png" alt></p>
+<h3 id="Issue（问题单）"><a href="#Issue（问题单）" class="headerlink" title="Issue（问题单）"></a>Issue（问题单）</h3><h4 id="Issue-Type（问题单类型）"><a href="#Issue-Type（问题单类型）" class="headerlink" title="Issue Type（问题单类型）"></a>Issue Type（问题单类型）</h4><ul>
+<li><strong>Bug</strong> - 故障，功能失效</li>
+<li><strong>Improvement</strong> - 提升，既有功能增强</li>
+<li><strong>New Feature</strong> - 新功能</li>
+<li><strong>Task</strong> - 任务</li>
+<li><strong>Custom Issue</strong> - 根据需要客户化定制</li>
+</ul>
+<h4 id="Priority（优先级）"><a href="#Priority（优先级）" class="headerlink" title="Priority（优先级）"></a>Priority（优先级）</h4><ul>
+<li><strong>Highest</strong> - 最高级别，表明问题阻塞了业务流程正常进行</li>
+<li><strong>High</strong> - 高级，表明问题引发明显故障，需要紧急关注</li>
+<li><strong>Medium</strong> - 中级，表明问题有一个明显的影响</li>
+<li><strong>Low</strong> - 低级，表明问题有一个轻微的影响</li>
+<li><strong>Lowest</strong> - 最低级</li>
+</ul>
+<h4 id="Status（状态）"><a href="#Status（状态）" class="headerlink" title="Status（状态）"></a>Status（状态）</h4><ul>
+<li><strong>Open</strong> - 打开状态，表明问题单已经被创建，等待被分配到开始处理状态</li>
+<li><strong>In Progress</strong> - 处理中状态，表明问题单已经被分配人激活，并处于被处理状态中</li>
+<li><strong>Resolved</strong> - 已解决状态，表明问题已经被处理完成，等待问题报告人的验证。从这个状态，问题单一般可以进一步变更为重新打开状态（Reopened）或关闭状态（Closed）</li>
+<li><strong>Reopened</strong> - 重新打开状态，问题经过验证发现没有被解决，就可以变更到这个状态</li>
+<li><strong>Closed</strong> - 关闭状态，问题被彻底解决就可以转为这个状态</li>
+</ul>
+<h4 id="Resolution（解决结果）"><a href="#Resolution（解决结果）" class="headerlink" title="Resolution（解决结果）"></a>Resolution（解决结果）</h4><ul>
+<li><strong>Fixed</strong> - 修复</li>
+<li><strong>Won’t Fix</strong> - 不用修复，例如这个问题所描述的现象已不再有影响了</li>
+<li><strong>Duplicate</strong> - 重复，同其它已经存在的问题重复了，推荐把相关的单子链接起来</li>
+<li><strong>Incomplete</strong> - 未完成，没有足够的信息继续完成这个问题</li>
+<li><strong>Cannot Reproduce</strong> - 不能重现，如果以后有更多信息可以继续可以重新打开这张单子</li>
+<li><strong>Won’t Do</strong> - 不做，类似于不用修复的方案，试用于软件项目的默认状态</li>
+</ul>
+<h2 id="管理员指南"><a href="#管理员指南" class="headerlink" title="管理员指南"></a>管理员指南</h2><h3 id="登录"><a href="#登录" class="headerlink" title="登录"></a>登录</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 普通用户登录</span></span><br><span class="line">http://jira.qd-aliyun-internal.haier.net</span><br><span class="line"></span><br><span class="line"><span class="comment"># 管理员登录</span></span><br><span class="line">http://jira.qd-aliyun-internal.haier.net/login.jsp?oauth_sso=false</span><br><span class="line">账号：admin</span><br><span class="line">密码：Pwd123456</span><br></pre></td></tr></table></figure>
+
+<h3 id="项目最佳实践"><a href="#项目最佳实践" class="headerlink" title="项目最佳实践"></a>项目最佳实践</h3><h3 id="问题单最佳实践"><a href="#问题单最佳实践" class="headerlink" title="问题单最佳实践"></a>问题单最佳实践</h3><h3 id="工作流最佳实践"><a href="#工作流最佳实践" class="headerlink" title="工作流最佳实践"></a>工作流最佳实践</h3>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/22/ielts-ref/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -519,7 +1312,7 @@
                 
               
 
-              <time title="创建时间：2019-10-22 08:02:31 / 修改时间：08:02:48" itemprop="dateCreated datePublished" datetime="2019-10-22T08:02:31+08:00">2019-10-22</time>
+              <time title="创建时间：2019-10-22 08:02:31 / 修改时间：08:55:37" itemprop="dateCreated datePublished" datetime="2019-10-22T08:02:31+08:00">2019-10-22</time>
             
 
             
@@ -560,8 +1353,8 @@
       
         
           
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://pingcap.com/" target="_blank" rel="noopener"><strong>TiDB</strong></a> 是一款定位于在线事务处理/在线分析处理（ HTAP: Hybrid Transactional/Analytical Processing）的融合型数据库产品，实现了一键水平伸缩，强一致性的多副本数据安全，分布式事务，实时 OLAP 等重要特性。同时兼容 MySQL 协议和生态，迁移便捷，运维成本极低。</p>
-<p><a href="https://pingcap.com/docs-cn/v3.0/" target="_blank" rel="noopener"><strong>文档</strong></a> | <a href="https://github.com/pingcap/tidb" target="_blank" rel="noopener"><strong>代码</strong></a> | <a href="https://pingcap.com/community-cn/" target="_blank" rel="noopener"><strong>社区</strong></a></p>
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://pingcap.com/" target="_blank" rel="noopener"><strong>TiDB</strong></a> 是一款定位于在线事务处理/在线分析处理（ HTAP: Hybrid Transactional/Analytical Processing）的融合型数据库产品，实现了一键水平伸缩、强一致性的多副本数据安全、分布式事务、实时 <code>OLAP</code> 等重要特性，同时兼容 MySQL 协议和生态，迁移便捷，运维成本极低。</p>
+<p>[ <a href="https://pingcap.com/docs-cn/v3.0/" target="_blank" rel="noopener"><strong>文档</strong></a> | <a href="https://github.com/pingcap/tidb" target="_blank" rel="noopener"><strong>代码</strong></a> | <a href="https://pingcap.com/community-cn/" target="_blank" rel="noopener">*<em>社区 *</em></a>]</p>
 <h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p><strong>安装依赖包</strong></p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ yum -y install libtool zlib-devel autoconf readline-devel readline libuuid-devel zlib-devel automake libuuid readline-devel readline ncurses-devel.x86_64 ncurses.x86_64 gcc-c++ vim wget net-tools svn libstdc++.so.<span class="number">6</span> glibc.i686 unzip make lrzsz libtool zlib-devel autoconf readline-devel readline libuuid-devel zlib-devel automake libuuid readline-devel readline ncurses-devel.x86_64 ncurses.x86_64 gcc-c++ vim wget net-tools svn libstdc++.so.<span class="number">6</span> libcurl-dev libcurl-devel expat-devel perl-ExtUtils-CBuilder perl-ExtUtils-MakeMaker zip git gcc openssl-devel libnl3-devel net-snmp-devel libnfnetlink-devel zlib zlib-devel openssl openssl-devel tree lrzsz tree net-tools nmap vim bash-completion lsof dos2unix nc telnet ntp wget rng-tools psmisc screen pcre pcre-devel</span><br></pre></td></tr></table></figure>
 
@@ -577,7 +1370,7 @@
 <p><strong>连接 TiDB</strong></p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -h 127.0.0.1 -P 4000 -u root</span><br><span class="line"></span><br><span class="line">Welcome to the MySQL monitor.  Commands <span class="keyword">end</span> <span class="keyword">with</span> ; or \g.</span><br><span class="line">Your MySQL connection id is 12</span><br><span class="line">Server version: 5.7.25-TiDB-v3.0.0-rc.1-290-g21d2590ac MySQL Community Server (Apache License 2.0)</span><br><span class="line"></span><br><span class="line">Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.</span><br><span class="line"></span><br><span class="line">Oracle is a registered trademark of Oracle Corporation and/or its</span><br><span class="line">affiliates. Other names may be trademarks of their respective</span><br><span class="line">owners.</span><br><span class="line"></span><br><span class="line">Type '<span class="keyword">help</span>;' or '\h' for help. <span class="keyword">Type</span> <span class="string">'\c'</span> <span class="keyword">to</span> <span class="keyword">clear</span> the <span class="keyword">current</span> <span class="keyword">input</span> statement.</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">show</span> <span class="keyword">databases</span>;</span><br><span class="line">+<span class="comment">--------------------+</span></span><br><span class="line">| Database           |</span><br><span class="line">+<span class="comment">--------------------+</span></span><br><span class="line">| INFORMATION_SCHEMA |</span><br><span class="line">| PERFORMANCE_SCHEMA |</span><br><span class="line">| mysql              |</span><br><span class="line">| test               |</span><br><span class="line">+<span class="comment">--------------------+</span></span><br><span class="line">4 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
 
-<p><strong>修改root密码</strong></p>
+<p><strong>修改密码</strong></p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; use mysql; </span><br><span class="line">mysql&gt; update user set password=PASSWORD("Changeme_123") where User='root';</span><br><span class="line">mysql&gt; flush privileges;</span><br></pre></td></tr></table></figure>
 
 <p><strong>设置远程可访问</strong></p>
@@ -1452,789 +2245,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/22/shell/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/22/shell/" class="post-title-link" itemprop="url">Shell</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-22 07:59:00 / 修改时间：08:01:52" itemprop="dateCreated datePublished" datetime="2019-10-22T07:59:00+08:00">2019-10-22</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>bash</p>
-<p>cat</p>
-<p>grep</p>
-<p>sed</p>
-<p>awk</p>
-<p>curl or wget</p>
-<p>sort</p>
-<p>tr</p>
-<p>tcpdump</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/21/mysql-case-diskspace/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/21/mysql-case-diskspace/" class="post-title-link" itemprop="url">MySQL · 案例分析 · 磁盘空间不足</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-21 23:15:37 / 修改时间：23:31:45" itemprop="dateCreated datePublished" datetime="2019-10-21T23:15:37+08:00">2019-10-21</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ df -h</span><br><span class="line">Filesystem                               Size  Used Avail Use% Mounted on</span><br><span class="line">/dev/mapper/centos_cosmoim--zdyq05-root  <span class="number">100</span>G   <span class="number">13</span>G   <span class="number">87</span>G  <span class="number">13</span>% /</span><br><span class="line">devtmpfs                                  <span class="number">63</span>G     <span class="number">0</span>   <span class="number">63</span>G   <span class="number">0</span>% /dev</span><br><span class="line">tmpfs                                     <span class="number">63</span>G     <span class="number">0</span>   <span class="number">63</span>G   <span class="number">0</span>% /dev/shm</span><br><span class="line">tmpfs                                     <span class="number">63</span>G  <span class="number">130</span>M   <span class="number">63</span>G   <span class="number">1</span>% /run</span><br><span class="line">tmpfs                                     <span class="number">63</span>G     <span class="number">0</span>   <span class="number">63</span>G   <span class="number">0</span>% /sys/fs/cgroup</span><br><span class="line">/dev/sda1                                <span class="number">497</span>M  <span class="number">172</span>M  <span class="number">326</span>M  <span class="number">35</span>% /boot</span><br><span class="line">/dev/mapper/centos_cosmoim--zdyq05-data  <span class="number">888</span>G  <span class="number">581</span>G  <span class="number">308</span>G  <span class="number">66</span>% /<span class="keyword">data</span></span><br><span class="line">tmpfs                                     <span class="number">13</span>G   <span class="number">12</span>K   <span class="number">13</span>G   <span class="number">1</span>% /run/user/<span class="number">42</span></span><br><span class="line">tmpfs                                     <span class="number">13</span>G     <span class="number">0</span>   <span class="number">13</span>G   <span class="number">0</span>% /run/user/<span class="number">1001</span></span><br><span class="line">tmpfs                                     <span class="number">13</span>G     <span class="number">0</span>   <span class="number">13</span>G   <span class="number">0</span>% /run/user/<span class="number">1002</span></span><br><span class="line">tmpfs                                     <span class="number">13</span>G     <span class="number">0</span>   <span class="number">13</span>G   <span class="number">0</span>% /run/user/<span class="number">0</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p><strong>文件排序命令</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ du -sxh /dir/* | sort -rh | head -<span class="number">5</span></span><br><span class="line"></span><br><span class="line">du</span><br><span class="line">-s：仅显示总计</span><br><span class="line">-x：以一开始的文件系统为准，忽略其他不同文件系统的目录</span><br><span class="line">-h：以可读形式显示文件大小</span><br><span class="line"></span><br><span class="line">sort</span><br><span class="line">-r：倒序排序</span><br><span class="line">-h：以可读数字进行比较</span><br><span class="line"></span><br><span class="line">head</span><br><span class="line">-n：打印文本的前n行</span><br></pre></td></tr></table></figure>
-
-<p><strong>多次执行查找最大文件</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">$ du -sxh /<span class="keyword">data</span>/* | sort -rh | head -<span class="number">5</span></span><br><span class="line"><span class="number">339</span>G	/<span class="keyword">data</span>/mysql</span><br><span class="line"><span class="number">243</span>G	/<span class="keyword">data</span>/backup</span><br><span class="line"><span class="number">4.0</span>K	/<span class="keyword">data</span>/backup.sh</span><br><span class="line"></span><br><span class="line">$ du -sxh /<span class="keyword">data</span>/mysql/* | sort -rh | head -<span class="number">5</span></span><br><span class="line"><span class="number">267</span>G	/<span class="keyword">data</span>/mysql/cosmo_im_1004</span><br><span class="line"><span class="number">1.1</span>G	/<span class="keyword">data</span>/mysql/mysql-binlog.<span class="number">000944</span></span><br><span class="line"><span class="number">1.1</span>G	/<span class="keyword">data</span>/mysql/mysql-binlog.<span class="number">000943</span></span><br><span class="line"><span class="number">1.1</span>G	/<span class="keyword">data</span>/mysql/mysql-binlog.<span class="number">000942</span></span><br><span class="line"><span class="number">1.1</span>G	/<span class="keyword">data</span>/mysql/mysql-binlog.<span class="number">000941</span></span><br><span class="line"></span><br><span class="line">$ du -sxh /<span class="keyword">data</span>/mysql/cosmo_im_1004/* | sort -rh | head -<span class="number">5</span></span><br><span class="line"><span class="number">231</span>G	/<span class="keyword">data</span>/mysql/cosmo_im_1004/bns_pm_pokayoke.ibd</span><br><span class="line"><span class="number">3.8</span>G	/<span class="keyword">data</span>/mysql/cosmo_im_1004/bns_pm_scanscehistory.ibd</span><br><span class="line"><span class="number">3.5</span>G	/<span class="keyword">data</span>/mysql/cosmo_im_1004/bns_pm_scanhistory_month.ibd</span><br><span class="line"><span class="number">3.4</span>G	/<span class="keyword">data</span>/mysql/cosmo_im_1004/bns_io_pm_pokayoke.ibd</span><br><span class="line"><span class="number">3.0</span>G	/<span class="keyword">data</span>/mysql/cosmo_im_1004/bns_pm_operation.ibd</span><br></pre></td></tr></table></figure>
-
-<p>最终，确定最大文件是 <code>/data/mysql/cosmo_im_1004/bns_pm_pokayoke.ibd</code></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/21/centos7-pip/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/21/centos7-pip/" class="post-title-link" itemprop="url">CentOS 7 安装 Python pip</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-21 15:24:21 / 修改时间：19:58:00" itemprop="dateCreated datePublished" datetime="2019-10-21T15:24:21+08:00">2019-10-21</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><code>CentOS 7.x</code> 默认安装的版本为 <code>python 2.7.5</code>，默认是没有安装 <code>pip</code></p>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p><strong>yum 安装</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ yum -y install epel-release</span><br><span class="line">$ yum -y install python-pip</span><br></pre></td></tr></table></figure>
-
-<p><strong>脚本安装</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py</span><br><span class="line">$ python get-pip.py</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/21/mysql-rollback/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/21/mysql-rollback/" class="post-title-link" itemprop="url">MySQL · 使用 binlog2sql 工具快速回滚误操作</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-21 14:25:53 / 修改时间：19:51:55" itemprop="dateCreated datePublished" datetime="2019-10-21T14:25:53+08:00">2019-10-21</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>误删了 <code>test.employees</code> 表的数据，需要紧急回滚，表信息如下：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from employees;</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">| id | name       | address            | age | gmt_create          | gmt_modified        |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">|  1 | xujinliang | 山东省青岛市       |  32 | 2019-09-24 17:13:00 | 2019-09-24 17:13:00 |</span><br><span class="line">|  2 | maofang    | 山东省青岛市       |  32 | 2019-09-24 17:32:00 | 2019-09-24 17:40:49 |</span><br><span class="line">|  3 | raohui     | 陕西省西安市       |  29 | 2019-09-24 17:39:28 | 2019-09-24 17:39:28 |</span><br><span class="line">|  4 | yangnan    | NULL               |  22 | 2019-09-24 17:39:52 | 2019-09-24 17:39:52 |</span><br><span class="line">|  5 | yuzhiqiang | NULL               |  29 | 2019-09-24 17:40:03 | 2019-09-24 17:40:03 |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">5 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">delete</span> <span class="keyword">from</span> employees;</span><br><span class="line">Query OK, 5 rows affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select * from employees;</span><br><span class="line">Empty <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-
-<h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><ul>
-<li>先用全量备份恢复实例，再利用增量 <code>binlog</code> 备份恢复到误操作之前的状态</li>
-<li><a href="https://github.com/danfengcao/binlog2sql" target="_blank" rel="noopener">binlog2sql</a>（仅支持 <code>DML Delete/Update</code> 等语句回滚，不支持 <code>DDL Drop</code> 等语句回滚）</li>
-</ul>
-<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><blockquote>
-<p><strong>前提条件</strong>：开启 <code>log_bin</code>，且日志格式为 <code>row</code></p>
-</blockquote>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">server-id = <span class="number">1</span></span><br><span class="line">log_bin = /<span class="keyword">data</span>/mysql/mysql-bin</span><br><span class="line">max_binlog_size = <span class="number">1</span>G</span><br><span class="line">binlog_format = row</span><br><span class="line">binlog_row_image = full</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>安装 <a href="https://github.com/danfengcao/binlog2sql" target="_blank" rel="noopener">binlog2sql</a></li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git clone https://github.com/danfengcao/binlog2sql.git &amp;&amp; cd binlog2sql</span><br><span class="line">$ pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>确定 <code>binlog</code> 文件，最新的文件是 <code>mysql-bin.000020</code></li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show master logs;</span><br><span class="line">+------------------+-----------+</span><br><span class="line">| Log_name         | File_size |</span><br><span class="line">+------------------+-----------+</span><br><span class="line">| mysql-bin.<span class="number">000018</span> |  <span class="number">66374823</span> |</span><br><span class="line">| mysql-bin.<span class="number">000019</span> |      <span class="number">4419</span> |</span><br><span class="line">| mysql-bin.<span class="number">000020</span> |  <span class="number">66375437</span> |</span><br><span class="line">+------------------+-----------+</span><br><span class="line"><span class="number">3</span> rows <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>定位误操作 <code>SQL</code></li>
-</ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ python binlog2sql/binlog2sql.py -h127.0.0.1 -P3306 -uroot -p'xx' -dtest -temployees <span class="comment">--start-file='mysql-bin.000020'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> <span class="string">`test`</span>.<span class="string">`employees`</span> <span class="keyword">WHERE</span> <span class="string">`name`</span>=<span class="string">'xujinliang'</span> <span class="keyword">AND</span> <span class="string">`gmt_modified`</span>=<span class="string">'2019-09-24 17:13:00'</span> <span class="keyword">AND</span> <span class="string">`age`</span>=<span class="number">32</span> <span class="keyword">AND</span> <span class="string">`gmt_create`</span>=<span class="string">'2019-09-24 17:13:00'</span> <span class="keyword">AND</span> <span class="string">`address`</span>=<span class="string">'山东省青岛市'</span> <span class="keyword">AND</span> <span class="string">`id`</span>=<span class="number">1</span> <span class="keyword">LIMIT</span> <span class="number">1</span>; <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> <span class="string">`test`</span>.<span class="string">`employees`</span> <span class="keyword">WHERE</span> <span class="string">`name`</span>=<span class="string">'maofang'</span> <span class="keyword">AND</span> <span class="string">`gmt_modified`</span>=<span class="string">'2019-09-24 17:40:49'</span> <span class="keyword">AND</span> <span class="string">`age`</span>=<span class="number">32</span> <span class="keyword">AND</span> <span class="string">`gmt_create`</span>=<span class="string">'2019-09-24 17:32:00'</span> <span class="keyword">AND</span> <span class="string">`address`</span>=<span class="string">'山东省青岛市'</span> <span class="keyword">AND</span> <span class="string">`id`</span>=<span class="number">2</span> <span class="keyword">LIMIT</span> <span class="number">1</span>; <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> <span class="string">`test`</span>.<span class="string">`employees`</span> <span class="keyword">WHERE</span> <span class="string">`name`</span>=<span class="string">'raohui'</span> <span class="keyword">AND</span> <span class="string">`gmt_modified`</span>=<span class="string">'2019-09-24 17:39:28'</span> <span class="keyword">AND</span> <span class="string">`age`</span>=<span class="number">29</span> <span class="keyword">AND</span> <span class="string">`gmt_create`</span>=<span class="string">'2019-09-24 17:39:28'</span> <span class="keyword">AND</span> <span class="string">`address`</span>=<span class="string">'陕西省西安市'</span> <span class="keyword">AND</span> <span class="string">`id`</span>=<span class="number">3</span> <span class="keyword">LIMIT</span> <span class="number">1</span>; <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> <span class="string">`test`</span>.<span class="string">`employees`</span> <span class="keyword">WHERE</span> <span class="string">`name`</span>=<span class="string">'yangnan'</span> <span class="keyword">AND</span> <span class="string">`gmt_modified`</span>=<span class="string">'2019-09-24 17:39:52'</span> <span class="keyword">AND</span> <span class="string">`age`</span>=<span class="number">22</span> <span class="keyword">AND</span> <span class="string">`gmt_create`</span>=<span class="string">'2019-09-24 17:39:52'</span> <span class="keyword">AND</span> <span class="string">`address`</span> <span class="keyword">IS</span> <span class="literal">NULL</span> <span class="keyword">AND</span> <span class="string">`id`</span>=<span class="number">4</span> <span class="keyword">LIMIT</span> <span class="number">1</span>; <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> <span class="string">`test`</span>.<span class="string">`employees`</span> <span class="keyword">WHERE</span> <span class="string">`name`</span>=<span class="string">'yuzhiqiang'</span> <span class="keyword">AND</span> <span class="string">`gmt_modified`</span>=<span class="string">'2019-09-24 17:40:03'</span> <span class="keyword">AND</span> <span class="string">`age`</span>=<span class="number">29</span> <span class="keyword">AND</span> <span class="string">`gmt_create`</span>=<span class="string">'2019-09-24 17:40:03'</span> <span class="keyword">AND</span> <span class="string">`address`</span> <span class="keyword">IS</span> <span class="literal">NULL</span> <span class="keyword">AND</span> <span class="string">`id`</span>=<span class="number">5</span> <span class="keyword">LIMIT</span> <span class="number">1</span>; <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>解析出回滚 <code>SQL</code>，并检查回滚 <code>SQL</code> 是否正确</li>
-</ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ python binlog2sql/binlog2sql.py -h127.0.0.1 -P3306 -uroot -p'xx' -dtest -temployees <span class="comment">--start-file='mysql-bin.000020' --start-pos=66374969 --end-pos=66375406 -B &gt; rollback.sql | cat</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`test`</span>.<span class="string">`employees`</span>(<span class="string">`name`</span>, <span class="string">`gmt_modified`</span>, <span class="string">`age`</span>, <span class="string">`gmt_create`</span>, <span class="string">`address`</span>, <span class="string">`id`</span>) <span class="keyword">VALUES</span> (<span class="string">'yuzhiqiang'</span>, <span class="string">'2019-09-24 17:40:03'</span>, <span class="number">29</span>, <span class="string">'2019-09-24 17:40:03'</span>, <span class="literal">NULL</span>, <span class="number">5</span>); <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`test`</span>.<span class="string">`employees`</span>(<span class="string">`name`</span>, <span class="string">`gmt_modified`</span>, <span class="string">`age`</span>, <span class="string">`gmt_create`</span>, <span class="string">`address`</span>, <span class="string">`id`</span>) <span class="keyword">VALUES</span> (<span class="string">'yangnan'</span>, <span class="string">'2019-09-24 17:39:52'</span>, <span class="number">22</span>, <span class="string">'2019-09-24 17:39:52'</span>, <span class="literal">NULL</span>, <span class="number">4</span>); <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`test`</span>.<span class="string">`employees`</span>(<span class="string">`name`</span>, <span class="string">`gmt_modified`</span>, <span class="string">`age`</span>, <span class="string">`gmt_create`</span>, <span class="string">`address`</span>, <span class="string">`id`</span>) <span class="keyword">VALUES</span> (<span class="string">'raohui'</span>, <span class="string">'2019-09-24 17:39:28'</span>, <span class="number">29</span>, <span class="string">'2019-09-24 17:39:28'</span>, <span class="string">'陕西省西安市'</span>, <span class="number">3</span>); <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`test`</span>.<span class="string">`employees`</span>(<span class="string">`name`</span>, <span class="string">`gmt_modified`</span>, <span class="string">`age`</span>, <span class="string">`gmt_create`</span>, <span class="string">`address`</span>, <span class="string">`id`</span>) <span class="keyword">VALUES</span> (<span class="string">'maofang'</span>, <span class="string">'2019-09-24 17:40:49'</span>, <span class="number">32</span>, <span class="string">'2019-09-24 17:32:00'</span>, <span class="string">'山东省青岛市'</span>, <span class="number">2</span>); <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`test`</span>.<span class="string">`employees`</span>(<span class="string">`name`</span>, <span class="string">`gmt_modified`</span>, <span class="string">`age`</span>, <span class="string">`gmt_create`</span>, <span class="string">`address`</span>, <span class="string">`id`</span>) <span class="keyword">VALUES</span> (<span class="string">'xujinliang'</span>, <span class="string">'2019-09-24 17:13:00'</span>, <span class="number">32</span>, <span class="string">'2019-09-24 17:13:00'</span>, <span class="string">'山东省青岛市'</span>, <span class="number">1</span>); <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>确认回滚 <code>SQL</code> 正确，执行回滚语句</li>
-</ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -h127.0.0.1 -P3306 -uroot -p'xx' &lt; rollback.sql</span><br><span class="line"></span><br><span class="line">mysql&gt; select * from employees;</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">| id | name       | address            | age | gmt_create          | gmt_modified        |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">|  1 | xujinliang | 山东省青岛市       |  32 | 2019-09-24 17:13:00 | 2019-09-24 17:13:00 |</span><br><span class="line">|  2 | maofang    | 山东省青岛市       |  32 | 2019-09-24 17:32:00 | 2019-09-24 17:40:49 |</span><br><span class="line">|  3 | raohui     | 陕西省西安市       |  29 | 2019-09-24 17:39:28 | 2019-09-24 17:39:28 |</span><br><span class="line">|  4 | yangnan    | NULL               |  22 | 2019-09-24 17:39:52 | 2019-09-24 17:39:52 |</span><br><span class="line">|  5 | yuzhiqiang | NULL               |  29 | 2019-09-24 17:40:03 | 2019-09-24 17:40:03 |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">5 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/21/mysql-modify-dbname/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/21/mysql-modify-dbname/" class="post-title-link" itemprop="url">MySQL · 修改数据库名</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-21 14:21:30 / 修改时间：19:49:25" itemprop="dateCreated datePublished" datetime="2019-10-21T14:21:30+08:00">2019-10-21</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h3 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h3><p><strong>需求</strong>：将数据库 <code>hrtrqu</code> 修改 <code>hrtrzq</code></p>
-<p><strong>方案</strong>：MySQL 没有 <code>rename database</code> 命令，只能变相修改表到目标库里的表来实现。</p>
-<h3 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h3><p><strong>1. 导出库数据</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mysqldump  --single-transaction -S /<span class="keyword">data</span>/mysql3308/mysql.sock -usre -p<span class="string">'xx'</span> hrtrqu &gt; hrtrqu.sql</span><br></pre></td></tr></table></figure>
-
-<p><strong>2. 创建新库 hrtrzq</strong></p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">DATABASE</span> <span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> hrtrzq <span class="keyword">default</span> <span class="keyword">charset</span> utf8 <span class="keyword">COLLATE</span> utf8_general_ci;</span><br></pre></td></tr></table></figure>
-
-<p><strong>3. 导入数据到新库</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -S /<span class="keyword">data</span>/mysql3308/mysql.sock -usre -p<span class="string">'sre@@p$i'</span> hrtrzq &lt; hrtrqu.sql</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2283,7 +2293,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">82</span>
+                    <span class="site-state-item-count">87</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

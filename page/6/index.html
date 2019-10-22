@@ -323,6 +323,917 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/21/mysql-index/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/08/21/mysql-index/" class="post-title-link" itemprop="url">MySQL · 索引</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-21 16:34:04" itemprop="dateCreated datePublished" datetime="2019-08-21T16:34:04+08:00">2019-08-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-20 00:11:42" itemprop="dateModified" datetime="2019-10-20T00:11:42+08:00">2019-10-20</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/21/mysql-lock/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/08/21/mysql-lock/" class="post-title-link" itemprop="url">MySQL · 锁机制</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-21 16:33:53" itemprop="dateCreated datePublished" datetime="2019-08-21T16:33:53+08:00">2019-08-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-13 19:13:37" itemprop="dateModified" datetime="2019-10-13T19:13:37+08:00">2019-10-13</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>锁</strong>：是计算机协调多个进程或线程并发访问某一资源的机制。</p>
+<p><strong>MySQL锁机制</strong>：相对其他数据库而言，MySQL 的锁机制比较简单，其最显著的特点是不同的存储引擎支持不同的锁机制。MyISAM 和 MEMORY 存储引擎采用的是表级锁（table-level locking）；InnoDB 存储引擎既支持行级锁（row-level locking），也支持表级锁，但默认情况下是采用行级锁。</p>
+<p>①  表级锁：开销小，加锁快；不会出现死锁；锁定粒度大，发生锁冲突的概率最高,并发度最低。  </p>
+<p>②  行级锁：开销大，加锁慢；会出现死锁；锁定粒度最小，发生锁冲突的概率最低,并发度也最高。</p>
+<p>从上述特点可见，很难笼统地说哪种锁更好，只能就具体应用的特点来说哪种锁更合适！仅从锁的角度来说：表级锁更适合于以查询为主，只有少量按索引条件更新数据的应用，如 Web 应用；而行级锁则更适合于有大量按索引条件并发更新少量不同数据，同时又有并发查询的应用，如一些在线事务处理（OLTP）系统。由于 BDB 已经被 InnoDB 取代，即将成为历史（所以现在基本都在使用 InnoDB 存储引擎）。</p>
+<p>如何查看表锁情况？可查看两个变量：</p>
+<p><strong>Table_locks_immediate</strong>：立刻获得表锁的次数</p>
+<p><strong>Table_locks_waited</strong>：需要等待表锁的次数，如果等待表锁的次数占比较大，说明表锁可能是潜在瓶颈。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show status like 'Table_locks%';</span><br><span class="line">+<span class="comment">-----------------------+---------+</span></span><br><span class="line">| Variable_name         | Value   |</span><br><span class="line">+<span class="comment">-----------------------+---------+</span></span><br><span class="line">| Table_locks_immediate | 1789993 |</span><br><span class="line">| Table_locks_waited    | 0       |</span><br><span class="line">+<span class="comment">-----------------------+---------+</span></span><br><span class="line">2 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p>表级锁的两种模式：</p>
+<ul>
+<li><p>表共享读锁（Table Read Lock）</p>
+</li>
+<li><p>表独占写锁（Table Write Lock）</p>
+</li>
+</ul>
+<h3 id="InnoDB"><a href="#InnoDB" class="headerlink" title="InnoDB"></a>InnoDB</h3><p>如果 InnoDB_row_lock_waits 和 InnoDB_row_lock_time_avg 的值比较高，表示锁争用情况比较严重。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show status like 'InnoDB_row_lock%';</span><br><span class="line">+<span class="comment">-------------------------------+-------+</span></span><br><span class="line">| Variable_name                 | Value |</span><br><span class="line">+<span class="comment">-------------------------------+-------+</span></span><br><span class="line">| Innodb_row_lock_current_waits | 0     |</span><br><span class="line">| Innodb_row_lock_time          | 0     |</span><br><span class="line">| Innodb_row_lock_time_avg      | 0     |</span><br><span class="line">| Innodb_row_lock_time_max      | 0     |</span><br><span class="line">| Innodb_row_lock_waits         | 0     |</span><br><span class="line">+<span class="comment">-------------------------------+-------+</span></span><br><span class="line">5 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p>InnoDB 实现了一下两种类型的行锁：  </p>
+<ul>
+<li>共享锁(S)：允许一个事务去多一行，阻止其它事务获得相同数据集的排他锁。  </li>
+<li>排他锁(X): 允许获得排他锁的事务更新数据，阻止其它事务获得相同数据集的共享锁和排他写锁。</li>
+</ul>
+<p>另外，为了允许行锁和表锁共存，实现多粒度锁机制，InnoDB 还有两种内部使用的意向锁（Intention Locks），这两种意向锁都是表锁。（感觉与MyISAM 的表锁机制类似）  </p>
+<ul>
+<li>意向共享锁（IS）：事务打算给数据行加行共享锁，事务在给一个数据行加共享锁前必须先取得该表的 IS 锁。  </li>
+<li>意向排他锁（IX）：事务打算给数据行加行排他锁，事务在给一个数据行加排他锁前必须先取得该表的 IX 锁。</li>
+</ul>
+<p><strong>InnoDB行锁模式兼容性列表</strong>：</p>
+<table>
+<thead>
+<tr>
+<th align="left">请求锁模式矩阵结果表示是否兼容 当前锁模式</th>
+<th align="left">X</th>
+<th align="left">IX</th>
+<th align="left">S</th>
+<th align="left">IS</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">X</td>
+<td align="left">冲突</td>
+<td align="left">冲突</td>
+<td align="left">冲突</td>
+<td align="left">冲突</td>
+</tr>
+<tr>
+<td align="left">IX</td>
+<td align="left">冲突</td>
+<td align="left">兼容</td>
+<td align="left">冲突</td>
+<td align="left">兼容</td>
+</tr>
+<tr>
+<td align="left">S</td>
+<td align="left">冲突</td>
+<td align="left">冲突</td>
+<td align="left">兼容</td>
+<td align="left">兼容</td>
+</tr>
+<tr>
+<td align="left">IS</td>
+<td align="left">冲突</td>
+<td align="left">兼容</td>
+<td align="left">兼容</td>
+<td align="left">兼容</td>
+</tr>
+</tbody></table>
+<h3 id="死锁（DeadLock"><a href="#死锁（DeadLock" class="headerlink" title="死锁（DeadLock)"></a>死锁（DeadLock)</h3><h3 id="避免死锁的方法"><a href="#避免死锁的方法" class="headerlink" title="避免死锁的方法"></a><strong>避免死锁的方法</strong></h3><ol>
+<li>在应用中，如果不同的程序会并发存取多个表，应尽量约定以相同的顺序来访问表，这样可以大大降低产生死锁的机会。在下面的例子中，由于两个 session 访问两个表的顺序不同，发生死锁的机会就非常高！但如果以相同的顺序来访问，死锁就可以避免。  </li>
+<li>在程序以批量方式处理数据的时候，如果事先对数据排序，保证每个线程按固定的顺序来处理记录，也可以大大降低出现死锁的可能。  </li>
+<li>在事务中，如果要更新记录，应该直接申请足够级别的锁，即排他锁，而不应先申请共享锁，更新时再申请排他锁，因为当用户申请排他锁时，其他事务可能又已经获得了相同记录的共享锁，从而造成锁冲突，甚至死锁。  </li>
+<li>在 REPEATABLE-READ 隔离级别下，如果两个线程同时对相同条件记录用 SELECT…FOR UPDATE 加排他锁，在没有符合该条件记录情况下，两个线程都会加锁成功。程序发现记录尚不存在，就试图插入一条新记录，如果两个线程都这么做，就会出现死锁。这种情况下，将隔离级别改成 READ COMMITTED，就可避免问题。  </li>
+<li>当隔离级别为 READ COMMITTED 时，如果两个线程都先执行 SELECT…FOR UPDATE，判断是否存在符合条件的记录，如果没有，就插入记录。此时，只有一个线程能插入成功，另一个线程会出现锁等待，当第 1 个线程提交后，第 2 个线程会因主键重出错，但虽然这个线程出错了，却会获得一个排他锁！这时如果有第 3 个线程又来申请排他锁，也会出现死锁。</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/12/foster/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/08/12/foster/" class="post-title-link" itemprop="url">新员工培养</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-12 09:26:09" itemprop="dateCreated datePublished" datetime="2019-08-12T09:26:09+08:00">2019-08-12</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-13 19:13:08" itemprop="dateModified" datetime="2019-10-13T19:13:08+08:00">2019-10-13</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="第一周（2019-08-12）"><a href="#第一周（2019-08-12）" class="headerlink" title="第一周（2019/08/12）"></a>第一周（2019/08/12）</h2><p><strong>本周学习内容：</strong><br>1、数据库基础概念及 <code>MySQL</code> 简介。<br>2、<code>Linux</code> 常用命令。<br>3、<code>Linux</code> 下安装 <code>MySQL 5.7</code> 版本数据库。<br>4、操作 <code>MySQL</code> 常用工具，学会对新增用户进行授权。<br>5、搭建个人技术博客，每日工作日报通过博客文章形式发送。</p>
+<p><strong>本周输出：</strong><br>1、学习总结：<a href="https://mino-yn.github.io/blog/archives/" target="_blank" rel="noopener">https://mino-yn.github.io/blog/archives/</a><br>2、<code>MySQL</code> 运维工单2个。</p>
+<h2 id="第二周（2019-08-19）"><a href="#第二周（2019-08-19）" class="headerlink" title="第二周（2019/08/19）"></a>第二周（2019/08/19）</h2><p><strong>本周学习内容：</strong><br>1、<code>MySQL</code> 数据库备份工具 <code>XtraBackup</code> 的学习实践。<br>2、增、删、改、查常用 <code>SQL</code> 语句操作及语法。<br>3、<code>MySQL</code> 常用内置函数的使用：<code>COUNT()</code>、<code>MAX()</code>、<code>MIN()</code>、<code>SUM()</code> 等。</p>
+<p><strong>本周输出：</strong><br>1、学习总结：<a href="https://mino-yn.github.io/blog/archives/" target="_blank" rel="noopener">https://mino-yn.github.io/blog/archives/</a><br>2、<code>MySQL</code> 运维工单2个。</p>
+<h2 id="第三周（2019-08-26）"><a href="#第三周（2019-08-26）" class="headerlink" title="第三周（2019/08/26）"></a>第三周（2019/08/26）</h2><p><strong>本周学习内容：</strong><br>1、<code>MySQL</code> 数据库备份工具 <code>mysqldump</code> 的学习与实践。<br>2、配置 <code>SSH</code> 互信的原理与实践<br>3、<code>MySQL</code> 高级查询：联结、组合查询、子查询等<br>4、<code>MySQL</code> 存储过程、游标、触发器等的使用</p>
+<p><strong>本周工作输出：</strong><br>1、学习总结：<a href="https://mino-yn.github.io/blog/archives/" target="_blank" rel="noopener">https://mino-yn.github.io/blog/archives/</a><br>2、<code>MySQL</code> 运维工单4个。</p>
+<h2 id="8月份培养计划"><a href="#8月份培养计划" class="headerlink" title="8月份培养计划"></a>8月份培养计划</h2><table>
+<thead>
+<tr>
+<th>月</th>
+<th>目标</th>
+<th>周</th>
+<th>工作任务</th>
+<th>具体要求</th>
+<th>完成情况</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>8月</td>
+<td>1. 快速融入工作环境，完成角色转换 2. 工学结合，处理5%工单 3. 培养沟通展示能力，月度总结汇报 4. 培养良好文档习惯，搭建知识博客</td>
+<td>week1</td>
+<td>1. 了解工作内容及常用工具（HeidiSQL/XtraBackup） 2. 熟悉数据库相关基本概念</td>
+<td>搭建个人博客，日报上传</td>
+<td><strong>OK</strong></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>week2</td>
+<td>1. 安装、卸载、启动、停止MySQL数据库进程服务 2. 了解MySQL常用的几种登陆方式 3. 编写5篇技术总结文档，并发布到博客</td>
+<td>1. 处理本周安装数据库的工单 2. 输出5篇技术文档</td>
+<td><strong>OK</strong></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>week3</td>
+<td>1. MySQL用户管理和权限管理 2. 编写10篇技术总结文档，并发布到博客</td>
+<td>1. 处理本周授权、安装数据库等工单 2. 输出10篇技术文档</td>
+<td><strong>OK</strong></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>week4</td>
+<td>月度总结并汇报</td>
+<td>1. 本月累计处理工单5% 2. 本月累计输出15篇技术文档</td>
+<td></td>
+</tr>
+</tbody></table>
+<p><img src="http://ww1.sinaimg.cn/large/006y8mN6ly1g6dgf80ua8j30u011stlx.jpg" alt="培养计划（杨楠）"></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/06/data-structure/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/08/06/data-structure/" class="post-title-link" itemprop="url">数据结构</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-06 15:28:51" itemprop="dateCreated datePublished" datetime="2019-08-06T15:28:51+08:00">2019-08-06</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-20 00:06:55" itemprop="dateModified" datetime="2019-10-20T00:06:55+08:00">2019-10-20</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>数据结构</strong>：是指一组数据的存储结构，它解决的是如何更快、更省地存储数据的问题。最常用、最基础数据结构有数组、链表、栈、队列、散列表、二叉树、堆、图。</p>
+<p><strong>算法</strong>：</p>
+<h2 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h2><h3 id="线性表"><a href="#线性表" class="headerlink" title="线性表"></a>线性表</h3><p>n个数据元素的有限序列。</p>
+<h4 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h4><p>数据连续储存在内存空间中，数据的访问简单，添加和删除数据较为麻烦。</p>
+<h3 id="链表"><a href="#链表" class="headerlink" title="链表"></a>链表</h3><h4 id="静态链表"><a href="#静态链表" class="headerlink" title="静态链表"></a>静态链表</h4><h4 id="单链表"><a href="#单链表" class="headerlink" title="单链表"></a>单链表</h4><h4 id="循环链表"><a href="#循环链表" class="headerlink" title="循环链表"></a>循环链表</h4><h4 id="双向链表"><a href="#双向链表" class="headerlink" title="双向链表"></a>双向链表</h4><h3 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h3><p>后进先出的数据结构形式</p>
+<h3 id="队列"><a href="#队列" class="headerlink" title="队列"></a>队列</h3><p>先进先出的数据结构形式</p>
+<h3 id="树"><a href="#树" class="headerlink" title="树"></a>树</h3><h3 id="哈希表"><a href="#哈希表" class="headerlink" title="哈希表"></a>哈希表</h3><h3 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h3><h3 id="图"><a href="#图" class="headerlink" title="图"></a>图</h3><h2 id="学习资料"><a href="#学习资料" class="headerlink" title="学习资料"></a>学习资料</h2><p><a href="http://asdfghjkl.xyz/2019/05/24/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%E4%B9%8B%E7%BE%8E/" target="_blank" rel="noopener">数据结构与算法之美</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/06/algorithms/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/08/06/algorithms/" class="post-title-link" itemprop="url">算法</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-06 15:28:22" itemprop="dateCreated datePublished" datetime="2019-08-06T15:28:22+08:00">2019-08-06</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-13 19:12:51" itemprop="dateModified" datetime="2019-10-13T19:12:51+08:00">2019-10-13</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h2><h2 id="排序"><a href="#排序" class="headerlink" title="排序"></a>排序</h2><h3 id="冒泡排序"><a href="#冒泡排序" class="headerlink" title="冒泡排序"></a>冒泡排序</h3><p>从序列右边开始比较相邻两个数字的大小，再根据结果交换两个数字的位置。</p>
+<h3 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h3><p>从待排序的数据中寻找最小值，将其与序列最左边的数字进行交换。</p>
+<h3 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h3><p>从序列左端开始依次对数据进行排序。</p>
+<h3 id="堆排序"><a href="#堆排序" class="headerlink" title="堆排序"></a>堆排序</h3><p>利用堆这种树形结构进行排序。</p>
+<h3 id="归并排序"><a href="#归并排序" class="headerlink" title="归并排序"></a>归并排序</h3><p>序列分成长度相同的两个子序列，当无法继续往下分时（也就是每个子序列中只有一个数据时），就对子序列进行归并。</p>
+<h3 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h3><p>首先会在序列中随机选择一个基准值（pivot），然后将除了基准值以外的数分为“比基准值小的数”和“比基准值大的数”这两个类别，再对比基准值小的数和比基准值大的数进行快速排序。</p>
+<h2 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h2><h2 id="搜索"><a href="#搜索" class="headerlink" title="搜索"></a>搜索</h2><h2 id="哈希"><a href="#哈希" class="headerlink" title="哈希"></a>哈希</h2>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/31/data-warehouse/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1359,1087 +2270,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/25/mysql-dba/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/25/mysql-dba/" class="post-title-link" itemprop="url">MySQL · DBA</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-25 17:18:59" itemprop="dateCreated datePublished" datetime="2019-07-25T17:18:59+08:00">2019-07-25</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-13 19:13:21" itemprop="dateModified" datetime="2019-10-13T19:13:21+08:00">2019-10-13</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>定位目标</strong>：数据库解决方案首席架构师</p>
-<p><strong>自我要求</strong>：能干活、能写文档、能讲</p>
-<p><strong>进阶</strong>：官方文档、动手实践验证、业务场景锻炼、提炼梳理体系、架构设计（业务数据如何存储？）</p>
-<p><strong>DBA 的职责</strong></p>
-<ul>
-<li><strong>设计与定义</strong>数据库系统</li>
-<li><strong>监控</strong>数据库系统的运行</li>
-<li><strong>线上数据操作</strong>与维护</li>
-<li>数据<strong>安全性</strong>保障</li>
-<li>数据库系统<strong>性能调优</strong></li>
-</ul>
-<p>实际情况</p>
-<ul>
-<li><strong>数据库设计</strong>：执行研发哥哥提交的建库/建表/建索引语句，提出质疑时，被通知今天要上线</li>
-<li><strong>监控</strong>：研发哥哥把数据库玩挂掉的时候，被质问为什么没有报警</li>
-<li><strong>线上操作</strong>：执行研发哥哥提交的增删查改语句，提出质疑时，被催促业务需求紧急</li>
-<li><strong>安全性</strong>：研发哥哥发现执行错了，被要求回滚数据，还被质疑恢复数据慢</li>
-<li><strong>性能调优</strong>：被研发哥哥要求加内存，加连接数，加从库（心里想着这么低的并发，动不动就是join，批量扫库，加多少从库也没用）</li>
-</ul>
-<p><strong>DBA千万不要沦为“工单执行工具”</strong></p>
-<p>业务DBA，从专业的角度带给业务价值</p>
-<p>业务DBA</p>
-<p>数据库设计：业务DBA，从专业的角度，帮助研发做好早期设计</p>
-<p>线上操作：业务DBA，需要了解被执行工单的业务背景，来龙去脉，做好把关</p>
-<p>性能调优：业务DBA，从专业的角度，结合业务进行优化，给出优化建议</p>
-<p>…</p>
-<p>找主要矛盾，针对性优化</p>
-<p>如何找主要矛盾？量化出来</p>
-<p>（1）执行次数多的SQL？</p>
-<p>（2）执行时间长的SQL？</p>
-<p>（3）扫描行数多的SQL？</p>
-<p>落地技巧：pt-query-digest，分析慢查询日志</p>
-<p>主要矛盾分析：</p>
-<ul>
-<li>按照总执行时间【time】排序</li>
-<li>需要重点关注调用次数【Calls】和单次调用时间【R/Call】</li>
-<li>通过【Query ID】可以得到具体SQL语句</li>
-<li>通过【explain】，可以得到具体SQL的【索引命中】情况以及【扫描行数】情况</li>
-</ul>
-<p>扫描行数多</p>
-<ul>
-<li>WHERE uid <strong>not in</strong> ( select useridfrom t_app_pusher)</li>
-<li>WHERE note LIKE <strong>‘%XX’</strong></li>
-<li>WHERE <strong>YEAR(date)</strong>&lt;= ‘2017’</li>
-<li>WHERE state IN (0, 1) AND createtime&gt;= ‘<strong>2016011-01</strong>‘</li>
-<li>建立20+以上的索引，删除无效索引30+</li>
-</ul>
-<p>处理时间长</p>
-<ul>
-<li>WHERE phone=13800001234</li>
-<li>SELECT * FROM order WHERE date &lt; = CURDATE()</li>
-</ul>
-<p>优化为：</p>
-<p>$curDate= date(‘Y-m-d’);$res = mysql_query(‘ SELECT * FROM order WHERE date &lt; = $curDate’);</p>
-<p>访问次数多</p>
-<ul>
-<li>可以发现TOP-SQL中都是读请求</li>
-<li>增加缓存能大大降低数据库压力</li>
-</ul>
-<p>数据库瓶颈？？？</p>
-<ul>
-<li>这个锅，DBA不背</li>
-<li>数据库QPS低于千级别，就有瓶颈，八成是研发哥哥的问题（索引，代码，架构）</li>
-<li>改进推不劢？就直接告诉他问题在哪里</li>
-</ul>
-<p>总结</p>
-<ul>
-<li>pt-query-digest，慢SQL设为0</li>
-<li>获取分组排序分析结果，得到次数多、耗时长、行数多的主要矛盾SQL</li>
-<li>针对主要矛盾进行优化：（1）索引添加（2）SQL优化（3）缓存增加（4）架构优化</li>
-<li>观念的改变：由“工单型DBA”转变为“业务伙伴DBA”</li>
-</ul>
-<h3 id="MySQL生命周期管理"><a href="#MySQL生命周期管理" class="headerlink" title="MySQL生命周期管理"></a>MySQL生命周期管理</h3><h4 id="数据库表设计"><a href="#数据库表设计" class="headerlink" title="数据库表设计"></a>数据库表设计</h4><p>开发尽快完成功能实现和交付</p>
-<h4 id="安装部署"><a href="#安装部署" class="headerlink" title="安装部署"></a>安装部署</h4><h4 id="性能监控"><a href="#性能监控" class="headerlink" title="性能监控"></a>性能监控</h4><p>关键指标</p>
-<p>QPS：Queries Per Second：每秒查询数，一台数据库每秒能够处理的查询次数</p>
-<p>TPS：Transactions Per Second：每秒处理事务数</p>
-<p><code>show status</code>查看运行状态</p>
-<ul>
-<li>Uptime：服务器已经运行的实际，单位秒</li>
-<li>Questions：已经发送给数据库查询数</li>
-<li>Com_select：查询次数，实际操作数据库的</li>
-<li>Com_insert：插入次数</li>
-<li>Com_delete：删除次数</li>
-<li>Com_update：更新次数</li>
-<li>Com_commit：事务次数</li>
-<li>Com_rollback：回滚次数</li>
-</ul>
-<p>计算 QPS：</p>
-<p>计算出QPS：</p>
-<p><strong>QPS = Questions / Uptime</strong></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span> show global status like 'Questions';</span><br><span class="line"><span class="meta">mysql&gt;</span> show global status like 'Uptime';</span><br></pre></td></tr></table></figure>
-
-<p><strong>TPS = (Com_commit + Com_rollback) / Uptime</strong></p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">mysql&gt;</span> show global status like 'Com_commit';</span><br><span class="line"><span class="meta">mysql&gt;</span> show global status like 'Com_rollback';</span><br><span class="line"><span class="meta">mysql&gt;</span> show global status like 'Uptime';</span><br></pre></td></tr></table></figure>
-
-<h4 id="性能分析"><a href="#性能分析" class="headerlink" title="性能分析"></a>性能分析</h4><h4 id="性能调优"><a href="#性能调优" class="headerlink" title="性能调优"></a>性能调优</h4><h4 id="数据库备份"><a href="#数据库备份" class="headerlink" title="数据库备份"></a>数据库备份</h4><h4 id="数据库修复"><a href="#数据库修复" class="headerlink" title="数据库修复"></a>数据库修复</h4><p>有时候MySQL服务器突然断电、异常关闭，会导致表损坏，无法读取表数据。这时就可以用到MySQL自带的两个工具进行修复，myisamchk 和 mysqlcheck。</p>
-<p>myisamchk：只能修复myisam表，需要停止数据库。</p>
-<p>mysqlcheck：myisam和innodb表都可以用，不需要停止数据库，如修复单个表，可在数据库后面添加表名，以空格分割。</p>
-<p>常用参数：</p>
-<ul>
-<li>-a –all-databases 检查所有的库</li>
-<li>-r –repair 修复表</li>
-<li>-c –check 检查表，默认选项</li>
-<li>-a –analyze 分析表</li>
-<li>-o –optimize 优化表</li>
-<li>-q –quik 最快检查或修复表</li>
-<li>-F –fast 只检查没有正常关闭的表</li>
-</ul>
-<p>快速修复weibo数据库:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqlcheck -r -q -uroot -p123 weibo</span><br></pre></td></tr></table></figure>
-
-<p>查看 CPU / 内存 / IO性能</p>
-<p>top</p>
-<p>iostat</p>
-<p>参数 -m 是以 M 单位显示，默认 K。</p>
-<ul>
-<li>%util：当达到100%时，说明I/O很忙。</li>
-<li>await：请求在队列中等待时间，直接影响read时间。</li>
-<li>I/O极限：IOPS（r/s+w/s）,一般在1200左右。（IOPS，每秒进行读写（I/O）操作次数）</li>
-<li>I/O带宽：在顺序读写模式下SAS硬盘理论值在300M/s左右，SSD硬盘理论值在600M/s左右。</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/25/mysql-best-practices/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/25/mysql-best-practices/" class="post-title-link" itemprop="url">MySQL · 最佳实践系列</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-25 11:32:54" itemprop="dateCreated datePublished" datetime="2019-07-25T11:32:54+08:00">2019-07-25</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-21 19:59:42" itemprop="dateModified" datetime="2019-10-21T19:59:42+08:00">2019-10-21</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a>最佳实践</h2><ul>
-<li><a href="https://huiraoo.github.io/blog/2019/10/17/mysql-archiver/">MySQL · 数据归档</a></li>
-<li><a href="https://huiraoo.github.io/blog/2019/10/21/mysql-delete-bigtable/">MySQL · 快速删除大表</a></li>
-<li><a href="https://huiraoo.github.io/blog/2019/10/21/mysql-modify-dbname/">MySQL · 修改数据库名</a></li>
-<li>MySQL · 在线修改索引</li>
-<li><a href="https://huiraoo.github.io/blog/2019/10/21/mysql-rollback/">MySQL · 使用 binlog2sql 工具快速回滚误操作</a></li>
-<li>MySQL · 使用 XtraBackup 工具迁移实例</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/25/mysql-guide/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/25/mysql-guide/" class="post-title-link" itemprop="url">MySQL · 简介</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-25 10:23:48" itemprop="dateCreated datePublished" datetime="2019-07-25T10:23:48+08:00">2019-07-25</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-13 19:13:28" itemprop="dateModified" datetime="2019-10-13T19:13:28+08:00">2019-10-13</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="演进历史"><a href="#演进历史" class="headerlink" title="演进历史"></a>演进历史</h2><ul>
-<li>1979年，Monty Widenius 写了最初的版本</li>
-<li>1996年，发布 1.0 版本</li>
-<li>1995-2000年，MySQL AB 成立</li>
-<li>2000年4月，集成 MyISAM 和 Replication</li>
-<li>2001年，Heikki Tuuri 向 MySQL 建议集成 InnoDB</li>
-<li><strong>2005年，发布 5.0 版本（提供了视图、存储过程等功能）</strong></li>
-<li>2008年，MySQL AB 被 Sun 收购，出价 10 亿美元</li>
-<li>2009年，推出 5.1 版本，同年4月，Oracle 收购 Sun</li>
-<li>2010年12月，推出 5.5 GA 版本，InnoDB 改为默认存储引擎</li>
-<li>2013年2月，推出 5.6 GA 版本</li>
-<li>2015年10月，推出 5.7 GA 版本</li>
-<li>2018年5月，推出 8.0 GA 版本</li>
-</ul>
-<h3 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h3><p><strong>优点</strong></p>
-<ul>
-<li>免费</li>
-<li>开源（源码、社区工具丰富）</li>
-<li>简便（部署简单、门槛低、上手快）</li>
-</ul>
-<p><strong>缺点</strong></p>
-<ul>
-<li>优化器对复杂 SQL 支持不好</li>
-<li>大规模集群方案不成熟，主要指中间件</li>
-<li>备份和恢复方案还是比较复杂，需要依赖外部组件</li>
-<li>官方缺少分库分表解决方案</li>
-</ul>
-<h3 id="分支"><a href="#分支" class="headerlink" title="分支"></a>分支</h3><p>MySQL</p>
-<p>Percona</p>
-<p>MariaDB</p>
-<p>MySQL社区版 -&gt; Percona -&gt; MariaDB -&gt; MySQL企业版</p>
-<h3 id="客户端登录"><a href="#客户端登录" class="headerlink" title="客户端登录"></a>客户端登录</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -h主机名  -u用户名 -p密码</span><br></pre></td></tr></table></figure>
-
-<p>参数含义：</p>
-<p>![image-20190925155817170](/Users/raohui/Library/Application Support/typora-user-images/image-20190925155817170.png)</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/24/mysql-split/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/24/mysql-split/" class="post-title-link" itemprop="url">MySQL · 分库分表</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-24 14:52:02" itemprop="dateCreated datePublished" datetime="2019-07-24T14:52:02+08:00">2019-07-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-21 16:11:02" itemprop="dateModified" datetime="2019-10-21T16:11:02+08:00">2019-10-21</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>当数据库的数据量非常大时，<strong>水平切分</strong>和<strong>垂直拆分</strong>是两种常见的降低数据库大小，提升性能的方法。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">user</span><br><span class="line">(</span><br><span class="line">uid bigint,</span><br><span class="line">name varchar(16),</span><br><span class="line">pass varchar(16),</span><br><span class="line">age int,</span><br><span class="line">sex tinyint,</span><br><span class="line">flag tinyint,</span><br><span class="line">sign varchar(64),</span><br><span class="line">intro varchar(256)</span><br><span class="line">…);</span><br></pre></td></tr></table></figure>
-
-<p><strong>水平切分</strong>：以某个字段为依据（例如 <code>uid</code>），按照一定规则（例如取模），将一个库（表）上的数据拆分到多个库（表）上，以降低单库（表）大小，达到提升性能的目的的方法，水平切分后，各个库（表）的特点是：</p>
-<ul>
-<li>每个库（表）的<strong>结构</strong>都一样</li>
-<li>每个库（表）的<strong>数据</strong>都不一样，没有交集</li>
-<li>所有库（表）的并集是全量数据</li>
-</ul>
-<p><strong>垂直拆分</strong>：将一个属性较多，一行数据较大的表，将不同的属性拆分到不同的表中，以降低单库（表）大小，达到提升性能的目的的方法，垂直切分后，各个库（表）的特点是：</p>
-<ul>
-<li>每个库（表）的<strong>结构</strong>都不一样</li>
-<li>一般来说，每个库（表）的<strong>属性</strong>至少有一列交集，一般是主键</li>
-<li>所有库（表）的并集是全量数据</li>
-</ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">user_base</span><br><span class="line">(</span><br><span class="line">uid bigint,</span><br><span class="line">name varchar(16),</span><br><span class="line">pass varchar(16),</span><br><span class="line">age int,</span><br><span class="line">sex tinyint,</span><br><span class="line">flag tinyint,</span><br><span class="line">…);</span><br><span class="line"></span><br><span class="line">user_ext</span><br><span class="line">(</span><br><span class="line">uid bigint,</span><br><span class="line">sign varchar(64),</span><br><span class="line">intro varchar(256)</span><br><span class="line">…);</span><br></pre></td></tr></table></figure>
-
-<p><strong>拆分原则</strong>：</p>
-<p>①  将长度较短，访问频率较高的属性尽量放在一个表里，这个表暂且称为<strong>主表</strong>。</p>
-<p>②  将字段较长，访问频率较低的属性尽量放在一个表里，这个表暂且称为<strong>扩展表。</strong></p>
-<h2 id="原则"><a href="#原则" class="headerlink" title="原则"></a>原则</h2><ul>
-<li>原则零：能不分就不分</li>
-<li>原则一：数据量太大，正常的运维影响正常的业务访问</li>
-<li>原则二：表设计不合理，需要对某些字段进行垂直拆分</li>
-<li>原则三：某些数据表出现了无穷增长的情况</li>
-<li>原则四：安全性和可用性的考虑</li>
-<li>原则五：业务耦合性考虑</li>
-</ul>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>①  <strong>水平拆分</strong>和<strong>垂直拆分</strong>都是降低数据量大小，提升数据库性能的常见手段</p>
-<p>②  流量大数据量大时，<strong>数据访问要有 service 层</strong>，并且 service 层不要通过 <code>join</code> 来获取主表和扩展表的属性</p>
-<p>③  <strong>垂直拆分的依据</strong>，尽量把长度较短，访问频率较高的属性放在主表里</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/24/mysql-devops/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/24/mysql-devops/" class="post-title-link" itemprop="url">MySQL · 开发运维之路</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-24 14:29:43" itemprop="dateCreated datePublished" datetime="2019-07-24T14:29:43+08:00">2019-07-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-13 19:13:24" itemprop="dateModified" datetime="2019-10-13T19:13:24+08:00">2019-10-13</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>传统 MySQL 到云上 MySQL 的演变？云数据库的诞生，符合社会分工精细化的发展趋势。也是人类产能效率提升的必要。当前不仅国外 AWS、Oracle 云蓬勃发展，国内 阿里、腾讯、华为 …. 尝试拥抱云数据库产品。</p>
-<p>海尔缺少技术基因</p>
-<p>趋势不可挡：MySQL 社区火爆（<a href="https://db-engines.com/en/ranking" target="_blank" rel="noopener">DB-Engines</a>），仍然在不断进步，升级至最新稳定版是优化的最好措施。</p>
-<h2 id="深陷泥沼"><a href="#深陷泥沼" class="headerlink" title="深陷泥沼"></a>深陷泥沼</h2><ol>
-<li>缺乏专业运维人员。</li>
-<li>人力投入有限。</li>
-</ol>
-<p>发力点在哪里？</p>
-<p>去IOE</p>
-<h2 id="云中漫步"><a href="#云中漫步" class="headerlink" title="云中漫步"></a>云中漫步</h2><p>云数据库服务 + 业务系统</p>
-<p>云数据库：基于 MySQL 提供的一种数据库服务（DBaaS）</p>
-<p>腾讯：CDB</p>
-<p>阿里：RDS</p>
-<p>AWS：RDS</p>
-<p>华为：DRDS</p>
-<p>云数据库架构：</p>
-<ul>
-<li><p>深度定制的云数据库内核（基础能力：基础版、高可用版、三节点企业版 [搭配异地灾备实例，具备跨可用区容灾能力 RPO=0]）</p>
-</li>
-<li><p>云化功能的管控平台：数据库管理、备份恢复、弹性扩展、安全升级、线上调优、归档（本地IDC痛点）</p>
-</li>
-</ul>
-<p>接入？</p>
-<p>MySQL 内核引擎优化：阿里云的 <a href="https://github.com/alibaba/AliSQL" target="_blank" rel="noopener">AliSQL</a>、腾讯云的 TxSQL</p>
-<p>复制优化：CDB 的 logbus，阿里云的双通道复制</p>
-<p>存储优化：本地SSD</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2488,7 +2318,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">82</span>
+                    <span class="site-state-item-count">87</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

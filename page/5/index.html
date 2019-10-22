@@ -323,6 +323,981 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/25/mysql-character/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/25/mysql-character/" class="post-title-link" itemprop="url">MySQL · 字符集</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-25 16:58:31" itemprop="dateCreated datePublished" datetime="2019-09-25T16:58:31+08:00">2019-09-25</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-20 00:16:27" itemprop="dateModified" datetime="2019-10-20T00:16:27+08:00">2019-10-20</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>字符集</strong>：计算机中只能存储二进制数据，那字符串该如何存储字符串呢？是靠建立字符与二进制数据的映射关系，将一个字符映射成一个二进制数据的过程叫做<strong>编码</strong>，将一个二进制数据映射到一个字符的过程叫做<strong>解码</strong>，抽象出一个<strong>字符集</strong>的概念来描述某个字符范围的编码规则。</p>
+<p><strong>比较规则</strong>：英文名为 <code>collation</code>，用于比较两个字符的大小。</p>
+<p><strong>常用字符集</strong></p>
+<ul>
+<li><p><code>ASCII</code> 字符集</p>
+<p>共收录 <code>128</code> 个字符，包括空格、标点符号、数字、大小写字母和一些不可见字符。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'L'</span> -&gt;  <span class="number">01001100</span>（十六进制：<span class="number">0</span>x4C，十进制：<span class="number">76</span>）</span><br><span class="line"><span class="string">'M'</span> -&gt;  <span class="number">01001101</span>（十六进制：<span class="number">0</span>x4D，十进制：<span class="number">77</span>）</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>ISO 8859-1</code> 字符集</p>
+<p>共收录 <code>256</code> 个字符，是在 <code>ASCII</code> 字符集的基础上又扩充了 <code>128</code> 个西欧常用字符（包括德法两国的字母），这个字符集也有一个别名 <code>latin1</code>。</p>
+</li>
+<li><p><code>utf8</code> 字符集</p>
+<p>收录地球上能想到的所有字符，而且还在不断扩充。这种字符集兼容 <code>ASCII</code> 字符集，采用变长编码方式，编码一个字符需要使用 <code>1～4</code> 个字节，比方说这样：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'L'</span> -&gt;  <span class="number">01001100</span>（十六进制：<span class="number">0</span>x4C）</span><br><span class="line"><span class="string">'啊'</span> -&gt;  <span class="number">111001011001010110001010</span>（十六进制：<span class="number">0</span>xE5958A）</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Tips： <code>utf8</code> 只是 <code>Unicode</code> 字符集的一种编码方案，<code>Unicode</code> 字符集可以用 <code>utf8</code>、<code>utf16</code>、<code>utf32</code> 这几种编码方案，<code>utf8</code> 使用 <code>1～4</code> 个字节编码一个字符。</p>
+</blockquote>
+</li>
+</ul>
+<p><strong>查看字符集（character set/charset）</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show charset like <span class="string">'utf8%'</span>;</span><br><span class="line">+---------+---------------+--------------------+--------+</span><br><span class="line">| Charset | Description   | Default collation  | Maxlen |</span><br><span class="line">+---------+---------------+--------------------+--------+</span><br><span class="line">| utf8    | UTF-<span class="number">8</span> Unicode | utf8_general_ci    |      <span class="number">3</span> |</span><br><span class="line">| utf8mb4 | UTF-<span class="number">8</span> Unicode | utf8mb4_general_ci |      <span class="number">4</span> |</span><br><span class="line">+---------+---------------+--------------------+--------+</span><br></pre></td></tr></table></figure>
+
+<p><strong>查看比较规则（collation）</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show collation like <span class="string">'utf8%general_ci'</span>;</span><br><span class="line">+--------------------+---------+----+---------+----------+---------+</span><br><span class="line">| Collation          | Charset | Id | Default | Compiled | Sortlen |</span><br><span class="line">+--------------------+---------+----+---------+----------+---------+</span><br><span class="line">| utf8_general_ci    | utf8    | <span class="number">33</span> | Yes     | Yes      |       <span class="number">1</span> |</span><br><span class="line">| utf8mb4_general_ci | utf8mb4 | <span class="number">45</span> | Yes     | Yes      |       <span class="number">1</span> |</span><br><span class="line">+--------------------+---------+----+---------+----------+---------+</span><br></pre></td></tr></table></figure>
+
+<p><code>utf8</code> 字符集默认的比较规则是 <code>utf8_general_ci</code>，它是一种通用的比较规则，<code>_ci</code> 结尾，表示不区分大小写。</p>
+<h2 id="字符集和比较规则"><a href="#字符集和比较规则" class="headerlink" title="字符集和比较规则"></a>字符集和比较规则</h2><p><code>MySQL</code> 有四个级别的字符集和比较规则，分别是：</p>
+<ul>
+<li>服务器级别</li>
+<li>数据库级别</li>
+<li>表级别</li>
+<li>列级别</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like <span class="string">'character%'</span>;</span><br><span class="line">+--------------------------+----------------------------------------------------+</span><br><span class="line">| Variable_name            | Value                                              |</span><br><span class="line">+--------------------------+----------------------------------------------------+</span><br><span class="line">| character_set_client     | utf8                                               |</span><br><span class="line">| character_set_connection | utf8                                               |</span><br><span class="line">| character_set_database   | utf8                                               |</span><br><span class="line">| character_set_filesystem | binary                                             |</span><br><span class="line">| character_set_results    | utf8                                               |</span><br><span class="line">| character_set_server     | latin1                                             |</span><br><span class="line">| character_set_system     | utf8                                               |</span><br><span class="line">| character_sets_dir       | /usr/local/mysql-<span class="number">5.7</span>.<span class="number">23</span>-el7-x86_64/share/charsets/ |</span><br><span class="line">+--------------------------+----------------------------------------------------+</span><br></pre></td></tr></table></figure>
+
+<p><strong>character_set_server</strong>： 默认的内部操作字符集<br><strong>character_set_client</strong>： 服务器解码请求时使用的字符集<br><strong>character_set_connection</strong>：连接层字符集<br><strong>character_set_results</strong>： 服务器向客户端返回数据时使用的字符集<br><strong>character_set_database</strong>： 当前选中数据库的默认字符集<br><strong>character_set_system</strong>： 系统元数据(字段名等)字符集</p>
+<h3 id="服务器级别"><a href="#服务器级别" class="headerlink" title="服务器级别"></a>服务器级别</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 控制参数</span></span><br><span class="line">character_set_server</span><br><span class="line">collation_server</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置文件设置</span></span><br><span class="line">[client]</span><br><span class="line">default-character-<span class="keyword">set</span>  = utf8</span><br><span class="line"></span><br><span class="line">[mysql]</span><br><span class="line"><span class="keyword">default</span>-<span class="built_in">character</span>-<span class="keyword">set</span>  = utf8</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line"><span class="built_in">character</span>-<span class="keyword">set</span>-<span class="keyword">server</span>   = utf8</span><br><span class="line"><span class="keyword">collation</span>-<span class="keyword">server</span>       = utf8_general_ci</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看方法</span></span><br><span class="line">mysql&gt; <span class="keyword">SHOW</span> <span class="keyword">VARIABLES</span> <span class="keyword">LIKE</span> <span class="string">'character_set_server'</span>;</span><br><span class="line">+<span class="comment">----------------------+--------+</span></span><br><span class="line">| Variable_name        | Value  |</span><br><span class="line">+<span class="comment">----------------------+--------+</span></span><br><span class="line">| character_set_server | utf8   |</span><br><span class="line">+<span class="comment">----------------------+--------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">SHOW</span> <span class="keyword">VARIABLES</span> <span class="keyword">LIKE</span> <span class="string">'collation_server'</span>;</span><br><span class="line">+<span class="comment">------------------+-------------------+</span></span><br><span class="line">| Variable_name    | Value             |</span><br><span class="line">+<span class="comment">------------------+-------------------+</span></span><br><span class="line">| collation_server | utf8_general_ci   |</span><br><span class="line">+<span class="comment">------------------+-------------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h3 id="数据库级别"><a href="#数据库级别" class="headerlink" title="数据库级别"></a>数据库级别</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 控制参数</span></span><br><span class="line">character_set_database</span><br><span class="line">collation_database</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建语法</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">DATABASE</span> 数据库名</span><br><span class="line">    [[<span class="keyword">DEFAULT</span>] <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> 字符集名称]</span><br><span class="line">    [[<span class="keyword">DEFAULT</span>] <span class="keyword">COLLATE</span> 比较规则名称];</span><br><span class="line"></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">DATABASE</span> 数据库名</span><br><span class="line">    [[<span class="keyword">DEFAULT</span>] <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> 字符集名称]</span><br><span class="line">    [[<span class="keyword">DEFAULT</span>] <span class="keyword">COLLATE</span> 比较规则名称];</span><br><span class="line">    </span><br><span class="line"><span class="comment"># 查看方法</span></span><br><span class="line">mysql&gt; use test;</span><br><span class="line">mysql&gt; SELECT @@character_set_database, @@collation_database;</span><br><span class="line">+<span class="comment">--------------------------+----------------------+</span></span><br><span class="line">| @@character_set_database | @@collation_database |</span><br><span class="line">+<span class="comment">--------------------------+----------------------+</span></span><br><span class="line">| utf8                     | utf8_general_ci      |</span><br><span class="line">+<span class="comment">--------------------------+----------------------+</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>规则</strong></p>
+<ul>
+<li>创建数据库时，指定了 <code>CHARACTER SET</code> 或 <code>COLLATE</code>，则以对应的字符集、比较规则为准。</li>
+<li>创建数据库时，没有指定字符集、排序规则，则以 <code>character_set_server</code>、<code>collation_server</code> 为准。</li>
+<li><code>character_set_database</code> 和 <code>collation_database</code> 这两个系统变量是只读的，不能通过修改这两个变量的值而改变当前数据库的字符集和比较规则。</li>
+</ul>
+<h3 id="表级别"><a href="#表级别" class="headerlink" title="表级别"></a>表级别</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建语法</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> 表名 (列的信息)</span><br><span class="line">    [[<span class="keyword">DEFAULT</span>] <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> 字符集名称]</span><br><span class="line">    [<span class="keyword">COLLATE</span> 比较规则名称]]</span><br><span class="line"></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> 表名</span><br><span class="line">    [[<span class="keyword">DEFAULT</span>] <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> 字符集名称]</span><br><span class="line">    [<span class="keyword">COLLATE</span> 比较规则名称]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看方法</span></span><br><span class="line">mysql&gt; <span class="keyword">show</span> <span class="keyword">table</span> <span class="keyword">status</span> <span class="keyword">from</span> <span class="keyword">test</span>\G</span><br><span class="line">*************************** <span class="number">1.</span> <span class="keyword">row</span> ***************************</span><br><span class="line">           <span class="keyword">Name</span>: <span class="keyword">test</span></span><br><span class="line">         <span class="keyword">Engine</span>: <span class="keyword">InnoDB</span></span><br><span class="line">        <span class="keyword">Version</span>: <span class="number">10</span></span><br><span class="line">     Row_format: Dynamic</span><br><span class="line">           <span class="keyword">Rows</span>: <span class="number">5</span></span><br><span class="line"> Avg_row_length: <span class="number">3276</span></span><br><span class="line">    Data_length: <span class="number">16384</span></span><br><span class="line">Max_data_length: <span class="number">0</span></span><br><span class="line">   Index_length: <span class="number">0</span></span><br><span class="line">      Data_free: <span class="number">0</span></span><br><span class="line"> Auto_increment: <span class="number">6</span></span><br><span class="line">    Create_time: <span class="number">2019</span><span class="number">-09</span><span class="number">-24</span> <span class="number">18</span>:<span class="number">00</span>:<span class="number">54</span></span><br><span class="line">    Update_time: <span class="literal">NULL</span></span><br><span class="line">     Check_time: <span class="literal">NULL</span></span><br><span class="line">      <span class="keyword">Collation</span>: utf8_general_ci</span><br><span class="line">       <span class="keyword">Checksum</span>: <span class="literal">NULL</span></span><br><span class="line"> Create_options: </span><br><span class="line">        <span class="keyword">Comment</span>:</span><br></pre></td></tr></table></figure>
+
+<p><strong>规则</strong></p>
+<ul>
+<li>明确了 <code>charset_name</code>、<code>collation_name</code>，则采用 <code>charset_name</code>、<code>collation_name</code>。</li>
+<li><code>charset_name</code>、<code>collation_name</code> 均未明确，则采用数据库的字符集、比较规则设置。</li>
+</ul>
+<h3 id="列级别"><a href="#列级别" class="headerlink" title="列级别"></a>列级别</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建语法</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> 表名(</span><br><span class="line">    列名 字符串类型 [<span class="built_in">CHARACTER</span> <span class="keyword">SET</span> 字符集名称] [<span class="keyword">COLLATE</span> 比较规则名称],</span><br><span class="line">    其他列...</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> 表名 <span class="keyword">MODIFY</span> 列名 字符串类型 [<span class="built_in">CHARACTER</span> <span class="keyword">SET</span> 字符集名称] [<span class="keyword">COLLATE</span> 比较规则名称];</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看方法</span></span><br><span class="line">mysql&gt; SELECT CHARACTER_SET_NAME, COLLATION_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA="test" AND TABLE_NAME="test" AND COLUMN_NAME="name";</span><br><span class="line">+<span class="comment">--------------------+-----------------+</span></span><br><span class="line">| CHARACTER_SET_NAME | COLLATION_NAME  |</span><br><span class="line">+<span class="comment">--------------------+-----------------+</span></span><br><span class="line">| utf8               | utf8_general_ci |</span><br><span class="line">+<span class="comment">--------------------+-----------------+</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>规则</strong></p>
+<ul>
+<li>明确了 <code>charset_name</code>、<code>collation_name</code> 均明确，则采用 <code>charset_name</code>、<code>collation_name</code> 为准。</li>
+<li><code>charset_name</code>、<code>collation_name</code> 均未明确，则以表的字符集、比较规则为准。</li>
+</ul>
+<blockquote>
+<p><strong>小结</strong></p>
+</blockquote>
+<ul>
+<li>如果创建或修改列时没有显式的指定字符集和比较规则，则该列默认用表的字符集和比较规则</li>
+<li>如果创建或修改表时没有显式的指定字符集和比较规则，则该表默认用数据库的字符集和比较规则</li>
+<li>如果创建或修改数据库时没有显式的指定字符集和比较规则，则该数据库默认用服务器的字符集和比较规则</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li><strong>字符集</strong>是某个字符范围的编码规则。</li>
+<li><strong>比较规则</strong>是针对某个字符集中的字符比较大小的一种规则。</li>
+<li><code>MySQL</code> 中一个字符集可以有若干种比较规则，其中有一个默认的比较规则。</li>
+<li><code>MySQL</code> 有四个级别的字符集和比较规则，优先级排序：列 &gt; 表 &gt; 库 &gt; 服务器。</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/25/mysql-config/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/25/mysql-config/" class="post-title-link" itemprop="url">MySQL · 配置文件</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-25 16:31:23" itemprop="dateCreated datePublished" datetime="2019-09-25T16:31:23+08:00">2019-09-25</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-13 19:13:15" itemprop="dateModified" datetime="2019-10-13T19:13:15+08:00">2019-10-13</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>MySQL 默认配置文件：<code>/etc/my.cnf</code>，自动 <a href="https://imysql.com/my_cnf_generator" target="_blank" rel="noopener"><strong>生成工具</strong></a></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">port                      = <span class="number">3306</span></span><br><span class="line">socket                    = /<span class="keyword">data</span>/mysql/mysql.sock</span><br><span class="line">default-character-set     = utf8</span><br><span class="line"></span><br><span class="line">[mysql]</span><br><span class="line">default-character-set     = utf8</span><br><span class="line">no-auto-rehash</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line">port                      = <span class="number">3306</span></span><br><span class="line">basedir                   = /usr/local/mysql</span><br><span class="line">datadir                   = /<span class="keyword">data</span>/mysql</span><br><span class="line">socket                    = /<span class="keyword">data</span>/mysql/mysql.sock</span><br><span class="line">pid-file                  = /<span class="keyword">data</span>/mysql/mysql.pid</span><br><span class="line">character-set-server      = utf8</span><br><span class="line">collation-server          = utf8_general_ci</span><br><span class="line">skip_name_resolve         = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># LOG</span></span><br><span class="line">slow_query_log            = <span class="number">1</span></span><br><span class="line">long_query_time           = <span class="number">5</span></span><br><span class="line">log_error                 = /<span class="keyword">data</span>/mysql/error.log</span><br><span class="line">slow_query_log_file       = /<span class="keyword">data</span>/mysql/slow.log</span><br><span class="line"></span><br><span class="line"><span class="comment"># INNODB</span></span><br><span class="line">innodb_data_home_dir      = /<span class="keyword">data</span>/mysql</span><br><span class="line">innodb_buffer_pool_size   = <span class="number">10240</span>M</span><br><span class="line">innodb_log_file_size      = <span class="number">2</span>G</span><br><span class="line">innodb_data_file_path     = ibdata1:<span class="number">1</span>G:autoextend</span><br><span class="line">innodb_buffer_pool_instances = <span class="number">4</span></span><br><span class="line">innodb_max_undo_log_size  = <span class="number">4</span>G</span><br><span class="line"></span><br><span class="line"><span class="comment"># OTHER</span></span><br><span class="line">back_log                  = <span class="number">1024</span></span><br><span class="line">max_connections           = <span class="number">3000</span></span><br><span class="line">interactive_timeout       = <span class="number">600</span></span><br><span class="line">wait_timeout              = <span class="number">600</span></span><br><span class="line">sort_buffer_size          = <span class="number">16</span>M</span><br><span class="line">join_buffer_size          = <span class="number">16</span>M</span><br><span class="line">lower_case_table_names    = <span class="number">1</span></span><br><span class="line">log_timestamps            = SYSTEM</span><br><span class="line">explicit_defaults_for_timestamp = <span class="number">1</span></span><br><span class="line">log_queries_not_using_indexes   = <span class="number">1</span></span><br><span class="line"></span><br><span class="line">server-id                 = <span class="number">3306100</span></span><br><span class="line">log-bin                   = /<span class="keyword">data</span>/mysql/mysql-bin</span><br><span class="line">sync_binlog               = <span class="number">1</span></span><br><span class="line">max_binlog_size           = <span class="number">1024</span>M</span><br><span class="line">binlog-format             = row</span><br><span class="line">expire_logs_days          = <span class="number">7</span></span><br></pre></td></tr></table></figure>
+
+<p>[<strong>mysql</strong>]：该部分由 <code>mysql</code> 命令行客户端读取<br>[<strong>client</strong>]：该部分由所有连接的客户端读取（包括 <code>mysql cli</code>）<br>[<strong>mysqld</strong>]：该部分由 <code>mysql</code> 服务器读取<br>[<strong>mysqldump</strong>]：该部分由 <code>mysqldump</code> 备份工具读取<br>[<strong>mysqld_safe</strong>]：该部分由 <code>mysqld_safe</code> 进程读取</p>
+<p><strong>参数类型</strong></p>
+<p>静态参数：重启 <code>MySQL</code> 服务器后才能使之生效。<br>动态参数：可以在不重新启动 <code>MySQL</code> 服务器的情况下即时更改。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/24/mysql-stringtype/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/24/mysql-stringtype/" class="post-title-link" itemprop="url">MySQL · 参数选择 · varchar vs char</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-24 15:33:55" itemprop="dateCreated datePublished" datetime="2019-09-24T15:33:55+08:00">2019-09-24</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-13 19:13:47" itemprop="dateModified" datetime="2019-10-13T19:13:47+08:00">2019-10-13</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>CHAR</strong> ：是一种<strong>定长字符串</strong>类型，并且必须在圆括号内用一个大小修饰符来定义，这个大小修饰符的范围从 0～255。比指定长度大的值将被截短，而比指定长度小的值将会用空格作填补。</p>
+<p><strong>VARCHAR</strong> ：是一种<strong>可变长度</strong>的字符串类型，并且也必须带有一个范围指示器。</p>
+<table>
+<thead>
+<tr>
+<th align="left">Value</th>
+<th align="left">CHAR(4)</th>
+<th align="left">Storage Required</th>
+<th align="left">VARCHAR(4)</th>
+<th align="left">Storage Required</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">‘’</td>
+<td align="left">‘’</td>
+<td align="left">4 bytes</td>
+<td align="left">‘’</td>
+<td align="left">1 byte</td>
+</tr>
+<tr>
+<td align="left">‘ab’</td>
+<td align="left">‘ab’</td>
+<td align="left">4 bytes</td>
+<td align="left">‘ab’</td>
+<td align="left">3 bytes</td>
+</tr>
+<tr>
+<td align="left">‘abcd’</td>
+<td align="left">‘abcd’</td>
+<td align="left">4 bytes</td>
+<td align="left">‘abcd’</td>
+<td align="left">5 bytes</td>
+</tr>
+<tr>
+<td align="left">‘abcdefgh’</td>
+<td align="left">‘abcd’</td>
+<td align="left">4 bytes</td>
+<td align="left">‘abcd’</td>
+<td align="left">5 bytes</td>
+</tr>
+</tbody></table>
+<p><strong>性能对比</strong></p>
+<p>char &gt; varchar</p>
+<p><strong>选择</strong></p>
+<p>选择最小的数据范围，因为这样可以大大减少磁盘空间及磁盘 I/O 读写开销，<strong>减少内存占用，减少CPU占用率</strong></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/24/mysql-timetype/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/24/mysql-timetype/" class="post-title-link" itemprop="url">MySQL · 参数选择 · datetime vs timestamp</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-24 11:50:26" itemprop="dateCreated datePublished" datetime="2019-09-24T11:50:26+08:00">2019-09-24</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-09-26 15:38:08" itemprop="dateModified" datetime="2019-09-26T15:38:08+08:00">2019-09-26</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>MySQL 中常用的两种时间储存类型分别是 <code>datetime</code> 和 <code>timestamp</code>，建表时该如何选择呢？</p>
+<p><strong>占用空间</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">类型</th>
+<th align="left">占据字节</th>
+<th align="left">表示形式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">datetime</td>
+<td align="left">8 字节</td>
+<td align="left">yyyy-mm-dd hh:mm:ss</td>
+</tr>
+<tr>
+<td align="left">timestamp</td>
+<td align="left">4 字节</td>
+<td align="left">yyyy-mm-dd hh:mm:ss</td>
+</tr>
+</tbody></table>
+<p><strong>表示范围</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">类型</th>
+<th align="left">表示范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">datetime</td>
+<td align="left">‘1000-01-01 00:00:00.000000’ to ‘9999-12-31 23:59:59.999999’</td>
+</tr>
+<tr>
+<td align="left">timestamp</td>
+<td align="left">‘1970-01-01 00:00:01.000000’ to ‘2038-01-19 03:14:07.999999’</td>
+</tr>
+</tbody></table>
+<p><strong>时区</strong></p>
+<ul>
+<li><p><code>timestamp</code> 占 4 个字节，而且是以 <code>utc</code> 格式储存，它会自动检索当前时区并进行转换，存和取可能不一样。</p>
+</li>
+<li><p><code>datetime</code> 占 8 个字节储存，不会进行时区的检索，存和取一样。</p>
+</li>
+<li><p>区别：如果存进去的是 <code>NULL</code>，<code>timestamp</code> 会自动储存当前时间，而 <code>datetime</code> 会储存 <code>NULL</code>。</p>
+</li>
+</ul>
+<p><strong>测试</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建测试表</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> timedemo(st <span class="built_in">timestamp</span>,dt datetime);</span><br><span class="line"></span><br><span class="line"><span class="comment"># 插入数据</span></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> timedemo <span class="keyword">values</span> (<span class="literal">null</span>,<span class="literal">null</span>), (<span class="keyword">now</span>(),<span class="keyword">now</span>()), (<span class="string">'20161001193450'</span>,<span class="string">'20161001193450'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment"># timestamp 会自动储存当前时间，而 datetime 会储存 NULL</span></span><br><span class="line">mysql&gt; select * from timedemo;</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line">| st                  | dt                  |</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line">| 2019-09-24 14:00:15 | NULL                |</span><br><span class="line">| 2019-09-24 14:00:15 | 2019-09-24 14:00:15 |</span><br><span class="line">| 2016-10-01 19:34:50 | 2016-10-01 19:34:50 |</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 将时区修改为东9区，会发现 timestamp 比 datetime 多一小时</span></span><br><span class="line">mysql&gt; set time_zone='+9:00';</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; show variables like "time_zone";</span><br><span class="line">+<span class="comment">---------------+--------+</span></span><br><span class="line">| Variable_name | Value  |</span><br><span class="line">+<span class="comment">---------------+--------+</span></span><br><span class="line">| time_zone     | +09:00 |</span><br><span class="line">+<span class="comment">---------------+--------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">select</span> * <span class="keyword">from</span> timedemo;</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line">| st                  | dt                  |</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line">| 2019-09-24 15:00:15 | NULL                |</span><br><span class="line">| 2019-09-24 15:00:15 | 2019-09-24 14:00:15 |</span><br><span class="line">| 2016-10-01 20:34:50 | 2016-10-01 19:34:50 |</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line">3 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p><strong>选择</strong></p>
+<ul>
+<li>如果在时间上要超过 <code>Linux</code> 时间的，或者服务器时区不一样的就建议选择 <code>datetime</code>。</li>
+<li>如果是想要使用自动插入时间或者自动更新时间功能，可以使用 <code>timestamp</code>。</li>
+<li>存储年使用 <code>year</code>，存储日期使用 <code>date</code>，存储时间使用 <code>datetime</code>。</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/20/mysql-practice-slave/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/20/mysql-practice-slave/" class="post-title-link" itemprop="url">MySQL · 运维实践 · 在线搭建从库</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-20 11:01:53" itemprop="dateCreated datePublished" datetime="2019-09-20T11:01:53+08:00">2019-09-20</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-09-25 15:19:06" itemprop="dateModified" datetime="2019-09-25T15:19:06+08:00">2019-09-25</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h2><p>常见有以下两种：</p>
+<ul>
+<li>主从复制中断，主 <code>binlog</code> 缺失，需要重新搭建从库</li>
+<li>单主模式，升级为主从模式</li>
+</ul>
+<h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><p>使用 Percona XtraBackup 工具不停机不锁表在线搭建从库。</p>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p>（1）主从服务器，<a href="https://huiraoo.github.io/blog/2019/06/18/mysql-xtrabackup/"><strong>安装 XtraBackup</strong></a></p>
+<p>（2）<a href="https://huiraoo.github.io/blog/2019/07/08/linux-ssh/"><strong>配置主从互信</strong></a></p>
+<p>（3）备份主库</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ innobackupex --defaults-file=/etc/my.cnf --user=<span class="string">'xx'</span> --password=<span class="string">'xx'</span> --no-timestamp /<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Tips：备份目录要依据服务器磁盘分配，否则会占满磁盘，影响业务。</p>
+</blockquote>
+<p>（4）传输到从库</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ scp -r /<span class="keyword">data</span>/backup/* root@x.x.x.x:/<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
+
+<p>（5）恢复数据</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ mysqladmin -uroot -p<span class="string">'xx'</span> shutdown</span><br><span class="line">$ innobackupex --apply-log /<span class="keyword">data</span>/backup</span><br><span class="line">$ mv mysql mysql_bak</span><br><span class="line">$ mkdir mysql</span><br><span class="line">$ innobackupex --copy-back /<span class="keyword">data</span>/backup</span><br><span class="line">$ chown -R mysql:mysql mysql</span><br><span class="line">$ /usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql &gt;/dev/null &amp;</span><br></pre></td></tr></table></figure>
+
+<p>（6）建立复制关系</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">$ cat xtrabackup_binlog_info</span><br><span class="line">mysql-binlog.<span class="number">000297</span>	<span class="number">900834433</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置同步</span></span><br><span class="line">CHANGE MASTER TO </span><br><span class="line">MASTER_HOST=<span class="string">'x.x.x.x'</span>,</span><br><span class="line">MASTER_USER=<span class="string">'repl'</span>,</span><br><span class="line">MASTER_PASSWORD=<span class="string">'Changeme_123'</span>,</span><br><span class="line">MASTER_PORT=<span class="number">3306</span>,</span><br><span class="line">MASTER_LOG_FILE=<span class="string">'mysql-binlog.000297'</span>, </span><br><span class="line">MASTER_LOG_POS=<span class="number">900834433</span>,</span><br><span class="line">MASTER_CONNECT_RETRY=<span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 开启同步</span></span><br><span class="line">mysql&gt; start slave;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 主库检查参数</span></span><br><span class="line">mysql&gt; show master status;</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line">| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB |</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line">| mysql-bin.<span class="number">001958</span> | <span class="number">32629730</span> |              |                  |</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line"></span><br><span class="line"><span class="comment"># 从库检查参数</span></span><br><span class="line">show slave status\G</span><br><span class="line">Slave_IO_Running: Yes</span><br><span class="line">Slave_SQL_Running: Yes</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/20/mysql-case-replication/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1151,917 +2126,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/21/mysql-index/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/08/21/mysql-index/" class="post-title-link" itemprop="url">MySQL · 索引</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-21 16:34:04" itemprop="dateCreated datePublished" datetime="2019-08-21T16:34:04+08:00">2019-08-21</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-20 00:11:42" itemprop="dateModified" datetime="2019-10-20T00:11:42+08:00">2019-10-20</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/21/mysql-lock/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/08/21/mysql-lock/" class="post-title-link" itemprop="url">MySQL · 锁机制</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-21 16:33:53" itemprop="dateCreated datePublished" datetime="2019-08-21T16:33:53+08:00">2019-08-21</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-13 19:13:37" itemprop="dateModified" datetime="2019-10-13T19:13:37+08:00">2019-10-13</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>锁</strong>：是计算机协调多个进程或线程并发访问某一资源的机制。</p>
-<p><strong>MySQL锁机制</strong>：相对其他数据库而言，MySQL 的锁机制比较简单，其最显著的特点是不同的存储引擎支持不同的锁机制。MyISAM 和 MEMORY 存储引擎采用的是表级锁（table-level locking）；InnoDB 存储引擎既支持行级锁（row-level locking），也支持表级锁，但默认情况下是采用行级锁。</p>
-<p>①  表级锁：开销小，加锁快；不会出现死锁；锁定粒度大，发生锁冲突的概率最高,并发度最低。  </p>
-<p>②  行级锁：开销大，加锁慢；会出现死锁；锁定粒度最小，发生锁冲突的概率最低,并发度也最高。</p>
-<p>从上述特点可见，很难笼统地说哪种锁更好，只能就具体应用的特点来说哪种锁更合适！仅从锁的角度来说：表级锁更适合于以查询为主，只有少量按索引条件更新数据的应用，如 Web 应用；而行级锁则更适合于有大量按索引条件并发更新少量不同数据，同时又有并发查询的应用，如一些在线事务处理（OLTP）系统。由于 BDB 已经被 InnoDB 取代，即将成为历史（所以现在基本都在使用 InnoDB 存储引擎）。</p>
-<p>如何查看表锁情况？可查看两个变量：</p>
-<p><strong>Table_locks_immediate</strong>：立刻获得表锁的次数</p>
-<p><strong>Table_locks_waited</strong>：需要等待表锁的次数，如果等待表锁的次数占比较大，说明表锁可能是潜在瓶颈。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show status like 'Table_locks%';</span><br><span class="line">+<span class="comment">-----------------------+---------+</span></span><br><span class="line">| Variable_name         | Value   |</span><br><span class="line">+<span class="comment">-----------------------+---------+</span></span><br><span class="line">| Table_locks_immediate | 1789993 |</span><br><span class="line">| Table_locks_waited    | 0       |</span><br><span class="line">+<span class="comment">-----------------------+---------+</span></span><br><span class="line">2 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-
-<p>表级锁的两种模式：</p>
-<ul>
-<li><p>表共享读锁（Table Read Lock）</p>
-</li>
-<li><p>表独占写锁（Table Write Lock）</p>
-</li>
-</ul>
-<h3 id="InnoDB"><a href="#InnoDB" class="headerlink" title="InnoDB"></a>InnoDB</h3><p>如果 InnoDB_row_lock_waits 和 InnoDB_row_lock_time_avg 的值比较高，表示锁争用情况比较严重。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show status like 'InnoDB_row_lock%';</span><br><span class="line">+<span class="comment">-------------------------------+-------+</span></span><br><span class="line">| Variable_name                 | Value |</span><br><span class="line">+<span class="comment">-------------------------------+-------+</span></span><br><span class="line">| Innodb_row_lock_current_waits | 0     |</span><br><span class="line">| Innodb_row_lock_time          | 0     |</span><br><span class="line">| Innodb_row_lock_time_avg      | 0     |</span><br><span class="line">| Innodb_row_lock_time_max      | 0     |</span><br><span class="line">| Innodb_row_lock_waits         | 0     |</span><br><span class="line">+<span class="comment">-------------------------------+-------+</span></span><br><span class="line">5 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-
-<p>InnoDB 实现了一下两种类型的行锁：  </p>
-<ul>
-<li>共享锁(S)：允许一个事务去多一行，阻止其它事务获得相同数据集的排他锁。  </li>
-<li>排他锁(X): 允许获得排他锁的事务更新数据，阻止其它事务获得相同数据集的共享锁和排他写锁。</li>
-</ul>
-<p>另外，为了允许行锁和表锁共存，实现多粒度锁机制，InnoDB 还有两种内部使用的意向锁（Intention Locks），这两种意向锁都是表锁。（感觉与MyISAM 的表锁机制类似）  </p>
-<ul>
-<li>意向共享锁（IS）：事务打算给数据行加行共享锁，事务在给一个数据行加共享锁前必须先取得该表的 IS 锁。  </li>
-<li>意向排他锁（IX）：事务打算给数据行加行排他锁，事务在给一个数据行加排他锁前必须先取得该表的 IX 锁。</li>
-</ul>
-<p><strong>InnoDB行锁模式兼容性列表</strong>：</p>
-<table>
-<thead>
-<tr>
-<th align="left">请求锁模式矩阵结果表示是否兼容 当前锁模式</th>
-<th align="left">X</th>
-<th align="left">IX</th>
-<th align="left">S</th>
-<th align="left">IS</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">X</td>
-<td align="left">冲突</td>
-<td align="left">冲突</td>
-<td align="left">冲突</td>
-<td align="left">冲突</td>
-</tr>
-<tr>
-<td align="left">IX</td>
-<td align="left">冲突</td>
-<td align="left">兼容</td>
-<td align="left">冲突</td>
-<td align="left">兼容</td>
-</tr>
-<tr>
-<td align="left">S</td>
-<td align="left">冲突</td>
-<td align="left">冲突</td>
-<td align="left">兼容</td>
-<td align="left">兼容</td>
-</tr>
-<tr>
-<td align="left">IS</td>
-<td align="left">冲突</td>
-<td align="left">兼容</td>
-<td align="left">兼容</td>
-<td align="left">兼容</td>
-</tr>
-</tbody></table>
-<h3 id="死锁（DeadLock"><a href="#死锁（DeadLock" class="headerlink" title="死锁（DeadLock)"></a>死锁（DeadLock)</h3><h3 id="避免死锁的方法"><a href="#避免死锁的方法" class="headerlink" title="避免死锁的方法"></a><strong>避免死锁的方法</strong></h3><ol>
-<li>在应用中，如果不同的程序会并发存取多个表，应尽量约定以相同的顺序来访问表，这样可以大大降低产生死锁的机会。在下面的例子中，由于两个 session 访问两个表的顺序不同，发生死锁的机会就非常高！但如果以相同的顺序来访问，死锁就可以避免。  </li>
-<li>在程序以批量方式处理数据的时候，如果事先对数据排序，保证每个线程按固定的顺序来处理记录，也可以大大降低出现死锁的可能。  </li>
-<li>在事务中，如果要更新记录，应该直接申请足够级别的锁，即排他锁，而不应先申请共享锁，更新时再申请排他锁，因为当用户申请排他锁时，其他事务可能又已经获得了相同记录的共享锁，从而造成锁冲突，甚至死锁。  </li>
-<li>在 REPEATABLE-READ 隔离级别下，如果两个线程同时对相同条件记录用 SELECT…FOR UPDATE 加排他锁，在没有符合该条件记录情况下，两个线程都会加锁成功。程序发现记录尚不存在，就试图插入一条新记录，如果两个线程都这么做，就会出现死锁。这种情况下，将隔离级别改成 READ COMMITTED，就可避免问题。  </li>
-<li>当隔离级别为 READ COMMITTED 时，如果两个线程都先执行 SELECT…FOR UPDATE，判断是否存在符合条件的记录，如果没有，就插入记录。此时，只有一个线程能插入成功，另一个线程会出现锁等待，当第 1 个线程提交后，第 2 个线程会因主键重出错，但虽然这个线程出错了，却会获得一个排他锁！这时如果有第 3 个线程又来申请排他锁，也会出现死锁。</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/12/foster/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/08/12/foster/" class="post-title-link" itemprop="url">新员工培养</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-12 09:26:09" itemprop="dateCreated datePublished" datetime="2019-08-12T09:26:09+08:00">2019-08-12</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-13 19:13:08" itemprop="dateModified" datetime="2019-10-13T19:13:08+08:00">2019-10-13</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="第一周（2019-08-12）"><a href="#第一周（2019-08-12）" class="headerlink" title="第一周（2019/08/12）"></a>第一周（2019/08/12）</h2><p><strong>本周学习内容：</strong><br>1、数据库基础概念及 <code>MySQL</code> 简介。<br>2、<code>Linux</code> 常用命令。<br>3、<code>Linux</code> 下安装 <code>MySQL 5.7</code> 版本数据库。<br>4、操作 <code>MySQL</code> 常用工具，学会对新增用户进行授权。<br>5、搭建个人技术博客，每日工作日报通过博客文章形式发送。</p>
-<p><strong>本周输出：</strong><br>1、学习总结：<a href="https://mino-yn.github.io/blog/archives/" target="_blank" rel="noopener">https://mino-yn.github.io/blog/archives/</a><br>2、<code>MySQL</code> 运维工单2个。</p>
-<h2 id="第二周（2019-08-19）"><a href="#第二周（2019-08-19）" class="headerlink" title="第二周（2019/08/19）"></a>第二周（2019/08/19）</h2><p><strong>本周学习内容：</strong><br>1、<code>MySQL</code> 数据库备份工具 <code>XtraBackup</code> 的学习实践。<br>2、增、删、改、查常用 <code>SQL</code> 语句操作及语法。<br>3、<code>MySQL</code> 常用内置函数的使用：<code>COUNT()</code>、<code>MAX()</code>、<code>MIN()</code>、<code>SUM()</code> 等。</p>
-<p><strong>本周输出：</strong><br>1、学习总结：<a href="https://mino-yn.github.io/blog/archives/" target="_blank" rel="noopener">https://mino-yn.github.io/blog/archives/</a><br>2、<code>MySQL</code> 运维工单2个。</p>
-<h2 id="第三周（2019-08-26）"><a href="#第三周（2019-08-26）" class="headerlink" title="第三周（2019/08/26）"></a>第三周（2019/08/26）</h2><p><strong>本周学习内容：</strong><br>1、<code>MySQL</code> 数据库备份工具 <code>mysqldump</code> 的学习与实践。<br>2、配置 <code>SSH</code> 互信的原理与实践<br>3、<code>MySQL</code> 高级查询：联结、组合查询、子查询等<br>4、<code>MySQL</code> 存储过程、游标、触发器等的使用</p>
-<p><strong>本周工作输出：</strong><br>1、学习总结：<a href="https://mino-yn.github.io/blog/archives/" target="_blank" rel="noopener">https://mino-yn.github.io/blog/archives/</a><br>2、<code>MySQL</code> 运维工单4个。</p>
-<h2 id="8月份培养计划"><a href="#8月份培养计划" class="headerlink" title="8月份培养计划"></a>8月份培养计划</h2><table>
-<thead>
-<tr>
-<th>月</th>
-<th>目标</th>
-<th>周</th>
-<th>工作任务</th>
-<th>具体要求</th>
-<th>完成情况</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>8月</td>
-<td>1. 快速融入工作环境，完成角色转换 2. 工学结合，处理5%工单 3. 培养沟通展示能力，月度总结汇报 4. 培养良好文档习惯，搭建知识博客</td>
-<td>week1</td>
-<td>1. 了解工作内容及常用工具（HeidiSQL/XtraBackup） 2. 熟悉数据库相关基本概念</td>
-<td>搭建个人博客，日报上传</td>
-<td><strong>OK</strong></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>week2</td>
-<td>1. 安装、卸载、启动、停止MySQL数据库进程服务 2. 了解MySQL常用的几种登陆方式 3. 编写5篇技术总结文档，并发布到博客</td>
-<td>1. 处理本周安装数据库的工单 2. 输出5篇技术文档</td>
-<td><strong>OK</strong></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>week3</td>
-<td>1. MySQL用户管理和权限管理 2. 编写10篇技术总结文档，并发布到博客</td>
-<td>1. 处理本周授权、安装数据库等工单 2. 输出10篇技术文档</td>
-<td><strong>OK</strong></td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td>week4</td>
-<td>月度总结并汇报</td>
-<td>1. 本月累计处理工单5% 2. 本月累计输出15篇技术文档</td>
-<td></td>
-</tr>
-</tbody></table>
-<p><img src="http://ww1.sinaimg.cn/large/006y8mN6ly1g6dgf80ua8j30u011stlx.jpg" alt="培养计划（杨楠）"></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/06/data-structure/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/08/06/data-structure/" class="post-title-link" itemprop="url">数据结构</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-06 15:28:51" itemprop="dateCreated datePublished" datetime="2019-08-06T15:28:51+08:00">2019-08-06</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-20 00:06:55" itemprop="dateModified" datetime="2019-10-20T00:06:55+08:00">2019-10-20</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>数据结构</strong>：是指一组数据的存储结构，它解决的是如何更快、更省地存储数据的问题。最常用、最基础数据结构有数组、链表、栈、队列、散列表、二叉树、堆、图。</p>
-<p><strong>算法</strong>：</p>
-<h2 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h2><h3 id="线性表"><a href="#线性表" class="headerlink" title="线性表"></a>线性表</h3><p>n个数据元素的有限序列。</p>
-<h4 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h4><p>数据连续储存在内存空间中，数据的访问简单，添加和删除数据较为麻烦。</p>
-<h3 id="链表"><a href="#链表" class="headerlink" title="链表"></a>链表</h3><h4 id="静态链表"><a href="#静态链表" class="headerlink" title="静态链表"></a>静态链表</h4><h4 id="单链表"><a href="#单链表" class="headerlink" title="单链表"></a>单链表</h4><h4 id="循环链表"><a href="#循环链表" class="headerlink" title="循环链表"></a>循环链表</h4><h4 id="双向链表"><a href="#双向链表" class="headerlink" title="双向链表"></a>双向链表</h4><h3 id="栈"><a href="#栈" class="headerlink" title="栈"></a>栈</h3><p>后进先出的数据结构形式</p>
-<h3 id="队列"><a href="#队列" class="headerlink" title="队列"></a>队列</h3><p>先进先出的数据结构形式</p>
-<h3 id="树"><a href="#树" class="headerlink" title="树"></a>树</h3><h3 id="哈希表"><a href="#哈希表" class="headerlink" title="哈希表"></a>哈希表</h3><h3 id="堆"><a href="#堆" class="headerlink" title="堆"></a>堆</h3><h3 id="图"><a href="#图" class="headerlink" title="图"></a>图</h3><h2 id="学习资料"><a href="#学习资料" class="headerlink" title="学习资料"></a>学习资料</h2><p><a href="http://asdfghjkl.xyz/2019/05/24/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%E4%B9%8B%E7%BE%8E/" target="_blank" rel="noopener">数据结构与算法之美</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/06/algorithms/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/08/06/algorithms/" class="post-title-link" itemprop="url">算法</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-06 15:28:22" itemprop="dateCreated datePublished" datetime="2019-08-06T15:28:22+08:00">2019-08-06</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-13 19:12:51" itemprop="dateModified" datetime="2019-10-13T19:12:51+08:00">2019-10-13</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="递归"><a href="#递归" class="headerlink" title="递归"></a>递归</h2><h2 id="排序"><a href="#排序" class="headerlink" title="排序"></a>排序</h2><h3 id="冒泡排序"><a href="#冒泡排序" class="headerlink" title="冒泡排序"></a>冒泡排序</h3><p>从序列右边开始比较相邻两个数字的大小，再根据结果交换两个数字的位置。</p>
-<h3 id="选择排序"><a href="#选择排序" class="headerlink" title="选择排序"></a>选择排序</h3><p>从待排序的数据中寻找最小值，将其与序列最左边的数字进行交换。</p>
-<h3 id="插入排序"><a href="#插入排序" class="headerlink" title="插入排序"></a>插入排序</h3><p>从序列左端开始依次对数据进行排序。</p>
-<h3 id="堆排序"><a href="#堆排序" class="headerlink" title="堆排序"></a>堆排序</h3><p>利用堆这种树形结构进行排序。</p>
-<h3 id="归并排序"><a href="#归并排序" class="headerlink" title="归并排序"></a>归并排序</h3><p>序列分成长度相同的两个子序列，当无法继续往下分时（也就是每个子序列中只有一个数据时），就对子序列进行归并。</p>
-<h3 id="快速排序"><a href="#快速排序" class="headerlink" title="快速排序"></a>快速排序</h3><p>首先会在序列中随机选择一个基准值（pivot），然后将除了基准值以外的数分为“比基准值小的数”和“比基准值大的数”这两个类别，再对比基准值小的数和比基准值大的数进行快速排序。</p>
-<h2 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h2><h2 id="搜索"><a href="#搜索" class="headerlink" title="搜索"></a>搜索</h2><h2 id="哈希"><a href="#哈希" class="headerlink" title="哈希"></a>哈希</h2>
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2110,7 +2174,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">82</span>
+                    <span class="site-state-item-count">87</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
