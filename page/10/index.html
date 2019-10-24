@@ -323,6 +323,312 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/16/nginx/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/16/nginx/" class="post-title-link" itemprop="url">Nginx</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-16 18:11:56" itemprop="dateCreated datePublished" datetime="2019-07-16T18:11:56+08:00">2019-07-16</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-24 10:20:35" itemprop="dateModified" datetime="2019-10-24T10:20:35+08:00">2019-10-24</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/其他/" itemprop="url" rel="index"><span itemprop="name">其他</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p><a href="http://nginx.org/" target="_blank" rel="noopener"><strong>Nginx</strong></a>：是一款自由的、开源的、高性能的 HTTP 服务器和反向代理服务器，同时也是一个 IMAP、POP3、SMTP 代理服务器，它可以作为一个 HTTP 服务器进行网站的发布处理，另外也可以作为反向代理进行负载均衡的实现。</p>
+<p><strong>代理</strong>：代理就是一个代表、一个渠道。涉及到两个角色，一个是被代理角色，一个是目标角色，被代理角色通过这个代理访问目标角色完成一些任务的过程称为代理操作过程。如同生活中的专卖店，客人到 adidas 专卖店买了一双鞋，这个专卖店就是代理，被代理角色就是 adidas 厂家，目标角色就是用户。</p>
+<h3 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h3><p>在如今的网络环境下，我们如果由于技术需要要去访问国外的某些网站，此时你会发现位于国外的某网站我们通过浏览器是没有办法访问的，此时大家可能都会用一个操作翻墙进行访问，翻墙的方式主要是找到一个可以访问国外网站的代理服务器，我们将请求发送给代理服务器，代理服务器去访问国外的网站，然后将访问到的数据传递给我们，这种代理模式称为正向代理。</p>
+<p>正向代理最大的特点是客户端非常明确要访问的服务器地址，服务器只清楚请求来自哪个代理服务器，而不清楚来自哪个具体的客户端，正向代理模式屏蔽或者隐藏了真实客户端信息。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133811.png" alt></p>
+<p>客户端必须设置正向代理服务器，当然前提是要知道正向代理服务器的 IP 地址，还有代理程序的端口。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133807.png" alt></p>
+<p><strong>总结来说</strong>：正向代理，”它代理的是客户端，代客户端发出请求”，是一个位于客户端和原始服务器（origin server）之间的服务器，为了从原始服务器取得内容，客户端向代理发送一个请求并指定目标（原始服务器），然后代理向原始服务器转交请求并将获得的内容返回给客户端，客户端必须要进行一些特别的设置才能使用正向代理。</p>
+<p>正向代理的用途：</p>
+<ul>
+<li>访问原来无法访问的资源，如 Google</li>
+<li>可以做缓存，加速访问资源</li>
+<li>对客户端访问授权，上网进行认证</li>
+<li>代理可以记录用户访问记录（上网行为管理），对外隐藏用户信息</li>
+</ul>
+<h3 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h3><p>多个客户端给服务器发送的请求，Nginx 服务器接收到之后，按照一定的规则分发给了后端的业务处理服务器进行处理了。此时，请求的来源也就是客户端是明确的，但是请求具体由哪台服务器处理的并不明确了，Nginx 扮演的就是一个反向代理角色。客户端是无感知代理的存在的，反向代理对外都是透明的，访问者并不知道自己访问的是一个代理。因为客户端不需要任何配置就可以访问。</p>
+<p>反向代理，”它代理的是服务端，代服务端接收请求”，主要用于服务器集群分布式部署的情况下，反向代理隐藏了服务器的信息。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133801.png" alt></p>
+<p>反向代理的作用：</p>
+<ul>
+<li>保证内网的安全，通常将反向代理作为公网访问地址，Web服务器是内网</li>
+<li>负载均衡，通过反向代理服务器来优化网站的负载</li>
+</ul>
+<p><strong>项目场景</strong>：通常情况下，我们在实际项目操作时，正向代理和反向代理很有可能会存在在一个应用场景中，正向代理代理客户端的请求去访问目标服务器，目标服务器是一个反向单利服务器，反向代理了多台真实的业务处理服务器。具体的拓扑图如下：</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133752.png" alt></p>
+<p>二者之间的区别：</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133744.png" alt></p>
+<p>在正向代理中，Proxy 和 Client 同属于一个 LAN（图中方框内），隐藏了客户端信息；</p>
+<p>在反向代理中，Proxy 和 Server 同属于一个LAN（图中方框内），隐藏了服务端信息；</p>
+<p>实际上，Proxy 在两种代理中做的事情都是替服务器代为收发请求和响应，不过从结构上看正好左右互换了一下，所以把后出现的那种代理方式称为反向代理了。</p>
+<h3 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h3><p>这里提到的客户端发送的、Nginx反向代理服务器接收到的请求数量，就是我们说的负载量。请求数量按照一定的规则进行分发到不同的服务器处理的规则，就是一种均衡规则。所以，将服务器接收到的请求按照规则分发的过程，称为负载均衡。</p>
+<p>负载均衡在实际项目操作过程中，有硬件负载均衡和软件负载均衡两种，硬件负载均衡也称为硬负载，如F5负载均衡，相对造价昂贵成本较高，但是数据的稳定性安全性等等有非常好的保障，如中国移动中国联通这样的公司才会选择硬负载进行操作；更多的公司考虑到成本原因，会选择使用软件负载均衡，软件负载均衡是利用现有的技术结合主机硬件实现的一种消息队列分发机制。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133716.png" alt></p>
+<h3 id="几种-web-服务器对比"><a href="#几种-web-服务器对比" class="headerlink" title="几种 web 服务器对比"></a>几种 web 服务器对比</h3><table>
+<thead>
+<tr>
+<th><strong>对比项 \ 服务器</strong></th>
+<th><strong>Apache</strong></th>
+<th><strong>Nginx</strong></th>
+<th><strong>Lighttpd</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Proxy代理</td>
+<td>非常好</td>
+<td>非常好</td>
+<td>一般</td>
+</tr>
+<tr>
+<td>Rewriter</td>
+<td>好</td>
+<td>非常好</td>
+<td>一般</td>
+</tr>
+<tr>
+<td>Fcgi</td>
+<td>不好</td>
+<td>好</td>
+<td>非常好</td>
+</tr>
+<tr>
+<td>热部署</td>
+<td>不支持</td>
+<td>支持</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>系统压力</td>
+<td>很大</td>
+<td>很小</td>
+<td>比较小</td>
+</tr>
+<tr>
+<td>稳定性</td>
+<td>好</td>
+<td>非常好</td>
+<td>不好</td>
+</tr>
+<tr>
+<td>安全性</td>
+<td>好</td>
+<td>一般</td>
+<td>一般</td>
+</tr>
+<tr>
+<td>静态文件处理</td>
+<td>一般</td>
+<td>非常好</td>
+<td>好</td>
+</tr>
+<tr>
+<td>反向代理</td>
+<td>一般</td>
+<td>非常好</td>
+<td>一般</td>
+</tr>
+</tbody></table>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><blockquote>
+<p>yum方式安装</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm</span><br><span class="line">yum install -y nginx</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>安装路径</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">whereis nginx</span><br><span class="line">nginx: /usr/sbin/nginx /usr/lib64/nginx /etc/nginx /usr/share/nginx /usr/share/man/man8/nginx.8.gz</span><br><span class="line"></span><br><span class="line">(1) Nginx配置路径：/etc/nginx/nginx.conf</span><br><span class="line">(2) PID目录：/var/run/nginx.pid</span><br><span class="line">(3) 错误日志：/var/log/nginx/error.log</span><br><span class="line">(4) 访问日志：/var/log/nginx/access.log</span><br><span class="line">(5) 默认站点目录：/usr/share/nginx/html</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">        listen       80;</span><br><span class="line">        server_name  zentao.smocer.top;</span><br><span class="line"></span><br><span class="line">        access_log  /var/log/nginx/zentao.access.log;</span><br><span class="line"></span><br><span class="line">        location / &#123;</span><br><span class="line">          try_files /_not_exists_ @backend;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        location @backend &#123;</span><br><span class="line">           proxy_set_header X-Forwarded-For $remote_addr;</span><br><span class="line">           proxy_set_header Host            $http_host;</span><br><span class="line">           proxy_set_header X-Forwarded-Proto $scheme;</span><br><span class="line">           </span><br><span class="line">        proxy_pass http://10.133.0.53:8080;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><blockquote>
+<p>启动</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>测试 Nginx 配置</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -t</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>重启</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -s reload</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>查询进程</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef | grep nginx</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>停止服务</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -s stop</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/15/mysql-cases/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2724,255 +3030,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/06/18/mysql-innodb_buffer_pool_size/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/06/18/mysql-innodb_buffer_pool_size/" class="post-title-link" itemprop="url">MySQL · 配置参数 · innodb_buffer_pool_size</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-06-18 14:09:04" itemprop="dateCreated datePublished" datetime="2019-06-18T14:09:04+08:00">2019-06-18</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-20 00:11:46" itemprop="dateModified" datetime="2019-10-20T00:11:46+08:00">2019-10-20</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>缓存</strong>是计算机系统非常重要的组成部分，因为访问硬盘相比缓存可能会慢 <code>100</code> 到 <code>100000</code> 倍，取决于访问的数据量。<code>MySQL</code> 作为一个存储系统，同样具有<strong>缓冲池</strong>（<code>Buffer Pool</code>）机制，以避免每次查询数据都进行磁盘 <code>IO</code>，不同存储引擎缓存方式有所区别：</p>
-<ul>
-<li><p><a href="https://baike.baidu.com/item/myisam" target="_blank" rel="noopener"><strong>MyISAM</strong></a> 使用的是操作系统的文件系统缓存，来缓存那些经常被查询的数据。</p>
-</li>
-<li><p><a href="https://baike.baidu.com/item/innodb" target="_blank" rel="noopener"><strong>InnoDB</strong></a> 不依赖操作系统的缓存，自己在 <a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-buffer-pool-resize.html" target="_blank" rel="noopener"><strong>InnoDB Buffer Pool</strong></a> 处理缓存。</p>
-</li>
-</ul>
-<p><strong>①  InnoDB Buffer Pool 主要作用？</strong></p>
-<p>缓存表数据与索引数据，把磁盘上的数据加载到缓冲池，避免每次访问都进行磁盘 <code>IO</code>，起到加速访问的作用。</p>
-<p><strong>②  为什么不把所有数据都放到缓冲池里？</strong></p>
-<p>凡事都具备两面性，抛开数据易失性不说，访问快速的反面是存储容量小：</p>
-<ul>
-<li>缓存访问快，但容量小，数据库存储了 <code>200G</code> 数据，缓存容量可能只有 <code>64G</code>；</li>
-<li>内存访问快，但容量小，买一台笔记本磁盘有 <code>2T</code>，内存可能只有 <code>16G</code>；</li>
-</ul>
-<p>因此，<strong>只能把“最热”的数据放到“最近”的地方，以“最大限度” 的降低磁盘访问</strong>。</p>
-<p><strong>③  如何管理与淘汰缓冲池，使得性能最大化呢？</strong></p>
-<h2 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h2><p><strong>参数</strong>：innodb_buffer_pool_size</p>
-<p><strong>介绍</strong>：配置缓冲池的大小，在内存允许的情况下，DBA 往往会建议调大这个参数，越多数据和索引放到内存里，数据库的性能会越好。</p>
-<p><strong>参数</strong>：innodb_old_blocks_pct</p>
-<p><strong>介绍</strong>：老生代占整个 <code>LRU</code> 链长度的比例，默认是 <code>37</code>，即整个 <code>LRU</code> 中新生代与老生代长度比例是 <code>63:37</code>。</p>
-<p><strong>参数</strong>：innodb_old_blocks_time</p>
-<p><strong>介绍</strong>：老生代停留时间窗口，单位是毫秒，默认是 <code>1000</code>，即同时满足“被访问”与“在老生代停留时间超过 <code>1</code> 秒两个条件，才会被插入到新生代头部。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select @@innodb_buffer_pool_size/1024/1024;</span><br><span class="line">+<span class="comment">-----------------------------------	--+</span></span><br><span class="line">| @@innodb_buffer_pool_size/1024/1024 |</span><br><span class="line">+<span class="comment">-------------------------------------+</span></span><br><span class="line">|                       1024.00000000 |</span><br><span class="line">+<span class="comment">-------------------------------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">show</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">'innodb_old%'</span>;</span><br><span class="line">+<span class="comment">------------------------+-------+</span></span><br><span class="line">| Variable_name          | Value |</span><br><span class="line">+<span class="comment">------------------------+-------+</span></span><br><span class="line">| innodb_old_blocks_pct  | 37    |</span><br><span class="line">| innodb_old_blocks_time | 1000  |</span><br><span class="line">+<span class="comment">------------------------+-------+</span></span><br><span class="line">2 rows in <span class="keyword">set</span> (<span class="number">0.01</span> sec)</span><br></pre></td></tr></table></figure>
-
-<p>InnoDB Buffer Pool 缓存命中率计算：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">脏页率计算公式：innodb_buffer_pool_pages_dirty / innodb_buffer_pool_pages_data * <span class="number">100</span>%</span><br><span class="line">使用率计算公式：innodb_buffer_pool_pages_data / ( innodb_buffer_pool_pages_data + innodb_buffer_pool_pages_free ) * <span class="number">100</span>%</span><br></pre></td></tr></table></figure>
-
-<p>将缓冲池划分为多个单独的实例，通过减少不同线程读取和写入缓存的争用来提高并发性。<code>Buffer Pool</code> 可以存放多个 <code>Instance</code>，每个 <code>Instance</code> 由多个 <code>Chunk</code> 组成。<code>Instance</code> 的数量范围和 <code>Chunk</code> 的总数量范围分别为 <code>1-64</code>，<code>1-1000</code>。</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-26-093000.png" alt="img"></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 默认值</span></span><br><span class="line">innodb_buffer_pool_size 默认值为<span class="number">128</span>M</span><br><span class="line">innodb_buffer_pool_instances 默认值为<span class="number">1</span></span><br><span class="line">innodb_buffer_pool_chunk_size 默认值为<span class="number">128</span>M</span><br><span class="line"></span><br><span class="line"><span class="comment"># 计算公式</span></span><br><span class="line">innodb_buffer_pool_size = innodb_buffer_pool_chunk_size * innodb_buffer_pool_instances * N</span><br><span class="line"></span><br><span class="line"><span class="comment"># 总缓存大小</span></span><br><span class="line">select @@innodb_buffer_pool_size/<span class="number">1024</span>/<span class="number">1024</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 缓存池数量</span></span><br><span class="line">select @@innodb_buffer_pool_instances;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 每个缓存池的大小</span></span><br><span class="line">select @@innodb_buffer_pool_chunk_size/<span class="number">1024</span>/<span class="number">1024</span>;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>Tips：当设置的 <code>Buffer Pool</code> 不等于 <code>Chunk</code> * <code>Instance</code> 倍数时，MySQL 会自动调整 <code>Buffer Pool</code> 的大小 ( 向上取值到最近的一次倍数 )。</p>
-</blockquote>
-<p><strong>小结</strong>：</p>
-<ul>
-<li><p>缓冲池（buffer pool）是一种常见的<strong>降低磁盘访问的机制</strong></p>
-</li>
-<li><p>缓冲池通常以<strong>页（page）</strong>为单位缓存数据</p>
-</li>
-<li><p>缓冲池的常见管理算法是 <strong>LRU</strong>，memcache，OS，InnoDB 都使用了这种算法</p>
-</li>
-<li><p>InnoDB 对普通 LRU 进行了优化：（1）将缓冲池分为老生代和新生代，入缓冲池的页，优先进入老生代，页被访问才进入新生代，以解决预读失效的问题；（2）页被访问，且在老生代停留时间超过配置阈值的，才进入新生代，以解决批量数据访问，大量热数据淘汰的问题。</p>
-</li>
-</ul>
-<h2 id="设置-InnoDB-Buffer-Pool"><a href="#设置-InnoDB-Buffer-Pool" class="headerlink" title="设置 InnoDB Buffer Pool"></a>设置 InnoDB Buffer Pool</h2><p>InnoDB Buffer Pool 缓存了表数据和二级索引在内存中，设置 <code>innodb_buffer_pool_size</code> 合理数值对实例性能影响很大。</p>
-<ul>
-<li>设置偏小，会导致数据库大量直接对磁盘的访问，查询效率低。</li>
-<li>设置过大，会导致数据库进程占用内存太多，发生 <code>OOM</code>。</li>
-</ul>
-<p><strong>独立服务器</strong></p>
-<p>如果仅 <code>MySQL</code> 服务独享服务器资源，推荐设置 <code>innodb_buffer_pool_size</code> 为服务器总可用内存的 <code>80%</code>，具体设置多少，需要根据服务器内存大小和消耗进行调整。</p>
-<p>设置 <code>80%</code> 的原因，是因为其它也需要内存：</p>
-<ul>
-<li>单次查询至少需要几K（甚至几M）的内存</li>
-<li>其他各种内部的 <code>MySQL</code> 结构和缓存</li>
-<li>有一些 <code>MySQL</code> 文件是在 <code>OS</code> 缓存里（<code>binary</code> 日志，<code>relay</code> 日志，事务日志等）</li>
-<li>操作系统消耗内存</li>
-</ul>
-<h2 id="修改方法"><a href="#修改方法" class="headerlink" title="修改方法"></a>修改方法</h2><ul>
-<li><code>MySQL 5.7</code> 版本之后，可以在线修改</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">set global innodb_buffer_pool_size = size_in_bytes;</span><br><span class="line">select @@innodb_buffer_pool_size/<span class="number">1024</span>/<span class="number">1024</span>;</span><br><span class="line">+-------------------------------------+</span><br><span class="line">| @@innodb_buffer_pool_size/<span class="number">1024</span>/<span class="number">1024</span> |</span><br><span class="line">+-------------------------------------+</span><br><span class="line">|                        <span class="number">128.00000000</span> |</span><br><span class="line">+-------------------------------------+</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Tips:</span><br><span class="line">① innodb_buffer_pool_size 在线修改时，用户的请求将会阻塞，需要在业务低峰期和没有大事务操作时候进行</span><br><span class="line">② 同时要修改配置文件 my.cnf，防止重启后恢复到原来的值</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><code>MySQL 5.7</code> 版本之前，需要修改 <code>my.cnf</code> 配置文件，然后重启 <code>MySQL</code> 服务</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">innodb_buffer_pool_size  = <span class="number">20480</span>M</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p><strong>参考</strong></p>
-</blockquote>
-<p><a href="http://mysql.taobao.org/monthly/2018/03/06/" target="_blank" rel="noopener"><strong>数据库内核月报</strong></a></p>
-<p><a href="https://www.centos.bz/2016/11/innodb_buffer_pool_size-set-the-right-size/" target="_blank" rel="noopener"><strong>INNODB_BUFFER_POOL_SIZE：设置最佳内存值</strong></a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3021,7 +3078,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">104</span>
+                    <span class="site-state-item-count">105</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
