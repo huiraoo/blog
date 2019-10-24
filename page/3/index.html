@@ -323,7 +323,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/19/pt-deadlock-logger/">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/22/tidb/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Hui Rao">
@@ -343,7 +343,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/blog/2019/10/19/pt-deadlock-logger/" class="post-title-link" itemprop="url">Percona Toolkit · 死锁监控工具 pt-deadlock-logger</a>
+                <a href="/blog/2019/10/22/tidb/" class="post-title-link" itemprop="url">TiDB</a>
               
             
           </h1>
@@ -368,24 +368,12 @@
                 
               
 
-              <time title="创建时间：2019-10-19 10:13:18" itemprop="dateCreated datePublished" datetime="2019-10-19T10:13:18+08:00">2019-10-19</time>
+              <time title="创建时间：2019-10-22 08:02:31 / 修改时间：21:28:07" itemprop="dateCreated datePublished" datetime="2019-10-22T08:02:31+08:00">2019-10-22</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-22 21:26:35" itemprop="dateModified" datetime="2019-10-22T21:26:35+08:00">2019-10-22</time>
               
             
           </span>
@@ -402,7 +390,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Percona-Toolkit/" itemprop="url" rel="index"><span itemprop="name">Percona Toolkit</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/TiDB/" itemprop="url" rel="index"><span itemprop="name">TiDB</span></a></span>
 
                 
                 
@@ -439,7 +427,28 @@
       
         
           
-            
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://pingcap.com/" target="_blank" rel="noopener"><strong>TiDB</strong></a> 是一款定位于在线事务处理/在线分析处理（ HTAP: Hybrid Transactional/Analytical Processing）的融合型数据库产品，实现了一键水平伸缩、强一致性的多副本数据安全、分布式事务、实时 <code>OLAP</code> 等重要特性，同时兼容 MySQL 协议和生态，迁移便捷，运维成本极低。</p>
+<p>[ <a href="https://pingcap.com/docs-cn/v3.0/" target="_blank" rel="noopener"><strong>文档</strong></a> | <a href="https://github.com/pingcap/tidb" target="_blank" rel="noopener"><strong>代码</strong></a> | <a href="https://pingcap.com/community-cn/" target="_blank" rel="noopener"><strong>社区</strong></a>]</p>
+<h2 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h2><p><strong>1. 安装依赖包</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ yum -y install libtool zlib-devel autoconf readline-devel readline libuuid-devel zlib-devel automake libuuid readline-devel readline ncurses-devel.x86_64 ncurses.x86_64 gcc-c++ vim wget net-tools svn libstdc++.so.<span class="number">6</span> glibc.i686 unzip make lrzsz libtool zlib-devel autoconf readline-devel readline libuuid-devel zlib-devel automake libuuid readline-devel readline ncurses-devel.x86_64 ncurses.x86_64 gcc-c++ vim wget net-tools svn libstdc++.so.<span class="number">6</span> libcurl-dev libcurl-devel expat-devel perl-ExtUtils-CBuilder perl-ExtUtils-MakeMaker zip git gcc openssl-devel libnl3-devel net-snmp-devel libnfnetlink-devel zlib zlib-devel openssl openssl-devel tree lrzsz tree net-tools nmap vim bash-completion lsof dos2unix nc telnet ntp wget rng-tools psmisc screen pcre pcre-devel</span><br></pre></td></tr></table></figure>
+
+<p><strong>2. 安装 TiDB</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ cd /usr/local/</span><br><span class="line">$ wget http://download.pingcap.org/tidb-latest-linux-amd64.tar.gz</span><br><span class="line">$ tar -xzf tidb-latest-linux-amd64.tar.gz  /usr/local</span><br><span class="line">$ mkdir -p /<span class="keyword">data</span>/tidb</span><br><span class="line">$ cd /usr/local/tidb-latest-linux-amd64</span><br><span class="line">$ ln -s /usr/local/tidb-latest-linux-amd64/bin/pd-tso-bench /usr/bin</span><br><span class="line">$ ln -s /usr/local/tidb-latest-linux-amd64/bin/tikv-server /usr/bin/</span><br><span class="line">$ ln -s /usr/local/tidb-latest-linux-amd64/bin/tidb-server /usr/bin/</span><br><span class="line">$ ln -s /usr/local/tidb-latest-linux-amd64/bin/pd-server /usr/bin/</span><br><span class="line">$ ln -s /usr/local/tidb-latest-linux-amd64/bin/pd-ctl /usr/bin/</span><br></pre></td></tr></table></figure>
+
+<p><strong>3. 启动 PD</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cd bin</span><br><span class="line">$ ./pd-server -data-dir=/<span class="keyword">data</span>/tidb/pd -log-file=/<span class="keyword">data</span>/tidb/log/pd.log -name=pd1 &amp;</span><br></pre></td></tr></table></figure>
+
+<p><strong>4. 启动 TiKV</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ./tikv-server --pd=<span class="string">"127.0.0.1:2379"</span> --data-dir=/<span class="keyword">data</span>/tidb/tikv --log-file=/<span class="keyword">data</span>/tidb/log/tikv.log &amp;</span><br></pre></td></tr></table></figure>
+
+<p><strong>5. 连接 TiDB</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -h 127.0.0.1 -P 4000 -u root</span><br><span class="line"></span><br><span class="line">Welcome to the MySQL monitor.  Commands <span class="keyword">end</span> <span class="keyword">with</span> ; or \g.</span><br><span class="line">Your MySQL connection id is 12</span><br><span class="line">Server version: 5.7.25-TiDB-v3.0.0-rc.1-290-g21d2590ac MySQL Community Server (Apache License 2.0)</span><br><span class="line"></span><br><span class="line">Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.</span><br><span class="line"></span><br><span class="line">Oracle is a registered trademark of Oracle Corporation and/or its</span><br><span class="line">affiliates. Other names may be trademarks of their respective</span><br><span class="line">owners.</span><br><span class="line"></span><br><span class="line">Type '<span class="keyword">help</span>;' or '\h' for help. <span class="keyword">Type</span> <span class="string">'\c'</span> <span class="keyword">to</span> <span class="keyword">clear</span> the <span class="keyword">current</span> <span class="keyword">input</span> statement.</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">show</span> <span class="keyword">databases</span>;</span><br><span class="line">+<span class="comment">--------------------+</span></span><br><span class="line">| Database           |</span><br><span class="line">+<span class="comment">--------------------+</span></span><br><span class="line">| INFORMATION_SCHEMA |</span><br><span class="line">| PERFORMANCE_SCHEMA |</span><br><span class="line">| mysql              |</span><br><span class="line">| test               |</span><br><span class="line">+<span class="comment">--------------------+</span></span><br><span class="line">4 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p><strong>6. 修改密码</strong></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; use mysql; </span><br><span class="line">mysql&gt; update user set password=PASSWORD("Changeme_123") where User='root';</span><br><span class="line">mysql&gt; flush privileges;</span><br></pre></td></tr></table></figure>
+
+<p><strong>7. 设置远程可访问</strong></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; grant all privileges on *.* to 'root'@'%' identified by 'Changeme_123';</span><br><span class="line">mysql&gt; flush privileges;</span><br></pre></td></tr></table></figure>
           
         
       
@@ -495,7 +504,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/19/pt-config-diff/">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/22/prometheus/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Hui Rao">
@@ -515,7 +524,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/blog/2019/10/19/pt-config-diff/" class="post-title-link" itemprop="url">Percona Toolkit · 配置对比工具 pt-config-diff</a>
+                <a href="/blog/2019/10/22/prometheus/" class="post-title-link" itemprop="url">Prometheus</a>
               
             
           </h1>
@@ -540,24 +549,12 @@
                 
               
 
-              <time title="创建时间：2019-10-19 09:55:09" itemprop="dateCreated datePublished" datetime="2019-10-19T09:55:09+08:00">2019-10-19</time>
+              <time title="创建时间：2019-10-22 07:59:35 / 修改时间：21:25:53" itemprop="dateCreated datePublished" datetime="2019-10-22T07:59:35+08:00">2019-10-22</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-22 21:26:31" itemprop="dateModified" datetime="2019-10-22T21:26:31+08:00">2019-10-22</time>
               
             
           </span>
@@ -574,7 +571,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Percona-Toolkit/" itemprop="url" rel="index"><span itemprop="name">Percona Toolkit</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Prometheus/" itemprop="url" rel="index"><span itemprop="name">Prometheus</span></a></span>
 
                 
                 
@@ -611,917 +608,1033 @@
       
         
           
-            
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/19/pt-align/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/19/pt-align/" class="post-title-link" itemprop="url">Percona Toolkit · 格式化输出工具 pt-align</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-19 09:54:31" itemprop="dateCreated datePublished" datetime="2019-10-19T09:54:31+08:00">2019-10-19</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-22 21:26:19" itemprop="dateModified" datetime="2019-10-22T21:26:19+08:00">2019-10-22</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Percona-Toolkit/" itemprop="url" rel="index"><span itemprop="name">Percona Toolkit</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/19/pt-show-grants/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/19/pt-show-grants/" class="post-title-link" itemprop="url">Percona Toolkit · 用户权限显示工具 pt-show-grants</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-19 09:52:54" itemprop="dateCreated datePublished" datetime="2019-10-19T09:52:54+08:00">2019-10-19</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-22 21:27:04" itemprop="dateModified" datetime="2019-10-22T21:27:04+08:00">2019-10-22</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Percona-Toolkit/" itemprop="url" rel="index"><span itemprop="name">Percona Toolkit</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><p>显示 <code>mysql.user</code> 所有用户及权限</p>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><ul>
-<li>先查找所有 <code>user</code> 和 <code>host</code></li>
-<li>然后逐个执行 <code>show grants</code></li>
-</ul>
-<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ pt-show-grants -u <span class="string">'xx'</span> -p <span class="string">'xx'</span> -S /tmp/mysql.sock</span><br><span class="line"></span><br><span class="line">-- Grants dumped by pt-show-grants</span><br><span class="line">-- Dumped from server Localhost via UNIX socket, MySQL <span class="number">5.7</span>.<span class="number">23</span>-log at <span class="number">2019</span>-<span class="number">10</span>-<span class="number">18</span> <span class="number">15</span>:<span class="number">56</span>:<span class="number">29</span></span><br><span class="line">-- Grants <span class="keyword">for</span> <span class="string">'hdm'</span><span class="string">@'%'</span></span><br><span class="line"><span class="string">CREATE USER IF NOT EXISTS 'hdm'@'%';</span></span><br><span class="line"><span class="string">ALTER USER 'hdm'@'%' IDENTIFIED WITH 'mysql_native_password' AS '*14533888C6CA3952B3957903FF7E69469C7E3A2B' REQUIRE NONE PASSWORD EXPIRE DEFAULT ACCOUNT UNLOCK;</span></span><br><span class="line"><span class="string">GRANT PROCESS, REPLICATION CLIENT, REPLICATION SLAVE, SELECT, SHOW DATABASES ON *.* TO 'hdm'@'%';</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">-- Grants for 'monitor'@'10.138.228.%'</span></span><br><span class="line"><span class="string">CREATE USER IF NOT EXISTS 'monitor'@'10.138.228.%';</span></span><br><span class="line"><span class="string">ALTER USER 'monitor'@'10.138.228.%' IDENTIFIED WITH 'mysql_native_password' AS '*67C7E9852A88EE023433F77C5C63AF9DD730667B' REQUIRE NONE PASSWORD EXPIRE DEFAULT ACCOUNT UNLOCK;</span></span><br><span class="line"><span class="string">GRANT PROCESS, REPLICATION CLIENT, SELECT ON *.* TO 'monitor'@'10.138.228.%';</span></span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/19/pt-index-usage/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/19/pt-index-usage/" class="post-title-link" itemprop="url">Percona Toolkit · 索引分析工具 pt-index-usage</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-19 09:52:44" itemprop="dateCreated datePublished" datetime="2019-10-19T09:52:44+08:00">2019-10-19</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-22 21:26:48" itemprop="dateModified" datetime="2019-10-22T21:26:48+08:00">2019-10-22</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Percona-Toolkit/" itemprop="url" rel="index"><span itemprop="name">Percona Toolkit</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><p>从日志当中分析索引的使用情况，检测多余的索引</p>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>通过 <code>EXPLAIN</code> 慢查询日志中的 <code>SQL</code>，然后用执行计划和数据库中的索引做对比，看哪些索引没有被利用</p>
-<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pt-index-usage /<span class="keyword">data</span>/mysql/slow.log  -u <span class="string">'xx'</span> -p <span class="string">'xx'</span> -S /tmp/mysql.sock</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/19/pt-slave-restart/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/19/pt-slave-restart/" class="post-title-link" itemprop="url">Percona Toolkit · 复制异常修复工具 pt-slave-restart</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-19 09:52:33" itemprop="dateCreated datePublished" datetime="2019-10-19T09:52:33+08:00">2019-10-19</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-22 21:27:09" itemprop="dateModified" datetime="2019-10-22T21:27:09+08:00">2019-10-22</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Percona-Toolkit/" itemprop="url" rel="index"><span itemprop="name">Percona Toolkit</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/19/pt-query-digest/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/19/pt-query-digest/" class="post-title-link" itemprop="url">Percona Toolkit · 慢日志分析工具 pt-query-digest</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-19 09:52:23" itemprop="dateCreated datePublished" datetime="2019-10-19T09:52:23+08:00">2019-10-19</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-22 21:26:59" itemprop="dateModified" datetime="2019-10-22T21:26:59+08:00">2019-10-22</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Percona-Toolkit/" itemprop="url" rel="index"><span itemprop="name">Percona Toolkit</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><p>提供慢日志分析功能，与 <code>mysqldumpshow</code> 工具相比，<code>pt-query-digest</code> 工具的分析结果更具体，更完善。</p>
-<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p><strong>第一部分：总体统计结果</strong></p>
+            <h2 id="基础"><a href="#基础" class="headerlink" title="基础"></a>基础</h2><p><a href="https://prometheus.io/" target="_blank" rel="noopener"><strong>Prometheus</strong></a> 是一个开源的完整监控解决方案，其对传统监控系统的测试和告警模型进行了彻底的颠覆，形成了基于中央化的规则计算、统一分析和告警的新模型，基于 <code>Golang</code> 编写。</p>
+<h3 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h3><p><strong>易于管理</strong></p>
+<p><code>Prometheus</code> 基于 <code>Pull</code> 模型的架构方式，可以在任何地方（本地电脑，开发环境，测试环境）搭建我们的监控系统。对于一些复杂的情况，还可以使用 <code>Prometheus</code> 服务发现 (<code>Service Discovery</code>) 能力动态管理监控目标。</p>
+<p><strong>强大的数据模型</strong></p>
+<p>所有采集的监控数据均以指标 <code>metric</code> 的形式保存在内置的时间序列数据库当中 <code>TSDB</code>。所有的样本除了基本的指标名称以外，还包含一组用于描述该样本特征的标签。</p>
+<p>如下所示：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">http_request_status&#123;code='200',content_path='/api/path',</span> <span class="string">environment='produment'&#125;</span> <span class="string">=&gt;</span> <span class="string">[value1@timestamp1,value2@timestamp2...]</span></span><br><span class="line"><span class="string">http_request_status&#123;code='200',content_path='/api/path2',</span> <span class="string">environment='produment'&#125;</span> <span class="string">=&gt;</span> <span class="string">[value1@timestamp1,value2@timestamp2...]</span></span><br></pre></td></tr></table></figure>
+
+<p>每一条时间序列由指标名称 <code>Metrics Name</code> 以及一组标签 <code>Labels</code> 唯一标识。每条时间序列按照时间的先后顺序存储一系列的样本值。表示维度的标签可能来源于你的监控对象的状态，比如 <code>code=404</code> 或者 <code>content_path=/api/path</code>。基于这些 <code>Labels</code> ，我们可以方便地对监控数据进行聚合、过滤、裁剪。</p>
+<p><strong>强大的查询语言 PromSQL</strong></p>
+<p><code>Prometheus</code> 内置了一个强大的数据查询语言 <code>PromQL</code>。 通过 <code>PromQL</code> 可以实现对监控数据的查询、聚合。同时 <code>PromQL</code> 也被应用于数据可视化(如 <code>Grafana</code> )以及告警当中。</p>
+<p><strong>高效</strong></p>
+<p>对于监控系统而言，大量的监控任务必然导致有大量的数据产生。而<code>Prometheus</code> 可以高效地处理这些数据，对于单一 <code>Prometheus Server</code> 实例而言它可以处理：</p>
 <ul>
-<li><strong>Overall</strong>：总共有多少条查询</li>
-<li><strong>Time range</strong>：查询执行的时间范围</li>
-<li><strong>unique</strong>：唯一查询数量，即对查询条件进行参数化以后，总共有多少个不同的查询</li>
-<li><strong>total</strong>：总计   </li>
-<li><strong>min</strong>：最小   </li>
-<li><strong>max</strong>：最大  </li>
-<li><strong>avg</strong>：平均</li>
-<li><strong>95%</strong>：把所有值从小到大排列，位置位于 <code>95%</code> 的那个数，这个数一般最具有参考价值</li>
-<li><strong>median</strong>：中位数，把所有值从小到大排列，位置位于中间那个数</li>
+<li>数以百万的监控指标</li>
+<li>每秒处理数十万的数据点</li>
 </ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 8.7s user time, 170ms system time, 47.34M rss, 241.90M vsz</span></span><br><span class="line"><span class="comment"># Current date: Wed Oct 16 16:25:30 2019</span></span><br><span class="line"><span class="comment"># Hostname: console</span></span><br><span class="line"><span class="comment"># Files: slow.log</span></span><br><span class="line"><span class="comment"># Overall: 7.99k total, 894 unique, 0.00 QPS, 0.02x concurrency __________</span></span><br><span class="line"><span class="comment"># Time range: 2018-12-21T14:35:34 to 2019-10-16T07:09:56</span></span><br><span class="line"><span class="comment"># Attribute          total     min     max     avg     95%  stddev  median</span></span><br><span class="line"><span class="comment"># ============     ======= ======= ======= ======= ======= ======= =======</span></span><br><span class="line"><span class="comment"># Exec time        529092s      5s   6210s     66s    234s    211s     14s</span></span><br><span class="line"><span class="comment"># Lock time           808s       0    163s   101ms     5ms      3s   761us</span></span><br><span class="line"><span class="comment"># Rows sent        152.93M       0  15.14M  19.60k   1.39k 284.79k    0.99</span></span><br><span class="line"><span class="comment"># Rows examine     188.85G       0 867.98M  24.20M  72.18M  44.34M   3.68M</span></span><br><span class="line"><span class="comment"># Query size        31.32M       6  66.00k   4.01k  18.47k   5.60k  793.42</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>第二部分：查询分组统计结果</strong></p>
+<p><strong>易于集成</strong></p>
+<p><code>Prometheus</code> 社区还提供了大量第三方实现的监控数据采集支持：<code>MySQL</code>、<code>Consul</code>、<code>Redis</code> 等等。</p>
+<p><strong>可视化</strong></p>
+<p><code>Prometheus Server</code> 中自带了一个 <code>Prometheus UI</code>，通过这个 UI 可以方便地直接对数据进行查询，并且支持直接以图形化的形式展示数据。开源第三方可视化工具 <code>Grafana</code> 也已经提供了完整的 <code>Prometheus</code> 支持，基于 <code>Grafana</code> 可以创建更加精美的监控图标。</p>
+<p><strong>缺点</strong>：相比于 <a href="https://www.zabbix.com/" target="_blank" rel="noopener"><strong>zabbix</strong></a>，更加消耗资源</p>
+<h3 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h3><p><img src="http://ww3.sinaimg.cn/large/006y8mN6ly1g6d2tdrnvxj311j0mjjtq.jpg" alt="Prometheus architecture"></p>
+<p><strong>Prometheus Server</strong>：是 <code>Prometheus</code> 组件中的核心部分，负责实现对监控数据的获取、存储以及查询。</p>
 <ul>
-<li><strong>Rank</strong>：所有语句的排名，默认按【time】降序排列，通过 <code>--order-by</code> 指定</li>
-<li><strong>Query ID</strong>：语句 <code>ID</code></li>
-<li><strong>Response</strong>：总的响应时间，单位为 <code>S</code></li>
-<li><strong>Time</strong>：该查询在本次分析中总的时间占比</li>
-<li><strong>Calls</strong>：执行次数，即本次分析总共有多少条这种类型的查询语句</li>
-<li><strong>R/Call</strong>：平均每次执行的响应时间</li>
-<li><strong>Item</strong>：查询对象</li>
+<li><code>Prometheus Server</code> 可以通过静态配置管理监控目标（<code>prometheus.yml</code>），也可以配合使用 <code>Service Discovery</code> 的方式动态管理监控目标，并从这些监控目标中获取数据。</li>
+<li><code>Prometheus Server</code> 需要对采集到的监控数据进行存储，它本身就是一个时序数据库，将采集到的监控数据按照时间序列的方式存储在本地磁盘当中。</li>
+<li><code>Prometheus Server</code> 对外提供了自定义的 <code>PromQL</code> 语言，实现对数据的查询以及分析。</li>
 </ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Profile</span></span><br><span class="line"><span class="comment"># Rank Query ID                    Response time     Calls R/Call    V/M</span></span><br><span class="line"><span class="comment"># ==== =========================== ================= ===== ========= =====</span></span><br><span class="line"><span class="comment">#    1 0xFFF66E9B3D962FA319C806... 211420.4504 40.0%   260  813.1556 25.32 ROLLBACK</span></span><br><span class="line"><span class="comment">#    2 0x73AFBACFEBF3942B3B02FB...  33680.6071  6.4%   173  194.6856  0.26 INSERT SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT UNION SELECT d_etl_odsgvs_faglflext_all tdmetl.odsgvs_faglflext_all</span></span><br><span class="line"><span class="comment">#    3 0xE1EA5439ED76CBFAA1C5A3...  24517.0767  4.6%     4 6129.2692  1.79 SELECT v_gvs_zgvs_bseg_edw</span></span><br><span class="line"><span class="comment">#    4 0xE562308914915E2720E128...  21322.3718  4.0%  1282   16.6321  8.55 SELECT tdmetl.gvs_zgvs_bseg_edw</span></span><br><span class="line"><span class="comment">#    5 0x0159EC63419857F0EC9D5B...  17472.3139  3.3%    71  246.0889  1.03 SELECT v_edw_data</span></span><br><span class="line"><span class="comment">#    6 0x2DD4B63FCE7C5DEEE14F92...  14743.4445  2.8%   159   92.7261  0.73 UPDATE SELECT d_tax_moth_data</span></span><br><span class="line"><span class="comment">#    7 0x9C084CB3E04D24D29E8BE9...   9081.9772  1.7%    85  106.8468 90.61 DELETE tdmetl.gvs_zgvs_bseg_edw</span></span><br><span class="line"><span class="comment">#    8 0xF879E6613E39CC61E92478...   7834.1462  1.5%   307   25.5184 62... SELECT v_gvs_zgvs_bseg_edw</span></span><br><span class="line"><span class="comment">#    9 0x2B3FA3F89D3D4498CC6FFD...   7490.2099  1.4%    35  214.0060  2.56 INSERT SELECT gvs_zgvs_bseg_edw_hz tdmetl.gvs_zgvs_bseg_edw</span></span><br><span class="line"><span class="comment">#   10 0x6DBDA9B50953D60A486825...   6925.0820  1.3%    71   97.5364 25... INSERT SELECT d_tax_moth_data v_d_tax_profit_data</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>第三部分：每一种查询的详细统计结果</strong></p>
+<p><strong>exporters</strong>：负责将监控数据采集的端点通过 <code>HTTP</code> 服务的形式暴露给 <code>Prometheus Server</code>，<code>Prometheus Server</code> 通过访问该 <code>exporter</code> 提供的 <code>Endpoint</code> 端点，即可获取到需要采集的监控数据。一般来说可以将<code>exporter</code> 分为 2 类：</p>
 <ul>
-<li><strong>ID</strong>：查询的 <code>ID</code> 号，和上图的 <code>Query ID</code> 对应</li>
-<li><strong>Databases</strong>：数据库名</li>
-<li><strong>Hosts</strong>：各个 <code>Host</code> 执行的次数占比</li>
-<li><strong>Users</strong>：查询用户</li>
-<li><strong>Query_time distribution</strong> ：查询时间分布，长短体现区间占比</li>
-<li><strong>Tables</strong>：查询中涉及到的表</li>
-<li><strong>Explain</strong>：<code>SQL</code> 语句</li>
+<li>直接采集：这一类 <code>exporter</code> 直接内置了对 <code>Prometheus</code> 监控的支持，例如：<code>Kubernetes</code>。</li>
+<li>间接采集：原有监控目标并不直接支持 <code>Prometheus</code>，因此我们需要通过 <code>Prometheus</code> 提供的 <code>Client Library</code> 编写该监控目标的监控采集程序。例如：监控主机有 <a href="https://github.com/prometheus/node_exporter" target="_blank" rel="noopener"><strong>node_exporter</strong></a>，监控 <code>MySQL</code> 有 <a href="https://github.com/prometheus/mysqld_exporter" target="_blank" rel="noopener"><strong>mysqld_exporter</strong></a>。</li>
 </ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Query 1: 0.00 QPS, 0.05x concurrency, ID 0xFFF66E9B3D962FA319C8068B5C1997CD at byte 3105049</span></span><br><span class="line"><span class="comment"># This item is included in the report because it matches --limit.</span></span><br><span class="line"><span class="comment"># Scores: V/M = 25.32</span></span><br><span class="line"><span class="comment"># Time range: 2019-02-15T18:37:47 to 2019-04-03T21:18:48</span></span><br><span class="line"><span class="comment"># Attribute    pct   total     min     max     avg     95%  stddev  median</span></span><br><span class="line"><span class="comment"># ============ === ======= ======= ======= ======= ======= ======= =======</span></span><br><span class="line"><span class="comment"># Count          3     260</span></span><br><span class="line"><span class="comment"># Exec time     39 211420s    322s   1078s    813s   1013s    143s    793s</span></span><br><span class="line"><span class="comment"># Lock time      0       0       0       0       0       0       0       0</span></span><br><span class="line"><span class="comment"># Rows sent      0       0       0       0       0       0       0       0</span></span><br><span class="line"><span class="comment"># Rows examine   0       0       0       0       0       0       0       0</span></span><br><span class="line"><span class="comment"># Query size     0   2.03k       8       8       8       8       0       8</span></span><br><span class="line"><span class="comment"># String:</span></span><br><span class="line"><span class="comment"># Databases    tdmetl</span></span><br><span class="line"><span class="comment"># Hosts        10.138.225.51 (140/53%), 10.138.225.43 (69/26%)... 3 more</span></span><br><span class="line"><span class="comment"># Users        tdmsetldev</span></span><br><span class="line"><span class="comment"># Query_time distribution</span></span><br><span class="line"><span class="comment">#   1us</span></span><br><span class="line"><span class="comment">#  10us</span></span><br><span class="line"><span class="comment"># 100us</span></span><br><span class="line"><span class="comment">#   1ms</span></span><br><span class="line"><span class="comment">#  10ms</span></span><br><span class="line"><span class="comment"># 100ms</span></span><br><span class="line"><span class="comment">#    1s</span></span><br><span class="line"><span class="comment">#  10s+  ################################################################</span></span><br><span class="line">rollback\G</span><br></pre></td></tr></table></figure>
+<p><strong>Pushgateway</strong>：由于 <code>Prometheus</code> 数据采集基于 <code>Pull</code> 模型进行设计，因此在网络环境的配置上必须要让<code>Prometheus Server</code> 能够直接与 <code>exporter</code> 进行通信。 当这种网络需求无法直接满足时，就可以利用<code>PushGateway</code> 来进行中转。可以通过 <code>PushGateway</code> 将内部网络的监控数据主动 <code>Push</code> 到 <code>Gateway</code> 当中。而 <code>Prometheus Server</code> 则可以采用同样 <code>Pull</code> 的方式从 <code>PushGateway</code> 中获取到监控数据。</p>
+<p><strong>Alertmanager</strong>：在 <code>Prometheus Server</code> 中支持基于 <code>PromQL</code> 创建告警规则，如果满足 <code>PromQL</code> 定义的规则，则会产生一条告警，而告警的后续处理流程则由 <code>AlertManager</code> 进行管理。在 <code>AlertManager</code> 中我们可以与邮件，<code>Slack</code> 等等内置的通知方式进行集成，也可以通过 <code>Webhook</code> 自定义告警处理方式。<code>AlertManager</code> 即 <code>Prometheus</code> 体系中的告警处理中心。</p>
+<p><strong>Web UI</strong>：数据可视化，主要使用第三方工具 <a href="https://grafana.com/" target="_blank" rel="noopener"><strong>Grafana</strong></a> 来实现。</p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><h4 id="Prometheus-Server"><a href="#Prometheus-Server" class="headerlink" title="Prometheus Server"></a>Prometheus Server</h4><p><strong>二进制包方式安装</strong></p>
+<p>（1）下载最新版本 <a href="https://prometheus.io/download/" target="_blank" rel="noopener"><strong>软件包</strong></a></p>
+<p>（2）解压</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">wget</span> <span class="attr">https://github.com/prometheus/prometheus/releases/download/v2.12.0/prometheus-2.12.0.linux-amd64.tar.gz</span></span><br><span class="line"><span class="string">tar</span> <span class="bullet">-xzf</span> <span class="string">prometheus-2.12.0.linux-amd64.tar.gz</span></span><br><span class="line"><span class="string">cd</span> <span class="string">prometheus-2.12.0.linux-amd64</span></span><br></pre></td></tr></table></figure>
 
-<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 分析全量慢查询日志</span></span><br><span class="line">$ pt-query-digest slow.log &gt; slow_report.log</span><br><span class="line"></span><br><span class="line"><span class="comment"># 分析最近12个小时内的查询</span></span><br><span class="line">$ pt-query-digest --since=<span class="number">12</span>h  slow.log &gt; slow_report.log</span><br><span class="line"></span><br><span class="line"><span class="comment"># 分析最近1个月内的查询</span></span><br><span class="line">$ pt-query-digest slow.log --since <span class="string">'2019-06-08 10:00:00'</span> --until <span class="string">'2019-07-08 10:00:00'</span> &gt; slow_report.log</span><br></pre></td></tr></table></figure>
+<p>（3）配置文件 <code>promethes.yml</code>，修改 <code>job_name</code>。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># my global config</span></span><br><span class="line"><span class="attr">global:</span></span><br><span class="line"><span class="attr">  scrape_interval:</span>     <span class="number">15</span><span class="string">s</span> <span class="comment"># Set the scrape interval to every 15 seconds. Default is every 1 minute.</span></span><br><span class="line"><span class="attr">  evaluation_interval:</span> <span class="number">15</span><span class="string">s</span> <span class="comment"># Evaluate rules every 15 seconds. The default is every 1 minute.</span></span><br><span class="line">  <span class="comment"># scrape_timeout is set to the global default (10s).</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Alertmanager configuration</span></span><br><span class="line"><span class="attr">alerting:</span></span><br><span class="line"><span class="attr">  alertmanagers:</span></span><br><span class="line"><span class="attr">  - static_configs:</span></span><br><span class="line"><span class="attr">    - targets:</span></span><br><span class="line">      <span class="comment"># - alertmanager:9093</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Load rules once and periodically evaluate them according to the global 'evaluation_interval'.</span></span><br><span class="line"><span class="attr">rule_files:</span></span><br><span class="line">  <span class="comment"># - "first_rules.yml"</span></span><br><span class="line">  <span class="comment"># - "second_rules.yml"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># A scrape configuration containing exactly one endpoint to scrape:</span></span><br><span class="line"><span class="comment"># Here it's Prometheus itself.</span></span><br><span class="line"><span class="attr">scrape_configs:</span></span><br><span class="line">  <span class="comment"># The job name is added as a label `job=&lt;job_name&gt;` to any timeseries scraped from this config.</span></span><br><span class="line"><span class="attr">  - job_name:</span> <span class="string">'prometheus'</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># metrics_path defaults to '/metrics'</span></span><br><span class="line">    <span class="comment"># scheme defaults to 'http'.</span></span><br><span class="line"></span><br><span class="line"><span class="attr">    static_configs:</span></span><br><span class="line"><span class="attr">    - targets:</span> <span class="string">['localhost:9090']</span></span><br></pre></td></tr></table></figure>
+
+<p>（4）创建数据存储目录，默认的存储路径为 <code>data/</code>，用户也可以通过参数 <code>--storage.tsdb.path=&quot;data/&quot;</code> 修改本地数据存储的路径。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">mkdir</span> <span class="bullet">-p</span> <span class="string">data</span></span><br></pre></td></tr></table></figure>
+
+<p>（5）启动 <code>prometheus</code> 服务，<a href="http://10.133.0.53:9090/" target="_blank" rel="noopener"><strong>http://10.133.0.53:9090</strong></a></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$</span> <span class="string">./prometheus</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.420Z</span> <span class="string">caller=main.go:293</span> <span class="string">msg="no</span> <span class="string">time</span> <span class="string">or</span> <span class="string">size</span> <span class="string">retention</span> <span class="string">was</span> <span class="string">set</span> <span class="string">so</span> <span class="string">using</span> <span class="string">the</span> <span class="string">default</span> <span class="string">time</span> <span class="string">retention"</span> <span class="string">duration=15d</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.420Z</span> <span class="string">caller=main.go:329</span> <span class="string">msg="Starting</span> <span class="string">Prometheus"</span> <span class="string">version="(version=2.12.0,</span> <span class="string">branch=HEAD,</span> <span class="string">revision=43acd0e2e93f9f70c49b2267efa0124f1e759e86)"</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.420Z</span> <span class="string">caller=main.go:330</span> <span class="string">build_context="(go=go1.12.8,</span> <span class="string">user=root@7a9dbdbe0cc7,</span> <span class="string">date=20190818-13:53:16)"</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.421Z</span> <span class="string">caller=main.go:331</span> <span class="string">host_details="(Linux</span> <span class="number">3.10</span><span class="number">.0</span><span class="bullet">-693.</span><span class="string">el7.x86_64</span> <span class="comment">#1 SMP Tue Aug 22 21:09:27 UTC 2017 x86_64 ptdsmapp05 (none))"</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.421Z</span> <span class="string">caller=main.go:332</span> <span class="string">fd_limits="(soft=65536,</span> <span class="string">hard=65536)"</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.421Z</span> <span class="string">caller=main.go:333</span> <span class="string">vm_limits="(soft=unlimited,</span> <span class="string">hard=unlimited)"</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.423Z</span> <span class="string">caller=web.go:448</span> <span class="string">component=web</span> <span class="string">msg="Start</span> <span class="string">listening</span> <span class="string">for</span> <span class="string">connections"</span> <span class="string">address=0.0.0.0:9090</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.423Z</span> <span class="string">caller=main.go:654</span> <span class="string">msg="Starting</span> <span class="string">TSDB</span> <span class="string">..."</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.442Z</span> <span class="string">caller=head.go:509</span> <span class="string">component=tsdb</span> <span class="string">msg="replaying</span> <span class="string">WAL,</span> <span class="string">this</span> <span class="string">may</span> <span class="string">take</span> <span class="string">awhile"</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.445Z</span> <span class="string">caller=head.go:557</span> <span class="string">component=tsdb</span> <span class="string">msg="WAL</span> <span class="string">segment</span> <span class="string">loaded"</span> <span class="string">segment=0</span> <span class="string">maxSegment=0</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.446Z</span> <span class="string">caller=main.go:669</span> <span class="string">fs_type=XFS_SUPER_MAGIC</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.446Z</span> <span class="string">caller=main.go:670</span> <span class="string">msg="TSDB</span> <span class="string">started"</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.446Z</span> <span class="string">caller=main.go:740</span> <span class="string">msg="Loading</span> <span class="string">configuration</span> <span class="string">file"</span> <span class="string">filename=prometheus.yml</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.448Z</span> <span class="string">caller=main.go:768</span> <span class="string">msg="Completed</span> <span class="string">loading</span> <span class="string">of</span> <span class="string">configuration</span> <span class="string">file"</span> <span class="string">filename=prometheus.yml</span></span><br><span class="line"><span class="string">level=info</span> <span class="string">ts=2019-08-26T07:33:43.448Z</span> <span class="string">caller=main.go:623</span> <span class="string">msg="Server</span> <span class="string">is</span> <span class="string">ready</span> <span class="string">to</span> <span class="string">receive</span> <span class="string">web</span> <span class="string">requests."</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>docker 方式安装</strong></p>
+<p>直接使用 <code>Prometheus</code> 的镜像即可启动 <code>Prometheus Server</code>。启动完成后，可以通过 <a href="http://10.133.0.53:9090/" target="_blank" rel="noopener"><strong>http://10.133.0.53:9090</strong></a> 访问 <code>UI</code> 界面：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">docker</span> <span class="string">run</span> <span class="bullet">-p</span> <span class="number">9090</span><span class="string">:9090</span> <span class="bullet">-v</span> <span class="string">/etc/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml</span> <span class="string">prom/prometheus</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="http://ww4.sinaimg.cn/large/006y8mN6ly1g6d58mi60uj32800ke415.jpg" alt="Prometheus UI"></p>
+<h4 id="node-exporter"><a href="#node-exporter" class="headerlink" title="node_exporter"></a>node_exporter</h4><p>采集主机的运行指标如 CPU、内存、磁盘等信息。同样采用 <code>Golang</code> 编写，并且不存在任何的第三方依赖。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">wget</span> <span class="attr">https://github.com/prometheus/node_exporter/releases/download/v0.18.1/node_exporter-0.18.1.linux-amd64.tar.gz</span></span><br><span class="line"><span class="string">tar</span> <span class="bullet">-xzf</span> <span class="string">node_exporter-0.18.1.linux-amd64.tar.gz</span></span><br><span class="line"><span class="string">cd</span> <span class="string">node_exporter-0.18.1.linux-amd64</span></span><br><span class="line"><span class="string">cp</span> <span class="string">node_exporter-0.18.1.linux-amd64/node_exporter</span> <span class="string">/usr/local/bin</span></span><br><span class="line"><span class="string">./node_exporter</span></span><br></pre></td></tr></table></figure>
+
+<p>启动成功后，可以看到如下输出：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">INFO[0000]</span> <span class="string">Listening</span> <span class="string">on</span> <span class="string">:9100</span>                            <span class="string">source="node_exporter.go:170"</span></span><br></pre></td></tr></table></figure>
+
+<p>访问 <strong><a href="http://10.133.0.53:9100/metrics" target="_blank" rel="noopener">http://10.133.0.53:9100/metrics</a></strong>，可以看到采集到的监控数据：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># HELP node_cpu Seconds the cpus spent in each mode.</span></span><br><span class="line"><span class="comment"># TYPE node_cpu counter</span></span><br><span class="line"><span class="string">node_cpu&#123;cpu="cpu0",mode="idle"&#125;</span> <span class="number">362812.7890625</span></span><br><span class="line"><span class="comment"># HELP node_load1 1m load average.</span></span><br><span class="line"><span class="comment"># TYPE node_load1 gauge</span></span><br><span class="line"><span class="string">node_load1</span> <span class="number">3.0703125</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>HELP</strong>：解释当前指标的含义。</p>
+<p><strong>TYPE</strong>：说明当前指标的数据类型。有四种数据类型，<code>counter</code>（计数器）、<code>gauge</code>（仪表盘）、<code>histogram</code>（直方图）、<code>summary</code>（求和）</p>
+<p>除了这些之外，还可以看到如下监控指标：</p>
+<ul>
+<li>node_boot_time：系统启动时间</li>
+<li>node_cpu：系统 <code>CPU</code> 使用量</li>
+<li>node_disk_*：磁盘 <code>IO</code></li>
+<li>node_filesystem_*：文件系统用量</li>
+<li>node_load1：系统负载</li>
+<li>node_memeory_*：内存使用量</li>
+<li>node_network_*：网络带宽</li>
+<li>node_time：当前系统时间</li>
+<li>go_*：<code>node_exporter</code> 中 <code>go</code> 相关指标</li>
+<li>process_*：<code>node_exporter</code> 自身进程相关运行指标</li>
+</ul>
+<h4 id="mysqld-exporter"><a href="#mysqld-exporter" class="headerlink" title="mysqld_exporter"></a>mysqld_exporter</h4><p>（1）下载<a href="https://prometheus.io/download/" target="_blank" rel="noopener"><strong>二进制包</strong></a></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">wget</span> <span class="attr">https://github.com/prometheus/mysqld_exporter/releases/download/v0.12.1/mysqld_exporter-0.12.1.linux-amd64.tar.gz</span></span><br><span class="line"><span class="string">tar</span> <span class="bullet">-xzf</span> <span class="string">mysqld_exporter-0.12.1.linux-amd64.tar.gz</span></span><br><span class="line"><span class="string">cd</span> <span class="string">mysqld_exporter-0.12.1.linux-amd64</span></span><br></pre></td></tr></table></figure>
+
+<p>（2）编辑 <code>.my.cnf</code></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[client]</span></span><br><span class="line"><span class="string">user=hdm</span></span><br><span class="line"><span class="string">password=Hdm@123!</span></span><br><span class="line"><span class="string">host=10.133.0.53</span></span><br><span class="line"><span class="string">port=3306</span></span><br></pre></td></tr></table></figure>
+
+<p>（3）启动 <code>mysqld_exporter</code>，默认端口是 <code>9104</code>，可以看到采集到的 MySQL <a href="http://10.133.0.53:9104/metrics" target="_blank" rel="noopener"><strong>Metrics</strong></a>。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">./mysqld_exporter</span> <span class="bullet">--config.my-cnf=/data/mysqld_exporter-0.12.1.linux-amd64/.my.cnf</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="数据收集"><a href="#数据收集" class="headerlink" title="数据收集"></a>数据收集</h3><p>为了能够让 <code>Prometheus Server</code> 能够从当前 <code>node_exporter</code> 获取到监控数据，这里需要修改 <code>Prometheus</code> 配置文件，编辑 <code>prometheus.yml</code> 并在 <code>scrape_configs</code> 节点下添加以下内容：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">scrape_configs:</span></span><br><span class="line"><span class="attr">  - job_name:</span> <span class="string">'prometheus'</span></span><br><span class="line"><span class="attr">    static_configs:</span></span><br><span class="line"><span class="attr">      - targets:</span> <span class="string">['localhost:9090']</span></span><br><span class="line">  <span class="comment"># 采集node exporter监控数据</span></span><br><span class="line"><span class="attr">  - job_name:</span> <span class="string">'node'</span></span><br><span class="line"><span class="attr">    static_configs:</span></span><br><span class="line"><span class="attr">      - targets:</span> <span class="string">['localhost:9100']</span></span><br></pre></td></tr></table></figure>
+
+<p>重新启动 <code>Prometheus Server</code>，访问 <a href="http://10.133.0.53:9090/" target="_blank" rel="noopener"><strong>http://10.133.0.53:9090</strong></a>，进入到 <code>Prometheus Server</code>。如果输入 <code>up</code> 并且点击执行按钮以后，可以看到如下结果：</p>
+<p><img src="http://ww1.sinaimg.cn/large/006y8mN6ly1g6df70foddj32cs0riwia.jpg" alt="image-20190826215234095"></p>
+<p>如果 <code>Prometheus</code> 能够正常从 <code>node_exporter</code> 获取数据，则会看到以下结果：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">up&#123;instance="localhost:9090",job="prometheus"&#125;</span>	<span class="number">1</span></span><br><span class="line"><span class="string">up&#123;instance="localhost:9100",job="node"&#125;</span>	<span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>其中 <code>&quot;1&quot;</code> 表示正常，反之 <code>&quot;0&quot;</code> 则为异常。</p>
+<h3 id="数据模型"><a href="#数据模型" class="headerlink" title="数据模型"></a>数据模型</h3><p><code>Prometheus</code> 存储的是 <a href="https://en.wikipedia.org/wiki/Time_series" target="_blank" rel="noopener"><strong>时序数据</strong></a>，即按照相同时序（相同的名字和标签），以时间维度存储连续的数据的集合。时序（<code>Time Series</code>）是由名字（<code>Metric</code>），以及一组 <code>key/value</code> 标签定义的，具有相同的名字以及标签属于相同时序。时序的名字由 <code>ASCII</code> 字符、数字、下划线、以及冒号组成，它必须满足正则表达式 <code>[a-zA-Z_:][a-zA-Z0-9_:]*</code>, 其名字应该具有语义化，一般表示一个可以度量的指标，例如： <code>http_requests_total</code>, 可以表示 <code>http</code> 请求的总数。</p>
+<p>时序的标签可以使 <code>Prometheus</code> 的数据更加丰富，能够区分具体不同的实例，例如 <code>http_requests_total{method=&quot;POST&quot;}</code> 可以表示所有 <code>Http</code> 中的 <code>POST</code> 请求。标签名称由 <code>ASCII</code> 字符，数字，以及下划线组成， 其中 <code>__</code> 开头属于 <code>Prometheus</code> 保留，标签的值可以是任何 <code>Unicode</code> 字符，支持中文。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&lt;metric</span> <span class="string">name&gt;&#123;&lt;label</span> <span class="string">name&gt;=&lt;label</span> <span class="string">value&gt;,</span> <span class="string">...&#125;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="数据可视化"><a href="#数据可视化" class="headerlink" title="数据可视化"></a>数据可视化</h3><p><code>Prometheus UI</code> 提供了快速验证 <code>PromQL</code> 以及临时可视化支持的能力，而在大多数场景下引入监控系统通常还需要构建可以长期使用的监控数据可视化面板（ <a href="https://grafana.com/grafana/dashboards" target="_blank" rel="noopener"><strong>Dashboard</strong></a> ）。这时用户可以考虑使用第三方的可视化工具如<code>Grafana</code>，<a href="https://grafana.com/" target="_blank" rel="noopener"><strong>Grafana</strong></a> 是一个开源的可视化平台，并且提供了对 <code>Prometheus</code> 的完整支持。</p>
+<p>安装 <code>Grafana</code>（使用向导：安装 -&gt; 添加数据源 -&gt; 创建 Dashboard -&gt; 邀请成员 -&gt; 安装应用和插件）</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">docker方式：</span></span><br><span class="line"><span class="string">docker</span> <span class="string">run</span> <span class="bullet">-d</span> <span class="bullet">-p</span> <span class="number">3000</span><span class="string">:3000</span> <span class="string">grafana/grafana</span></span><br><span class="line"></span><br><span class="line"><span class="string">二进制包方式：</span></span><br><span class="line"><span class="string">wget</span> <span class="attr">https://dl.grafana.com/oss/release/grafana-6.3.3.linux-amd64.tar.gz</span></span><br><span class="line"><span class="string">tar</span> <span class="bullet">-zxvf</span> <span class="string">grafana-6.3.3.linux-amd64.tar.gz</span></span><br><span class="line"></span><br><span class="line"><span class="string">rpm方式：</span></span><br><span class="line"><span class="string">wget</span> <span class="attr">https://dl.grafana.com/oss/release/grafana-6.3.3-1.x86_64.rpm</span> </span><br><span class="line"><span class="string">sudo</span> <span class="string">yum</span> <span class="string">localinstall</span> <span class="string">grafana-6.3.3-1.x86_64.rpm</span> </span><br><span class="line"></span><br><span class="line"><span class="string">Pie</span> <span class="string">Chart插件：</span></span><br><span class="line"><span class="string">grafana-cli</span> <span class="string">plugins</span> <span class="string">install</span> <span class="string">grafana-piechart-panel</span></span><br></pre></td></tr></table></figure>
+
+<p>访问 <a href="http://10.133.0.53:3000/" target="_blank" rel="noopener"><strong>http://10.133.0.53:3000</strong></a> 就可以进入到 <code>Grafana</code> 的界面中，默认情况下使用账户 <code>admin/admin</code> 进行登录</p>
+<h3 id="任务和实例"><a href="#任务和实例" class="headerlink" title="任务和实例"></a>任务和实例</h3><p>在 <code>Prometheus</code> 中，每一个暴露监控样本数据的 <code>HTTP</code> 服务称为一个实例。例如在当前主机上运行的 <code>node_exporter</code> 可以被称为一个<strong>实例</strong>（<code>Instance</code>）。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">scrape_configs:</span></span><br><span class="line"><span class="attr">  - job_name:</span> <span class="string">'prometheus'</span></span><br><span class="line"><span class="attr">    static_configs:</span></span><br><span class="line"><span class="attr">      - targets:</span> <span class="string">['localhost:9090']</span></span><br><span class="line"><span class="attr">  - job_name:</span> <span class="string">'node'</span></span><br><span class="line"><span class="attr">    static_configs:</span></span><br><span class="line"><span class="attr">      - targets:</span> <span class="string">['localhost:9100']</span></span><br></pre></td></tr></table></figure>
+
+<p>而一组用于相同采集目的的实例，或者同一个采集进程的多个副本则通过一个<strong>任务</strong>（<code>Job</code>）进行管理。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">*</span> <span class="attr">job:</span> <span class="string">node</span></span><br><span class="line">    <span class="string">*</span> <span class="string">instance</span> <span class="number">2</span><span class="string">:</span> <span class="number">1.2</span><span class="number">.3</span><span class="number">.4</span><span class="string">:9100</span></span><br><span class="line">    <span class="string">*</span> <span class="string">instance</span> <span class="number">4</span><span class="string">:</span> <span class="number">5.6</span><span class="number">.7</span><span class="number">.8</span><span class="string">:9100</span></span><br></pre></td></tr></table></figure>
+
+<p>当前在每一个 <code>Job</code> 中主要使用了静态配置（<code>static_configs</code>）的方式定义监控目标，<code>Prometheus</code> 还支持与 <code>Consul</code>、<code>Kubernetes</code> 等进行集成实现自动发现实例，并从这些实例上获取监控数据。可以访问 <a href="http://10.133.0.53:9090/targets" target="_blank" rel="noopener"><strong>targets</strong></a> 直接查看当前所有的任务以及每个任务对应的实例信息。</p>
+<h2 id="服务发现"><a href="#服务发现" class="headerlink" title="服务发现"></a>服务发现</h2><h3 id="Push-vs-Pull"><a href="#Push-vs-Pull" class="headerlink" title="Push vs Pull"></a>Push vs Pull</h3><p><img src="https://github.com/huiraoo/prometheus-book/raw/master/sd/static/pulls_vs_push.png" alt="Push"></p>
+<p>如上所示，展示了 <code>Push</code> 系统和 <code>Pull</code> 系统的核心差异。相较于 <code>Push</code> 模式，<code>Pull</code> 模式的优点可以简单总结为以下几点：</p>
+<ul>
+<li>只要 <code>exporter</code> 在运行，你可以在任何地方（比如在本地），搭建你的监控系统；</li>
+<li>你可以更容易的查看监控目标实例的健康状态，并且可以快速定位故障；</li>
+<li>更利于构建 <code>DevOps</code> 文化的团队；</li>
+<li>松耦合的架构模式更适合于云原生的部署环境。</li>
+</ul>
+<h3 id="Consul"><a href="#Consul" class="headerlink" title="Consul"></a>Consul</h3><p><a href="https://www.consul.io" target="_blank" rel="noopener"><strong>Consul</strong></a>：由 <code>HashiCorp</code> 开发的一个支持多数据中心的分布式服务发现和键值对存储服务的开源软件，被大量应用于基于微服务的软件架构当中，使用 <code>Golang</code> 语言开发。</p>
+<h4 id="安装-1"><a href="#安装-1" class="headerlink" title="安装"></a>安装</h4><p>下载<a href="https://www.consul.io/downloads.html" target="_blank" rel="noopener"><strong>二进制包</strong></a></p>
+<h4 id="与-Prometheus-集成"><a href="#与-Prometheus-集成" class="headerlink" title="与 Prometheus 集成"></a>与 Prometheus 集成</h4><h2 id="PromQL"><a href="#PromQL" class="headerlink" title="PromQL"></a>PromQL</h2><p>PromQL（<code>Prometheus Query Language</code>），是 <code>Prometheus</code> 自己开发的数据查询 <code>DSL</code> 语言，<code>PromQL</code> 作为<code>Prometheus</code> 的核心能力除了实现数据的对外查询和展现，同时告警监控也是依赖 <code>PromQL</code> 实现的。</p>
+<h3 id="时间序列"><a href="#时间序列" class="headerlink" title="时间序列"></a>时间序列</h3><p>Prometheus 可以采集到当前主机所有监控指标的样本数据，例如：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># HELP node_cpu Seconds the cpus spent in each mode.</span></span><br><span class="line"><span class="comment"># TYPE node_cpu counter</span></span><br><span class="line"><span class="string">node_cpu&#123;cpu="cpu0",mode="idle"&#125;</span> <span class="number">362812.7890625</span></span><br><span class="line"><span class="comment"># HELP node_load1 1m load average.</span></span><br><span class="line"><span class="comment"># TYPE node_load1 gauge</span></span><br><span class="line"><span class="string">node_load1</span> <span class="number">3.0703125</span></span><br></pre></td></tr></table></figure>
+
+<p>其中非 # 开头的每一行表示当前 node_exporter 采集到的一个监控样本：node_cpu 和 node_load1 表明了当前指标的名称、大括号中的标签则反映了当前样本的一些特征和维度、浮点数则是该监控样本的具体值。</p>
+<h3 id="样本"><a href="#样本" class="headerlink" title="样本"></a>样本</h3><p>Prometheus 会将所有采集到的样本数据以时间序列（time-series）的方式保存在内存数据库中，并且定时保存到硬盘上。如下所示，可以将 time-series 理解为一个以时间为 Y 轴的数字矩阵：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">^</span></span><br><span class="line"><span class="string">│</span>   <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span>   <span class="string">.</span> <span class="string">.</span>   <span class="string">node_cpu&#123;cpu="cpu0",mode="idle"&#125;</span></span><br><span class="line"><span class="string">│</span>     <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span>   <span class="string">node_cpu&#123;cpu="cpu0",mode="system"&#125;</span></span><br><span class="line"><span class="string">│</span>     <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span>   <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span>   <span class="string">node_load1&#123;&#125;</span></span><br><span class="line"><span class="string">│</span>     <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span> <span class="string">.</span>   <span class="string">.</span> <span class="string">.</span>  </span><br><span class="line"><span class="string">v</span></span><br><span class="line">  <span class="string">&lt;------------------</span> <span class="string">时间</span> <span class="bullet">----------------&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>在 time-series 中的每一个点称为一个样本（sample），样本由以下三部分组成：</p>
+<ul>
+<li>指标 (metric)：metric name 和描述当前样本特征的 label sets。</li>
+<li>时间戳 (timestamp)：一个精确到毫秒的时间戳。</li>
+<li>样本值 (value)： 一个 folat64 的浮点型数据表示当前样本的值。</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&lt;---------------</span> <span class="string">metric</span> <span class="bullet">---------------------&gt;&lt;-timestamp</span> <span class="bullet">-&gt;&lt;-value-&gt;</span></span><br><span class="line"><span class="string">http_request_total&#123;status="200",</span> <span class="string">method="GET"&#125;@1434417560938</span> <span class="string">=&gt;</span> <span class="number">94355</span></span><br><span class="line"><span class="string">http_request_total&#123;status="200",</span> <span class="string">method="GET"&#125;@1434417561287</span> <span class="string">=&gt;</span> <span class="number">94334</span></span><br><span class="line"></span><br><span class="line"><span class="string">http_request_total&#123;status="404",</span> <span class="string">method="GET"&#125;@1434417560938</span> <span class="string">=&gt;</span> <span class="number">38473</span></span><br><span class="line"><span class="string">http_request_total&#123;status="404",</span> <span class="string">method="GET"&#125;@1434417561287</span> <span class="string">=&gt;</span> <span class="number">38544</span></span><br><span class="line"></span><br><span class="line"><span class="string">http_request_total&#123;status="200",</span> <span class="string">method="POST"&#125;@1434417560938</span> <span class="string">=&gt;</span> <span class="number">4748</span></span><br><span class="line"><span class="string">http_request_total&#123;status="200",</span> <span class="string">method="POST"&#125;@1434417561287</span> <span class="string">=&gt;</span> <span class="number">4785</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="指标-Metric"><a href="#指标-Metric" class="headerlink" title="指标 (Metric)"></a>指标 (Metric)</h3><p>在形式上，所有的指标 (Metric) 都通过如下格式标示：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&lt;metric</span> <span class="string">name&gt;&#123;&lt;label</span> <span class="string">name&gt;=&lt;label</span> <span class="string">value&gt;,</span> <span class="string">...&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>指标名称（metric name）：反映监控样本的含义。</p>
+<p>标签（label）：反映当前样本的特征维度。</p>
+<p>指标类型：Counter（计数器）、Gauge（仪表盘）、Histogram（直方图）、Summary（摘要）</p>
+<p>Counter：只增不减的计数器</p>
+<p>Gauge：可增可减的仪表盘</p>
+<p>使用 Histogram 和 Summary 分析数据分布情况</p>
+<h2 id="告警"><a href="#告警" class="headerlink" title="告警"></a>告警</h2>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/22/project/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/22/project/" class="post-title-link" itemprop="url">项目</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-22 07:59:27 / 修改时间：21:25:34" itemprop="dateCreated datePublished" datetime="2019-10-22T07:59:27+08:00">2019-10-22</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/项目/" itemprop="url" rel="index"><span itemprop="name">项目</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="监控告警"><a href="#监控告警" class="headerlink" title="监控告警"></a>监控告警</h2><p><strong>背景</strong>：为了托管已上线 <code>MySQL</code> 系统，建立完善的监控体系，提升业务系统稳定性，达到以下 <code>3</code> 个目的：</p>
+<ul>
+<li><strong>告警</strong>：当系统出现或者即将出现故障时，监控系统需要迅速反应并通知管理员，从而能够对问题进行快速的处理或者提前预防问题的发生，避免出现对业务的影响。</li>
+<li><strong>故障分析与定位</strong>：当问题发生后，需要对问题进行调查和处理。通过对不同监控监控以及历史数据的分析，能够找到并解决根源问题。</li>
+<li><strong>数据可视化</strong>：通过可视化仪表盘能够直接获取系统的运行状态、资源使用情况、以及服务运行状态等直观的信息。</li>
+</ul>
+<p><strong>技术方案</strong>：[<a href="https://prometheus.io" target="_blank" rel="noopener"><strong>Prometheus</strong></a>] [<a href="https://grafana.com" target="_blank" rel="noopener"><strong>Grafana</strong></a>] [<a href="https://www.consul.io/" target="_blank" rel="noopener"><strong>Consul</strong></a>] [<a href="https://www.percona.com/doc/percona-monitoring-and-management/index.html" target="_blank" rel="noopener"><strong>PMM</strong></a>] </p>
+<h2 id="运维工单"><a href="#运维工单" class="headerlink" title="运维工单"></a>运维工单</h2><p><strong>背景</strong>：日常运维问题繁多，提高运维效率。</p>
+<p><strong>技术方案</strong>：[<a href="https://golang.google.cn/" target="_blank" rel="noopener"><strong>Golang</strong></a>] [<a href="https://cn.vuejs.org/" target="_blank" rel="noopener"><strong>Vue</strong></a>] [<a href="https://element.eleme.cn/#/" target="_blank" rel="noopener"><strong>Element UI</strong></a>] [<a href="https://www.heidisql.com/" target="_blank" rel="noopener"><strong>HeidiSQL</strong></a>] [<a href="https://www.percona.com/downloads/percona-toolkit" target="_blank" rel="noopener"><strong>Percona Toolkit</strong></a>] </p>
+<h2 id="备份"><a href="#备份" class="headerlink" title="备份"></a>备份</h2><p><strong>背景</strong>：100+ 上线项目系统（<code>MySQL</code>、<code>Oracle</code>、<code>Server SQL</code>、小型机、etc. ）之前未做备份恢复演练，也有部分上线系统未备份，存在巨大的数据安全风险，全量排查消除隐患。</p>
+<p><strong>技术方案</strong>：[<a href="https://www.commvault.com.cn/" target="_blank" rel="noopener"><strong>Commvault</strong></a>] [<a href="https://www.percona.com/software/mysql-database/percona-xtrabackup" target="_blank" rel="noopener"><strong>Percona XtraBackup</strong></a>]</p>
+<h2 id="体验优化"><a href="#体验优化" class="headerlink" title="体验优化"></a>体验优化</h2><p><strong>背景</strong>：数据库 <code>slowlog</code> 发布每周报告，需要从管理视角驱动质量提升，展现技术平台的价值。</p>
+<p><strong>技术方案</strong>：[<a href="https://www.aliyun.com/product/hdm" target="_blank" rel="noopener"><strong>HDM</strong></a>] [<a href="https://www.percona.com/downloads/percona-toolkit" target="_blank" rel="noopener"><strong>Percona Toolkit</strong></a>]</p>
+<h2 id="堡垒机"><a href="#堡垒机" class="headerlink" title="堡垒机"></a>堡垒机</h2><p><strong>背景</strong>：核心功能是用于实现对运维操作人员的<strong>权限控制</strong>与<strong>操作行为审计</strong>，<a href="http://www.openskill.cn/article/260" target="_blank" rel="noopener"><strong>工作原理</strong></a></p>
+<p><strong>技术方案</strong>：[<a href="http://www.jumpserver.org" target="_blank" rel="noopener"><strong>Jumpserver</strong></a>]</p>
+<h2 id="容灾"><a href="#容灾" class="headerlink" title="容灾"></a>容灾</h2><p><strong>背景</strong>：为解决本地机房发生重大灾难，数据不可恢复，特在红岛建立的灾备数据中心。</p>
+<p><strong>技术方案</strong>：[<strong><a href="https://huiraoo.github.io/blog/2019/09/04/mysql-disaster/">容灾</a></strong>]</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/22/python/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/22/python/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-22 07:59:06" itemprop="dateCreated datePublished" datetime="2019-10-22T07:59:06+08:00">2019-10-22</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-24 09:51:27" itemprop="dateModified" datetime="2019-10-24T09:51:27+08:00">2019-10-24</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>title: Python<br>date: 2019-10-22 07:59:06<br>tags:<br>categories: Python</p>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ul>
+<li>Python · 简介安装</li>
+<li>Python · 数据类型</li>
+<li>Python · 控制流</li>
+<li>Python · 函数</li>
+<li>Python · 模块和包</li>
+<li>Python · 面向对象编程</li>
+<li>Python · 异常</li>
+<li>Pyhton · I/O 编程</li>
+<li>Python · 进程与线程</li>
+<li>Python · 正则表达式</li>
+<li>Python · 网络编程</li>
+<li>Python · 测试</li>
+<li>Python · 开发规范</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><p><a href="https://link.juejin.im/?target=https%3A%2F%2Fwww.liaoxuefeng.com%2Fwiki%2F0014316089557264a6b348958f449949df42a6d3a2e542c000" target="_blank" rel="noopener">廖雪峰Python教程</a></p>
+<p><a href="https://book.douban.com/subject/10561367/" target="_blank" rel="noopener">《Head First Python 中文版》</a></p>
+<p><a href="https://www.runoob.com/python/python-100-examples.html" target="_blank" rel="noopener">Python练习100题</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/22/shell/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/22/shell/" class="post-title-link" itemprop="url">Shell</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-22 07:59:00 / 修改时间：21:27:52" itemprop="dateCreated datePublished" datetime="2019-10-22T07:59:00+08:00">2019-10-22</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Shell/" itemprop="url" rel="index"><span itemprop="name">Shell</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>bash</p>
+<p>cat</p>
+<p>grep</p>
+<p>sed</p>
+<p>awk</p>
+<p>curl or wget</p>
+<p>sort</p>
+<p>tr</p>
+<p>tcpdump</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/21/mysql-case-diskspace/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/21/mysql-case-diskspace/" class="post-title-link" itemprop="url">MySQL · 案例分析 · 磁盘空间不足</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-21 23:15:37" itemprop="dateCreated datePublished" datetime="2019-10-21T23:15:37+08:00">2019-10-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-22 21:21:34" itemprop="dateModified" datetime="2019-10-22T21:21:34+08:00">2019-10-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ df -h</span><br><span class="line">Filesystem                               Size  Used Avail Use% Mounted on</span><br><span class="line">/dev/mapper/centos_cosmoim--zdyq05-root  <span class="number">100</span>G   <span class="number">13</span>G   <span class="number">87</span>G  <span class="number">13</span>% /</span><br><span class="line">devtmpfs                                  <span class="number">63</span>G     <span class="number">0</span>   <span class="number">63</span>G   <span class="number">0</span>% /dev</span><br><span class="line">tmpfs                                     <span class="number">63</span>G     <span class="number">0</span>   <span class="number">63</span>G   <span class="number">0</span>% /dev/shm</span><br><span class="line">tmpfs                                     <span class="number">63</span>G  <span class="number">130</span>M   <span class="number">63</span>G   <span class="number">1</span>% /run</span><br><span class="line">tmpfs                                     <span class="number">63</span>G     <span class="number">0</span>   <span class="number">63</span>G   <span class="number">0</span>% /sys/fs/cgroup</span><br><span class="line">/dev/sda1                                <span class="number">497</span>M  <span class="number">172</span>M  <span class="number">326</span>M  <span class="number">35</span>% /boot</span><br><span class="line">/dev/mapper/centos_cosmoim--zdyq05-data  <span class="number">888</span>G  <span class="number">581</span>G  <span class="number">308</span>G  <span class="number">66</span>% /<span class="keyword">data</span></span><br><span class="line">tmpfs                                     <span class="number">13</span>G   <span class="number">12</span>K   <span class="number">13</span>G   <span class="number">1</span>% /run/user/<span class="number">42</span></span><br><span class="line">tmpfs                                     <span class="number">13</span>G     <span class="number">0</span>   <span class="number">13</span>G   <span class="number">0</span>% /run/user/<span class="number">1001</span></span><br><span class="line">tmpfs                                     <span class="number">13</span>G     <span class="number">0</span>   <span class="number">13</span>G   <span class="number">0</span>% /run/user/<span class="number">1002</span></span><br><span class="line">tmpfs                                     <span class="number">13</span>G     <span class="number">0</span>   <span class="number">13</span>G   <span class="number">0</span>% /run/user/<span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h2><p><strong>文件排序命令</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ du -sxh /dir/* | sort -rh | head -<span class="number">5</span></span><br><span class="line"></span><br><span class="line">du</span><br><span class="line">-s：仅显示总计</span><br><span class="line">-x：以一开始的文件系统为准，忽略其他不同文件系统的目录</span><br><span class="line">-h：以可读形式显示文件大小</span><br><span class="line"></span><br><span class="line">sort</span><br><span class="line">-r：倒序排序</span><br><span class="line">-h：以可读数字进行比较</span><br><span class="line"></span><br><span class="line">head</span><br><span class="line">-n：打印文本的前n行</span><br></pre></td></tr></table></figure>
+
+<p><strong>多次执行查找最大文件</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">$ du -sxh /<span class="keyword">data</span>/* | sort -rh | head -<span class="number">5</span></span><br><span class="line"><span class="number">339</span>G	/<span class="keyword">data</span>/mysql</span><br><span class="line"><span class="number">243</span>G	/<span class="keyword">data</span>/backup</span><br><span class="line"><span class="number">4.0</span>K	/<span class="keyword">data</span>/backup.sh</span><br><span class="line"></span><br><span class="line">$ du -sxh /<span class="keyword">data</span>/mysql/* | sort -rh | head -<span class="number">5</span></span><br><span class="line"><span class="number">267</span>G	/<span class="keyword">data</span>/mysql/cosmo_im_1004</span><br><span class="line"><span class="number">1.1</span>G	/<span class="keyword">data</span>/mysql/mysql-binlog.<span class="number">000944</span></span><br><span class="line"><span class="number">1.1</span>G	/<span class="keyword">data</span>/mysql/mysql-binlog.<span class="number">000943</span></span><br><span class="line"><span class="number">1.1</span>G	/<span class="keyword">data</span>/mysql/mysql-binlog.<span class="number">000942</span></span><br><span class="line"><span class="number">1.1</span>G	/<span class="keyword">data</span>/mysql/mysql-binlog.<span class="number">000941</span></span><br><span class="line"></span><br><span class="line">$ du -sxh /<span class="keyword">data</span>/mysql/cosmo_im_1004/* | sort -rh | head -<span class="number">5</span></span><br><span class="line"><span class="number">231</span>G	/<span class="keyword">data</span>/mysql/cosmo_im_1004/bns_pm_pokayoke.ibd</span><br><span class="line"><span class="number">3.8</span>G	/<span class="keyword">data</span>/mysql/cosmo_im_1004/bns_pm_scanscehistory.ibd</span><br><span class="line"><span class="number">3.5</span>G	/<span class="keyword">data</span>/mysql/cosmo_im_1004/bns_pm_scanhistory_month.ibd</span><br><span class="line"><span class="number">3.4</span>G	/<span class="keyword">data</span>/mysql/cosmo_im_1004/bns_io_pm_pokayoke.ibd</span><br><span class="line"><span class="number">3.0</span>G	/<span class="keyword">data</span>/mysql/cosmo_im_1004/bns_pm_operation.ibd</span><br></pre></td></tr></table></figure>
+
+<p>最终，确定最大文件是 <code>/data/mysql/cosmo_im_1004/bns_pm_pokayoke.ibd</code></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/21/centos7-pip/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/21/centos7-pip/" class="post-title-link" itemprop="url">CentOS 7 安装 Python pip</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-21 15:24:21" itemprop="dateCreated datePublished" datetime="2019-10-21T15:24:21+08:00">2019-10-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-22 21:17:47" itemprop="dateModified" datetime="2019-10-22T21:17:47+08:00">2019-10-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><code>CentOS 7.x</code> 默认安装的版本为 <code>python 2.7.5</code>，默认是没有安装 <code>pip</code></p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p><strong>yum 安装</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ yum -y install epel-release</span><br><span class="line">$ yum -y install python-pip</span><br></pre></td></tr></table></figure>
+
+<p><strong>脚本安装</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py</span><br><span class="line">$ python get-pip.py</span><br></pre></td></tr></table></figure>
 
 
           
@@ -1579,7 +1692,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/19/pt-online-schema-change/">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/21/mysql-rollback/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Hui Rao">
@@ -1599,7 +1712,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/blog/2019/10/19/pt-online-schema-change/" class="post-title-link" itemprop="url">Percona Toolkit · 在线修改表结构工具 pt-online-schema-change</a>
+                <a href="/blog/2019/10/21/mysql-rollback/" class="post-title-link" itemprop="url">MySQL · 使用 binlog2sql 工具快速回滚误操作</a>
               
             
           </h1>
@@ -1624,7 +1737,7 @@
                 
               
 
-              <time title="创建时间：2019-10-19 09:52:13" itemprop="dateCreated datePublished" datetime="2019-10-19T09:52:13+08:00">2019-10-19</time>
+              <time title="创建时间：2019-10-21 14:25:53" itemprop="dateCreated datePublished" datetime="2019-10-21T14:25:53+08:00">2019-10-21</time>
             
 
             
@@ -1641,7 +1754,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-10-22 21:26:53" itemprop="dateModified" datetime="2019-10-22T21:26:53+08:00">2019-10-22</time>
+                <time title="修改时间：2019-10-22 21:24:00" itemprop="dateModified" datetime="2019-10-22T21:24:00+08:00">2019-10-22</time>
               
             
           </span>
@@ -1658,7 +1771,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Percona-Toolkit/" itemprop="url" rel="index"><span itemprop="name">Percona Toolkit</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
 
                 
                 
@@ -1695,24 +1808,42 @@
       
         
           
-            <h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><p>支持不锁表在线修改表结构</p>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>以 <code>test.employees</code> 为例：</p>
-<ul>
-<li>创建新表，<code>test.employees_new</code> 表结构与 <code>test.employees</code> 一致</li>
-<li><code>test.employees_new</code> 执行 SQL</li>
-<li><code>test.employees</code> 添加触发器 (<code>DELETE/UPDATE/INSERT</code>)</li>
-<li>批量从 <code>test.employees</code> 拷贝数据到 <code>test.employees_new</code>，拷贝过程中通过触发器自动更新</li>
-<li>修改表名，<code>test.employees</code> 修改为 <code>test.employees_old</code>，<code>test.employees_new</code> 修改为 <code>test.employees</code></li>
-<li>删除 <code>test.employees_old</code> 和触发器</li>
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>误删了 <code>test.employees</code> 表的数据，需要紧急回滚，表信息如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from employees;</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">| id | name       | address            | age | gmt_create          | gmt_modified        |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">|  1 | xujinliang | 山东省青岛市       |  32 | 2019-09-24 17:13:00 | 2019-09-24 17:13:00 |</span><br><span class="line">|  2 | maofang    | 山东省青岛市       |  32 | 2019-09-24 17:32:00 | 2019-09-24 17:40:49 |</span><br><span class="line">|  3 | raohui     | 陕西省西安市       |  29 | 2019-09-24 17:39:28 | 2019-09-24 17:39:28 |</span><br><span class="line">|  4 | yangnan    | NULL               |  22 | 2019-09-24 17:39:52 | 2019-09-24 17:39:52 |</span><br><span class="line">|  5 | yuzhiqiang | NULL               |  29 | 2019-09-24 17:40:03 | 2019-09-24 17:40:03 |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">5 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">delete</span> <span class="keyword">from</span> employees;</span><br><span class="line">Query OK, 5 rows affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select * from employees;</span><br><span class="line">Empty <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><ul>
+<li>先用全量备份恢复实例，再利用增量 <code>binlog</code> 备份恢复到误操作之前的状态</li>
+<li><a href="https://github.com/danfengcao/binlog2sql" target="_blank" rel="noopener">binlog2sql</a>（仅支持 <code>DML Delete/Update</code> 等语句回滚，不支持 <code>DDL Drop</code> 等语句回滚）</li>
 </ul>
-<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p><strong>参数说明</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">--host=xxx </span><br><span class="line">--user=xxx </span><br><span class="line">--password=xxx     <span class="comment"># 连接实例信息</span></span><br><span class="line">--user=            <span class="comment"># 连接mysql的用户名</span></span><br><span class="line">--password=        <span class="comment"># 连接mysql的密码</span></span><br><span class="line">--host=            <span class="comment"># 连接mysql的地址</span></span><br><span class="line">P=<span class="number">3306</span>             <span class="comment"># 连接mysql的端口号</span></span><br><span class="line">D=                 <span class="comment"># 连接mysql的库名</span></span><br><span class="line">t=                 <span class="comment"># 连接mysql的表名</span></span><br><span class="line">--alter            <span class="comment"># 修改表结构的语句</span></span><br><span class="line">--dry-run          <span class="comment"># 创建和修改新表</span></span><br><span class="line">--print            <span class="comment"># 打印信息</span></span><br><span class="line">--execute          <span class="comment"># 执行修改表结构 ，--dry-run与--execute必须指定一个，二者相互排斥</span></span><br><span class="line">--charset=utf8     <span class="comment"># 使用utf8编码，避免中文乱码</span></span><br><span class="line">--no-version-check <span class="comment"># 不检查版本，在阿里云服务器中一般加入此参数，否则会报错</span></span><br></pre></td></tr></table></figure>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><blockquote>
+<p><strong>前提条件</strong>：开启 <code>log_bin</code>，且日志格式为 <code>row</code></p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">server-id = <span class="number">1</span></span><br><span class="line">log_bin = /<span class="keyword">data</span>/mysql/mysql-bin</span><br><span class="line">max_binlog_size = <span class="number">1</span>G</span><br><span class="line">binlog_format = row</span><br><span class="line">binlog_row_image = full</span><br></pre></td></tr></table></figure>
 
-<p><strong>添加索引</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ pt-online-schema-change --user=root --password=<span class="string">'xx'</span> --socket=/<span class="keyword">data</span>/mysql-tdds/mysql.sock --alter <span class="string">"ADD INDEX idx_address(address)"</span> D=test,t=employees --print --execute</span><br></pre></td></tr></table></figure>
+<ul>
+<li>安装 <a href="https://github.com/danfengcao/binlog2sql" target="_blank" rel="noopener">binlog2sql</a></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git clone https://github.com/danfengcao/binlog2sql.git &amp;&amp; cd binlog2sql</span><br><span class="line">$ pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
 
-<p><strong>删除索引</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">$ pt-online-schema-change --user=root --password=<span class="string">'xx'</span> --socket=/<span class="keyword">data</span>/mysql-tdds/mysql.sock --alter <span class="string">"DROP INDEX idx_address"</span> D=test,t=employees --print --execute</span><br><span class="line"></span><br><span class="line">Operation, tries, wait:</span><br><span class="line">  analyze_table, <span class="number">10</span>, <span class="number">1</span></span><br><span class="line">  copy_rows, <span class="number">10</span>, <span class="number">0.25</span></span><br><span class="line">  create_triggers, <span class="number">10</span>, <span class="number">1</span></span><br><span class="line">  drop_triggers, <span class="number">10</span>, <span class="number">1</span></span><br><span class="line">  swap_tables, <span class="number">10</span>, <span class="number">1</span></span><br><span class="line">  update_foreign_keys, <span class="number">10</span>, <span class="number">1</span></span><br><span class="line">Altering `test`.`employees`...</span><br><span class="line">Creating new table...</span><br><span class="line">CREATE TABLE `test`.`_employees_new` (</span><br><span class="line">  `id` bigint(<span class="number">20</span>) unsigned NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `name` char(<span class="number">20</span>) NOT NULL DEFAULT <span class="string">''</span>,</span><br><span class="line">  `address` varchar(<span class="number">50</span>) DEFAULT NULL,</span><br><span class="line">  `age` tinyint(<span class="number">3</span>) unsigned NOT NULL DEFAULT <span class="string">'0'</span>,</span><br><span class="line">  `gmt_create` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,</span><br><span class="line">  `gmt_modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,</span><br><span class="line">  PRIMARY KEY (`id`),</span><br><span class="line">  KEY `idx_address` (`address`)</span><br><span class="line">) /*!<span class="number">50100</span> TABLESPACE `innodb_file_per_table` */ ENGINE=InnoDB AUTO_INCREMENT=<span class="number">6</span> DEFAULT CHARSET=utf8</span><br><span class="line">Created new table test._employees_new OK.</span><br><span class="line">Altering new table...</span><br><span class="line">ALTER TABLE `test`.`_employees_new` DROP INDEX idx_address</span><br><span class="line">Altered `test`.`_employees_new` OK.</span><br><span class="line"><span class="number">2019</span>-<span class="number">10</span>-<span class="number">22</span>T15:<span class="number">59</span>:<span class="number">32</span> Creating triggers...</span><br><span class="line"><span class="number">2019</span>-<span class="number">10</span>-<span class="number">22</span>T15:<span class="number">59</span>:<span class="number">32</span> Created triggers OK.</span><br><span class="line"><span class="number">2019</span>-<span class="number">10</span>-<span class="number">22</span>T15:<span class="number">59</span>:<span class="number">32</span> Copying approximately <span class="number">5</span> rows...</span><br><span class="line">INSERT LOW_PRIORITY IGNORE INTO `test`.`_employees_new` (`id`, `name`, `address`, `age`, `gmt_create`, `gmt_modified`) SELECT `id`, `name`, `address`, `age`, `gmt_create`, `gmt_modified` FROM `test`.`employees` LOCK <span class="keyword">IN</span> SHARE MODE /*pt-online-schema-change <span class="number">112205</span> copy table*/</span><br><span class="line"><span class="number">2019</span>-<span class="number">10</span>-<span class="number">22</span>T15:<span class="number">59</span>:<span class="number">32</span> Copied rows OK.</span><br><span class="line"><span class="number">2019</span>-<span class="number">10</span>-<span class="number">22</span>T15:<span class="number">59</span>:<span class="number">32</span> Analyzing new table...</span><br><span class="line"><span class="number">2019</span>-<span class="number">10</span>-<span class="number">22</span>T15:<span class="number">59</span>:<span class="number">32</span> Swapping tables...</span><br><span class="line">RENAME TABLE `test`.`employees` TO `test`.`_employees_old`, `test`.`_employees_new` TO `test`.`employees`</span><br><span class="line"><span class="number">2019</span>-<span class="number">10</span>-<span class="number">22</span>T15:<span class="number">59</span>:<span class="number">32</span> Swapped original and new tables OK.</span><br><span class="line"><span class="number">2019</span>-<span class="number">10</span>-<span class="number">22</span>T15:<span class="number">59</span>:<span class="number">32</span> Dropping old table...</span><br><span class="line">DROP TABLE <span class="keyword">IF</span> EXISTS `test`.`_employees_old`</span><br><span class="line"><span class="number">2019</span>-<span class="number">10</span>-<span class="number">22</span>T15:<span class="number">59</span>:<span class="number">32</span> Dropped old table `test`.`_employees_old` OK.</span><br><span class="line"><span class="number">2019</span>-<span class="number">10</span>-<span class="number">22</span>T15:<span class="number">59</span>:<span class="number">32</span> Dropping triggers...</span><br><span class="line">DROP TRIGGER <span class="keyword">IF</span> EXISTS `test`.`pt_osc_test_employees_del`</span><br><span class="line">DROP TRIGGER <span class="keyword">IF</span> EXISTS `test`.`pt_osc_test_employees_upd`</span><br><span class="line">DROP TRIGGER <span class="keyword">IF</span> EXISTS `test`.`pt_osc_test_employees_ins`</span><br><span class="line"><span class="number">2019</span>-<span class="number">10</span>-<span class="number">22</span>T15:<span class="number">59</span>:<span class="number">32</span> Dropped triggers OK.</span><br><span class="line">Successfully altered `test`.`employees`.</span><br></pre></td></tr></table></figure>
+<ul>
+<li>确定 <code>binlog</code> 文件，最新的文件是 <code>mysql-bin.000020</code></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show master logs;</span><br><span class="line">+------------------+-----------+</span><br><span class="line">| Log_name         | File_size |</span><br><span class="line">+------------------+-----------+</span><br><span class="line">| mysql-bin.<span class="number">000018</span> |  <span class="number">66374823</span> |</span><br><span class="line">| mysql-bin.<span class="number">000019</span> |      <span class="number">4419</span> |</span><br><span class="line">| mysql-bin.<span class="number">000020</span> |  <span class="number">66375437</span> |</span><br><span class="line">+------------------+-----------+</span><br><span class="line"><span class="number">3</span> rows <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>定位误操作 <code>SQL</code></li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ python binlog2sql/binlog2sql.py -h127.0.0.1 -P3306 -uroot -p'xx' -dtest -temployees <span class="comment">--start-file='mysql-bin.000020'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> <span class="string">`test`</span>.<span class="string">`employees`</span> <span class="keyword">WHERE</span> <span class="string">`name`</span>=<span class="string">'xujinliang'</span> <span class="keyword">AND</span> <span class="string">`gmt_modified`</span>=<span class="string">'2019-09-24 17:13:00'</span> <span class="keyword">AND</span> <span class="string">`age`</span>=<span class="number">32</span> <span class="keyword">AND</span> <span class="string">`gmt_create`</span>=<span class="string">'2019-09-24 17:13:00'</span> <span class="keyword">AND</span> <span class="string">`address`</span>=<span class="string">'山东省青岛市'</span> <span class="keyword">AND</span> <span class="string">`id`</span>=<span class="number">1</span> <span class="keyword">LIMIT</span> <span class="number">1</span>; <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> <span class="string">`test`</span>.<span class="string">`employees`</span> <span class="keyword">WHERE</span> <span class="string">`name`</span>=<span class="string">'maofang'</span> <span class="keyword">AND</span> <span class="string">`gmt_modified`</span>=<span class="string">'2019-09-24 17:40:49'</span> <span class="keyword">AND</span> <span class="string">`age`</span>=<span class="number">32</span> <span class="keyword">AND</span> <span class="string">`gmt_create`</span>=<span class="string">'2019-09-24 17:32:00'</span> <span class="keyword">AND</span> <span class="string">`address`</span>=<span class="string">'山东省青岛市'</span> <span class="keyword">AND</span> <span class="string">`id`</span>=<span class="number">2</span> <span class="keyword">LIMIT</span> <span class="number">1</span>; <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> <span class="string">`test`</span>.<span class="string">`employees`</span> <span class="keyword">WHERE</span> <span class="string">`name`</span>=<span class="string">'raohui'</span> <span class="keyword">AND</span> <span class="string">`gmt_modified`</span>=<span class="string">'2019-09-24 17:39:28'</span> <span class="keyword">AND</span> <span class="string">`age`</span>=<span class="number">29</span> <span class="keyword">AND</span> <span class="string">`gmt_create`</span>=<span class="string">'2019-09-24 17:39:28'</span> <span class="keyword">AND</span> <span class="string">`address`</span>=<span class="string">'陕西省西安市'</span> <span class="keyword">AND</span> <span class="string">`id`</span>=<span class="number">3</span> <span class="keyword">LIMIT</span> <span class="number">1</span>; <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> <span class="string">`test`</span>.<span class="string">`employees`</span> <span class="keyword">WHERE</span> <span class="string">`name`</span>=<span class="string">'yangnan'</span> <span class="keyword">AND</span> <span class="string">`gmt_modified`</span>=<span class="string">'2019-09-24 17:39:52'</span> <span class="keyword">AND</span> <span class="string">`age`</span>=<span class="number">22</span> <span class="keyword">AND</span> <span class="string">`gmt_create`</span>=<span class="string">'2019-09-24 17:39:52'</span> <span class="keyword">AND</span> <span class="string">`address`</span> <span class="keyword">IS</span> <span class="literal">NULL</span> <span class="keyword">AND</span> <span class="string">`id`</span>=<span class="number">4</span> <span class="keyword">LIMIT</span> <span class="number">1</span>; <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> <span class="string">`test`</span>.<span class="string">`employees`</span> <span class="keyword">WHERE</span> <span class="string">`name`</span>=<span class="string">'yuzhiqiang'</span> <span class="keyword">AND</span> <span class="string">`gmt_modified`</span>=<span class="string">'2019-09-24 17:40:03'</span> <span class="keyword">AND</span> <span class="string">`age`</span>=<span class="number">29</span> <span class="keyword">AND</span> <span class="string">`gmt_create`</span>=<span class="string">'2019-09-24 17:40:03'</span> <span class="keyword">AND</span> <span class="string">`address`</span> <span class="keyword">IS</span> <span class="literal">NULL</span> <span class="keyword">AND</span> <span class="string">`id`</span>=<span class="number">5</span> <span class="keyword">LIMIT</span> <span class="number">1</span>; <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>解析出回滚 <code>SQL</code>，并检查回滚 <code>SQL</code> 是否正确</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ python binlog2sql/binlog2sql.py -h127.0.0.1 -P3306 -uroot -p'xx' -dtest -temployees <span class="comment">--start-file='mysql-bin.000020' --start-pos=66374969 --end-pos=66375406 -B &gt; rollback.sql | cat</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`test`</span>.<span class="string">`employees`</span>(<span class="string">`name`</span>, <span class="string">`gmt_modified`</span>, <span class="string">`age`</span>, <span class="string">`gmt_create`</span>, <span class="string">`address`</span>, <span class="string">`id`</span>) <span class="keyword">VALUES</span> (<span class="string">'yuzhiqiang'</span>, <span class="string">'2019-09-24 17:40:03'</span>, <span class="number">29</span>, <span class="string">'2019-09-24 17:40:03'</span>, <span class="literal">NULL</span>, <span class="number">5</span>); <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`test`</span>.<span class="string">`employees`</span>(<span class="string">`name`</span>, <span class="string">`gmt_modified`</span>, <span class="string">`age`</span>, <span class="string">`gmt_create`</span>, <span class="string">`address`</span>, <span class="string">`id`</span>) <span class="keyword">VALUES</span> (<span class="string">'yangnan'</span>, <span class="string">'2019-09-24 17:39:52'</span>, <span class="number">22</span>, <span class="string">'2019-09-24 17:39:52'</span>, <span class="literal">NULL</span>, <span class="number">4</span>); <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`test`</span>.<span class="string">`employees`</span>(<span class="string">`name`</span>, <span class="string">`gmt_modified`</span>, <span class="string">`age`</span>, <span class="string">`gmt_create`</span>, <span class="string">`address`</span>, <span class="string">`id`</span>) <span class="keyword">VALUES</span> (<span class="string">'raohui'</span>, <span class="string">'2019-09-24 17:39:28'</span>, <span class="number">29</span>, <span class="string">'2019-09-24 17:39:28'</span>, <span class="string">'陕西省西安市'</span>, <span class="number">3</span>); <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`test`</span>.<span class="string">`employees`</span>(<span class="string">`name`</span>, <span class="string">`gmt_modified`</span>, <span class="string">`age`</span>, <span class="string">`gmt_create`</span>, <span class="string">`address`</span>, <span class="string">`id`</span>) <span class="keyword">VALUES</span> (<span class="string">'maofang'</span>, <span class="string">'2019-09-24 17:40:49'</span>, <span class="number">32</span>, <span class="string">'2019-09-24 17:32:00'</span>, <span class="string">'山东省青岛市'</span>, <span class="number">2</span>); <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`test`</span>.<span class="string">`employees`</span>(<span class="string">`name`</span>, <span class="string">`gmt_modified`</span>, <span class="string">`age`</span>, <span class="string">`gmt_create`</span>, <span class="string">`address`</span>, <span class="string">`id`</span>) <span class="keyword">VALUES</span> (<span class="string">'xujinliang'</span>, <span class="string">'2019-09-24 17:13:00'</span>, <span class="number">32</span>, <span class="string">'2019-09-24 17:13:00'</span>, <span class="string">'山东省青岛市'</span>, <span class="number">1</span>); <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>确认回滚 <code>SQL</code> 正确，执行回滚语句</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -h127.0.0.1 -P3306 -uroot -p'xx' &lt; rollback.sql</span><br><span class="line"></span><br><span class="line">mysql&gt; select * from employees;</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">| id | name       | address            | age | gmt_create          | gmt_modified        |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">|  1 | xujinliang | 山东省青岛市       |  32 | 2019-09-24 17:13:00 | 2019-09-24 17:13:00 |</span><br><span class="line">|  2 | maofang    | 山东省青岛市       |  32 | 2019-09-24 17:32:00 | 2019-09-24 17:40:49 |</span><br><span class="line">|  3 | raohui     | 陕西省西安市       |  29 | 2019-09-24 17:39:28 | 2019-09-24 17:39:28 |</span><br><span class="line">|  4 | yangnan    | NULL               |  22 | 2019-09-24 17:39:52 | 2019-09-24 17:39:52 |</span><br><span class="line">|  5 | yuzhiqiang | NULL               |  29 | 2019-09-24 17:40:03 | 2019-09-24 17:40:03 |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">5 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
 
 
           
@@ -1770,7 +1901,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/19/pt-archiver/">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/21/mysql-modify-dbname/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Hui Rao">
@@ -1790,7 +1921,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/blog/2019/10/19/pt-archiver/" class="post-title-link" itemprop="url">Percona Toolkit · 归档工具 pt-archiver</a>
+                <a href="/blog/2019/10/21/mysql-modify-dbname/" class="post-title-link" itemprop="url">MySQL · 修改数据库名</a>
               
             
           </h1>
@@ -1815,7 +1946,7 @@
                 
               
 
-              <time title="创建时间：2019-10-19 09:51:58" itemprop="dateCreated datePublished" datetime="2019-10-19T09:51:58+08:00">2019-10-19</time>
+              <time title="创建时间：2019-10-21 14:21:30" itemprop="dateCreated datePublished" datetime="2019-10-21T14:21:30+08:00">2019-10-21</time>
             
 
             
@@ -1832,7 +1963,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-10-22 21:26:14" itemprop="dateModified" datetime="2019-10-22T21:26:14+08:00">2019-10-22</time>
+                <time title="修改时间：2019-10-22 21:23:36" itemprop="dateModified" datetime="2019-10-22T21:23:36+08:00">2019-10-22</time>
               
             
           </span>
@@ -1849,7 +1980,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Percona-Toolkit/" itemprop="url" rel="index"><span itemprop="name">Percona Toolkit</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
 
                 
                 
@@ -1886,9 +2017,18 @@
       
         
           
-            <h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><p>将 MySQL 数据库中表的记录归档到另外一个表或者文件</p>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-19-103800.png" alt="pt"></p>
-<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 把数据归档至归档表</span></span><br><span class="line">pt-archiver --source h=<span class="number">10.138</span>.<span class="number">228.231</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'xxx'</span>,D=matomo,t=matomo_log_link_visit_action --charset=utf8 --dest h=<span class="number">10.138</span>.<span class="number">228.231</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'xxx'</span>,D=matomo,t=matomo_log_link_visit_action_history --where <span class="string">"server_time &lt; '2019-01-01'"</span> --limit <span class="number">1000</span> --commit-each --bulk-insert --no-version-check</span><br><span class="line"></span><br><span class="line"><span class="comment"># h=10.138.228.231               -- 数据库实例地址</span></span><br><span class="line"><span class="comment"># P=3306                         -- 数据库实例端口</span></span><br><span class="line"><span class="comment"># u=sre                          -- 数据库实例用户</span></span><br><span class="line"><span class="comment"># p=xxx                          -- 数据库实例用户密码</span></span><br><span class="line"><span class="comment"># D=matomo                       -- 数据库实例数据库</span></span><br><span class="line"><span class="comment"># t=matomo_log_link_visit_action -- 数据库实例表名称</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># --source                       -- 指定要被归档的数据源</span></span><br><span class="line"><span class="comment"># --charset=utf8                 -- 使用的字符集，需与表字符集一致</span></span><br><span class="line"><span class="comment"># --file                         -- 指定目标操作系统文件名</span></span><br><span class="line"><span class="comment"># --dest                         -- 指定归档到的目标表</span></span><br><span class="line"><span class="comment"># --where "id &gt; 3008"            -- 指定 where 过滤条件，过滤出要归档的数据</span></span><br><span class="line"><span class="comment"># --limit 1000                   -- 每条语句读取和归档的数据行数，默认是 1</span></span><br><span class="line"><span class="comment"># --commit-each                  -- 每次获取和归档数据后，commit提交</span></span><br><span class="line"><span class="comment"># --no-version-check             -- 不做版本检查</span></span><br><span class="line"><span class="comment"># --bulk-insert                  -- 批量插入数据</span></span><br><span class="line"><span class="comment"># --statistics                   -- 显示 pt-archiver 本次操作的统计信息。</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 每5000条删除1次，每隔2000行输出一次数据</span></span><br><span class="line">pt-archiver --source D=ibilling_pay_hupu,t=purchase_order --user=root --password=<span class="string">'root'</span> -S /tmp/mysql.sock --where <span class="string">"create_datetime &lt;= '2015-06-20 00:00:00'"</span> --purge --limit=<span class="number">5000</span> --progress <span class="number">2000</span> --why-quit --no-check-charset &gt; /opt/<span class="number">1</span>.log</span><br><span class="line"></span><br><span class="line"><span class="comment"># 用于把数据导出文件，不用删除原表中数据</span></span><br><span class="line">pt-archiver --source h=<span class="number">127.0</span>.<span class="number">0.1</span>,P=<span class="number">58886</span>,D=test,t=t_info_refresh --no-check-charset  --where <span class="string">'id &gt; 1'</span> --progress <span class="number">4000</span> --no-delete --file <span class="string">"/tmp/pt-archiver.sql"</span> --limit=<span class="number">10000</span></span><br></pre></td></tr></table></figure>
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p><strong>需求</strong>：将数据库 <code>hrtrqu</code> 修改 <code>hrtrzq</code></p>
+<p><strong>方案</strong>：MySQL 没有 <code>rename database</code> 命令，只能变相修改表到目标库里的表来实现。</p>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p><strong>1. 导出库数据</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mysqldump  --single-transaction -S /<span class="keyword">data</span>/mysql3308/mysql.sock -usre -p<span class="string">'xx'</span> hrtrqu &gt; hrtrqu.sql</span><br></pre></td></tr></table></figure>
+
+<p><strong>2. 创建新库 hrtrzq</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">DATABASE</span> <span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> hrtrzq <span class="keyword">default</span> <span class="keyword">charset</span> utf8 <span class="keyword">COLLATE</span> utf8_general_ci;</span><br></pre></td></tr></table></figure>
+
+<p><strong>3. 导入数据到新库</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -S /<span class="keyword">data</span>/mysql3308/mysql.sock -usre -p<span class="string">'sre@@p$i'</span> hrtrzq &lt; hrtrqu.sql</span><br></pre></td></tr></table></figure>
+
+
           
         
       
@@ -1944,7 +2084,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/18/pt-summary/">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/21/mysql-delete-bigtable/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Hui Rao">
@@ -1964,7 +2104,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/blog/2019/10/18/pt-summary/" class="post-title-link" itemprop="url">Percona Toolkit · 信息收集工具 pt-summary</a>
+                <a href="/blog/2019/10/21/mysql-delete-bigtable/" class="post-title-link" itemprop="url">MySQL · 快速删除大表</a>
               
             
           </h1>
@@ -1989,7 +2129,7 @@
                 
               
 
-              <time title="创建时间：2019-10-18 17:46:35" itemprop="dateCreated datePublished" datetime="2019-10-18T17:46:35+08:00">2019-10-18</time>
+              <time title="创建时间：2019-10-21 11:23:48" itemprop="dateCreated datePublished" datetime="2019-10-21T11:23:48+08:00">2019-10-21</time>
             
 
             
@@ -2006,7 +2146,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-10-22 21:27:15" itemprop="dateModified" datetime="2019-10-22T21:27:15+08:00">2019-10-22</time>
+                <time title="修改时间：2019-10-22 21:22:39" itemprop="dateModified" datetime="2019-10-22T21:22:39+08:00">2019-10-22</time>
               
             
           </span>
@@ -2023,7 +2163,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Percona-Toolkit/" itemprop="url" rel="index"><span itemprop="name">Percona Toolkit</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
 
                 
                 
@@ -2060,7 +2200,28 @@
       
         
           
-            <h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><h2 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">$ pt-summary</span><br><span class="line"><span class="comment"># Percona Toolkit System Summary Report ######################</span></span><br><span class="line">        Date | <span class="number">2019</span>-<span class="number">10</span>-<span class="number">18</span> <span class="number">09</span>:<span class="number">41</span>:<span class="number">24</span> UTC (local TZ: CST +<span class="number">0800</span>)</span><br><span class="line">    Hostname | hrmk-Dubbo4</span><br><span class="line">      Uptime | <span class="number">182</span> days, <span class="number">20</span>:<span class="number">56</span>,  <span class="number">1</span> user,  load average: <span class="number">0.66</span>, <span class="number">0.69</span>, <span class="number">0.69</span></span><br><span class="line">      System | Dell Inc.; PowerEdge R730; vNot Specified (Rack Mount Chassis)</span><br><span class="line"> Service Tag | <span class="number">5</span>K6GBD2</span><br><span class="line">    Platform | Linux</span><br><span class="line">     Release | CentOS release <span class="number">6.10</span> (Final)</span><br><span class="line">      Kernel | <span class="number">2.6</span>.<span class="number">32</span>-<span class="number">431</span>.el6.x86_64</span><br><span class="line">Architecture | CPU = <span class="number">64</span>-bit, OS = <span class="number">64</span>-bit</span><br><span class="line">   Threading | NPTL <span class="number">2.12</span></span><br><span class="line">     SELinux | Enforcing</span><br><span class="line"> Virtualized | No virtualization detected</span><br><span class="line"> </span><br><span class="line"><span class="comment"># Processor ##################################################</span></span><br><span class="line">  Processors | physical = <span class="number">2</span>, cores = <span class="number">12</span>, virtual = <span class="number">24</span>, hyperthreading = yes</span><br><span class="line">      Speeds | <span class="number">24</span>x2400.<span class="number">128</span></span><br><span class="line">      Models | <span class="number">24</span>xIntel(R) Xeon(R) CPU E5-<span class="number">2620</span> v3 @ <span class="number">2.40</span>GHz</span><br><span class="line">      Caches | <span class="number">24</span>x15360 KB</span><br><span class="line">      </span><br><span class="line"><span class="comment"># Memory #####################################################</span></span><br><span class="line">       Total | <span class="number">15.6</span>G</span><br><span class="line">        Free | <span class="number">217.5</span>M</span><br><span class="line">        Used | physical = <span class="number">15.4</span>G, swap allocated = <span class="number">7.8</span>G, swap used = <span class="number">96.0</span>k, virtual = <span class="number">15.4</span>G</span><br><span class="line">      Shared | <span class="number">1.2</span>M</span><br><span class="line">     Buffers | <span class="number">221.9</span>M</span><br><span class="line">      Caches | <span class="number">2.2</span>G</span><br><span class="line">       Dirty | <span class="number">344</span> kB</span><br><span class="line">     UsedRSS | <span class="number">12.4</span>G</span><br><span class="line">  Swappiness | <span class="number">60</span></span><br><span class="line"> DirtyPolicy | <span class="number">20</span>, <span class="number">10</span></span><br><span class="line"> DirtyStatus | <span class="number">0</span>, <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Network Devices ############################################</span></span><br><span class="line">  Device    Speed     Duplex</span><br><span class="line">  ========= ========= =========</span><br><span class="line">  em2        <span class="number">1000</span>Mb/s   Full      </span><br><span class="line">  em3        Unknown!   Unknown!  </span><br><span class="line">  em4        <span class="number">1000</span>Mb/s   Full      </span><br><span class="line">  bond0      <span class="number">1000</span>Mb/s   Full      </span><br><span class="line">  virbr0-nic <span class="number">10</span>Mb/s     Full      </span><br><span class="line">  virbr0                          </span><br><span class="line">  em1        <span class="number">1000</span>Mb/s   Full</span><br></pre></td></tr></table></figure>
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>生产环境有一张日志表 <code>schedule_task_error_log</code> ，数据量超过 <code>5000w</code>，想通过 <code>drop</code> 删除但是速度很慢。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql <span class="number">5.1</span>K Jan  <span class="number">8</span>  <span class="number">2018</span> schedule_task_error_log.frm</span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">36</span>G May <span class="number">16</span> <span class="number">18</span>:<span class="number">14</span> schedule_task_error_log.ibd</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-21-114430.jpg" alt></p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p><strong>前提</strong>：<code>MySQL</code> 开启了<strong>独立表空间</strong>，<code>MySQL 5.6.7</code> 之后默认开启。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">MariaDB&gt; show variables like 'innodb_file_per_table';</span><br><span class="line">+<span class="comment">-----------------------+-------+</span></span><br><span class="line">| Variable_name         | Value |</span><br><span class="line">+<span class="comment">-----------------------+-------+</span></span><br><span class="line">| innodb_file_per_table | ON    |</span><br><span class="line">+<span class="comment">-----------------------+-------+</span></span><br></pre></td></tr></table></figure>
+
+<p><code>MySQL</code> 在删除大表的时候为什么慢？</p>
+<ul>
+<li><code>Buffer Pool</code> 页面清除过程（拥有 <code>InnoDB</code> 全局锁）</li>
+<li>删除 <code>ibd</code> 磁盘文件过程</li>
+</ul>
+<p><strong>方案</strong>：利用了 <code>Linux</code> 中 <strong>硬链接</strong> 减少 <code>DDL</code> 时间，加快锁释放，来进行快速删除。</p>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p><strong>1. 建立硬连接</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ ln schedule_task_error_log.ibd schedule_task_error_log.ibd.hdlk</span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql <span class="number">5.1</span>K Jan  <span class="number">8</span>  <span class="number">2018</span> schedule_task_error_log.frm</span><br><span class="line">-rw-rw----. <span class="number">2</span> mysql mysql  <span class="number">36</span>G May <span class="number">16</span> <span class="number">18</span>:<span class="number">14</span> schedule_task_error_log.ibd</span><br><span class="line">-rw-rw----. <span class="number">2</span> mysql mysql  <span class="number">36</span>G May <span class="number">16</span> <span class="number">18</span>:<span class="number">14</span> schedule_task_error_log.ibd.hdlk</span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql <span class="number">5.8</span>K Mar <span class="number">14</span>  <span class="number">2018</span> user_operation_syslog.frm</span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql <span class="number">272</span>K Feb <span class="number">13</span>  <span class="number">2019</span> user_operation_syslog.ibd</span><br></pre></td></tr></table></figure>
+
+<p><strong>2. drop table</strong></p>
+<p>再看物理文件的引用数变为 1，然后我们可以另外找时间手动删除物理文件。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">MariaDB&gt; drop table schedule_task_error_log;</span><br><span class="line">Query OK, <span class="number">0</span> rows affected (<span class="number">0.78</span> sec)</span><br><span class="line"></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">36</span>G May <span class="number">16</span> <span class="number">18</span>:<span class="number">14</span> schedule_task_error_log.ibd.hdlk</span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql <span class="number">5.8</span>K Mar <span class="number">14</span>  <span class="number">2018</span> user_operation_syslog.frm</span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql <span class="number">272</span>K Feb <span class="number">13</span>  <span class="number">2019</span> user_operation_syslog.ibd</span><br></pre></td></tr></table></figure>
+
+<p><strong>3. 删除物理文件</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rm -rf schedule_task_error_log.ibd.hdlk</span><br></pre></td></tr></table></figure>
 
 
           
@@ -2107,7 +2268,7 @@
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><a class="page-number" href="/blog/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/blog/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/9/">9</a><a class="extend next" rel="next" href="/blog/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><a class="page-number" href="/blog/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/blog/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/11/">11</a><a class="extend next" rel="next" href="/blog/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -2151,7 +2312,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">88</span>
+                    <span class="site-state-item-count">101</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2204,9 +2365,7 @@
                     
                       
                     
-                      
-                    
-                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-count">18</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
