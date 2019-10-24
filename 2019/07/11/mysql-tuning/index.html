@@ -96,23 +96,22 @@
 
 
 
-  <meta name="description" content="SQL是怎样执行的 ？MySQL 是典型的 C/S 架构，即 Client/Server 架构，服务器端程序使用的 mysqld。整体的流程如下图所示：  MySQL 由三层组成： 1）连接层：客户端和服务器端建立连接，客户端发送 SQL 至服务器端； 2）SQL 层：对 SQL 语句进行查询处理； 3）存储引擎层：与数据库文件打交道，负责数据的存储和读取。 SQL层的结构：   连接器：客户端与">
-<meta name="keywords" content="Explain">
+  <meta name="description" content="SQL 优化 定位低效率的SQL语句 - 慢查询日志。  通过explain了解SQL的执行计划。  select_type：查询类型（SIMPLE - 简单查询、PRIMARY - 主查询、UNION - 并集、SUBQUERY - 子查询）。  table：输出结果集的表。  type：访问类型（ALL - 全表查询性能最差、index、range、ref、eq_ref、const、NULL）">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MySQL · 调优系列">
+<meta property="og:title" content="MySQL · 性能优化">
 <meta property="og:url" content="https://huiraoo.github.io/blog/2019/07/11/mysql-tuning/index.html">
 <meta property="og:site_name" content="Rao&#39;s Blog">
-<meta property="og:description" content="SQL是怎样执行的 ？MySQL 是典型的 C/S 架构，即 Client/Server 架构，服务器端程序使用的 mysqld。整体的流程如下图所示：  MySQL 由三层组成： 1）连接层：客户端和服务器端建立连接，客户端发送 SQL 至服务器端； 2）SQL 层：对 SQL 语句进行查询处理； 3）存储引擎层：与数据库文件打交道，负责数据的存储和读取。 SQL层的结构：   连接器：客户端与">
+<meta property="og:description" content="SQL 优化 定位低效率的SQL语句 - 慢查询日志。  通过explain了解SQL的执行计划。  select_type：查询类型（SIMPLE - 简单查询、PRIMARY - 主查询、UNION - 并集、SUBQUERY - 子查询）。  table：输出结果集的表。  type：访问类型（ALL - 全表查询性能最差、index、range、ref、eq_ref、const、NULL）">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://ww3.sinaimg.cn/large/006y8mN6ly1g6ap6gn423j30p00dc40x.jpg">
 <meta property="og:image" content="http://ww2.sinaimg.cn/large/006tNc79ly1g64xrbwlygj30k004b0sp.jpg">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/006tNc79ly1g61nat9jo2j31400u0tpc.jpg">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/006tNc79ly1g64togewmoj30m80ieq5a.jpg">
 <meta property="og:image" content="http://ww2.sinaimg.cn/large/006y8mN6ly1g6apont0v2j30y50u04lx.jpg">
-<meta property="og:updated_time" content="2019-10-21T08:41:18.023Z">
+<meta property="og:updated_time" content="2019-10-24T07:33:09.149Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="MySQL · 调优系列">
-<meta name="twitter:description" content="SQL是怎样执行的 ？MySQL 是典型的 C/S 架构，即 Client/Server 架构，服务器端程序使用的 mysqld。整体的流程如下图所示：  MySQL 由三层组成： 1）连接层：客户端和服务器端建立连接，客户端发送 SQL 至服务器端； 2）SQL 层：对 SQL 语句进行查询处理； 3）存储引擎层：与数据库文件打交道，负责数据的存储和读取。 SQL层的结构：   连接器：客户端与">
+<meta name="twitter:title" content="MySQL · 性能优化">
+<meta name="twitter:description" content="SQL 优化 定位低效率的SQL语句 - 慢查询日志。  通过explain了解SQL的执行计划。  select_type：查询类型（SIMPLE - 简单查询、PRIMARY - 主查询、UNION - 并集、SUBQUERY - 子查询）。  table：输出结果集的表。  type：访问类型（ALL - 全表查询性能最差、index、range、ref、eq_ref、const、NULL）">
 <meta name="twitter:image" content="http://ww3.sinaimg.cn/large/006y8mN6ly1g6ap6gn423j30p00dc40x.jpg">
 
 
@@ -131,7 +130,7 @@
   };
 </script>
 
-  <title>MySQL · 调优系列 | Rao's Blog</title>
+  <title>MySQL · 性能优化 | Rao's Blog</title>
   
 
 
@@ -347,7 +346,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">MySQL · 调优系列
+          <h1 class="post-title" itemprop="name headline">MySQL · 性能优化
 
               
             
@@ -390,7 +389,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-10-21 16:41:18" itemprop="dateModified" datetime="2019-10-21T16:41:18+08:00">2019-10-21</time>
+                <time title="修改时间：2019-10-24 15:33:09" itemprop="dateModified" datetime="2019-10-24T15:33:09+08:00">2019-10-24</time>
               
             
           </span>
@@ -449,7 +448,55 @@
       
 
       
-        <h2 id="SQL是怎样执行的-？"><a href="#SQL是怎样执行的-？" class="headerlink" title="SQL是怎样执行的 ？"></a>SQL是怎样执行的 ？</h2><p>MySQL 是典型的 <code>C/S</code> 架构，即 <code>Client/Server</code> 架构，服务器端程序使用的 <code>mysqld</code>。整体的流程如下图所示：</p>
+        <h2 id="SQL-优化"><a href="#SQL-优化" class="headerlink" title="SQL 优化"></a>SQL 优化</h2><ul>
+<li><p>定位低效率的SQL语句 - 慢查询日志。</p>
+</li>
+<li><p>通过<code>explain</code>了解SQL的执行计划。</p>
+<ul>
+<li><p><code>select_type</code>：查询类型（SIMPLE - 简单查询、PRIMARY - 主查询、UNION - 并集、SUBQUERY - 子查询）。</p>
+</li>
+<li><p><code>table</code>：输出结果集的表。</p>
+</li>
+<li><p><code>type</code>：访问类型（ALL - 全表查询性能最差、index、range、ref、eq_ref、const、NULL）。</p>
+</li>
+<li><p><code>possible_keys</code>：查询时可能用到的索引。</p>
+</li>
+<li><p><code>key</code>：实际使用的索引。</p>
+</li>
+<li><p><code>key_len</code>：索引字段的长度。</p>
+</li>
+<li><p><code>rows</code>：扫描的行数，行数越少肯定性能越好。</p>
+</li>
+<li><p><code>extra</code>：额外信息。</p>
+</li>
+</ul>
+</li>
+<li><p>通过 <code>show profiles</code> 和 <code>show profile for query</code> 分析SQL。</p>
+</li>
+<li><p>优化 CRUD 操作</p>
+<ul>
+<li>优化 <code>insert</code> 语句</li>
+<li>优化 <code>order by</code> 语句</li>
+<li>优化 <code>group by</code> 语句</li>
+<li>优化 <code>join</code> 语句</li>
+<li>优化 <code>or</code> 语句</li>
+<li>优化分页</li>
+</ul>
+</li>
+</ul>
+<h2 id="配置优化"><a href="#配置优化" class="headerlink" title="配置优化"></a>配置优化</h2><ol>
+<li>调整max_connections</li>
+<li>调整back_log</li>
+<li>调整table_open_cache</li>
+<li>调整thread_cache_size</li>
+<li>调整innodb_lock_wait_timeout</li>
+<li>调整<code>innodb_buffer_pool_size</code>：InnoDB数据和索引的内存缓冲区大小，以字节为单位，这个值设置得越高，访问表数据需要进行的磁盘I/O操作就越少，如果可能甚至可以将该值设置为物理内存大小的80%。</li>
+</ol>
+<h2 id="架构优化"><a href="#架构优化" class="headerlink" title="架构优化"></a>架构优化</h2><ul>
+<li>分库分表（水平拆分/垂直拆分）</li>
+<li>读写分离</li>
+</ul>
+<h2 id="SQL是怎样执行的-？"><a href="#SQL是怎样执行的-？" class="headerlink" title="SQL是怎样执行的 ？"></a>SQL是怎样执行的 ？</h2><p>MySQL 是典型的 <code>C/S</code> 架构，即 <code>Client/Server</code> 架构，服务器端程序使用的 <code>mysqld</code>。整体的流程如下图所示：</p>
 <p><img src="http://ww3.sinaimg.cn/large/006y8mN6ly1g6ap6gn423j30p00dc40x.jpg" alt="img"></p>
 <p>MySQL 由三层组成：</p>
 <p>1）连接层：客户端和服务器端建立连接，客户端发送 <code>SQL</code> 至服务器端；</p>
@@ -635,12 +682,6 @@
 
     <footer class="post-footer">
       
-        <div class="post-tags">
-          
-            <a href="/blog/tags/Explain/" rel="tag"># Explain</a>
-          
-        </div>
-      
 
       
       
@@ -733,7 +774,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">101</span>
+                    <span class="site-state-item-count">106</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -776,19 +817,7 @@
                     
                       
                     
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-count">13</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -837,9 +866,7 @@
                     
                       
                     
-                      
-                    
-                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -903,7 +930,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL是怎样执行的-？"><span class="nav-number">1.</span> <span class="nav-text">SQL是怎样执行的 ？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#连接器"><span class="nav-number">1.1.</span> <span class="nav-text">连接器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查询缓存"><span class="nav-number">1.2.</span> <span class="nav-text">查询缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析器"><span class="nav-number">1.3.</span> <span class="nav-text">分析器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#优化器"><span class="nav-number">1.4.</span> <span class="nav-text">优化器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#执行器"><span class="nav-number">1.5.</span> <span class="nav-text">执行器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL-语句的执行时间分析"><span class="nav-number">2.</span> <span class="nav-text">SQL 语句的执行时间分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Explain"><span class="nav-number">3.</span> <span class="nav-text">Explain</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简述"><span class="nav-number">3.1.</span> <span class="nav-text">简述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用方法"><span class="nav-number">3.2.</span> <span class="nav-text">使用方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数介绍"><span class="nav-number">3.3.</span> <span class="nav-text">参数介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#id"><span class="nav-number">3.3.1.</span> <span class="nav-text">id</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#select-type"><span class="nav-number">3.3.2.</span> <span class="nav-text">select_type</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#table"><span class="nav-number">3.3.3.</span> <span class="nav-text">table</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#type"><span class="nav-number">3.3.4.</span> <span class="nav-text">type</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#possible-keys"><span class="nav-number">3.3.5.</span> <span class="nav-text">possible_keys</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#key"><span class="nav-number">3.3.6.</span> <span class="nav-text">key</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#key-len"><span class="nav-number">3.3.7.</span> <span class="nav-text">key_len</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ref"><span class="nav-number">3.3.8.</span> <span class="nav-text">ref</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#rows"><span class="nav-number">3.3.9.</span> <span class="nav-text">rows</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Extra"><span class="nav-number">3.3.10.</span> <span class="nav-text">Extra</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL调优"><span class="nav-number">4.</span> <span class="nav-text">SQL调优</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#索引调优"><span class="nav-number">5.</span> <span class="nav-text">索引调优</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL-优化"><span class="nav-number">1.</span> <span class="nav-text">SQL 优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置优化"><span class="nav-number">2.</span> <span class="nav-text">配置优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#架构优化"><span class="nav-number">3.</span> <span class="nav-text">架构优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL是怎样执行的-？"><span class="nav-number">4.</span> <span class="nav-text">SQL是怎样执行的 ？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#连接器"><span class="nav-number">4.1.</span> <span class="nav-text">连接器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#查询缓存"><span class="nav-number">4.2.</span> <span class="nav-text">查询缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分析器"><span class="nav-number">4.3.</span> <span class="nav-text">分析器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#优化器"><span class="nav-number">4.4.</span> <span class="nav-text">优化器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#执行器"><span class="nav-number">4.5.</span> <span class="nav-text">执行器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL-语句的执行时间分析"><span class="nav-number">5.</span> <span class="nav-text">SQL 语句的执行时间分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Explain"><span class="nav-number">6.</span> <span class="nav-text">Explain</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#简述"><span class="nav-number">6.1.</span> <span class="nav-text">简述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用方法"><span class="nav-number">6.2.</span> <span class="nav-text">使用方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数介绍"><span class="nav-number">6.3.</span> <span class="nav-text">参数介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#id"><span class="nav-number">6.3.1.</span> <span class="nav-text">id</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#select-type"><span class="nav-number">6.3.2.</span> <span class="nav-text">select_type</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#table"><span class="nav-number">6.3.3.</span> <span class="nav-text">table</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#type"><span class="nav-number">6.3.4.</span> <span class="nav-text">type</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#possible-keys"><span class="nav-number">6.3.5.</span> <span class="nav-text">possible_keys</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#key"><span class="nav-number">6.3.6.</span> <span class="nav-text">key</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#key-len"><span class="nav-number">6.3.7.</span> <span class="nav-text">key_len</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ref"><span class="nav-number">6.3.8.</span> <span class="nav-text">ref</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#rows"><span class="nav-number">6.3.9.</span> <span class="nav-text">rows</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Extra"><span class="nav-number">6.3.10.</span> <span class="nav-text">Extra</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SQL调优"><span class="nav-number">7.</span> <span class="nav-text">SQL调优</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#索引调优"><span class="nav-number">8.</span> <span class="nav-text">索引调优</span></a></li></ol></div>
             
 
           </div>

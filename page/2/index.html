@@ -323,6 +323,844 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/python-testing/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/24/python-testing/" class="post-title-link" itemprop="url">Python · 测试</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-24 09:28:26 / 修改时间：10:23:04" itemprop="dateCreated datePublished" datetime="2019-10-24T09:28:26+08:00">2019-10-24</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>单元测试</strong>：<code>unittest</code>、<code>setUp()</code>、<code>tearDown()</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> unittest</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> mydict <span class="keyword">import</span> Dict</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestDict</span><span class="params">(unittest.TestCase)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_init</span><span class="params">(self)</span>:</span></span><br><span class="line">        d = Dict(a=<span class="number">1</span>, b=<span class="string">'test'</span>)</span><br><span class="line">        self.assertEqual(d.a, <span class="number">1</span>)</span><br><span class="line">        self.assertEqual(d.b, <span class="string">'test'</span>)</span><br><span class="line">        self.assertTrue(isinstance(d, dict))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_key</span><span class="params">(self)</span>:</span></span><br><span class="line">        d = Dict()</span><br><span class="line">        d[<span class="string">'key'</span>] = <span class="string">'value'</span></span><br><span class="line">        self.assertEqual(d.key, <span class="string">'value'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_attr</span><span class="params">(self)</span>:</span></span><br><span class="line">        d = Dict()</span><br><span class="line">        d.key = <span class="string">'value'</span></span><br><span class="line">        self.assertTrue(<span class="string">'key'</span> <span class="keyword">in</span> d)</span><br><span class="line">        self.assertEqual(d[<span class="string">'key'</span>], <span class="string">'value'</span>)</span><br><span class="line">        </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_keyerror</span><span class="params">(self)</span>:</span></span><br><span class="line">        d = Dict()</span><br><span class="line">        <span class="keyword">with</span> self.assertRaises(KeyError):</span><br><span class="line">            value = d[<span class="string">'empty'</span>]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">test_attrerror</span><span class="params">(self)</span>:</span></span><br><span class="line">        d = Dict()</span><br><span class="line">        <span class="keyword">with</span> self.assertRaises(AttributeError):</span><br><span class="line">            value = d.empty</span><br><span class="line">            </span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    unittest.main()</span><br></pre></td></tr></table></figure>
+
+<p><strong>virtualenv</strong>：为应用提供了隔离的 <code>Python</code> 运行环境，解决了不同应用间多版本的冲突问题。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/python-exception/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/24/python-exception/" class="post-title-link" itemprop="url">Python · 异常</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-24 09:26:45 / 修改时间：10:21:50" itemprop="dateCreated datePublished" datetime="2019-10-24T09:26:45+08:00">2019-10-24</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>错误处理机制</strong>：<code>try...except...finally...</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    print(<span class="string">'try...'</span>)</span><br><span class="line">    r = <span class="number">10</span> / <span class="number">0</span></span><br><span class="line">    print(<span class="string">'result:'</span>, r)</span><br><span class="line"><span class="keyword">except</span> ZeroDivisionError <span class="keyword">as</span> e:</span><br><span class="line">    print(<span class="string">'except:'</span>, e)</span><br><span class="line"><span class="keyword">finally</span>:</span><br><span class="line">    print(<span class="string">'finally...'</span>)</span><br><span class="line">print(<span class="string">'END'</span>)</span><br></pre></td></tr></table></figure>
+
+<p><strong>记录错误</strong>：它允许你指定记录信息的级别，有 <code>debug</code>，<code>info</code>，<code>warning</code>，<code>error</code> 等几个级别</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># err_logging.py</span></span><br><span class="line"><span class="keyword">import</span> logging</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">foo</span><span class="params">(s)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">10</span> / int(s)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">bar</span><span class="params">(s)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> foo(s) * <span class="number">2</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        bar(<span class="string">'0'</span>)</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        logging.exception(e)</span><br><span class="line"></span><br><span class="line">main()</span><br><span class="line">print(<span class="string">'END'</span>)</span><br></pre></td></tr></table></figure>
+
+<p><strong>抛出错误</strong>：<code>raise</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># err_raise.py</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FooError</span><span class="params">(ValueError)</span>:</span></span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">foo</span><span class="params">(s)</span>:</span></span><br><span class="line">    n = int(s)</span><br><span class="line">    <span class="keyword">if</span> n==<span class="number">0</span>:</span><br><span class="line">        <span class="keyword">raise</span> FooError(<span class="string">'invalid value: %s'</span> % s)</span><br><span class="line">    <span class="keyword">return</span> <span class="number">10</span> / n</span><br><span class="line"></span><br><span class="line">foo(<span class="string">'0'</span>)</span><br></pre></td></tr></table></figure>
+
+<p><strong>调试</strong>：断言、<code>IDE</code>、<code>logging</code></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/python-oop/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/24/python-oop/" class="post-title-link" itemprop="url">Python · 面向对象编程</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-24 09:25:41 / 修改时间：10:22:18" itemprop="dateCreated datePublished" datetime="2019-10-24T09:25:41+08:00">2019-10-24</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>高级特性</strong>：切片、迭代、列表生成式、生成器、迭代器</p>
+<p><strong>面向对象编程</strong>：数据封装、继承、多态</p>
+<p><strong>类和实例</strong>：创建实例的模板，而实例则是一个一个具体的对象，各个实例拥有的数据都互相独立，互不影响。</p>
+<p><strong>方法</strong>：就是与实例绑定的函数，和普通函数不同，方法可以直接访问实例的数据。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>继承</strong>：最大好处是子类获得了父类的全部功能，这样就不必重零做起，子类只需要新增自己特有的方法，也可以把父类不适合的方法覆盖重写。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">                ┌───────────────┐</span><br><span class="line">                │    object     │</span><br><span class="line">                └───────────────┘</span><br><span class="line">                        │</span><br><span class="line">           ┌────────────┴────────────┐</span><br><span class="line">           │                         │</span><br><span class="line">           ▼                        ▼</span><br><span class="line">    ┌─────────────┐           ┌─────────────┐</span><br><span class="line">    │   Animal    │           │    Plant    │</span><br><span class="line">    └─────────────┘           └─────────────┘</span><br><span class="line">           │                         │</span><br><span class="line">     ┌─────┴──────┐            ┌─────┴──────┐</span><br><span class="line">     │            │            │            │</span><br><span class="line">     ▼           ▼           ▼            ▼</span><br><span class="line">┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐</span><br><span class="line">│   Dog   │  │   Cat   │  │  Tree   │  │ Flower  │</span><br><span class="line">└─────────┘  └─────────┘  └─────────┘  └─────────┘</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/python-module/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/24/python-module/" class="post-title-link" itemprop="url">Python · 模块和包</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-24 09:20:51 / 修改时间：10:22:12" itemprop="dateCreated datePublished" datetime="2019-10-24T09:20:51+08:00">2019-10-24</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mycompany</span><br><span class="line"> ├─ web</span><br><span class="line"> │  ├─ __init__.py</span><br><span class="line"> │  ├─ utils.py</span><br><span class="line"> │  └─ www.py</span><br><span class="line"> ├─ __init__.py</span><br><span class="line"> ├─ abc.py</span><br><span class="line"> └─ utils.py</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意</strong>：每一个包目录下面都会有一个 <code>__init__.py</code> 的文件，这个文件是必须存在的，否则 <code>Python</code> 就把这个目录当成普通目录，而不是一个包。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># !/usr/bin/env python3</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"></span><br><span class="line">__author__ = <span class="string">'Hui Rao'</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">test</span><span class="params">()</span>:</span></span><br><span class="line">    args = sys.argv</span><br><span class="line">    <span class="keyword">if</span> len(args)==<span class="number">1</span>:</span><br><span class="line">        print(<span class="string">'Hello, world!'</span>)</span><br><span class="line">    <span class="keyword">elif</span> len(args)==<span class="number">2</span>:</span><br><span class="line">        print(<span class="string">'Hello, %s!'</span> % args[<span class="number">1</span>])</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        print(<span class="string">'Too many arguments!'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">'__main__'</span>:</span><br><span class="line">    test()</span><br><span class="line">    </span><br><span class="line">第<span class="number">1</span>行：表示可以让这个 hello.py 文件直接在 Unix/Linux/Mac 上运行</span><br><span class="line">第<span class="number">2</span>行：表示.py文件本身使用标准 UTF<span class="number">-8</span> 编码</span><br><span class="line">第<span class="number">4</span>行：是一个字符串，表示模块的文档注释，任何模块代码的第一个字符串都被视为模块的文档注释</span><br><span class="line">第<span class="number">6</span>行：使用__author__变量把作者写进去，这样当你公开源代码后别人就可以瞻仰你的大名</span><br><span class="line">第<span class="number">8</span>行：导入sys模块</span><br></pre></td></tr></table></figure>
+
+<p>在一个模块中，我们可能会定义很多函数和变量，但有的函数和变量我们希望给别人使用，有的函数和变量我们希望仅仅在模块内部使用，在 <code>Python</code> 中是通过<code>_</code>前缀来实现的。正常的函数和变量名是公开的（<code>public</code>），可以被直接引用，比如：<code>abc</code>，<code>x123</code>，<code>PI</code>等。</p>
+<p>类似<code>__xxx__</code>这样的变量是特殊变量，可以被直接引用，但是有特殊用途，比如上面的<code>__author__</code>，<code>__name__</code>就是特殊变量，<code>hello</code>模块定义的文档注释也可以用特殊变量<code>__doc__</code>访问，我们自己的变量一般不要用这种变量名。</p>
+<p>类似 <code>_xxx</code> 和 <code>__xxx</code> 这样的函数或变量就是非公开的（<code>private</code>），不应该被直接引用，比如<code>_abc</code>，<code>__abc</code>等。</p>
+<h3 id="常用模块库"><a href="#常用模块库" class="headerlink" title="常用模块库"></a><strong>常用模块库</strong></h3><p><strong>datetime</strong>：Python 处理日期和时间的标准库，表示的时间需要时区信息才能确定一个特定的时间，否则只能视为本地时间。如果要存储<code>datetime</code>，最佳方法是将其转换为<code>timestamp</code>再存储，因为<code>timestamp</code>的值与时区完全无关。</p>
+<p><strong>collections</strong>：Python 内建的一个集合模块，提供了许多有用的集合类。</p>
+<p><strong>base64</strong>：一种任意二进制到文本字符串的编码方法，常用于在URL、Cookie、网页中传输少量二进制数据。</p>
+<p><strong>urllib</strong>：提供的功能就是利用程序去执行各种 HTTP 请求。如果要模拟浏览器完成特定功能，需要把请求伪装成浏览器，伪装的方法是先监控浏览器发出的请求，再根据浏览器的请求头来伪装，<code>User-Agent</code>头就是用来标识浏览器的。</p>
+<p><strong>requests</strong>：相较 urllib 库，处理 URL 资源更为简单方便。</p>
+<p><strong>chardet</strong>：检测编码非常容易，chardet 支持检测中文、日文、韩文等多种语言。</p>
+<p><strong>psutil</strong>：Python 程序获取系统信息变得易如反掌，还可以获取用户信息、Windows 服务等很多有用的系统信息。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/python-function/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/24/python-function/" class="post-title-link" itemprop="url">Python · 函数</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-24 09:14:04 / 修改时间：10:21:54" itemprop="dateCreated datePublished" datetime="2019-10-24T09:14:04+08:00">2019-10-24</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">say_hello</span><span class="params">()</span>:</span></span><br><span class="line">  <span class="comment"># 该块属于这一函数</span></span><br><span class="line">  print(<span class="string">'hello world'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 函数结束</span></span><br><span class="line">say_hello()  <span class="comment"># 调用函数</span></span><br><span class="line">say_hello()  <span class="comment"># 再次调用函数</span></span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/python-control/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -368,7 +1206,7 @@
                 
               
 
-              <time title="创建时间：2019-10-24 09:10:20 / 修改时间：09:16:34" itemprop="dateCreated datePublished" datetime="2019-10-24T09:10:20+08:00">2019-10-24</time>
+              <time title="创建时间：2019-10-24 09:10:20 / 修改时间：10:21:41" itemprop="dateCreated datePublished" datetime="2019-10-24T09:10:20+08:00">2019-10-24</time>
             
 
             
@@ -378,6 +1216,24 @@
             
           </span>
 
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -519,7 +1375,7 @@
                 
               
 
-              <time title="创建时间：2019-10-24 09:09:04 / 修改时间：09:16:00" itemprop="dateCreated datePublished" datetime="2019-10-24T09:09:04+08:00">2019-10-24</time>
+              <time title="创建时间：2019-10-24 09:09:04 / 修改时间：18:30:07" itemprop="dateCreated datePublished" datetime="2019-10-24T09:09:04+08:00">2019-10-24</time>
             
 
             
@@ -529,6 +1385,24 @@
             
           </span>
 
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -560,7 +1434,108 @@
       
         
           
-            <p><strong>数据类型</strong>：整型、浮点型、字符串、布尔值、列表 (List)、元组 (Tuple)、字典 (Dict)、集合 (Set)</p>
+            <h2 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h2><h3 id="整型（Integers）"><a href="#整型（Integers）" class="headerlink" title="整型（Integers）"></a>整型（Integers）</h3><p>Python 可以处理任意大小的整数：</p>
+<ul>
+<li>Python 2.x 中有 <code>int</code> 和 <code>long</code> 两种类型</li>
+<li>Python 3.x 中只有 <code>int</code> 类型</li>
+</ul>
+<h3 id="浮点型（Floats）"><a href="#浮点型（Floats）" class="headerlink" title="浮点型（Floats）"></a>浮点型（Floats）</h3><p>浮点数也就是小数，之所以称为浮点数，是因为按照科学记数法表示时，一个浮点数的小数点位置是可变的，浮点数除了数学写法（如 <code>123.456</code>）之外还支持科学计数法（如 <code>1.23456e2</code>）。</p>
+<h4 id="字符串（String）"><a href="#字符串（String）" class="headerlink" title="字符串（String）"></a>字符串（String）</h4><ul>
+<li><strong>单引号</strong>：所有引号内的空间，诸如空格与制表符，都将按原样保留</li>
+<li><strong>双引号</strong>：被双引号包括的字符串和被单引号括起的字符串其工作机制完全相同</li>
+<li><strong>三引号</strong>：可以书写成多行的形式</li>
+</ul>
+<h3 id="布尔值（Bool）"><a href="#布尔值（Bool）" class="headerlink" title="布尔值（Bool）"></a>布尔值（Bool）</h3><p>布尔值只有 <code>True</code>、<code>False</code> 两种值</p>
+<h3 id="列表（List）"><a href="#列表（List）" class="headerlink" title="列表（List）"></a>列表（List）</h3><p>List 是一种有序的集合，可以随时添加和删除其中的元素</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">classmates = [<span class="string">'Michael'</span>, <span class="string">'Bob'</span>, <span class="string">'Tracy'</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 增加</span></span><br><span class="line">classmates.append(<span class="string">'Adam'</span>)     <span class="comment"># 增加元素到末尾</span></span><br><span class="line">classmates.insert(<span class="number">1</span>, <span class="string">'Jack'</span>)  <span class="comment"># 增加元素到指定位置</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除</span></span><br><span class="line">classmates.pop(i)             <span class="comment"># 删除指定i位置的元素</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改</span></span><br><span class="line">classmates[i] = <span class="string">'Sarah'</span>       <span class="comment"># 替换指定i位置的元素</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="元祖（Tuple）"><a href="#元祖（Tuple）" class="headerlink" title="元祖（Tuple）"></a>元祖（Tuple）</h3><h3 id="字典（Dict）"><a href="#字典（Dict）" class="headerlink" title="字典（Dict）"></a>字典（Dict）</h3><h3 id="集合（Set）"><a href="#集合（Set）" class="headerlink" title="集合（Set）"></a>集合（Set）</h3><h3 id="空值（None）"><a href="#空值（None）" class="headerlink" title="空值（None）"></a>空值（None）</h3><ul>
+<li><code>None</code> 是一个特殊的空值</li>
+<li><code>None</code> 不能理解为 <code>0</code>，因为 <code>0</code> 是有意义的</li>
+</ul>
+<h3 id="变量与常量"><a href="#变量与常量" class="headerlink" title="变量与常量"></a>变量与常量</h3><p><strong>常量</strong>：通常用<strong>全部大写的变量名</strong>表示常量。</p>
+<p><strong>变量</strong>：变量名必须是大小写英文、数字和 <code>_</code> 的组合，且不能用数字开头。</p>
+<p><strong>占位符</strong>：</p>
+<ul>
+<li><code>%d</code> ：整数的占位符</li>
+<li><code>%f</code> ：小数的占位符</li>
+<li><code>%s</code>：字符串的占位符</li>
+<li><code>%x</code>：十六进制整数占位符</li>
+<li><code>%%</code> ：百分号占位符</li>
+</ul>
+<p><strong>类型转换</strong>：</p>
+<ul>
+<li><code>int()</code>：将一个数值或字符串转换成整数，可以指定进制</li>
+<li><code>float()</code>：将一个字符串转换成浮点数</li>
+<li><code>str()</code>：将指定的对象转换成字符串形式，可以指定编码</li>
+<li><code>chr()</code>：将整数转换成该编码对应的字符串（一个字符）</li>
+<li><code>ord()</code>：将字符串（一个字符）转换成对应的编码（整数）</li>
+</ul>
+<h3 id="运算符"><a href="#运算符" class="headerlink" title="运算符"></a>运算符</h3><table>
+<thead>
+<tr>
+<th>运算符</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>[]</code> <code>[:]</code></td>
+<td>下标，切片</td>
+</tr>
+<tr>
+<td><code>**</code></td>
+<td>指数</td>
+</tr>
+<tr>
+<td><code>~</code> <code>+</code> <code>-</code></td>
+<td>按位取反, 正负号</td>
+</tr>
+<tr>
+<td><code>*</code> <code>/</code> <code>%</code> <code>//</code></td>
+<td>乘，除，模，整除</td>
+</tr>
+<tr>
+<td><code>+</code> <code>-</code></td>
+<td>加，减</td>
+</tr>
+<tr>
+<td><code>&gt;&gt;</code> <code>&lt;&lt;</code></td>
+<td>右移，左移</td>
+</tr>
+<tr>
+<td><code>&amp;</code></td>
+<td>按位与</td>
+</tr>
+<tr>
+<td><code>^</code> `</td>
+<td>`</td>
+</tr>
+<tr>
+<td><code>&lt;=</code> <code>&lt;</code> <code>&gt;</code> <code>&gt;=</code></td>
+<td>小于等于，小于，大于，大于等于</td>
+</tr>
+<tr>
+<td><code>==</code> <code>!=</code></td>
+<td>等于，不等于</td>
+</tr>
+<tr>
+<td><code>is</code> <code>is not</code></td>
+<td>身份运算符</td>
+</tr>
+<tr>
+<td><code>in</code> <code>not in</code></td>
+<td>成员运算符</td>
+</tr>
+<tr>
+<td><code>not</code> <code>or</code> <code>and</code></td>
+<td>逻辑运算符</td>
+</tr>
+<tr>
+<td><code>=</code> <code>+=</code> <code>-=</code> <code>*=</code> <code>/=</code> <code>%=</code> <code>//=</code> <code>**=</code> <code>&amp;=</code> `</td>
+<td>=<code></code>^=<code></code>&gt;&gt;=<code></code>&lt;&lt;=`</td>
+</tr>
+</tbody></table>
+<p>表达式</p>
 
           
         
@@ -662,7 +1637,7 @@
                 
               
 
-              <time title="创建时间：2019-10-24 09:06:35 / 修改时间：09:57:52" itemprop="dateCreated datePublished" datetime="2019-10-24T09:06:35+08:00">2019-10-24</time>
+              <time title="创建时间：2019-10-24 09:06:35 / 修改时间：18:09:43" itemprop="dateCreated datePublished" datetime="2019-10-24T09:06:35+08:00">2019-10-24</time>
             
 
             
@@ -672,6 +1647,24 @@
             
           </span>
 
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
+
+                
+                
+              
+            </span>
           
 
           
@@ -703,15 +1696,28 @@
       
         
           
-            <p><strong>优点</strong>：「优雅」、「明确」、「简单」</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ python -V</span><br><span class="line">Python <span class="number">2.7</span>.<span class="number">10</span></span><br><span class="line"></span><br><span class="line">$ python3 -V</span><br><span class="line">Python <span class="number">3.7</span>.<span class="number">4</span></span><br></pre></td></tr></table></figure>
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://www.python.org/" target="_blank" rel="noopener">Python</a> 是一种极少数能兼具 <strong>简单</strong> 与 *<em>功能强大 *</em>的编程语言。</p>
+<p><strong>优点</strong>：优雅、明确、简单</p>
+<p><strong>缺点</strong>：执行效率稍低、代码无法加密</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Mac上安装</span></span><br><span class="line">$ brew install python3</span><br><span class="line"></span><br><span class="line">$ python -V</span><br><span class="line">Python <span class="number">2.7</span>.<span class="number">10</span></span><br><span class="line"></span><br><span class="line">$ python3 -V</span><br><span class="line">Python <span class="number">3.7</span>.<span class="number">4</span></span><br></pre></td></tr></table></figure>
 
-<p><strong>IDE</strong>：<a href="http://www.jetbrains.com/pycharm/" target="_blank" rel="noopener">PyCharm</a></p>
+<h2 id="开发"><a href="#开发" class="headerlink" title="开发"></a>开发</h2><p><strong>IDE</strong></p>
+<ul>
+<li><strong><a href="http://www.sublimetext.com/" target="_blank" rel="noopener">Sublime Text</a></strong>：高级文本编辑器</li>
+<li><strong><a href="http://www.jetbrains.com/pycharm/" target="_blank" rel="noopener">PyCharm</a></strong>：Python 开发神器</li>
+</ul>
 <p><strong>注释</strong></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 注意到 print 是一个函数</span></span><br><span class="line">print(<span class="string">'hello world'</span>)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>单行注释</strong>：以 <code>#</code> 开头的语句</li>
+<li><strong>多行注释</strong>：以 <code>&quot;&quot;&quot;</code> 开头，<code>&quot;&quot;&quot;</code> 结尾的语句</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">第一个 Python 程序 - hello, world!</span></span><br><span class="line"><span class="string">向伟大的 Guido van Rossum 先生致敬</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Version: 0.1</span></span><br><span class="line"><span class="string">Author: Hui Rao</span></span><br><span class="line"><span class="string">"""</span></span><br><span class="line"></span><br><span class="line">print(<span class="string">'hello, world!'</span>)</span><br><span class="line">print(<span class="string">'你好'</span>, <span class="string">'世界'</span>)  <span class="comment"># print("你好,世界！")</span></span><br><span class="line">print(<span class="string">'hello'</span>, <span class="string">'world'</span>, sep=<span class="string">', '</span>, end=<span class="string">'!'</span>)</span><br><span class="line">print(<span class="string">'goodbye, world'</span>, end=<span class="string">'!\n'</span>)</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br></pre></td></tr></table></figure>
-
+<blockquote>
+<p><strong>注意</strong>：Python 程序是 <strong>大小写敏感</strong> 的。</p>
+</blockquote>
+<p><strong>缩进</strong></p>
+<p>Python 语言官方的建议使用 <strong>四个空格</strong> 来缩进，放置在一起的语句必须拥有相同的缩进，每一组这样的语句被称为块（Block）。</p>
 
           
         
@@ -830,7 +1836,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-10-24 08:07:31" itemprop="dateModified" datetime="2019-10-24T08:07:31+08:00">2019-10-24</time>
+                <time title="修改时间：2019-10-24 14:20:01" itemprop="dateModified" datetime="2019-10-24T14:20:01+08:00">2019-10-24</time>
               
             
           </span>
@@ -867,7 +1873,7 @@
         
           
             <h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-23-174720.png" alt></p>
-<h2 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select table_name,table_rows,CONCAT(TRUNCATE(SUM(data_length)/1024/1024,2),'MB') AS data_size, CONCAT(TRUNCATE(SUM(index_length)/1024/1024,2),'MB') AS index_size from information_schema.tables where TABLE_SCHEMA = 'mqm' and table_name='t_batch';</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| table_name | table_rows | data_size | index_size |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| t_batch    |   10289197 | 4895.00MB | 7578.23MB  |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.03</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">INDEX</span> idx_group</span><br><span class="line"><span class="keyword">Analyze</span> <span class="keyword">table</span> t_batch;</span><br><span class="line"></span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| table_name | table_rows | data_size | index_size |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| t_batch    |   10657643 | 4895.00MB | 1230.93MB  |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| table_name | table_rows | data_size | index_size |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| t_batch    |    <span class="number">9852520</span> | <span class="number">4895.00</span>MB | <span class="number">2863.00</span>MB  |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line"><span class="number">1</span> <span class="keyword">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.04</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">ALTER</span> <span class="keyword">TABLE</span> t_batch <span class="keyword">ADD</span> <span class="keyword">INDEX</span> idx_check_style_id(check_style_id);</span><br><span class="line">Query OK, 0 rows affected (2 min 27.34 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; ALTER TABLE t_batch ADD INDEX idx_check_status_id(check_status_id);</span><br><span class="line">Query OK, 0 rows affected (1 min 0.12 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; ALTER TABLE t_batch ADD INDEX idx_iqc_leader_id(iqc_leader_id);</span><br><span class="line">Query OK, 0 rows affected (1 min 14.52 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; ALTER TABLE t_batch ADD INDEX idx_create_date(create_date);</span><br><span class="line">Query OK, 0 rows affected (53.03 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; ALTER TABLE t_batch ADD INDEX idx_IQC_manager_id(IQC_manager_id);</span><br><span class="line">Query OK, 0 rows affected (1 min 11.37 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; ALTER TABLE t_batch ADD INDEX idx_syb_id(syb_id);</span><br><span class="line">Query OK, 0 rows affected (1 min 3.97 sec)</span><br></pre></td></tr></table></figure>
+<h2 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select table_name,table_rows,CONCAT(TRUNCATE(SUM(data_length)/1024/1024,2),'MB') AS data_size, CONCAT(TRUNCATE(SUM(index_length)/1024/1024,2),'MB') AS index_size from information_schema.tables where TABLE_SCHEMA = 'mqm' and table_name='t_batch';</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| table_name | table_rows | data_size | index_size |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| t_batch    |   10289197 | 4895.00MB | 7578.23MB  |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.03</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">INDEX</span> idx_group</span><br><span class="line"><span class="keyword">Analyze</span> <span class="keyword">table</span> t_batch;</span><br><span class="line"></span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| table_name | table_rows | data_size | index_size |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| t_batch    |   10657643 | 4895.00MB | 1230.93MB  |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| table_name | table_rows | data_size | index_size |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| t_batch    |    <span class="number">9852520</span> | <span class="number">4895.00</span>MB | <span class="number">2863.00</span>MB  |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line"><span class="number">1</span> <span class="keyword">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.04</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">ALTER</span> <span class="keyword">TABLE</span> t_batch <span class="keyword">ADD</span> <span class="keyword">INDEX</span> idx_check_style_id(check_style_id);</span><br><span class="line">Query OK, 0 rows affected (2 min 27.34 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; ALTER TABLE t_batch ADD INDEX idx_check_status_id(check_status_id);</span><br><span class="line">Query OK, 0 rows affected (1 min 0.12 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; ALTER TABLE t_batch ADD INDEX idx_iqc_leader_id(iqc_leader_id);</span><br><span class="line">Query OK, 0 rows affected (1 min 14.52 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; ALTER TABLE t_batch ADD INDEX idx_create_date(create_date);</span><br><span class="line">Query OK, 0 rows affected (53.03 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; ALTER TABLE t_batch ADD INDEX idx_IQC_manager_id(IQC_manager_id);</span><br><span class="line">Query OK, 0 rows affected (1 min 11.37 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; ALTER TABLE t_batch ADD INDEX idx_syb_id(syb_id);</span><br><span class="line">Query OK, 0 rows affected (1 min 3.97 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; ALTER TABLE t_batch ADD INDEX idx_group(check_style_id, check_status_id, delete_status);</span><br><span class="line">Query OK, 0 rows affected (2 min 3.08 sec)</span><br></pre></td></tr></table></figure>
 
 <p><strong>测试数据库</strong></p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">实例：<span class="number">10.138</span>.<span class="number">22.192</span>:<span class="number">3306</span>/mqm</span><br><span class="line">账号：hmqm/hmqm</span><br></pre></td></tr></table></figure>
@@ -1098,920 +2104,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/22/mysql-case-rows/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/22/mysql-case-rows/" class="post-title-link" itemprop="url">MySQL · 案例分析 · information_schema.tables 与 count(*) 查询数不一致</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-22 11:25:04 / 修改时间：21:21:56" itemprop="dateCreated datePublished" datetime="2019-10-22T11:25:04+08:00">2019-10-22</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><p>查询表 <code>mqm.t_batch</code> 总行数，发现两种方式查询的结果不一致。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># information_schema.tables</span></span><br><span class="line">mysql&gt; select table_name,table_rows from information_schema.tables where TABLE_SCHEMA = 'mqm' and table_name='t_batch';</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">| table_name | table_rows |</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">| t_batch    |    9527271 |</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.02</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># count(*)</span></span><br><span class="line">mysql&gt; <span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> t_batch;</span><br><span class="line">+<span class="comment">----------+</span></span><br><span class="line">| count(*) |</span><br><span class="line">+<span class="comment">----------+</span></span><br><span class="line">| 10474287 |</span><br><span class="line">+<span class="comment">----------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">21.52</span> sec)</span><br></pre></td></tr></table></figure>
-
-<h2 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h2><p>默认情况下，MySQL 对表进行增删操作时，是不会自动更新 <code>information_schema.tables</code> 表 <code>table_rows</code> 字段，只有 <code>10%</code> 的行数发生变化才会自动收集，执行 <code>ANALYZE TABLE &#39;table_name&#39;</code> 后会统计所有表数据，结果和 <code>count(*)</code> 一致。</p>
-<blockquote>
-<p><strong>Tips</strong>：生产环境中不建议使用，因为会锁表！</p>
-</blockquote>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; ANALYZE TABLE t_batch;</span><br><span class="line">+<span class="comment">-------------+---------+----------+----------+</span></span><br><span class="line">| Table       | Op      | Msg_type | Msg_text |</span><br><span class="line">+<span class="comment">-------------+---------+----------+----------+</span></span><br><span class="line">| mqm.t_batch | <span class="keyword">analyze</span> | <span class="keyword">status</span>   | OK       |</span><br><span class="line">+<span class="comment">-------------+---------+----------+----------+</span></span><br><span class="line"><span class="number">1</span> <span class="keyword">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">3.85</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">select</span> table_name,table_rows <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> TABLE_SCHEMA = <span class="string">'mqm'</span> <span class="keyword">and</span> table_name=<span class="string">'t_batch'</span>;</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">| table_name | table_rows |</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">| t_batch    |   10261904 |</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.07</span> sec)</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/22/mysql-tuning-like/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/22/mysql-tuning-like/" class="post-title-link" itemprop="url">MySQL · 调优案例 · 千万级大表模糊查询</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-22 10:54:49 / 修改时间：21:24:44" itemprop="dateCreated datePublished" datetime="2019-10-22T10:54:49+08:00">2019-10-22</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p><strong>模糊查询</strong>：使用 <code>like %%</code> 类 <code>SQL</code></p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生产环境执行的SQL</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">''</span> <span class="keyword">AS</span> batch_fail_id, <span class="string">''</span> <span class="keyword">AS</span> uuid_Fail, b.send_goods_No, b.test_type, b.order_no</span><br><span class="line">	, b.row_no, b.bu, b.mtl_no, b.mtl_name, b.mtl_group, b.mtl_group_name</span><br><span class="line">	, b.materiel_category_id, b.materiel_category_name, b.pattern_amount</span><br><span class="line">	, b.plan_pattern_amount, b.goods_unit, b.plan_send_day, b.fact_send_Day, b.stock_Day</span><br><span class="line">	, b.supply_code, b.supply_name, b.supply_check_level, b.sap_mark_id, b.sap_mark_name</span><br><span class="line">	, b.syb_id, b.syb_name, b.check_style_id, b.check_style_name, b.check_type_id</span><br><span class="line">	, b.check_type_name, b.QC_STATUS, b.QC_STATUS_INSTR_DATE, b.QC_NO, b.factory_code</span><br><span class="line">	, b.goods_sort, b.price_unit, b.stock_price, b.LICHA, b.BSART, b.LGORT</span><br><span class="line">	, b.plan_Date, b.TEST_CONCLUSION, b.IQC_manager_id, b.IQC_manager_name, b.iqc_leader_id</span><br><span class="line">	, b.iqc_leader_name, b.test_complete_day, b.test_start_day, b.new_or_old,b.check_status_id</span><br><span class="line">	, b.is_appeal, b.is_start_check, b.standard_type, b.check_reason, b.is_stop</span><br><span class="line">	, b.check_time, b.instance_id, b.create_date <span class="keyword">AS</span> createDate, b.delete_status</span><br><span class="line"><span class="keyword">FROM</span> t_batch b</span><br><span class="line"><span class="keyword">WHERE</span> b.mtl_no <span class="keyword">LIKE</span> <span class="string">'%0594A%'</span> <span class="keyword">AND</span> b.delete_status = <span class="string">'N'</span></span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line"><span class="keyword">SELECT</span> f.batch_fail_id, f.uuid, f.send_goods_No, f.test_type, f.order_no, f.row_no</span><br><span class="line">        , f.bu, f.mtl_no, f.mtl_name, f.mtl_group, f.mtl_group_name</span><br><span class="line">        , f.materiel_category_id,f.materiel_category_name, f.pattern_amount</span><br><span class="line">        , f.plan_pattern_amount</span><br><span class="line">	, f.goods_unit, f.plan_send_day, f.fact_send_Day, f.stock_Day, f.supply_code</span><br><span class="line">	, f.supply_name, f.supply_check_level, f.sap_mark_id, f.sap_mark_name, f.syb_id</span><br><span class="line">	, f.syb_name, f.check_style_id, f.check_style_name, f.check_type_id, f.check_type_name</span><br><span class="line">	, f.QC_STATUS, f.QC_STATUS_INSTR_DATE, f.QC_NO, f.factory_code, f.goods_sort</span><br><span class="line">	, f.price_unit, f.stock_price, f.LICHA, f.BSART, f.LGORT</span><br><span class="line">	, f.plan_Date, f.TEST_CONCLUSION, f.IQC_manager_id, f.IQC_manager_name, f.iqc_leader_id</span><br><span class="line">	, f.iqc_leader_name, f.test_complete_day, f.test_start_day, f.new_or_old</span><br><span class="line">	, f.check_status_id, f.is_appeal, f.is_start_check, f.standard_type, f.check_reason</span><br><span class="line">	, f.is_stop, f.check_time, f.instance_id, f.create_date <span class="keyword">AS</span> createDate, f.delete_status</span><br><span class="line"><span class="keyword">FROM</span> t_batch_fail f</span><br><span class="line"><span class="keyword">WHERE</span> f.mtl_no <span class="keyword">LIKE</span> <span class="string">'%0594A%'</span> <span class="keyword">AND</span> f.delete_status = <span class="string">'N'</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> createDate <span class="keyword">DESC</span></span><br><span class="line"><span class="keyword">LIMIT</span> <span class="number">0</span>, <span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 表数据量</span></span><br><span class="line">mysql&gt; <span class="keyword">select</span> table_name,table_rows,<span class="keyword">CONCAT</span>(<span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(data_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> data_size, <span class="keyword">CONCAT</span>(<span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(index_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> index_size <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> TABLE_SCHEMA = <span class="string">'mqm'</span> <span class="keyword">and</span> table_name=<span class="string">'t_batch'</span>;</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| table_name | table_rows | data_size | index_size |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| t_batch    |   10261904 | 4895.00MB | 8643.23MB  |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">+<span class="comment">--------------+------------+-----------+------------+</span></span><br><span class="line">| table_name   | table_rows | data_size | index_size |</span><br><span class="line">+<span class="comment">--------------+------------+-----------+------------+</span></span><br><span class="line">| t_batch_fail |      <span class="number">43683</span> | <span class="number">19.56</span>MB   | <span class="number">14.57</span>MB    |</span><br><span class="line">+<span class="comment">--------------+------------+-----------+------------+</span></span><br><span class="line"><span class="number">1</span> <span class="keyword">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.01</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行时间</span></span><br><span class="line"><span class="number">10</span> <span class="keyword">rows</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">1</span> <span class="keyword">min</span> <span class="number">26.92</span> sec)</span><br></pre></td></tr></table></figure>
-
-<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p><strong>Union All</strong>：对两个结果集进行并集操作，包括重复行。</p>
-<p><strong>执行计划</strong>：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br><span class="line">| id | select_type  | table      | type | possible_keys     | key               | key_len | ref   | rows    | Extra                              |</span><br><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br><span class="line">|  1 | PRIMARY      | b          | ALL  | NULL              | NULL              | NULL    | NULL  | 9527271 | Using where                        |</span><br><span class="line">|  2 | UNION        | f          | ref  | idx_delete_status | idx_delete_status | 9       | const |   20469 | Using index condition; Using where |</span><br><span class="line">| NULL | UNION RESULT | &lt;union1,2&gt; | ALL  | NULL              | NULL              | NULL    | NULL  |    NULL | Using temporary; Using filesort    |</span><br><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加索引</span></span><br><span class="line">mysql&gt; ALTER TABLE t_batch ADD INDEX idx_delete_status (delete_status);</span><br><span class="line">Query OK, 0 rows affected (2 min 47.24 sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行计划</span></span><br><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br><span class="line">| id | select_type  | table      | type | possible_keys     | key               | key_len | ref   | rows    | Extra                              |</span><br><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br><span class="line">|  1 | PRIMARY      | b          | ref  | idx_delete_status | idx_delete_status | 9       | const | 5130952 | Using index condition; Using where |</span><br><span class="line">|  2 | UNION        | f          | ref  | idx_delete_status | idx_delete_status | 9       | const |   20469 | Using index condition; Using where |</span><br><span class="line">| NULL | UNION RESULT | &lt;union1,2&gt; | ALL  | NULL              | NULL              | NULL    | NULL  |    NULL | Using temporary; Using filesort    |</span><br><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br><span class="line">3 rows in <span class="keyword">set</span> (<span class="number">0.07</span> sec)</span><br></pre></td></tr></table></figure>
-
-<p><strong>模糊查询方法对比</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">① mtl_no like <span class="string">'%0594A%'</span></span><br><span class="line"><span class="number">10</span> rows <span class="keyword">in</span> set (<span class="number">1</span> min <span class="number">26.92</span> sec)</span><br><span class="line"></span><br><span class="line">② locate(<span class="string">'0594A'</span>, mtl_no) &gt; <span class="number">0</span></span><br><span class="line"><span class="number">10</span> rows <span class="keyword">in</span> set (<span class="number">32.71</span> sec)</span><br><span class="line"></span><br><span class="line">③ instr(mtl_no,<span class="string">'0594A'</span>) &gt; <span class="number">0</span></span><br><span class="line"><span class="number">10</span> rows <span class="keyword">in</span> set (<span class="number">32.72</span> sec)</span><br></pre></td></tr></table></figure>
-
-<p><strong>结论：</strong></p>
-<ul>
-<li>这三种方法都只能用全表扫描的方式进行查询，但 <code>locate</code> 和 <code>instr</code> 方法速度比 <code>like</code> 稍快。</li>
-<li><code>like %%</code> 此类模糊查询，推荐使用搜索引擎，比如 <code>Elasticsearch</code>。</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/22/confluence/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/22/confluence/" class="post-title-link" itemprop="url">Confluence</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-22 10:43:11" itemprop="dateCreated datePublished" datetime="2019-10-22T10:43:11+08:00">2019-10-22</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-23 21:45:59" itemprop="dateModified" datetime="2019-10-23T21:45:59+08:00">2019-10-23</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/项目/" itemprop="url" rel="index"><span itemprop="name">项目</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="基础概念"><a href="#基础概念" class="headerlink" title="基础概念"></a>基础概念</h2><p><strong>空间（Space）</strong></p>
-<ul>
-<li>团队空间：存放与该项目相关的文档信息放置到该空间中，对项目成员开设访问/编辑权限</li>
-<li>个人空间：存放工作总结或笔记等文档放置到自己的空间中</li>
-</ul>
-<p><strong>页面（Page）</strong></p>
-<ul>
-<li>页面是存储和共享信息的主要方式，以树状结构进行组织，放置于空间之中。</li>
-<li>页面支持大量的内容展现形式，除了富文本文档外，还包括图表、视频、附件（可预览）、流程图、公式等等，如果还不够，还可以通过海量的第三方插件进行扩展。</li>
-</ul>
-<p><strong>权限（Permission）</strong></p>
-<p>权限控制分 3 个维度，分别是团队（Group），个人（Individual Users），匿名用户（Anonymous）。</p>
-<h2 id="登录"><a href="#登录" class="headerlink" title="登录"></a>登录</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 普通地址</span></span><br><span class="line">http://wiki.qd-aliyun-internal.haier.net</span><br><span class="line"></span><br><span class="line"><span class="comment"># 管理员地址</span></span><br><span class="line">http://wiki.qd-aliyun-internal.haier.net/login.action?oauth_sso=false</span><br><span class="line">账号：admin</span><br><span class="line">密码：Pwd123456</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/22/jira/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/22/jira/" class="post-title-link" itemprop="url">Jira</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-22 09:27:51 / 修改时间：21:35:15" itemprop="dateCreated datePublished" datetime="2019-10-22T09:27:51+08:00">2019-10-22</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/项目/" itemprop="url" rel="index"><span itemprop="name">项目</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>JIRA 是 Atlassian 公司的产品，Atlassian 最核心的产品仍然是 <strong>JIRA</strong> 和 <strong>Confluence</strong>，JIRA 被业界公认为最好的项目管理和开发管理工具，Confluence 被认为是最好用的企业级知识管理工具。</p>
-<h2 id="核心概念"><a href="#核心概念" class="headerlink" title="核心概念"></a>核心概念</h2><h3 id="Project（项目）"><a href="#Project（项目）" class="headerlink" title="Project（项目）"></a>Project（项目）</h3><p><strong>创建项目</strong>：项目名称、简称、URL、问题类型</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-22-100515.png" alt></p>
-<h3 id="Issue（问题单）"><a href="#Issue（问题单）" class="headerlink" title="Issue（问题单）"></a>Issue（问题单）</h3><h4 id="Issue-Type（问题单类型）"><a href="#Issue-Type（问题单类型）" class="headerlink" title="Issue Type（问题单类型）"></a>Issue Type（问题单类型）</h4><ul>
-<li><strong>Bug</strong> - 故障，功能失效</li>
-<li><strong>Improvement</strong> - 提升，既有功能增强</li>
-<li><strong>New Feature</strong> - 新功能</li>
-<li><strong>Task</strong> - 任务</li>
-<li><strong>Custom Issue</strong> - 根据需要客户化定制</li>
-</ul>
-<h4 id="Priority（优先级）"><a href="#Priority（优先级）" class="headerlink" title="Priority（优先级）"></a>Priority（优先级）</h4><ul>
-<li><strong>Highest</strong> - 最高级别，表明问题阻塞了业务流程正常进行</li>
-<li><strong>High</strong> - 高级，表明问题引发明显故障，需要紧急关注</li>
-<li><strong>Medium</strong> - 中级，表明问题有一个明显的影响</li>
-<li><strong>Low</strong> - 低级，表明问题有一个轻微的影响</li>
-<li><strong>Lowest</strong> - 最低级</li>
-</ul>
-<h4 id="Status（状态）"><a href="#Status（状态）" class="headerlink" title="Status（状态）"></a>Status（状态）</h4><ul>
-<li><strong>Open</strong> - 打开状态，表明问题单已经被创建，等待被分配到开始处理状态</li>
-<li><strong>In Progress</strong> - 处理中状态，表明问题单已经被分配人激活，并处于被处理状态中</li>
-<li><strong>Resolved</strong> - 已解决状态，表明问题已经被处理完成，等待问题报告人的验证。从这个状态，问题单一般可以进一步变更为重新打开状态（Reopened）或关闭状态（Closed）</li>
-<li><strong>Reopened</strong> - 重新打开状态，问题经过验证发现没有被解决，就可以变更到这个状态</li>
-<li><strong>Closed</strong> - 关闭状态，问题被彻底解决就可以转为这个状态</li>
-</ul>
-<h4 id="Resolution（解决结果）"><a href="#Resolution（解决结果）" class="headerlink" title="Resolution（解决结果）"></a>Resolution（解决结果）</h4><ul>
-<li><strong>Fixed</strong> - 修复</li>
-<li><strong>Won’t Fix</strong> - 不用修复，例如这个问题所描述的现象已不再有影响了</li>
-<li><strong>Duplicate</strong> - 重复，同其它已经存在的问题重复了，推荐把相关的单子链接起来</li>
-<li><strong>Incomplete</strong> - 未完成，没有足够的信息继续完成这个问题</li>
-<li><strong>Cannot Reproduce</strong> - 不能重现，如果以后有更多信息可以继续可以重新打开这张单子</li>
-<li><strong>Won’t Do</strong> - 不做，类似于不用修复的方案，试用于软件项目的默认状态</li>
-</ul>
-<h2 id="管理员指南"><a href="#管理员指南" class="headerlink" title="管理员指南"></a>管理员指南</h2><h3 id="登录"><a href="#登录" class="headerlink" title="登录"></a>登录</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 普通用户登录</span></span><br><span class="line">http://jira.qd-aliyun-internal.haier.net</span><br><span class="line"></span><br><span class="line"><span class="comment"># 管理员登录</span></span><br><span class="line">http://jira.qd-aliyun-internal.haier.net/login.jsp?oauth_sso=false</span><br><span class="line">账号：admin</span><br><span class="line">密码：Pwd123456</span><br></pre></td></tr></table></figure>
-
-<h3 id="项目最佳实践"><a href="#项目最佳实践" class="headerlink" title="项目最佳实践"></a>项目最佳实践</h3><h3 id="问题单最佳实践"><a href="#问题单最佳实践" class="headerlink" title="问题单最佳实践"></a>问题单最佳实践</h3>
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/22/ielts/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/22/ielts/" class="post-title-link" itemprop="url">雅思</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-22 08:04:08" itemprop="dateCreated datePublished" datetime="2019-10-22T08:04:08+08:00">2019-10-22</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-23 21:59:14" itemprop="dateModified" datetime="2019-10-23T21:59:14+08:00">2019-10-23</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/其他/" itemprop="url" rel="index"><span itemprop="name">其他</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="报名"><a href="#报名" class="headerlink" title="报名"></a>报名</h2><ul>
-<li><p><a href="https://ielts.etest.net.cn" target="_blank" rel="noopener">报名入口</a></p>
-</li>
-<li><p>考试费用：￥2020</p>
-</li>
-<li><p>转考费用：￥420</p>
-</li>
-</ul>
-<h2 id="资料"><a href="#资料" class="headerlink" title="资料"></a>资料</h2><ul>
-<li>《剑桥雅思官方真题》</li>
-<li>《剑桥雅思真题精讲》</li>
-<li>《7天搞定雅思高频核心词》</li>
-<li>《雅思词汇真经》</li>
-<li>《顾家北手把手教你雅思写作》</li>
-<li>《雅思王听力真题语料库》</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2060,7 +2152,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">101</span>
+                    <span class="site-state-item-count">106</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2103,19 +2195,7 @@
                     
                       
                     
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">19</span>
+                    <span class="site-state-item-count">13</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -2164,9 +2244,7 @@
                     
                       
                     
-                      
-                    
-                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
