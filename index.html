@@ -323,7 +323,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/mysql-config-max-connections/">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/25/mysql-config-sync-binlog/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Hui Rao">
@@ -343,7 +343,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/blog/2019/10/24/mysql-config-max-connections/" class="post-title-link" itemprop="url">MySQL · 配置参数 · max_connections</a>
+                <a href="/blog/2019/10/25/mysql-config-sync-binlog/" class="post-title-link" itemprop="url">MySQL · 配置参数 · sync_binlog</a>
               
             
           </h1>
@@ -368,7 +368,7 @@
                 
               
 
-              <time title="创建时间：2019-10-24 22:22:02 / 修改时间：22:31:47" itemprop="dateCreated datePublished" datetime="2019-10-24T22:22:02+08:00">2019-10-24</time>
+              <time title="创建时间：2019-10-25 09:35:46 / 修改时间：10:45:41" itemprop="dateCreated datePublished" datetime="2019-10-25T09:35:46+08:00">2019-10-25</time>
             
 
             
@@ -427,14 +427,495 @@
       
         
           
-            <h2 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h2><ul>
-<li><strong>max_connections</strong>：MySQL 配置的最大连接数。</li>
-<li><strong>Max_used_connections</strong>：它是指从这次 MySQL 服务启动到现在，同一时刻并行连接数的最大值，它不是指当前的连接情况，而是一个比较值。</li>
+            <h2 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h2><p><a href="https://dev.mysql.com/doc/refman/5.7/en/replication-options-binary-log.html#sysvar_sync_binlog" target="_blank" rel="noopener"><strong>sync_binlog</strong></a>：控制 MySQL 二进制日志（<code>binlog</code>）同步到磁盘的频率。</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Command-Line Format</strong></td>
+<td><code>--sync-binlog=#</code></td>
+</tr>
+<tr>
+<td><strong>System Variable</strong></td>
+<td><code>sync_binlog</code></td>
+</tr>
+<tr>
+<td><strong>Scope</strong></td>
+<td>Global</td>
+</tr>
+<tr>
+<td><strong>Dynamic</strong></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>Type</strong></td>
+<td>Integer</td>
+</tr>
+<tr>
+<td><strong>Default Value</strong> (&gt;= 5.7.7)</td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><strong>Default Value</strong> (&lt;= 5.7.6)</td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td><strong>Minimum Value</strong></td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td><strong>Maximum Value</strong></td>
+<td><code>4294967295</code></td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>sync_binlog = 0</strong>，每进行事务提交后，MySQL 不做 <code>fsync</code> 之类的磁盘同步指令刷新 <code>binlog_cache</code> 中的信息到磁盘，而让文件系统自行决定什么时候来做同步，或者 <code>cache</code> 满了之后才同步到磁盘。</li>
+<li><strong>sync_binlog = 1</strong>，每进行 <code>1</code> 次事务提交，MySQL 将进行一次 <code>fsync</code> 之类的磁盘同步指令来将 <code>binlog_cache</code> 中的数据强制写入磁盘。</li>
+<li><strong>sync_binlog = N</strong>，每进行 <code>N</code> 次事务提交，MySQL 将进行一次 <code>fsync</code> 之类的磁盘同步指令来将 <code>binlog_cache</code> 中的数据强制写入磁盘。</li>
 </ul>
+<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><ul>
+<li><strong>性能</strong>：0 &gt; N &gt; 1</li>
+<li><strong>安全</strong>：1 &gt; N &gt; 0</li>
+<li><strong>建议</strong>：区分业务场景进行设置 </li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 支付场景：sync_binlog = 1</span></span><br><span class="line"><span class="comment"># 其他场景：sync_binlog = 1000</span></span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/25/mysql-config-innodb-flush-log-at-trx-commit/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/25/mysql-config-innodb-flush-log-at-trx-commit/" class="post-title-link" itemprop="url">未命名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-25 09:33:42 / 修改时间：10:45:50" itemprop="dateCreated datePublished" datetime="2019-10-25T09:33:42+08:00">2019-10-25</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h2><p><a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit" target="_blank" rel="noopener"><strong>innodb_flush_log_at_trx_commit</strong></a>：控制 <code>ib_logfile</code> 日志（记录 <code>redo log</code>  <code>undo log</code> 信息）的刷新方式。</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Command-Line Format</strong></td>
+<td><code>--innodb-flush-log-at-trx-commit=#</code></td>
+</tr>
+<tr>
+<td><strong>System Variable</strong></td>
+<td><code>innodb_flush_log_at_trx_commit</code></td>
+</tr>
+<tr>
+<td><strong>Scope</strong></td>
+<td>Global</td>
+</tr>
+<tr>
+<td><strong>Dynamic</strong></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>Type</strong></td>
+<td>Enumeration</td>
+</tr>
+<tr>
+<td><strong>Default Value</strong></td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><strong>Valid Values</strong></td>
+<td><code>0</code> <code>1</code> <code>2</code></td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>innodb_flush_log_at_trx_commit = 0</strong>，表示每隔 1 秒把 <code>log buffer</code> 刷到 <code>log file</code> 中去，并且同时调用文件系统的 <code>flush</code> 操作将缓存刷新到磁盘上去。也就是说一秒之前的日志都保存在日志缓冲区，也就是内存上，在<strong>mysqld 进程崩溃</strong>的情况下，可能丢失 1 秒的事务数据。</li>
+<li><strong>innodb_flush_log_at_trx_commit = 1</strong>，表示在每次事务提交后，会把 <code>log buffer</code> 刷到 <code>log file</code> 中去，并且调用文件系统的 <code>flush</code> 操作将缓存刷新到磁盘上去。</li>
+<li><strong>innodb_flush_log_at_trx_commit = 2</strong>，表示在每次事务提交后，会把 <code>log buffer</code> 刷到 <code>log file</code> 中去，但并不会立即刷写到磁盘。只有在<strong>数据库所在的主机操作系统损坏或者突然掉电</strong>的情况下，可能丢失 1 秒的事务数据。</li>
+</ul>
+<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><ul>
+<li><strong>性能</strong>：0 &gt; 2 &gt; 1</li>
+<li><strong>安全</strong>：1 &gt; 2 &gt;0</li>
+<li><strong>推荐</strong>：区分业务场景进行设置</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 支付场景：innodb_flush_log_at_trx_commit = 1</span></span><br><span class="line"><span class="comment"># 其他场景：innodb_flush_log_at_trx_commit = 2</span></span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/mysql-config-max-connections/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/24/mysql-config-max-connections/" class="post-title-link" itemprop="url">MySQL · 配置参数 · max_connections</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-24 22:22:02" itemprop="dateCreated datePublished" datetime="2019-10-24T22:22:02+08:00">2019-10-24</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-25 09:59:03" itemprop="dateModified" datetime="2019-10-25T09:59:03+08:00">2019-10-25</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h2><ul>
+<li><strong><a href="https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_max_connections" target="_blank" rel="noopener">max_connections</a></strong>：MySQL 实例最大连接数。</li>
+<li><strong>Max_used_connections</strong>：是指从本次 MySQL 服务启动到现在，同一时刻并行连接数的最大值，不是指当前的连接情况，而是一个比较值。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Command-Line Format</strong></td>
+<td><code>--max-connections=#</code></td>
+</tr>
+<tr>
+<td><strong>System Variable</strong></td>
+<td><code>max_connections</code></td>
+</tr>
+<tr>
+<td><strong>Scope</strong></td>
+<td>Global</td>
+</tr>
+<tr>
+<td><strong>Dynamic</strong></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>Type</strong></td>
+<td>Integer</td>
+</tr>
+<tr>
+<td><strong>Default Value</strong></td>
+<td><code>151</code></td>
+</tr>
+<tr>
+<td><strong>Minimum Value</strong></td>
+<td><code>1</code></td>
+</tr>
+<tr>
+<td><strong>Maximum Value</strong></td>
+<td><code>100000</code></td>
+</tr>
+</tbody></table>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like <span class="string">"max_connections"</span>;</span><br><span class="line">+-----------------+-------+</span><br><span class="line">| Variable_name   | Value |</span><br><span class="line">+-----------------+-------+</span><br><span class="line">| max_connections | <span class="number">1000</span>  |</span><br><span class="line">+-----------------+-------+</span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; show status like <span class="string">"max_used%"</span>;</span><br><span class="line">+----------------------+-------+</span><br><span class="line">| Variable_name        | Value |</span><br><span class="line">+----------------------+-------+</span><br><span class="line">| Max_used_connections | <span class="number">391</span>   |</span><br><span class="line">+----------------------+-------+</span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
 
-<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p><strong>推荐</strong>：Max_used_connections / max_connections * 100%  &gt; 10%</p>
-<p><strong>方法</strong>：<code>/etc/my.cnf</code> 添加参数 <code>max_connections = 1000</code></p>
+<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p><strong>推荐</strong>：如果设置太高硬件吃不消，太低又不能充分利用硬件，一般要求两者比值超过 <code>10%</code>。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Max_used_connections / max_connections * <span class="number">100</span>%  &gt; <span class="number">10</span>%</span><br></pre></td></tr></table></figure>
+
+<p><strong>方法</strong>：<code>/etc/my.cnf</code> 添加参数 <code>max_connections = 1000</code>，这个值的大小取决于服务器的配置。</p>
+<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>如果你看到数据库报 <code>&quot;Too many connections&quot;</code> 错误，是因为当前连接数超过 <code>max_connections</code> 设置的值，常见的原因是应用程序没有正确的关闭数据库连接，应用程序使用连接池有助于解决这一问题。</p>
 
           
         
@@ -1715,424 +2196,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/python-threads/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/24/python-threads/" class="post-title-link" itemprop="url">Python · 进程与线程</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-24 09:30:41 / 修改时间：10:23:10" itemprop="dateCreated datePublished" datetime="2019-10-24T09:30:41+08:00">2019-10-24</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>多任务的实现有3种方式：</p>
-<ul>
-<li>多进程模式</li>
-<li>多线程模式</li>
-<li>多进程+多线程模式</li>
-</ul>
-<p>多线程的执行方式和多进程是一样的，也是由操作系统在多个线程之间快速切换，让每个线程都短暂地交替运行，看起来就像同时执行一样。当然，真正地同时执行多线程需要多核CPU才可能实现。</p>
-<p><strong>进程</strong>：一个任务就是一个进程，一个线程相当于进程的子任务。</p>
-<p><strong>线程</strong>：线程是最小的执行单元，而进程由至少一个线程组成。</p>
-<p>多进程和多线程的程序涉及到同步、数据共享的问题，编写起来更复杂。</p>
-<p>Unix/Linux 操作系统提供了一个<code>fork()</code>系统调用，它非常特殊。普通的函数调用，调用一次，返回一次，但是<code>fork()</code>调用一次，返回两次，因为操作系统自动把当前进程（称为父进程）复制了一份（称为子进程），然后，分别在父进程和子进程内返回。子进程永远返回<code>0</code>，而父进程返回子进程的 ID。这样做的理由是，一个父进程可以 fork 出很多子进程，所以，父进程要记下每个子进程的 ID，而子进程只需要调用<code>getppid()</code>就可以拿到父进程的 ID。</p>
-<p>Python 的<code>os</code>模块封装了常见的系统调用，其中就包括<code>fork</code>，可以在 Python 程序中轻松创建子进程：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">print(<span class="string">'Process (%s) start...'</span> % os.getpid())</span><br><span class="line"><span class="comment"># Only works on Unix/Linux/Mac</span></span><br><span class="line">pid = os.fork()</span><br><span class="line"><span class="keyword">if</span> pid == <span class="number">0</span>:</span><br><span class="line">    print(<span class="string">'I am child process (%s) and my parent is %s.'</span> % (os.getpid(), os.getppid()))</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    print(<span class="string">'I (%s) just created a child process (%s).'</span> % (os.getpid(), pid))</span><br><span class="line">    </span><br><span class="line">Process (<span class="number">876</span>) start...</span><br><span class="line">I (<span class="number">876</span>) just created a child process (<span class="number">877</span>).</span><br><span class="line">I am child process (<span class="number">877</span>) <span class="keyword">and</span> my parent <span class="keyword">is</span> <span class="number">876.</span></span><br></pre></td></tr></table></figure>
-
-<p>Python 的 <code>multiprocessing</code>模块就是跨平台版本的多进程模块。<code>multiprocessing</code>模块提供了一个<code>Process</code>类来代表一个进程对象，下面的例子演示了启动一个子进程并等待其结束。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Process</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="comment"># 子进程要执行的代码</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">run_proc</span><span class="params">(name)</span>:</span></span><br><span class="line">    print(<span class="string">'Run child process %s (%s)...'</span> % (name, os.getpid()))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">'__main__'</span>:</span><br><span class="line">    print(<span class="string">'Parent process %s.'</span> % os.getpid())</span><br><span class="line">    p = Process(target=run_proc, args=(<span class="string">'test'</span>,))</span><br><span class="line">    print(<span class="string">'Child process will start.'</span>)</span><br><span class="line">    p.start()</span><br><span class="line">    p.join()</span><br><span class="line">    print(<span class="string">'Child process end.'</span>)</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">执行结果如下：</span><br><span class="line">Parent process <span class="number">928.</span></span><br><span class="line">Child process will start.</span><br><span class="line">Run child process test (<span class="number">929</span>)...</span><br><span class="line">Child process end.</span><br></pre></td></tr></table></figure>
-
-<p>创建子进程时，只需要传入一个执行函数和函数的参数，创建一个<code>Process</code>实例，用<code>start()</code>方法启动，这样创建进程比<code>fork()</code>还要简单。<code>join()</code>方法可以等待子进程结束后再继续往下运行，通常用于进程间的同步。</p>
-<p><strong>Pool</strong>：如果要启动大量的子进程，可以用进程池的方式批量创建子进程，<code>Pool</code>的默认大小是 CPU 的核数。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Pool</span><br><span class="line"><span class="keyword">import</span> os, time, random</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">long_time_task</span><span class="params">(name)</span>:</span></span><br><span class="line">    print(<span class="string">'Run task %s (%s)...'</span> % (name, os.getpid()))</span><br><span class="line">    start = time.time()</span><br><span class="line">    time.sleep(random.random() * <span class="number">3</span>)</span><br><span class="line">    end = time.time()</span><br><span class="line">    print(<span class="string">'Task %s runs %0.2f seconds.'</span> % (name, (end - start)))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">'__main__'</span>:</span><br><span class="line">    print(<span class="string">'Parent process %s.'</span> % os.getpid())</span><br><span class="line">    p = Pool(<span class="number">4</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">5</span>):</span><br><span class="line">        p.apply_async(long_time_task, args=(i,))</span><br><span class="line">    print(<span class="string">'Waiting for all subprocesses done...'</span>)</span><br><span class="line">    p.close()</span><br><span class="line">    p.join()</span><br><span class="line">    print(<span class="string">'All subprocesses done.'</span>)</span><br><span class="line">    </span><br><span class="line">执行结果如下：</span><br><span class="line">Parent process <span class="number">669.</span></span><br><span class="line">Waiting <span class="keyword">for</span> all subprocesses done...</span><br><span class="line">Run task <span class="number">0</span> (<span class="number">671</span>)...</span><br><span class="line">Run task <span class="number">1</span> (<span class="number">672</span>)...</span><br><span class="line">Run task <span class="number">2</span> (<span class="number">673</span>)...</span><br><span class="line">Run task <span class="number">3</span> (<span class="number">674</span>)...</span><br><span class="line">Task <span class="number">2</span> runs <span class="number">0.14</span> seconds.</span><br><span class="line">Run task <span class="number">4</span> (<span class="number">673</span>)...</span><br><span class="line">Task <span class="number">1</span> runs <span class="number">0.27</span> seconds.</span><br><span class="line">Task <span class="number">3</span> runs <span class="number">0.86</span> seconds.</span><br><span class="line">Task <span class="number">0</span> runs <span class="number">1.41</span> seconds.</span><br><span class="line">Task <span class="number">4</span> runs <span class="number">1.91</span> seconds.</span><br><span class="line">All subprocesses done.</span><br></pre></td></tr></table></figure>
-
-<p><strong>子进程</strong>：很多时候，子进程并不是自身，而是一个外部进程。我们创建了子进程后，还需要控制子进程的输入和输出。<code>subprocess</code>模块可以让我们非常方便地启动一个子进程，然后控制其输入和输出。</p>
-<p><strong>进程间通信</strong>：<code>Process</code>之间肯定是需要通信的，操作系统提供了很多机制来实现进程间的通信。<code>Python</code> 的<code>multiprocessing</code> 模块包装了底层的机制，提供了<code>Queue</code>、<code>Pipes</code>等多种方式来交换数据。我们以<code>Queue</code>为例，在父进程中创建两个子进程，一个往 <code>Queue</code> 里写数据，一个从 <code>Queue</code> 里读数据。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Process, Queue</span><br><span class="line"><span class="keyword">import</span> os, time, random</span><br><span class="line"></span><br><span class="line"><span class="comment"># 写数据进程执行的代码:</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">write</span><span class="params">(q)</span>:</span></span><br><span class="line">    print(<span class="string">'Process to write: %s'</span> % os.getpid())</span><br><span class="line">    <span class="keyword">for</span> value <span class="keyword">in</span> [<span class="string">'A'</span>, <span class="string">'B'</span>, <span class="string">'C'</span>]:</span><br><span class="line">        print(<span class="string">'Put %s to queue...'</span> % value)</span><br><span class="line">        q.put(value)</span><br><span class="line">        time.sleep(random.random())</span><br><span class="line"></span><br><span class="line"><span class="comment"># 读数据进程执行的代码:</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">read</span><span class="params">(q)</span>:</span></span><br><span class="line">    print(<span class="string">'Process to read: %s'</span> % os.getpid())</span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        value = q.get(<span class="literal">True</span>)</span><br><span class="line">        print(<span class="string">'Get %s from queue.'</span> % value)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">'__main__'</span>:</span><br><span class="line">    <span class="comment"># 父进程创建Queue，并传给各个子进程：</span></span><br><span class="line">    q = Queue()</span><br><span class="line">    pw = Process(target=write, args=(q,))</span><br><span class="line">    pr = Process(target=read, args=(q,))</span><br><span class="line">    <span class="comment"># 启动子进程pw，写入:</span></span><br><span class="line">    pw.start()</span><br><span class="line">    <span class="comment"># 启动子进程pr，读取:</span></span><br><span class="line">    pr.start()</span><br><span class="line">    <span class="comment"># 等待pw结束:</span></span><br><span class="line">    pw.join()</span><br><span class="line">    <span class="comment"># pr进程里是死循环，无法等待其结束，只能强行终止:</span></span><br><span class="line">    pr.terminate()</span><br><span class="line">    </span><br><span class="line">执行结果如下：</span><br><span class="line">Process to write: <span class="number">50563</span></span><br><span class="line">Put A to queue...</span><br><span class="line">Process to read: <span class="number">50564</span></span><br><span class="line">Get A <span class="keyword">from</span> queue.</span><br><span class="line">Put B to queue...</span><br><span class="line">Get B <span class="keyword">from</span> queue.</span><br><span class="line">Put C to queue...</span><br><span class="line">Get C <span class="keyword">from</span> queue.</span><br></pre></td></tr></table></figure>
-
-<p><strong>小结</strong>：</p>
-<ol>
-<li>在 <code>Unix/Linux</code> 下，可以使用 <code>fork()</code> 调用实现多进程。</li>
-<li>要实现跨平台的多进程，可以使用 <code>multiprocessing</code> 模块。</li>
-<li>进程间通信是通过 <code>Queue</code>、<code>Pipes</code> 等实现的。</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/python-io/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/24/python-io/" class="post-title-link" itemprop="url">Python · I/O 编程</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-24 09:29:56 / 修改时间：10:22:04" itemprop="dateCreated datePublished" datetime="2019-10-24T09:29:56+08:00">2019-10-24</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>Stream</strong>：把流想象成一个水管，数据就是水管里的水，但是只能单向流动。<code>Input Stream</code> 就是数据从外面（磁盘、网络）流进内存，<code>Output Stream</code> 就是数据从内存流到外面去。</p>
-<p><strong>Output</strong>：数据从内存写入到磁盘文件</p>
-<p><strong>Input</strong>：磁盘读取文件到内存</p>
-<p><strong>同步IO</strong>：CPU 等待，也就是程序暂停执行后续代码，等 100M 的数据在 10 秒后写入磁盘，再接着往下执行。</p>
-<p><strong>异步IO</strong>：CPU 不等待，只是告诉磁盘，“您老慢慢写，不着急，我接着干别的事去了”，于是，后续代码可以立刻接着执行。同步和异步的区别就在于是否等待 IO 执行的结果，使用异步 IO 来编写程序性能会远远高于同步 IO，但是异步 IO的缺点是编程模型复杂。</p>
-<p><strong>回调模式</strong>：服务员跑过来找到你，这是回调模式。</p>
-<p><strong>轮询模式</strong>：服务员发短信通知你，你就得不停地检查手机，这是轮询模式</p>
-<p>读写文本文件：用<code>&#39;r&#39;</code>模式打开文件，以<code>&#39;w&#39;</code>模式写入文件，</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>f = open(<span class="string">'/Users/michael/test.txt'</span>, <span class="string">'r'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>f.write(<span class="string">'Hello, world!'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>f.read()</span><br><span class="line"><span class="string">'Hello, world!'</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>f.close()</span><br></pre></td></tr></table></figure>
-
-<p><strong>注意</strong>：文件使用完毕后必须关闭，因为文件对象会占用操作系统的资源，并且操作系统同一时间能打开的文件数量也是有限的。</p>
-<p><code>Python</code> 引入了 <code>with</code> 语句来自动帮我们调用 <code>close()</code> 方法：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> open(<span class="string">'/path/to/file'</span>, <span class="string">'r'</span>) <span class="keyword">as</span> f:</span><br><span class="line">    f.write(<span class="string">'Hello, world!'</span>)</span><br><span class="line">    print(f.read())</span><br><span class="line">    </span><br><span class="line">等价于    </span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    f = open(<span class="string">'/path/to/file'</span>, <span class="string">'r'</span>)</span><br><span class="line">    print(f.read())</span><br><span class="line"><span class="keyword">finally</span>:</span><br><span class="line">    <span class="keyword">if</span> f:</span><br><span class="line">        f.close()</span><br></pre></td></tr></table></figure>
-
-<p>如果文件很小，<code>read()</code>一次性读取最方便；如果不能确定文件大小，反复调用<code>read(size)</code>比较保险；如果是配置文件，调用<code>readlines()</code>最方便。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> line <span class="keyword">in</span> f.readlines():</span><br><span class="line">    print(line.strip())  <span class="comment"># 把末尾的'\n'删掉</span></span><br></pre></td></tr></table></figure>
-
-<p>读写二进制文件：用<code>&#39;rb&#39;</code>模式打开文件即可</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>f = open(<span class="string">'/Users/michael/test.jpg'</span>, <span class="string">'rb'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>f.read()</span><br></pre></td></tr></table></figure>
-
-<p><strong>序列化</strong>：把变量从内存中变成可存储或传输的过程称之为序列化，即<code>pickling</code>。序列化之后，就可以把序列化后的内容写入磁盘，或者通过网络传输到别的机器上。<code>Python</code> 提供了<code>pickle</code>模块来实现序列化。</p>
-<p><strong>反序列化</strong>：把变量内容从序列化的对象重新读到内存里称之为反序列化，即 <code>unpickling</code>。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> pickle</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>d = dict(name=<span class="string">'Bob'</span>, age=<span class="number">20</span>, score=<span class="number">88</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>f = open(<span class="string">'dump.txt'</span>, <span class="string">'wb'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>pickle.dump(d, f)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>f.close()</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>f = open(<span class="string">'dump.txt'</span>, <span class="string">'rb'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>d = pickle.load(f)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>f.close()</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>d</span><br><span class="line">&#123;<span class="string">'age'</span>: <span class="number">20</span>, <span class="string">'score'</span>: <span class="number">88</span>, <span class="string">'name'</span>: <span class="string">'Bob'</span>&#125;</span><br></pre></td></tr></table></figure>
-
-<p>如果我们要在不同的编程语言之间传递对象，就必须把对象序列化为标准格式。<code>JSON</code> 表示出来就是一个字符串，可以被所有语言读取，也可以方便地存储到磁盘或者通过网络传输。<code>JSON</code> 不仅是标准格式，并且比 XML 更快，而且可以直接在 <code>Web</code> 页面中读取，非常方便。</p>
-<table>
-<thead>
-<tr>
-<th align="left">JSON类型</th>
-<th align="left">Python类型</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">{}</td>
-<td align="left">dict</td>
-</tr>
-<tr>
-<td align="left">[]</td>
-<td align="left">list</td>
-</tr>
-<tr>
-<td align="left">“string”</td>
-<td align="left">str</td>
-</tr>
-<tr>
-<td align="left">1234.56</td>
-<td align="left">int 或 float</td>
-</tr>
-<tr>
-<td align="left">true/false</td>
-<td align="left">True / False</td>
-</tr>
-<tr>
-<td align="left">null</td>
-<td align="left">None</td>
-</tr>
-</tbody></table>
-<p>Python 内置的<code>json</code>模块提供了非常完善的 Python 对象到 JSON 格式的转换，<code>dumps()</code>方法返回一个<code>str</code>，内容就是标准的 JSON。类似的，<code>dump()</code>方法可以直接把 JSON 写入一个<code>file-like Object</code>。要把 JSON 反序列化 Python 对象，用<code>loads()</code>或者对应的<code>load()</code>方法，前者把 JSON 的字符串反序列化，后者从<code>file-like Object</code>中读取字符串并反序列化。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> json</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>d = dict(name=<span class="string">'Bob'</span>, age=<span class="number">20</span>, score=<span class="number">88</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>json.dumps(d)</span><br><span class="line"><span class="string">'&#123;"age": 20, "score": 88, "name": "Bob"&#125;'</span></span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>json_str = <span class="string">'&#123;"age": 20, "score": 88, "name": "Bob"&#125;'</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>json.loads(json_str)</span><br><span class="line">&#123;<span class="string">'age'</span>: <span class="number">20</span>, <span class="string">'score'</span>: <span class="number">88</span>, <span class="string">'name'</span>: <span class="string">'Bob'</span>&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>小结</strong>：</p>
-<ol>
-<li>在 <code>Python</code> 中，文件读写是通过<code>open()</code>函数打开的文件对象完成的，使用<code>with</code>语句操作文件 IO 是个好习惯。</li>
-<li><code>StringIO</code> 和 <code>BytesIO</code> 是在内存中操作 <code>str</code> 和 <code>bytes</code> 的方法，使得和读写文件具有一致的接口。</li>
-<li>Python 的<code>os</code>模块封装了操作系统的目录和文件操作，要注意这些函数有的在<code>os</code>模块中，有的在<code>os.path</code>模块中。</li>
-<li>Python 语言特定的序列化模块是<code>pickle</code>，但如果要把序列化搞得更通用、更符合 Web 标准，就可以使用<code>json</code>模块，<code>json</code>模块的<code>dumps()</code>和<code>loads()</code>函数是定义得非常好的接口的典范。</li>
-</ol>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2181,7 +2244,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">105</span>
+                    <span class="site-state-item-count">107</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

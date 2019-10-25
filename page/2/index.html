@@ -323,6 +323,424 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/python-threads/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/24/python-threads/" class="post-title-link" itemprop="url">Python · 进程与线程</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-24 09:30:41 / 修改时间：10:23:10" itemprop="dateCreated datePublished" datetime="2019-10-24T09:30:41+08:00">2019-10-24</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>多任务的实现有3种方式：</p>
+<ul>
+<li>多进程模式</li>
+<li>多线程模式</li>
+<li>多进程+多线程模式</li>
+</ul>
+<p>多线程的执行方式和多进程是一样的，也是由操作系统在多个线程之间快速切换，让每个线程都短暂地交替运行，看起来就像同时执行一样。当然，真正地同时执行多线程需要多核CPU才可能实现。</p>
+<p><strong>进程</strong>：一个任务就是一个进程，一个线程相当于进程的子任务。</p>
+<p><strong>线程</strong>：线程是最小的执行单元，而进程由至少一个线程组成。</p>
+<p>多进程和多线程的程序涉及到同步、数据共享的问题，编写起来更复杂。</p>
+<p>Unix/Linux 操作系统提供了一个<code>fork()</code>系统调用，它非常特殊。普通的函数调用，调用一次，返回一次，但是<code>fork()</code>调用一次，返回两次，因为操作系统自动把当前进程（称为父进程）复制了一份（称为子进程），然后，分别在父进程和子进程内返回。子进程永远返回<code>0</code>，而父进程返回子进程的 ID。这样做的理由是，一个父进程可以 fork 出很多子进程，所以，父进程要记下每个子进程的 ID，而子进程只需要调用<code>getppid()</code>就可以拿到父进程的 ID。</p>
+<p>Python 的<code>os</code>模块封装了常见的系统调用，其中就包括<code>fork</code>，可以在 Python 程序中轻松创建子进程：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">print(<span class="string">'Process (%s) start...'</span> % os.getpid())</span><br><span class="line"><span class="comment"># Only works on Unix/Linux/Mac</span></span><br><span class="line">pid = os.fork()</span><br><span class="line"><span class="keyword">if</span> pid == <span class="number">0</span>:</span><br><span class="line">    print(<span class="string">'I am child process (%s) and my parent is %s.'</span> % (os.getpid(), os.getppid()))</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    print(<span class="string">'I (%s) just created a child process (%s).'</span> % (os.getpid(), pid))</span><br><span class="line">    </span><br><span class="line">Process (<span class="number">876</span>) start...</span><br><span class="line">I (<span class="number">876</span>) just created a child process (<span class="number">877</span>).</span><br><span class="line">I am child process (<span class="number">877</span>) <span class="keyword">and</span> my parent <span class="keyword">is</span> <span class="number">876.</span></span><br></pre></td></tr></table></figure>
+
+<p>Python 的 <code>multiprocessing</code>模块就是跨平台版本的多进程模块。<code>multiprocessing</code>模块提供了一个<code>Process</code>类来代表一个进程对象，下面的例子演示了启动一个子进程并等待其结束。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Process</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="comment"># 子进程要执行的代码</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">run_proc</span><span class="params">(name)</span>:</span></span><br><span class="line">    print(<span class="string">'Run child process %s (%s)...'</span> % (name, os.getpid()))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">'__main__'</span>:</span><br><span class="line">    print(<span class="string">'Parent process %s.'</span> % os.getpid())</span><br><span class="line">    p = Process(target=run_proc, args=(<span class="string">'test'</span>,))</span><br><span class="line">    print(<span class="string">'Child process will start.'</span>)</span><br><span class="line">    p.start()</span><br><span class="line">    p.join()</span><br><span class="line">    print(<span class="string">'Child process end.'</span>)</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">执行结果如下：</span><br><span class="line">Parent process <span class="number">928.</span></span><br><span class="line">Child process will start.</span><br><span class="line">Run child process test (<span class="number">929</span>)...</span><br><span class="line">Child process end.</span><br></pre></td></tr></table></figure>
+
+<p>创建子进程时，只需要传入一个执行函数和函数的参数，创建一个<code>Process</code>实例，用<code>start()</code>方法启动，这样创建进程比<code>fork()</code>还要简单。<code>join()</code>方法可以等待子进程结束后再继续往下运行，通常用于进程间的同步。</p>
+<p><strong>Pool</strong>：如果要启动大量的子进程，可以用进程池的方式批量创建子进程，<code>Pool</code>的默认大小是 CPU 的核数。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Pool</span><br><span class="line"><span class="keyword">import</span> os, time, random</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">long_time_task</span><span class="params">(name)</span>:</span></span><br><span class="line">    print(<span class="string">'Run task %s (%s)...'</span> % (name, os.getpid()))</span><br><span class="line">    start = time.time()</span><br><span class="line">    time.sleep(random.random() * <span class="number">3</span>)</span><br><span class="line">    end = time.time()</span><br><span class="line">    print(<span class="string">'Task %s runs %0.2f seconds.'</span> % (name, (end - start)))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">'__main__'</span>:</span><br><span class="line">    print(<span class="string">'Parent process %s.'</span> % os.getpid())</span><br><span class="line">    p = Pool(<span class="number">4</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">5</span>):</span><br><span class="line">        p.apply_async(long_time_task, args=(i,))</span><br><span class="line">    print(<span class="string">'Waiting for all subprocesses done...'</span>)</span><br><span class="line">    p.close()</span><br><span class="line">    p.join()</span><br><span class="line">    print(<span class="string">'All subprocesses done.'</span>)</span><br><span class="line">    </span><br><span class="line">执行结果如下：</span><br><span class="line">Parent process <span class="number">669.</span></span><br><span class="line">Waiting <span class="keyword">for</span> all subprocesses done...</span><br><span class="line">Run task <span class="number">0</span> (<span class="number">671</span>)...</span><br><span class="line">Run task <span class="number">1</span> (<span class="number">672</span>)...</span><br><span class="line">Run task <span class="number">2</span> (<span class="number">673</span>)...</span><br><span class="line">Run task <span class="number">3</span> (<span class="number">674</span>)...</span><br><span class="line">Task <span class="number">2</span> runs <span class="number">0.14</span> seconds.</span><br><span class="line">Run task <span class="number">4</span> (<span class="number">673</span>)...</span><br><span class="line">Task <span class="number">1</span> runs <span class="number">0.27</span> seconds.</span><br><span class="line">Task <span class="number">3</span> runs <span class="number">0.86</span> seconds.</span><br><span class="line">Task <span class="number">0</span> runs <span class="number">1.41</span> seconds.</span><br><span class="line">Task <span class="number">4</span> runs <span class="number">1.91</span> seconds.</span><br><span class="line">All subprocesses done.</span><br></pre></td></tr></table></figure>
+
+<p><strong>子进程</strong>：很多时候，子进程并不是自身，而是一个外部进程。我们创建了子进程后，还需要控制子进程的输入和输出。<code>subprocess</code>模块可以让我们非常方便地启动一个子进程，然后控制其输入和输出。</p>
+<p><strong>进程间通信</strong>：<code>Process</code>之间肯定是需要通信的，操作系统提供了很多机制来实现进程间的通信。<code>Python</code> 的<code>multiprocessing</code> 模块包装了底层的机制，提供了<code>Queue</code>、<code>Pipes</code>等多种方式来交换数据。我们以<code>Queue</code>为例，在父进程中创建两个子进程，一个往 <code>Queue</code> 里写数据，一个从 <code>Queue</code> 里读数据。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Process, Queue</span><br><span class="line"><span class="keyword">import</span> os, time, random</span><br><span class="line"></span><br><span class="line"><span class="comment"># 写数据进程执行的代码:</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">write</span><span class="params">(q)</span>:</span></span><br><span class="line">    print(<span class="string">'Process to write: %s'</span> % os.getpid())</span><br><span class="line">    <span class="keyword">for</span> value <span class="keyword">in</span> [<span class="string">'A'</span>, <span class="string">'B'</span>, <span class="string">'C'</span>]:</span><br><span class="line">        print(<span class="string">'Put %s to queue...'</span> % value)</span><br><span class="line">        q.put(value)</span><br><span class="line">        time.sleep(random.random())</span><br><span class="line"></span><br><span class="line"><span class="comment"># 读数据进程执行的代码:</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">read</span><span class="params">(q)</span>:</span></span><br><span class="line">    print(<span class="string">'Process to read: %s'</span> % os.getpid())</span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        value = q.get(<span class="literal">True</span>)</span><br><span class="line">        print(<span class="string">'Get %s from queue.'</span> % value)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">'__main__'</span>:</span><br><span class="line">    <span class="comment"># 父进程创建Queue，并传给各个子进程：</span></span><br><span class="line">    q = Queue()</span><br><span class="line">    pw = Process(target=write, args=(q,))</span><br><span class="line">    pr = Process(target=read, args=(q,))</span><br><span class="line">    <span class="comment"># 启动子进程pw，写入:</span></span><br><span class="line">    pw.start()</span><br><span class="line">    <span class="comment"># 启动子进程pr，读取:</span></span><br><span class="line">    pr.start()</span><br><span class="line">    <span class="comment"># 等待pw结束:</span></span><br><span class="line">    pw.join()</span><br><span class="line">    <span class="comment"># pr进程里是死循环，无法等待其结束，只能强行终止:</span></span><br><span class="line">    pr.terminate()</span><br><span class="line">    </span><br><span class="line">执行结果如下：</span><br><span class="line">Process to write: <span class="number">50563</span></span><br><span class="line">Put A to queue...</span><br><span class="line">Process to read: <span class="number">50564</span></span><br><span class="line">Get A <span class="keyword">from</span> queue.</span><br><span class="line">Put B to queue...</span><br><span class="line">Get B <span class="keyword">from</span> queue.</span><br><span class="line">Put C to queue...</span><br><span class="line">Get C <span class="keyword">from</span> queue.</span><br></pre></td></tr></table></figure>
+
+<p><strong>小结</strong>：</p>
+<ol>
+<li>在 <code>Unix/Linux</code> 下，可以使用 <code>fork()</code> 调用实现多进程。</li>
+<li>要实现跨平台的多进程，可以使用 <code>multiprocessing</code> 模块。</li>
+<li>进程间通信是通过 <code>Queue</code>、<code>Pipes</code> 等实现的。</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/python-io/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/24/python-io/" class="post-title-link" itemprop="url">Python · I/O 编程</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-24 09:29:56 / 修改时间：10:22:04" itemprop="dateCreated datePublished" datetime="2019-10-24T09:29:56+08:00">2019-10-24</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>Stream</strong>：把流想象成一个水管，数据就是水管里的水，但是只能单向流动。<code>Input Stream</code> 就是数据从外面（磁盘、网络）流进内存，<code>Output Stream</code> 就是数据从内存流到外面去。</p>
+<p><strong>Output</strong>：数据从内存写入到磁盘文件</p>
+<p><strong>Input</strong>：磁盘读取文件到内存</p>
+<p><strong>同步IO</strong>：CPU 等待，也就是程序暂停执行后续代码，等 100M 的数据在 10 秒后写入磁盘，再接着往下执行。</p>
+<p><strong>异步IO</strong>：CPU 不等待，只是告诉磁盘，“您老慢慢写，不着急，我接着干别的事去了”，于是，后续代码可以立刻接着执行。同步和异步的区别就在于是否等待 IO 执行的结果，使用异步 IO 来编写程序性能会远远高于同步 IO，但是异步 IO的缺点是编程模型复杂。</p>
+<p><strong>回调模式</strong>：服务员跑过来找到你，这是回调模式。</p>
+<p><strong>轮询模式</strong>：服务员发短信通知你，你就得不停地检查手机，这是轮询模式</p>
+<p>读写文本文件：用<code>&#39;r&#39;</code>模式打开文件，以<code>&#39;w&#39;</code>模式写入文件，</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>f = open(<span class="string">'/Users/michael/test.txt'</span>, <span class="string">'r'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>f.write(<span class="string">'Hello, world!'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>f.read()</span><br><span class="line"><span class="string">'Hello, world!'</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>f.close()</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意</strong>：文件使用完毕后必须关闭，因为文件对象会占用操作系统的资源，并且操作系统同一时间能打开的文件数量也是有限的。</p>
+<p><code>Python</code> 引入了 <code>with</code> 语句来自动帮我们调用 <code>close()</code> 方法：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> open(<span class="string">'/path/to/file'</span>, <span class="string">'r'</span>) <span class="keyword">as</span> f:</span><br><span class="line">    f.write(<span class="string">'Hello, world!'</span>)</span><br><span class="line">    print(f.read())</span><br><span class="line">    </span><br><span class="line">等价于    </span><br><span class="line"></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    f = open(<span class="string">'/path/to/file'</span>, <span class="string">'r'</span>)</span><br><span class="line">    print(f.read())</span><br><span class="line"><span class="keyword">finally</span>:</span><br><span class="line">    <span class="keyword">if</span> f:</span><br><span class="line">        f.close()</span><br></pre></td></tr></table></figure>
+
+<p>如果文件很小，<code>read()</code>一次性读取最方便；如果不能确定文件大小，反复调用<code>read(size)</code>比较保险；如果是配置文件，调用<code>readlines()</code>最方便。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> line <span class="keyword">in</span> f.readlines():</span><br><span class="line">    print(line.strip())  <span class="comment"># 把末尾的'\n'删掉</span></span><br></pre></td></tr></table></figure>
+
+<p>读写二进制文件：用<code>&#39;rb&#39;</code>模式打开文件即可</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>f = open(<span class="string">'/Users/michael/test.jpg'</span>, <span class="string">'rb'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>f.read()</span><br></pre></td></tr></table></figure>
+
+<p><strong>序列化</strong>：把变量从内存中变成可存储或传输的过程称之为序列化，即<code>pickling</code>。序列化之后，就可以把序列化后的内容写入磁盘，或者通过网络传输到别的机器上。<code>Python</code> 提供了<code>pickle</code>模块来实现序列化。</p>
+<p><strong>反序列化</strong>：把变量内容从序列化的对象重新读到内存里称之为反序列化，即 <code>unpickling</code>。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> pickle</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>d = dict(name=<span class="string">'Bob'</span>, age=<span class="number">20</span>, score=<span class="number">88</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>f = open(<span class="string">'dump.txt'</span>, <span class="string">'wb'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>pickle.dump(d, f)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>f.close()</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>f = open(<span class="string">'dump.txt'</span>, <span class="string">'rb'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>d = pickle.load(f)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>f.close()</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>d</span><br><span class="line">&#123;<span class="string">'age'</span>: <span class="number">20</span>, <span class="string">'score'</span>: <span class="number">88</span>, <span class="string">'name'</span>: <span class="string">'Bob'</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果我们要在不同的编程语言之间传递对象，就必须把对象序列化为标准格式。<code>JSON</code> 表示出来就是一个字符串，可以被所有语言读取，也可以方便地存储到磁盘或者通过网络传输。<code>JSON</code> 不仅是标准格式，并且比 XML 更快，而且可以直接在 <code>Web</code> 页面中读取，非常方便。</p>
+<table>
+<thead>
+<tr>
+<th align="left">JSON类型</th>
+<th align="left">Python类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">{}</td>
+<td align="left">dict</td>
+</tr>
+<tr>
+<td align="left">[]</td>
+<td align="left">list</td>
+</tr>
+<tr>
+<td align="left">“string”</td>
+<td align="left">str</td>
+</tr>
+<tr>
+<td align="left">1234.56</td>
+<td align="left">int 或 float</td>
+</tr>
+<tr>
+<td align="left">true/false</td>
+<td align="left">True / False</td>
+</tr>
+<tr>
+<td align="left">null</td>
+<td align="left">None</td>
+</tr>
+</tbody></table>
+<p>Python 内置的<code>json</code>模块提供了非常完善的 Python 对象到 JSON 格式的转换，<code>dumps()</code>方法返回一个<code>str</code>，内容就是标准的 JSON。类似的，<code>dump()</code>方法可以直接把 JSON 写入一个<code>file-like Object</code>。要把 JSON 反序列化 Python 对象，用<code>loads()</code>或者对应的<code>load()</code>方法，前者把 JSON 的字符串反序列化，后者从<code>file-like Object</code>中读取字符串并反序列化。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> json</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>d = dict(name=<span class="string">'Bob'</span>, age=<span class="number">20</span>, score=<span class="number">88</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>json.dumps(d)</span><br><span class="line"><span class="string">'&#123;"age": 20, "score": 88, "name": "Bob"&#125;'</span></span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>json_str = <span class="string">'&#123;"age": 20, "score": 88, "name": "Bob"&#125;'</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>json.loads(json_str)</span><br><span class="line">&#123;<span class="string">'age'</span>: <span class="number">20</span>, <span class="string">'score'</span>: <span class="number">88</span>, <span class="string">'name'</span>: <span class="string">'Bob'</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>小结</strong>：</p>
+<ol>
+<li>在 <code>Python</code> 中，文件读写是通过<code>open()</code>函数打开的文件对象完成的，使用<code>with</code>语句操作文件 IO 是个好习惯。</li>
+<li><code>StringIO</code> 和 <code>BytesIO</code> 是在内存中操作 <code>str</code> 和 <code>bytes</code> 的方法，使得和读写文件具有一致的接口。</li>
+<li>Python 的<code>os</code>模块封装了操作系统的目录和文件操作，要注意这些函数有的在<code>os</code>模块中，有的在<code>os.path</code>模块中。</li>
+<li>Python 语言特定的序列化模块是<code>pickle</code>，但如果要把序列化搞得更通用、更符合 Web 标准，就可以使用<code>json</code>模块，<code>json</code>模块的<code>dumps()</code>和<code>loads()</code>函数是定义得非常好的接口的典范。</li>
+</ol>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/python-rules/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1736,354 +2154,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/python-introduction/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/24/python-introduction/" class="post-title-link" itemprop="url">Python · 简介安装</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-24 09:06:35 / 修改时间：21:52:48" itemprop="dateCreated datePublished" datetime="2019-10-24T09:06:35+08:00">2019-10-24</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://www.python.org/" target="_blank" rel="noopener">Python</a> 是一种极少数能兼具 <strong>简单</strong> 与 <strong>功能强大</strong> 的编程语言。</p>
-<ul>
-<li><strong>优点</strong>：优雅、明确、简单</li>
-<li><strong>缺点</strong>：执行效率稍低、代码无法加密</li>
-</ul>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Mac上安装</span></span><br><span class="line">$ brew install python3</span><br><span class="line"></span><br><span class="line">$ python -V</span><br><span class="line">Python <span class="number">2.7</span>.<span class="number">10</span></span><br><span class="line"></span><br><span class="line">$ python3 -V</span><br><span class="line">Python <span class="number">3.7</span>.<span class="number">4</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="开发"><a href="#开发" class="headerlink" title="开发"></a>开发</h2><p><strong>IDE</strong></p>
-<ul>
-<li><strong><a href="http://www.sublimetext.com/" target="_blank" rel="noopener">Sublime Text</a></strong>：高级文本编辑器</li>
-<li><strong><a href="http://www.jetbrains.com/pycharm/" target="_blank" rel="noopener">PyCharm</a></strong>：Python 开发神器</li>
-</ul>
-<p><strong>注释</strong></p>
-<ul>
-<li><strong>单行注释</strong>：以 <code>#</code> 开头的语句</li>
-<li><strong>多行注释</strong>：以 <code>&quot;&quot;&quot;</code> 开头，<code>&quot;&quot;&quot;</code> 结尾的语句</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"></span><br><span class="line"><span class="string">""</span><span class="string">"</span></span><br><span class="line"><span class="string">第一个 Python 程序 - hello, world!</span></span><br><span class="line"><span class="string">向伟大的 Guido van Rossum 先生致敬</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">Version: 0.1</span></span><br><span class="line"><span class="string">Author: Hui Rao</span></span><br><span class="line"><span class="string">"</span><span class="string">""</span></span><br><span class="line"></span><br><span class="line">print(<span class="string">'hello, world!'</span>)</span><br><span class="line">print(<span class="string">'你好'</span>, <span class="string">'世界'</span>)  <span class="comment"># print("你好,世界！")</span></span><br><span class="line">print(<span class="string">'hello'</span>, <span class="string">'world'</span>, sep=<span class="string">', '</span>, <span class="keyword">end</span>=<span class="string">'!'</span>)</span><br><span class="line">print(<span class="string">'goodbye, world'</span>, <span class="keyword">end</span>=<span class="string">'!\n'</span>)</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p><strong>注意</strong>：Python 程序是 <strong>大小写敏感</strong> 的。</p>
-</blockquote>
-<p><strong>缩进</strong></p>
-<p>Python 语言官方建议使用 <strong>四个空格</strong> 来缩进，放置在一起的语句必须拥有相同的缩进，每一组这样的语句被称为块。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/23/mysql-tuning-hmqm/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/23/mysql-tuning-hmqm/" class="post-title-link" itemprop="url">MySQL · 调优案例 · HMQM</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-23 15:23:38" itemprop="dateCreated datePublished" datetime="2019-10-23T15:23:38+08:00">2019-10-23</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-24 14:20:01" itemprop="dateModified" datetime="2019-10-24T14:20:01+08:00">2019-10-24</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-23-174720.png" alt></p>
-<h2 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select table_name,table_rows,CONCAT(TRUNCATE(SUM(data_length)/1024/1024,2),'MB') AS data_size, CONCAT(TRUNCATE(SUM(index_length)/1024/1024,2),'MB') AS index_size from information_schema.tables where TABLE_SCHEMA = 'mqm' and table_name='t_batch';</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| table_name | table_rows | data_size | index_size |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| t_batch    |   10289197 | 4895.00MB | 7578.23MB  |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.03</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">INDEX</span> idx_group</span><br><span class="line"><span class="keyword">Analyze</span> <span class="keyword">table</span> t_batch;</span><br><span class="line"></span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| table_name | table_rows | data_size | index_size |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| t_batch    |   10657643 | 4895.00MB | 1230.93MB  |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| table_name | table_rows | data_size | index_size |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| t_batch    |    <span class="number">9852520</span> | <span class="number">4895.00</span>MB | <span class="number">2863.00</span>MB  |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line"><span class="number">1</span> <span class="keyword">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.04</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">ALTER</span> <span class="keyword">TABLE</span> t_batch <span class="keyword">ADD</span> <span class="keyword">INDEX</span> idx_check_style_id(check_style_id);</span><br><span class="line">Query OK, 0 rows affected (2 min 27.34 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; ALTER TABLE t_batch ADD INDEX idx_check_status_id(check_status_id);</span><br><span class="line">Query OK, 0 rows affected (1 min 0.12 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; ALTER TABLE t_batch ADD INDEX idx_iqc_leader_id(iqc_leader_id);</span><br><span class="line">Query OK, 0 rows affected (1 min 14.52 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; ALTER TABLE t_batch ADD INDEX idx_create_date(create_date);</span><br><span class="line">Query OK, 0 rows affected (53.03 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; ALTER TABLE t_batch ADD INDEX idx_IQC_manager_id(IQC_manager_id);</span><br><span class="line">Query OK, 0 rows affected (1 min 11.37 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; ALTER TABLE t_batch ADD INDEX idx_syb_id(syb_id);</span><br><span class="line">Query OK, 0 rows affected (1 min 3.97 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; ALTER TABLE t_batch ADD INDEX idx_group(check_style_id, check_status_id, delete_status);</span><br><span class="line">Query OK, 0 rows affected (2 min 3.08 sec)</span><br></pre></td></tr></table></figure>
-
-<p><strong>测试数据库</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">实例：<span class="number">10.138</span>.<span class="number">22.192</span>:<span class="number">3306</span>/mqm</span><br><span class="line">账号：hmqm/hmqm</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">+----+-------------+---------+-------------+----------------------------------------------------------+---------------------------------------+---------+------+------+---------------------------------------------------------------------+</span><br><span class="line">| id | select_type | table   | type        | possible_keys                                            | key                                   | key_len | ref  | rows | Extra                                                               |</span><br><span class="line">+----+-------------+---------+-------------+----------------------------------------------------------+---------------------------------------+---------+------+------+---------------------------------------------------------------------+</span><br><span class="line">|  <span class="number">1</span> | SIMPLE      | t_batch | index_merge | idx_check_style_id,idx_check_status_id,idx_iqc_leader_id | idx_check_status_id,idx_iqc_leader_id | <span class="number">5</span>,<span class="number">63</span>    | NULL | <span class="number">4955</span> | Using intersect(idx_check_status_id,idx_iqc_leader_id); Using where |</span><br><span class="line">+----+-------------+---------+-------------+----------------------------------------------------------+---------------------------------------+---------+------+------+---------------------------------------------------------------------+</span><br><span class="line"></span><br><span class="line">type: index_merge: 表示查询使用了两个以上的索引，最后取交集或者并集，常见and ，or的条件使用了不同的索引，官方排序这个在ref_or_null之后，但是实际上由于要读取所个索引，性能可能大部分时间都不如range</span><br><span class="line">extra: using intersect，表示使用and的各个索引的条件时，该信息表示是从处理结果获取交集</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">explain</span> <span class="keyword">select</span> <span class="string">''</span> batch_fail_id,<span class="string">''</span> uuid_Fail,b.send_goods_No,b.test_type,b.order_no,b.row_no,b.bu,b.mtl_no,b.mtl_name,b.mtl_group,b.mtl_group_name,b.materiel_category_id,b.materiel_category_name,b.pattern_amount,b.plan_pattern_amount,b.goods_unit,b.plan_send_day,b.fact_send_Day,b.stock_Day,b.supply_code,b.supply_name,b.supply_check_level,b.sap_mark_id,b.sap_mark_name,b.syb_id,b.syb_name,b.check_style_id,b.check_style_name,b.check_type_id,b.check_type_name,b.QC_STATUS,b.QC_STATUS_INSTR_DATE,b.QC_NO,b.factory_code,b.goods_sort,b.price_unit,b.stock_price,b.LICHA,b.BSART,b.LGORT,b.plan_Date,b.TEST_CONCLUSION,b.IQC_manager_id,b.IQC_manager_name,b.iqc_leader_id,b.iqc_leader_name,b.test_complete_day,b.test_start_day,b.new_or_old,b.check_status_id,b.is_appeal,b.is_start_check,b.standard_type,b.check_reason,b.is_stop,b.check_time,b.instance_id,b.create_date createDate,b.delete_status</span><br><span class="line"><span class="keyword">from</span> t_batch b</span><br><span class="line"><span class="keyword">where</span> b.mtl_no <span class="keyword">like</span> <span class="keyword">CONCAT</span>(<span class="string">'%470A%'</span>) </span><br><span class="line"><span class="keyword">and</span> b.syb_id <span class="keyword">in</span> (<span class="number">18</span>,<span class="number">306</span>,<span class="number">323</span>,<span class="number">17</span>,<span class="number">483</span>,<span class="number">15</span>,<span class="number">519</span>)</span><br><span class="line"><span class="keyword">and</span> b.lgort <span class="keyword">like</span> <span class="keyword">CONCAT</span>(<span class="string">'%J191023878681%'</span>)</span><br><span class="line"><span class="keyword">and</span> b.delete_status = <span class="string">'N'</span></span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line"><span class="keyword">select</span> f.batch_fail_id,f.uuid,f.send_goods_No,f.test_type,f.order_no,f.row_no,f.bu,f.mtl_no,f.mtl_name,f.mtl_group,f.mtl_group_name,f.materiel_category_id,f.materiel_category_name,f.pattern_amount,f.plan_pattern_amount,f.goods_unit,f.plan_send_day,f.fact_send_Day,f.stock_Day,f.supply_code,f.supply_name,f.supply_check_level,f.sap_mark_id,f.sap_mark_name,f.syb_id,f.syb_name,f.check_style_id,f.check_style_name,f.check_type_id,f.check_type_name,f.QC_STATUS,f.QC_STATUS_INSTR_DATE,f.QC_NO,f.factory_code,f.goods_sort,f.price_unit,f.stock_price,f.LICHA,f.BSART,f.LGORT,f.plan_Date,f.TEST_CONCLUSION,f.IQC_manager_id,f.IQC_manager_name,f.iqc_leader_id,f.iqc_leader_name,f.test_complete_day,f.test_start_day,f.new_or_old,f.check_status_id,f.is_appeal,f.is_start_check,f.standard_type,f.check_reason,f.is_stop,f.check_time,f.instance_id,f.create_date createDate,f.delete_status</span><br><span class="line"><span class="keyword">from</span> t_batch_fail f</span><br><span class="line"><span class="keyword">where</span> f.mtl_no <span class="keyword">like</span> <span class="keyword">CONCAT</span>(<span class="string">'%470A%'</span>)</span><br><span class="line"><span class="keyword">and</span> f.syb_id <span class="keyword">in</span> (<span class="number">18</span>,<span class="number">306</span>,<span class="number">323</span>,<span class="number">17</span>,<span class="number">483</span>,<span class="number">15</span>,<span class="number">519</span>)</span><br><span class="line"><span class="keyword">and</span> f.lgort <span class="keyword">like</span> <span class="keyword">CONCAT</span>(<span class="string">'%J191023878681%'</span>) </span><br><span class="line"><span class="keyword">and</span> f.delete_status = <span class="string">'N'</span></span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span> createDate <span class="keyword">DESC</span></span><br><span class="line"><span class="keyword">limit</span> <span class="number">0</span>,<span class="number">10</span></span><br><span class="line"></span><br><span class="line">// 查询时 <span class="keyword">limit</span> <span class="number">0</span>,<span class="number">10</span></span><br><span class="line">// 导出时 <span class="keyword">limit</span> <span class="number">0</span>,<span class="number">5000</span></span><br><span class="line">// 外检查询入场数据，常用的参数：物料号mtl_no截取后几位，看单号lgort，系统自动获取外检的事业部信息syb_id,有时候是一个事业部，有时候是多个事业部遍历。</span><br><span class="line"><span class="keyword">and</span> b.syb_id = <span class="number">18</span>    </span><br><span class="line"><span class="keyword">and</span> b.syb_id <span class="keyword">in</span> (<span class="number">18</span>,<span class="number">306</span>,<span class="number">323</span>,<span class="number">17</span>,<span class="number">483</span>,<span class="number">15</span>,<span class="number">519</span>) 这两个条件只会存在一个。</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2132,7 +2202,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">105</span>
+                    <span class="site-state-item-count">107</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
