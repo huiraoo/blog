@@ -103,7 +103,7 @@
 <meta property="og:site_name" content="Rao&#39;s Blog">
 <meta property="og:description" content="磁盘类型按照材质分类：  HDD（Hard Disk Driver）：传统硬盘，即机械硬盘 SSD（Solid State Disk）：固态硬盘，是一种主要以闪存作为永久性存储器的计算机存储设备。  按照硬盘接口分类：硬盘接口是指硬盘与主板之间的连接方式  SATA：串形高技术配置接口 SAS：串形小型计算机系统接口 SAS 接口的硬盘比 SATA 接口的硬盘传输速度要快很多，并且性能也高很多">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-25T15:09:48.459Z">
+<meta property="og:updated_time" content="2019-10-26T00:54:36.620Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux 磁盘相关知识">
 <meta name="twitter:description" content="磁盘类型按照材质分类：  HDD（Hard Disk Driver）：传统硬盘，即机械硬盘 SSD（Solid State Disk）：固态硬盘，是一种主要以闪存作为永久性存储器的计算机存储设备。  按照硬盘接口分类：硬盘接口是指硬盘与主板之间的连接方式  SATA：串形高技术配置接口 SAS：串形小型计算机系统接口 SAS 接口的硬盘比 SATA 接口的硬盘传输速度要快很多，并且性能也高很多">
@@ -366,12 +366,24 @@
                 
               
 
-              <time title="创建时间：2019-10-25 22:17:51 / 修改时间：23:09:48" itemprop="dateCreated datePublished" datetime="2019-10-25T22:17:51+08:00">2019-10-25</time>
+              <time title="创建时间：2019-10-25 22:17:51" itemprop="dateCreated datePublished" datetime="2019-10-25T22:17:51+08:00">2019-10-25</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-26 08:54:36" itemprop="dateModified" datetime="2019-10-26T08:54:36+08:00">2019-10-26</time>
               
             
           </span>
@@ -445,12 +457,12 @@
 <ul>
 <li><code>-d</code> ，表示显示设备名称</li>
 <li><code>-o</code> ，表示仅显示特定的列</li>
+<li><code>ROTA</code> 是 <code>1</code> 的表示可以旋转，磁盘类型是 <code>HDD</code>。</li>
+<li><code>ROTA</code> 是 <code>0</code> 的表示不可以旋转，就有可能是 <code>SSD</code>。</li>
 </ul>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ lsblk -d -o name,rota</span><br><span class="line">NAME ROTA</span><br><span class="line">fd0     <span class="number">1</span></span><br><span class="line">sda     <span class="number">1</span></span><br><span class="line">sdb     <span class="number">1</span></span><br><span class="line">sr0     <span class="number">1</span></span><br></pre></td></tr></table></figure>
 
-<p><code>ROTA</code> 是 <code>1</code> 的表示可以旋转，磁盘类型是 <code>HDD</code>。</p>
-<p><code>ROTA</code> 是 <code>0</code> 的表示不可以旋转，就有可能是 <code>SSD</code>。</p>
-<h2 id="磁盘性能"><a href="#磁盘性能" class="headerlink" title="磁盘性能"></a>磁盘性能</h2><p><strong>硬盘性能指标</strong>：IOPS (Input / Output Per Second) 即每秒的输入输出量(读写次数)，是衡量磁盘性能的主要指标之一。</p>
+<h2 id="磁盘性能"><a href="#磁盘性能" class="headerlink" title="磁盘性能"></a>磁盘性能</h2><p><strong>硬盘性能指标</strong>：IOPS (Input / Output Per Second) 即每秒的输入输出量（读写次数），是衡量磁盘性能的主要指标之一。</p>
 <p>使用 <code>dd</code> 测试硬盘吞吐量：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ dd <span class="keyword">if</span>=/dev/zero of=/dev/sda bs=<span class="number">4</span>k count=<span class="number">3000</span> oflag=direct</span><br><span class="line">记录了<span class="number">3000</span>+<span class="number">0</span> 的读入</span><br><span class="line">记录了<span class="number">3000</span>+<span class="number">0</span> 的写出</span><br><span class="line"><span class="number">12288000</span>字节(<span class="number">12</span> MB)已复制，<span class="number">0.0791091</span> 秒，<span class="number">155</span> MB/秒</span><br></pre></td></tr></table></figure>
 
