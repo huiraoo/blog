@@ -96,17 +96,17 @@
 
 
 
-  <meta name="description" content="多任务的实现有3种方式：  多进程模式 多线程模式 多进程+多线程模式  多线程的执行方式和多进程是一样的，也是由操作系统在多个线程之间快速切换，让每个线程都短暂地交替运行，看起来就像同时执行一样。当然，真正地同时执行多线程需要多核CPU才可能实现。 进程：一个任务就是一个进程，一个线程相当于进程的子任务。 线程：线程是最小的执行单元，而进程由至少一个线程组成。 多进程和多线程的程序涉及到同步、数">
+  <meta name="description" content="概念目的：多核 CPU 时代，为了充分利用资源，依赖多任务并发编程技术提升程序性能和改善用户体验。 多任务并发编程方式：  多进程 多线程 多进程 + 多线程  进程：操作系统中执行的一个程序，一个任务就是一个进程。 线程：线程是最小的执行单元，一个线程相当于进程的子任务。 进程间通信方式：管道、信号、套接字、共享内存区等。 多进程 os 模块：使用 fork() 调用实现多进程。 multipr">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Python · 进程与线程">
 <meta property="og:url" content="https://huiraoo.github.io/blog/2019/10/24/python-threads/index.html">
 <meta property="og:site_name" content="Rao&#39;s Blog">
-<meta property="og:description" content="多任务的实现有3种方式：  多进程模式 多线程模式 多进程+多线程模式  多线程的执行方式和多进程是一样的，也是由操作系统在多个线程之间快速切换，让每个线程都短暂地交替运行，看起来就像同时执行一样。当然，真正地同时执行多线程需要多核CPU才可能实现。 进程：一个任务就是一个进程，一个线程相当于进程的子任务。 线程：线程是最小的执行单元，而进程由至少一个线程组成。 多进程和多线程的程序涉及到同步、数">
+<meta property="og:description" content="概念目的：多核 CPU 时代，为了充分利用资源，依赖多任务并发编程技术提升程序性能和改善用户体验。 多任务并发编程方式：  多进程 多线程 多进程 + 多线程  进程：操作系统中执行的一个程序，一个任务就是一个进程。 线程：线程是最小的执行单元，一个线程相当于进程的子任务。 进程间通信方式：管道、信号、套接字、共享内存区等。 多进程 os 模块：使用 fork() 调用实现多进程。 multipr">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-24T02:23:10.577Z">
+<meta property="og:updated_time" content="2019-10-26T05:54:35.381Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Python · 进程与线程">
-<meta name="twitter:description" content="多任务的实现有3种方式：  多进程模式 多线程模式 多进程+多线程模式  多线程的执行方式和多进程是一样的，也是由操作系统在多个线程之间快速切换，让每个线程都短暂地交替运行，看起来就像同时执行一样。当然，真正地同时执行多线程需要多核CPU才可能实现。 进程：一个任务就是一个进程，一个线程相当于进程的子任务。 线程：线程是最小的执行单元，而进程由至少一个线程组成。 多进程和多线程的程序涉及到同步、数">
+<meta name="twitter:description" content="概念目的：多核 CPU 时代，为了充分利用资源，依赖多任务并发编程技术提升程序性能和改善用户体验。 多任务并发编程方式：  多进程 多线程 多进程 + 多线程  进程：操作系统中执行的一个程序，一个任务就是一个进程。 线程：线程是最小的执行单元，一个线程相当于进程的子任务。 进程间通信方式：管道、信号、套接字、共享内存区等。 多进程 os 模块：使用 fork() 调用实现多进程。 multipr">
 
 
 
@@ -366,12 +366,24 @@
                 
               
 
-              <time title="创建时间：2019-10-24 09:30:41 / 修改时间：10:23:10" itemprop="dateCreated datePublished" datetime="2019-10-24T09:30:41+08:00">2019-10-24</time>
+              <time title="创建时间：2019-10-24 09:30:41" itemprop="dateCreated datePublished" datetime="2019-10-24T09:30:41+08:00">2019-10-24</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-26 13:54:35" itemprop="dateModified" datetime="2019-10-26T13:54:35+08:00">2019-10-26</time>
               
             
           </span>
@@ -430,18 +442,33 @@
       
 
       
-        <p>多任务的实现有3种方式：</p>
+        <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p><strong>目的</strong>：多核 <code>CPU</code> 时代，为了充分利用资源，依赖多任务并发编程技术<strong>提升程序性能</strong>和<strong>改善用户体验</strong>。</p>
+<p><strong>多任务并发编程方式</strong>：</p>
 <ul>
-<li>多进程模式</li>
-<li>多线程模式</li>
-<li>多进程+多线程模式</li>
+<li>多进程</li>
+<li>多线程</li>
+<li>多进程 + 多线程</li>
 </ul>
-<p>多线程的执行方式和多进程是一样的，也是由操作系统在多个线程之间快速切换，让每个线程都短暂地交替运行，看起来就像同时执行一样。当然，真正地同时执行多线程需要多核CPU才可能实现。</p>
-<p><strong>进程</strong>：一个任务就是一个进程，一个线程相当于进程的子任务。</p>
-<p><strong>线程</strong>：线程是最小的执行单元，而进程由至少一个线程组成。</p>
-<p>多进程和多线程的程序涉及到同步、数据共享的问题，编写起来更复杂。</p>
-<p>Unix/Linux 操作系统提供了一个<code>fork()</code>系统调用，它非常特殊。普通的函数调用，调用一次，返回一次，但是<code>fork()</code>调用一次，返回两次，因为操作系统自动把当前进程（称为父进程）复制了一份（称为子进程），然后，分别在父进程和子进程内返回。子进程永远返回<code>0</code>，而父进程返回子进程的 ID。这样做的理由是，一个父进程可以 fork 出很多子进程，所以，父进程要记下每个子进程的 ID，而子进程只需要调用<code>getppid()</code>就可以拿到父进程的 ID。</p>
-<p>Python 的<code>os</code>模块封装了常见的系统调用，其中就包括<code>fork</code>，可以在 Python 程序中轻松创建子进程：</p>
+<p><strong>进程</strong>：操作系统中执行的一个程序，一个任务就是一个进程。</p>
+<p><strong>线程</strong>：线程是最小的执行单元，一个线程相当于进程的子任务。</p>
+<p><strong>进程间通信方式</strong>：管道、信号、套接字、共享内存区等。</p>
+<h2 id="多进程"><a href="#多进程" class="headerlink" title="多进程"></a>多进程</h2><ul>
+<li><strong><code>os</code> 模块</strong>：使用 <code>fork()</code> 调用实现多进程。</li>
+<li><strong><code>multiprocessing</code> 模块</strong>：实现跨平台多进程。</li>
+<li><strong><code>Process</code> 对象</strong>：实现多进程。</li>
+<li><strong><code>Pool</code> 对象</strong>：可以用进程池的方式批量创建子进程，<code>Pool</code> 的默认大小是 <code>CPU</code> 的核数。</li>
+<li><strong><code>Queue</code> 对象</strong>：通过队列实现进程间通信。</li>
+<li><strong><code>Pipes</code> 对象</strong>：通过管道实现进程间通信。</li>
+<li><strong><code>start</code> 方法</strong>：表示启动进程。</li>
+<li><strong><code>join</code> 方法</strong>：表示等待进程执行结束。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> random <span class="keyword">import</span> randint</span><br><span class="line"><span class="keyword">from</span> time <span class="keyword">import</span> time, sleep</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">download_task</span><span class="params">(filename)</span>:</span></span><br><span class="line">    print(<span class="string">'开始下载%s...'</span> % filename)</span><br><span class="line">    time_to_download = randint(<span class="number">5</span>, <span class="number">10</span>)</span><br><span class="line">    sleep(time_to_download)</span><br><span class="line">    print(<span class="string">'%s下载完成! 耗费了%d秒'</span> % (filename, time_to_download))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    start = time()</span><br><span class="line">    download_task(<span class="string">'Python从入门到进坑.pdf'</span>)</span><br><span class="line">    download_task(<span class="string">'Peking Hot.avi'</span>)</span><br><span class="line">    end = time()</span><br><span class="line">    print(<span class="string">'总共耗费了%.2f秒.'</span> % (end - start))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">运行结果：</span><br><span class="line">开始下载 Python从入门到进坑.pdf...</span><br><span class="line">Python从入门到住院.pdf下载完成! 耗费了<span class="number">6</span>秒</span><br><span class="line">开始下载 Peking Hot.avi...</span><br><span class="line">Peking Hot.avi下载完成! 耗费了<span class="number">7</span>秒</span><br><span class="line">总共耗费了<span class="number">13.01</span>秒.</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Process</span><br><span class="line"><span class="keyword">from</span> os <span class="keyword">import</span> getpid</span><br><span class="line"><span class="keyword">from</span> random <span class="keyword">import</span> randint</span><br><span class="line"><span class="keyword">from</span> time <span class="keyword">import</span> time, sleep</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">download_task</span><span class="params">(filename)</span>:</span></span><br><span class="line">    print(<span class="string">'启动下载进程，进程号[%d].'</span> % getpid())</span><br><span class="line">    print(<span class="string">'开始下载%s...'</span> % filename)</span><br><span class="line">    time_to_download = randint(<span class="number">5</span>, <span class="number">10</span>)</span><br><span class="line">    sleep(time_to_download)</span><br><span class="line">    print(<span class="string">'%s下载完成! 耗费了%d秒'</span> % (filename, time_to_download))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    start = time()</span><br><span class="line">    p1 = Process(target=download_task, args=(<span class="string">'Python从入门到住院.pdf'</span>, ))</span><br><span class="line">    p1.start()</span><br><span class="line">    p2 = Process(target=download_task, args=(<span class="string">'Peking Hot.avi'</span>, ))</span><br><span class="line">    p2.start()</span><br><span class="line">    p1.join()</span><br><span class="line">    p2.join()</span><br><span class="line">    end = time()</span><br><span class="line">    print(<span class="string">'总共耗费了%.2f秒.'</span> % (end - start))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">运行结果：</span><br><span class="line">启动下载进程，进程号[<span class="number">1530</span>].</span><br><span class="line">开始下载 Python从入门到住院.pdf...</span><br><span class="line">启动下载进程，进程号[<span class="number">1531</span>].</span><br><span class="line">开始下载 Peking Hot.avi...</span><br><span class="line">Peking Hot.avi下载完成! 耗费了<span class="number">7</span>秒</span><br><span class="line">Python从入门到住院.pdf下载完成! 耗费了<span class="number">10</span>秒</span><br><span class="line">总共耗费了<span class="number">10.01</span>秒.</span><br></pre></td></tr></table></figure>
+
+<h2 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h2><ul>
+<li><strong><code>thread</code> 模块</strong>：实现多线程</li>
+</ul>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">print(<span class="string">'Process (%s) start...'</span> % os.getpid())</span><br><span class="line"><span class="comment"># Only works on Unix/Linux/Mac</span></span><br><span class="line">pid = os.fork()</span><br><span class="line"><span class="keyword">if</span> pid == <span class="number">0</span>:</span><br><span class="line">    print(<span class="string">'I am child process (%s) and my parent is %s.'</span> % (os.getpid(), os.getppid()))</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    print(<span class="string">'I (%s) just created a child process (%s).'</span> % (os.getpid(), pid))</span><br><span class="line">    </span><br><span class="line">Process (<span class="number">876</span>) start...</span><br><span class="line">I (<span class="number">876</span>) just created a child process (<span class="number">877</span>).</span><br><span class="line">I am child process (<span class="number">877</span>) <span class="keyword">and</span> my parent <span class="keyword">is</span> <span class="number">876.</span></span><br></pre></td></tr></table></figure>
 
 <p>Python 的 <code>multiprocessing</code>模块就是跨平台版本的多进程模块。<code>multiprocessing</code>模块提供了一个<code>Process</code>类来代表一个进程对象，下面的例子演示了启动一个子进程并等待其结束。</p>
@@ -451,16 +478,9 @@
 <p><strong>Pool</strong>：如果要启动大量的子进程，可以用进程池的方式批量创建子进程，<code>Pool</code>的默认大小是 CPU 的核数。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Pool</span><br><span class="line"><span class="keyword">import</span> os, time, random</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">long_time_task</span><span class="params">(name)</span>:</span></span><br><span class="line">    print(<span class="string">'Run task %s (%s)...'</span> % (name, os.getpid()))</span><br><span class="line">    start = time.time()</span><br><span class="line">    time.sleep(random.random() * <span class="number">3</span>)</span><br><span class="line">    end = time.time()</span><br><span class="line">    print(<span class="string">'Task %s runs %0.2f seconds.'</span> % (name, (end - start)))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">'__main__'</span>:</span><br><span class="line">    print(<span class="string">'Parent process %s.'</span> % os.getpid())</span><br><span class="line">    p = Pool(<span class="number">4</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">5</span>):</span><br><span class="line">        p.apply_async(long_time_task, args=(i,))</span><br><span class="line">    print(<span class="string">'Waiting for all subprocesses done...'</span>)</span><br><span class="line">    p.close()</span><br><span class="line">    p.join()</span><br><span class="line">    print(<span class="string">'All subprocesses done.'</span>)</span><br><span class="line">    </span><br><span class="line">执行结果如下：</span><br><span class="line">Parent process <span class="number">669.</span></span><br><span class="line">Waiting <span class="keyword">for</span> all subprocesses done...</span><br><span class="line">Run task <span class="number">0</span> (<span class="number">671</span>)...</span><br><span class="line">Run task <span class="number">1</span> (<span class="number">672</span>)...</span><br><span class="line">Run task <span class="number">2</span> (<span class="number">673</span>)...</span><br><span class="line">Run task <span class="number">3</span> (<span class="number">674</span>)...</span><br><span class="line">Task <span class="number">2</span> runs <span class="number">0.14</span> seconds.</span><br><span class="line">Run task <span class="number">4</span> (<span class="number">673</span>)...</span><br><span class="line">Task <span class="number">1</span> runs <span class="number">0.27</span> seconds.</span><br><span class="line">Task <span class="number">3</span> runs <span class="number">0.86</span> seconds.</span><br><span class="line">Task <span class="number">0</span> runs <span class="number">1.41</span> seconds.</span><br><span class="line">Task <span class="number">4</span> runs <span class="number">1.91</span> seconds.</span><br><span class="line">All subprocesses done.</span><br></pre></td></tr></table></figure>
 
-<p><strong>子进程</strong>：很多时候，子进程并不是自身，而是一个外部进程。我们创建了子进程后，还需要控制子进程的输入和输出。<code>subprocess</code>模块可以让我们非常方便地启动一个子进程，然后控制其输入和输出。</p>
 <p><strong>进程间通信</strong>：<code>Process</code>之间肯定是需要通信的，操作系统提供了很多机制来实现进程间的通信。<code>Python</code> 的<code>multiprocessing</code> 模块包装了底层的机制，提供了<code>Queue</code>、<code>Pipes</code>等多种方式来交换数据。我们以<code>Queue</code>为例，在父进程中创建两个子进程，一个往 <code>Queue</code> 里写数据，一个从 <code>Queue</code> 里读数据。</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Process, Queue</span><br><span class="line"><span class="keyword">import</span> os, time, random</span><br><span class="line"></span><br><span class="line"><span class="comment"># 写数据进程执行的代码:</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">write</span><span class="params">(q)</span>:</span></span><br><span class="line">    print(<span class="string">'Process to write: %s'</span> % os.getpid())</span><br><span class="line">    <span class="keyword">for</span> value <span class="keyword">in</span> [<span class="string">'A'</span>, <span class="string">'B'</span>, <span class="string">'C'</span>]:</span><br><span class="line">        print(<span class="string">'Put %s to queue...'</span> % value)</span><br><span class="line">        q.put(value)</span><br><span class="line">        time.sleep(random.random())</span><br><span class="line"></span><br><span class="line"><span class="comment"># 读数据进程执行的代码:</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">read</span><span class="params">(q)</span>:</span></span><br><span class="line">    print(<span class="string">'Process to read: %s'</span> % os.getpid())</span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        value = q.get(<span class="literal">True</span>)</span><br><span class="line">        print(<span class="string">'Get %s from queue.'</span> % value)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">'__main__'</span>:</span><br><span class="line">    <span class="comment"># 父进程创建Queue，并传给各个子进程：</span></span><br><span class="line">    q = Queue()</span><br><span class="line">    pw = Process(target=write, args=(q,))</span><br><span class="line">    pr = Process(target=read, args=(q,))</span><br><span class="line">    <span class="comment"># 启动子进程pw，写入:</span></span><br><span class="line">    pw.start()</span><br><span class="line">    <span class="comment"># 启动子进程pr，读取:</span></span><br><span class="line">    pr.start()</span><br><span class="line">    <span class="comment"># 等待pw结束:</span></span><br><span class="line">    pw.join()</span><br><span class="line">    <span class="comment"># pr进程里是死循环，无法等待其结束，只能强行终止:</span></span><br><span class="line">    pr.terminate()</span><br><span class="line">    </span><br><span class="line">执行结果如下：</span><br><span class="line">Process to write: <span class="number">50563</span></span><br><span class="line">Put A to queue...</span><br><span class="line">Process to read: <span class="number">50564</span></span><br><span class="line">Get A <span class="keyword">from</span> queue.</span><br><span class="line">Put B to queue...</span><br><span class="line">Get B <span class="keyword">from</span> queue.</span><br><span class="line">Put C to queue...</span><br><span class="line">Get C <span class="keyword">from</span> queue.</span><br></pre></td></tr></table></figure>
 
-<p><strong>小结</strong>：</p>
-<ol>
-<li>在 <code>Unix/Linux</code> 下，可以使用 <code>fork()</code> 调用实现多进程。</li>
-<li>要实现跨平台的多进程，可以使用 <code>multiprocessing</code> 模块。</li>
-<li>进程间通信是通过 <code>Queue</code>、<code>Pipes</code> 等实现的。</li>
-</ol>
 
       
     </div>
@@ -547,8 +567,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -710,6 +739,23 @@
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概念"><span class="nav-number">1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多进程"><span class="nav-number">2.</span> <span class="nav-text">多进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多线程"><span class="nav-number">3.</span> <span class="nav-text">多线程</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       
