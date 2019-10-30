@@ -104,7 +104,7 @@
 <meta property="og:description" content="问题现象 123456789101112131415161718192021222324252627282930313233343536373839404142mysql&amp;gt; show slave status\G************************* 1. row ***************************               Slave_IO_State:">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-20-015800.png">
-<meta property="og:updated_time" content="2019-10-22T13:21:43.175Z">
+<meta property="og:updated_time" content="2019-10-30T08:34:25.763Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL · 案例分析 · 主从复制中断">
 <meta name="twitter:description" content="问题现象 123456789101112131415161718192021222324252627282930313233343536373839404142mysql&amp;gt; show slave status\G************************* 1. row ***************************               Slave_IO_State:">
@@ -385,7 +385,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-10-22 21:21:43" itemprop="dateModified" datetime="2019-10-22T21:21:43+08:00">2019-10-22</time>
+                <time title="修改时间：2019-10-30 16:34:25" itemprop="dateModified" datetime="2019-10-30T16:34:25+08:00">2019-10-30</time>
               
             
           </span>
@@ -454,11 +454,20 @@
 </ul>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@hop02 mzjh]<span class="comment"># ll | grep mysql-bin</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073742013</span> Sep <span class="number">12</span> <span class="number">14</span>:<span class="number">55</span> mysql-bin.<span class="number">001948</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073742073</span> Sep <span class="number">13</span> <span class="number">11</span>:<span class="number">53</span> mysql-bin.<span class="number">001949</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073742120</span> Sep <span class="number">14</span> <span class="number">08</span>:<span class="number">39</span> mysql-bin.<span class="number">001950</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073859355</span> Sep <span class="number">15</span> <span class="number">06</span>:<span class="number">21</span> mysql-bin.<span class="number">001951</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1074054892</span> Sep <span class="number">16</span> <span class="number">06</span>:<span class="number">18</span> mysql-bin.<span class="number">001952</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1075243641</span> Sep <span class="number">17</span> <span class="number">06</span>:<span class="number">18</span> mysql-bin.<span class="number">001953</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1074801420</span> Sep <span class="number">18</span> <span class="number">06</span>:<span class="number">16</span> mysql-bin.<span class="number">001954</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1075257243</span> Sep <span class="number">19</span> <span class="number">06</span>:<span class="number">16</span> mysql-bin.<span class="number">001955</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql   <span class="number">619405162</span> Sep <span class="number">19</span> <span class="number">13</span>:<span class="number">32</span> mysql-bin.<span class="number">001956</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1072898197</span> Sep <span class="number">20</span> <span class="number">09</span>:<span class="number">44</span> mysql-bin.<span class="number">001957</span></span><br><span class="line">-rw-r-----. <span class="number">1</span> mysql mysql         <span class="number">190</span> Sep <span class="number">19</span> <span class="number">13</span>:<span class="number">32</span> mysql-bin.index</span><br></pre></td></tr></table></figure>
 
-<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><p>为了避免数据丢失，需要重新搭建 Slave。</p>
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><ul>
+<li>为了避免数据丢失，需要重新搭建 <code>Slave</code></li>
+</ul>
 <blockquote>
-<p>Tips：不要使用 <code>rm -rf</code> 命令删除 <code>binlog</code> 日志文件，这样不会同步修改 <code>mysql-bin.index</code> 记录的 <code>binlog</code> 条目。在删除 <code>binlog</code> 的时候确保主库保留了从库 <code>show slave status</code> 的 <code>Relay_Master_Log_File</code> 对应的 <code>binlog</code> 日志文件。</p>
+<p><strong>Tips</strong>：不要使用 <code>rm -rf</code> 命令删除 <code>binlog</code> 日志文件</p>
 </blockquote>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 手动清除binlog</span></span><br><span class="line">$ mysql -u root -p</span><br><span class="line">mysql&gt; PURGE MASTER LOGS TO 'mysql-bin.001950′</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -u root -p</span><br><span class="line">mysql&gt; PURGE MASTER LOGS TO <span class="string">'mysql-bin.001950′</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>跳过解决 <code>Slave_SQL_Running:No</code></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; stop slave ;</span><br><span class="line">mysql&gt; set GLOBAL SQL_SLAVE_SKIP_COUNTER=<span class="number">1</span>;</span><br><span class="line">mysql&gt; start slave ;</span><br></pre></td></tr></table></figure>
+
+
       
     </div>
 
@@ -571,7 +580,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">112</span>
+                    <span class="site-state-item-count">114</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
