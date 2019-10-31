@@ -323,6 +323,574 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/05/mysql-toolkit/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/05/mysql-toolkit/" class="post-title-link" itemprop="url">Percona Toolkit · 简介安装</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-05 15:28:49" itemprop="dateCreated datePublished" datetime="2019-07-05T15:28:49+08:00">2019-07-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-19 23:58:11" itemprop="dateModified" datetime="2019-10-19T23:58:11+08:00">2019-10-19</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://github.com/percona/percona-toolkit" target="_blank" rel="noopener"><strong>Percona Toolkit</strong></a> 简称 <code>pt</code>，专用于 <code>MySQL</code> 运维管理的工具箱，几乎能满足 <code>MySQL</code> 日常运维的所有需求，使用 <code>Perl</code> 编写。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>①  安装</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ wget http://devops-files.oss-cn-qingdao.aliyuncs.com/percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-el7-x86_64-bundle.tar</span><br><span class="line">$ tar xvf percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-el7-x86_64-bundle.tar</span><br><span class="line">$ rpm -ivh percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br><span class="line"></span><br><span class="line">warning: percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64.rpm: Header V4 RSA/SHA256 Signature, key ID <span class="number">8507</span>efa5: NOKEY</span><br><span class="line">error: Failed dependencies:</span><br><span class="line">	perl(DBD::mysql) &gt;= <span class="number">1.0</span> is needed by percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64</span><br><span class="line">	perl(IO::Socket::SSL) is needed by percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64</span><br><span class="line">	perl(Digest::MD5) is needed by percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64</span><br></pre></td></tr></table></figure>
+
+<p>②  解决依赖</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ yum -y install perl-DBD-MySQL</span><br><span class="line">$ yum -y install perl-Digest-MD5</span><br><span class="line">$ yum -y install perl-IO-Socket-SSL</span><br><span class="line">$ yum -y install perl-TermReadKey</span><br><span class="line">$ rpm -ivh percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br><span class="line"></span><br><span class="line">$ pt-archiver --help</span><br><span class="line">Usage: pt-archiver [OPTIONS] --source DSN --where WHERE</span><br></pre></td></tr></table></figure>
+
+<h2 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>pt-align</td>
+<td>对齐其他工具的输出</td>
+</tr>
+<tr>
+<td>pt-archiver</td>
+<td>将表数据归档到另一个表或文件中</td>
+</tr>
+<tr>
+<td>pt-config-diff</td>
+<td>比较配置文件和参数</td>
+</tr>
+<tr>
+<td>pt-deadlock-logger</td>
+<td>提取和记录 <code>mysql</code> 死锁信息</td>
+</tr>
+<tr>
+<td>pt-diskstats</td>
+<td>查看系统磁盘状态</td>
+</tr>
+<tr>
+<td>pt-duplicate-key-checker</td>
+<td>列出并删除重复的索引和外键</td>
+</tr>
+<tr>
+<td>pt-fifo-split</td>
+<td>模拟切割文件并输出</td>
+</tr>
+<tr>
+<td>pt-find</td>
+<td>查找表并执行命令</td>
+</tr>
+<tr>
+<td>pt-fingerprint</td>
+<td>将查询转成密文</td>
+</tr>
+<tr>
+<td>pt-fk-error-logger</td>
+<td>提取和记录外键信息</td>
+</tr>
+<tr>
+<td>pt-heartbeat</td>
+<td>监控复制延迟</td>
+</tr>
+<tr>
+<td>pt-index-usage</td>
+<td>分析日志中索引使用情况，并出报告</td>
+</tr>
+<tr>
+<td>pt-ioprofile</td>
+<td>查询进程 <code>IO</code> 并打印活动表</td>
+</tr>
+<tr>
+<td>pt-kill</td>
+<td><code>kill</code> 掉符合条件的 <code>sql</code></td>
+</tr>
+<tr>
+<td>pt-mext</td>
+<td>并行查看 <code>status</code> 样本信息</td>
+</tr>
+<tr>
+<td>pt-mysql-summary</td>
+<td>对 <code>mysql</code> 配置和 <code>status</code> 进行汇总</td>
+</tr>
+<tr>
+<td>pt-online-schema-change</td>
+<td>在线修改表结构</td>
+</tr>
+<tr>
+<td>pt-pmp</td>
+<td>为查询结果跟踪，并汇总跟踪结果</td>
+</tr>
+<tr>
+<td>pt-query-digest</td>
+<td>分析查询日志，并产生报告</td>
+</tr>
+<tr>
+<td>pt-secure-collect</td>
+<td>收集、打包、加密数据</td>
+</tr>
+<tr>
+<td>pt-show-grants</td>
+<td>规范化和打印权限</td>
+</tr>
+<tr>
+<td>pt-sift</td>
+<td>浏览由 <code>pt-stalk</code> 创建的文件</td>
+</tr>
+<tr>
+<td>pt-slave-delay</td>
+<td>设定从落后主的时间</td>
+</tr>
+<tr>
+<td>pt-slave-find</td>
+<td>查找和打印所有复制层级关系</td>
+</tr>
+<tr>
+<td>pt-slave-restart</td>
+<td>监控 <code>salve</code> 错误，并尝试重启 <code>salve</code></td>
+</tr>
+<tr>
+<td>pt-stalk</td>
+<td>出现问题时，收集诊断数据</td>
+</tr>
+<tr>
+<td>pt-summary</td>
+<td>收集和显示系统概况</td>
+</tr>
+<tr>
+<td>pt-table-checksum</td>
+<td>校验主从复制一致性</td>
+</tr>
+<tr>
+<td>pt-table-sync</td>
+<td>高效同步表数据</td>
+</tr>
+<tr>
+<td>pt-table-usage</td>
+<td>分析日志中查询并分析表使用情况</td>
+</tr>
+<tr>
+<td>pt-upgrade</td>
+<td>在多个服务器上执行查询，并比较不同</td>
+</tr>
+<tr>
+<td>pt-variable-advisor</td>
+<td>分析参数，并提出建议</td>
+</tr>
+<tr>
+<td>pt-visual-explain</td>
+<td>格式化执行计划</td>
+</tr>
+</tbody></table>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/06/18/mysql-innodb_buffer_pool_size/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/06/18/mysql-innodb_buffer_pool_size/" class="post-title-link" itemprop="url">MySQL · 配置参数 · innodb_buffer_pool_size</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-18 14:09:04" itemprop="dateCreated datePublished" datetime="2019-06-18T14:09:04+08:00">2019-06-18</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-20 00:11:46" itemprop="dateModified" datetime="2019-10-20T00:11:46+08:00">2019-10-20</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>缓存</strong>是计算机系统非常重要的组成部分，因为访问硬盘相比缓存可能会慢 <code>100</code> 到 <code>100000</code> 倍，取决于访问的数据量。<code>MySQL</code> 作为一个存储系统，同样具有<strong>缓冲池</strong>（<code>Buffer Pool</code>）机制，以避免每次查询数据都进行磁盘 <code>IO</code>，不同存储引擎缓存方式有所区别：</p>
+<ul>
+<li><p><a href="https://baike.baidu.com/item/myisam" target="_blank" rel="noopener"><strong>MyISAM</strong></a> 使用的是操作系统的文件系统缓存，来缓存那些经常被查询的数据。</p>
+</li>
+<li><p><a href="https://baike.baidu.com/item/innodb" target="_blank" rel="noopener"><strong>InnoDB</strong></a> 不依赖操作系统的缓存，自己在 <a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-buffer-pool-resize.html" target="_blank" rel="noopener"><strong>InnoDB Buffer Pool</strong></a> 处理缓存。</p>
+</li>
+</ul>
+<p><strong>①  InnoDB Buffer Pool 主要作用？</strong></p>
+<p>缓存表数据与索引数据，把磁盘上的数据加载到缓冲池，避免每次访问都进行磁盘 <code>IO</code>，起到加速访问的作用。</p>
+<p><strong>②  为什么不把所有数据都放到缓冲池里？</strong></p>
+<p>凡事都具备两面性，抛开数据易失性不说，访问快速的反面是存储容量小：</p>
+<ul>
+<li>缓存访问快，但容量小，数据库存储了 <code>200G</code> 数据，缓存容量可能只有 <code>64G</code>；</li>
+<li>内存访问快，但容量小，买一台笔记本磁盘有 <code>2T</code>，内存可能只有 <code>16G</code>；</li>
+</ul>
+<p>因此，<strong>只能把“最热”的数据放到“最近”的地方，以“最大限度” 的降低磁盘访问</strong>。</p>
+<p><strong>③  如何管理与淘汰缓冲池，使得性能最大化呢？</strong></p>
+<h2 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h2><p><strong>参数</strong>：innodb_buffer_pool_size</p>
+<p><strong>介绍</strong>：配置缓冲池的大小，在内存允许的情况下，DBA 往往会建议调大这个参数，越多数据和索引放到内存里，数据库的性能会越好。</p>
+<p><strong>参数</strong>：innodb_old_blocks_pct</p>
+<p><strong>介绍</strong>：老生代占整个 <code>LRU</code> 链长度的比例，默认是 <code>37</code>，即整个 <code>LRU</code> 中新生代与老生代长度比例是 <code>63:37</code>。</p>
+<p><strong>参数</strong>：innodb_old_blocks_time</p>
+<p><strong>介绍</strong>：老生代停留时间窗口，单位是毫秒，默认是 <code>1000</code>，即同时满足“被访问”与“在老生代停留时间超过 <code>1</code> 秒两个条件，才会被插入到新生代头部。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select @@innodb_buffer_pool_size/1024/1024;</span><br><span class="line">+<span class="comment">-----------------------------------	--+</span></span><br><span class="line">| @@innodb_buffer_pool_size/1024/1024 |</span><br><span class="line">+<span class="comment">-------------------------------------+</span></span><br><span class="line">|                       1024.00000000 |</span><br><span class="line">+<span class="comment">-------------------------------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">show</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">'innodb_old%'</span>;</span><br><span class="line">+<span class="comment">------------------------+-------+</span></span><br><span class="line">| Variable_name          | Value |</span><br><span class="line">+<span class="comment">------------------------+-------+</span></span><br><span class="line">| innodb_old_blocks_pct  | 37    |</span><br><span class="line">| innodb_old_blocks_time | 1000  |</span><br><span class="line">+<span class="comment">------------------------+-------+</span></span><br><span class="line">2 rows in <span class="keyword">set</span> (<span class="number">0.01</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p>InnoDB Buffer Pool 缓存命中率计算：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">脏页率计算公式：innodb_buffer_pool_pages_dirty / innodb_buffer_pool_pages_data * <span class="number">100</span>%</span><br><span class="line">使用率计算公式：innodb_buffer_pool_pages_data / ( innodb_buffer_pool_pages_data + innodb_buffer_pool_pages_free ) * <span class="number">100</span>%</span><br></pre></td></tr></table></figure>
+
+<p>将缓冲池划分为多个单独的实例，通过减少不同线程读取和写入缓存的争用来提高并发性。<code>Buffer Pool</code> 可以存放多个 <code>Instance</code>，每个 <code>Instance</code> 由多个 <code>Chunk</code> 组成。<code>Instance</code> 的数量范围和 <code>Chunk</code> 的总数量范围分别为 <code>1-64</code>，<code>1-1000</code>。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-26-093000.png" alt="img"></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 默认值</span></span><br><span class="line">innodb_buffer_pool_size 默认值为<span class="number">128</span>M</span><br><span class="line">innodb_buffer_pool_instances 默认值为<span class="number">1</span></span><br><span class="line">innodb_buffer_pool_chunk_size 默认值为<span class="number">128</span>M</span><br><span class="line"></span><br><span class="line"><span class="comment"># 计算公式</span></span><br><span class="line">innodb_buffer_pool_size = innodb_buffer_pool_chunk_size * innodb_buffer_pool_instances * N</span><br><span class="line"></span><br><span class="line"><span class="comment"># 总缓存大小</span></span><br><span class="line">select @@innodb_buffer_pool_size/<span class="number">1024</span>/<span class="number">1024</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 缓存池数量</span></span><br><span class="line">select @@innodb_buffer_pool_instances;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 每个缓存池的大小</span></span><br><span class="line">select @@innodb_buffer_pool_chunk_size/<span class="number">1024</span>/<span class="number">1024</span>;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Tips：当设置的 <code>Buffer Pool</code> 不等于 <code>Chunk</code> * <code>Instance</code> 倍数时，MySQL 会自动调整 <code>Buffer Pool</code> 的大小 ( 向上取值到最近的一次倍数 )。</p>
+</blockquote>
+<p><strong>小结</strong>：</p>
+<ul>
+<li><p>缓冲池（buffer pool）是一种常见的<strong>降低磁盘访问的机制</strong></p>
+</li>
+<li><p>缓冲池通常以<strong>页（page）</strong>为单位缓存数据</p>
+</li>
+<li><p>缓冲池的常见管理算法是 <strong>LRU</strong>，memcache，OS，InnoDB 都使用了这种算法</p>
+</li>
+<li><p>InnoDB 对普通 LRU 进行了优化：（1）将缓冲池分为老生代和新生代，入缓冲池的页，优先进入老生代，页被访问才进入新生代，以解决预读失效的问题；（2）页被访问，且在老生代停留时间超过配置阈值的，才进入新生代，以解决批量数据访问，大量热数据淘汰的问题。</p>
+</li>
+</ul>
+<h2 id="设置-InnoDB-Buffer-Pool"><a href="#设置-InnoDB-Buffer-Pool" class="headerlink" title="设置 InnoDB Buffer Pool"></a>设置 InnoDB Buffer Pool</h2><p>InnoDB Buffer Pool 缓存了表数据和二级索引在内存中，设置 <code>innodb_buffer_pool_size</code> 合理数值对实例性能影响很大。</p>
+<ul>
+<li>设置偏小，会导致数据库大量直接对磁盘的访问，查询效率低。</li>
+<li>设置过大，会导致数据库进程占用内存太多，发生 <code>OOM</code>。</li>
+</ul>
+<p><strong>独立服务器</strong></p>
+<p>如果仅 <code>MySQL</code> 服务独享服务器资源，推荐设置 <code>innodb_buffer_pool_size</code> 为服务器总可用内存的 <code>80%</code>，具体设置多少，需要根据服务器内存大小和消耗进行调整。</p>
+<p>设置 <code>80%</code> 的原因，是因为其它也需要内存：</p>
+<ul>
+<li>单次查询至少需要几K（甚至几M）的内存</li>
+<li>其他各种内部的 <code>MySQL</code> 结构和缓存</li>
+<li>有一些 <code>MySQL</code> 文件是在 <code>OS</code> 缓存里（<code>binary</code> 日志，<code>relay</code> 日志，事务日志等）</li>
+<li>操作系统消耗内存</li>
+</ul>
+<h2 id="修改方法"><a href="#修改方法" class="headerlink" title="修改方法"></a>修改方法</h2><ul>
+<li><code>MySQL 5.7</code> 版本之后，可以在线修改</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">set global innodb_buffer_pool_size = size_in_bytes;</span><br><span class="line">select @@innodb_buffer_pool_size/<span class="number">1024</span>/<span class="number">1024</span>;</span><br><span class="line">+-------------------------------------+</span><br><span class="line">| @@innodb_buffer_pool_size/<span class="number">1024</span>/<span class="number">1024</span> |</span><br><span class="line">+-------------------------------------+</span><br><span class="line">|                        <span class="number">128.00000000</span> |</span><br><span class="line">+-------------------------------------+</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Tips:</span><br><span class="line">① innodb_buffer_pool_size 在线修改时，用户的请求将会阻塞，需要在业务低峰期和没有大事务操作时候进行</span><br><span class="line">② 同时要修改配置文件 my.cnf，防止重启后恢复到原来的值</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>MySQL 5.7</code> 版本之前，需要修改 <code>my.cnf</code> 配置文件，然后重启 <code>MySQL</code> 服务</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">innodb_buffer_pool_size  = <span class="number">20480</span>M</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>参考</strong></p>
+</blockquote>
+<p><a href="http://mysql.taobao.org/monthly/2018/03/06/" target="_blank" rel="noopener"><strong>数据库内核月报</strong></a></p>
+<p><a href="https://www.centos.bz/2016/11/innodb_buffer_pool_size-set-the-right-size/" target="_blank" rel="noopener"><strong>INNODB_BUFFER_POOL_SIZE：设置最佳内存值</strong></a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/06/18/mysql-xtrabackup/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1297,7 +1865,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">114</span>
+                    <span class="site-state-item-count">116</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
