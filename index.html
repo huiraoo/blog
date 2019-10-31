@@ -368,7 +368,7 @@
                 
               
 
-              <time title="创建时间：2019-10-31 09:46:50 / 修改时间：14:01:56" itemprop="dateCreated datePublished" datetime="2019-10-31T09:46:50+08:00">2019-10-31</time>
+              <time title="创建时间：2019-10-31 09:46:50 / 修改时间：14:06:26" itemprop="dateCreated datePublished" datetime="2019-10-31T09:46:50+08:00">2019-10-31</time>
             
 
             
@@ -495,8 +495,8 @@
 <td>bns_pm_prodprocess</td>
 <td>工位过站记录表</td>
 <td>Order_Code</td>
-<td></td>
-<td></td>
+<td>….</td>
+<td>….</td>
 </tr>
 <tr>
 <td>bns_pm_barcodecode</td>
@@ -508,16 +508,16 @@
 </tbody></table>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> base_production_order_t <span class="keyword">where</span> EST &lt; <span class="keyword">now</span>()-<span class="built_in">interval</span> <span class="number">3</span> <span class="keyword">month</span> <span class="keyword">and</span> OrderStatus = <span class="string">'2'</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> bns_pm_barcodecode <span class="keyword">where</span> scan_time &lt; <span class="keyword">now</span>()-<span class="built_in">interval</span> <span class="number">3</span> <span class="keyword">month</span>;</span><br></pre></td></tr></table></figure>
 
-<h3 id="要求"><a href="#要求" class="headerlink" title="要求"></a>要求</h3><p>数据归档表的表结构与原表一致，命名统一采用原表名 <code>_archive</code> 的格式，如 <code>bns_pm_operation</code> 对应的归档表为 <code>bns_pm_operation_archive</code>。</p>
 <h3 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h3><h4 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h4><ul>
-<li><p><a href="https://huiraoo.github.io/blog/2019/07/05/mysql-toolkit/">安装 Percona Toolkit</a></p>
-</li>
-<li><p>创建归档表 <code>xx_archive</code></p>
-</li>
-<li><p>开始归档</p>
-</li>
+<li><a href="https://huiraoo.github.io/blog/2019/07/05/mysql-toolkit/">安装 Percona Toolkit</a></li>
+<li>创建归档表 <code>xx_archive</code>：数据归档表的表结构与原表一致，命名统一采用原表名 <code>_archive</code> 的格式</li>
 </ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 归档表</span></span><br><span class="line">bns_pm_operation_archive</span><br><span class="line">bns_pm_scanhistory_month_archive</span><br><span class="line">bns_qm_processtest_archive</span><br><span class="line">bns_pm_prodprocess_archive</span><br><span class="line">bns_pm_barcodecode_archive</span><br><span class="line"></span><br><span class="line"><span class="comment"># 归档命令</span></span><br><span class="line">nohup pt-archiver --source h=xx,P=<span class="number">3306</span>,u=sre,p=<span class="string">'xx'</span>,D=<span class="string">'xx'</span>,t=bns_pm_barcodecode --charset=utf8 --dest  h=xx,P=<span class="number">3306</span>,u=sre,p=<span class="string">'xx'</span>,D=<span class="string">'xx'</span>,t=bns_pm_barcodecode_archive --where <span class="string">"scan_time &lt; now()-interval 3 month"</span> --limit <span class="number">1000</span> --commit-each --bulk-insert --no-version-check &gt; myout.file <span class="number">2</span>&gt;&amp;<span class="number">1</span> &amp;</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 归档表</span></span><br><span class="line">bns_pm_operation_archive</span><br><span class="line">bns_pm_scanhistory_month_archive</span><br><span class="line">bns_qm_processtest_archive</span><br><span class="line">bns_pm_prodprocess_archive</span><br><span class="line">bns_pm_barcodecode_archive</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>开始归档</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 归档命令</span></span><br><span class="line">nohup pt-archiver --source h=xx,P=<span class="number">3306</span>,u=sre,p=<span class="string">'xx'</span>,D=<span class="string">'xx'</span>,t=bns_pm_barcodecode --charset=utf8 --dest  h=xx,P=<span class="number">3306</span>,u=sre,p=<span class="string">'xx'</span>,D=<span class="string">'xx'</span>,t=bns_pm_barcodecode_archive --where <span class="string">"scan_time &lt; now()-interval 3 month"</span> --limit <span class="number">1000</span> --commit-each --bulk-insert --no-version-check &gt; myout.file <span class="number">2</span>&gt;&amp;<span class="number">1</span> &amp;</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>实时查看进度</li>
