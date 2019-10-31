@@ -323,7 +323,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/31/mysql-tuning-mes/">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/31/mysql-event/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Hui Rao">
@@ -343,7 +343,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/blog/2019/10/31/mysql-tuning-mes/" class="post-title-link" itemprop="url">MySQL · 性能优化 · MES</a>
+                <a href="/blog/2019/10/31/mysql-event/" class="post-title-link" itemprop="url">MySQL · 事件</a>
               
             
           </h1>
@@ -368,7 +368,7 @@
                 
               
 
-              <time title="创建时间：2019-10-31 09:46:50 / 修改时间：14:06:26" itemprop="dateCreated datePublished" datetime="2019-10-31T09:46:50+08:00">2019-10-31</time>
+              <time title="创建时间：2019-10-31 16:31:26 / 修改时间：17:15:03" itemprop="dateCreated datePublished" datetime="2019-10-31T16:31:26+08:00">2019-10-31</time>
             
 
             
@@ -427,7 +427,205 @@
       
         
           
-            <h2 id="数据归档"><a href="#数据归档" class="headerlink" title="数据归档"></a>数据归档</h2><h3 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h3><table>
+            <h2 id="参数说明：event-scheduler"><a href="#参数说明：event-scheduler" class="headerlink" title="参数说明：event_scheduler"></a>参数说明：event_scheduler</h2><table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Command-Line Format</strong></td>
+<td><code>--event-scheduler[=value]</code></td>
+</tr>
+<tr>
+<td><strong>System Variable</strong></td>
+<td><code>event_scheduler</code></td>
+</tr>
+<tr>
+<td><strong>Scope</strong></td>
+<td>Global</td>
+</tr>
+<tr>
+<td><strong>Dynamic</strong></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>Type</strong></td>
+<td>Enumeration</td>
+</tr>
+<tr>
+<td><strong>Default Value</strong></td>
+<td><code>OFF</code></td>
+</tr>
+<tr>
+<td><strong>Valid Values</strong></td>
+<td><code>ON OFF DISABLED</code></td>
+</tr>
+</tbody></table>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 事件参数event_scheduler</span></span><br><span class="line">mysql&gt; show variables like 'event_scheduler';</span><br><span class="line">+<span class="comment">-----------------+-------+</span></span><br><span class="line">| Variable_name   | Value |</span><br><span class="line">+<span class="comment">-----------------+-------+</span></span><br><span class="line">| event_scheduler | ON    |</span><br><span class="line">+<span class="comment">-----------------+-------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">set</span> <span class="keyword">global</span> event_scheduler = <span class="keyword">on</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建事件</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">EVENT</span> Event_Archive_Daily</span><br><span class="line"><span class="keyword">ON</span> SCHEDULE EVERY <span class="number">1</span> <span class="keyword">DAY</span> STARTS <span class="string">'2019-11-01 02:00:00'</span></span><br><span class="line"><span class="keyword">ON</span> COMPLETION <span class="keyword">PRESERVE</span></span><br><span class="line"><span class="keyword">ENABLE</span></span><br><span class="line"><span class="keyword">DO</span> <span class="keyword">call</span> sp_archive();</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询事件</span></span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/31/mysql-tuning-mes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/31/mysql-tuning-mes/" class="post-title-link" itemprop="url">MySQL · 性能优化 · MES</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-31 09:46:50 / 修改时间：18:10:05" itemprop="dateCreated datePublished" datetime="2019-10-31T09:46:50+08:00">2019-10-31</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="手动数据归档"><a href="#手动数据归档" class="headerlink" title="手动数据归档"></a>手动数据归档</h2><h3 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h3><table>
 <thead>
 <tr>
 <th>工厂号</th>
@@ -533,6 +731,8 @@
 <h4 id="bns-qm-processtest"><a href="#bns-qm-processtest" class="headerlink" title="bns_qm_processtest"></a>bns_qm_processtest</h4><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开始归档</span></span><br><span class="line">nohup pt-archiver --source h=<span class="number">192.168</span>.<span class="number">175.11</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'sre@@p$i'</span>,D=<span class="string">'cosmo_im_1026'</span>,t=bns_qm_processtest --charset=utf8 --dest  h=<span class="number">192.168</span>.<span class="number">175.11</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'sre@@p$i'</span>,D=<span class="string">'cosmo_im_1026'</span>,t=bns_qm_processtest_archive --where <span class="string">"Code IN (select Code from base_production_order_t where EST &lt; now()-interval 3 month and OrderStatus = '2')"</span> --limit <span class="number">1000</span> --commit-each --bulk-insert --no-version-check &gt; myout3.file <span class="number">2</span>&gt;&amp;<span class="number">1</span> &amp;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看归档进度</span></span><br><span class="line">use information_schema;</span><br><span class="line">select table_name,table_rows from tables where TABLE_SCHEMA = <span class="string">'cosmo_im_1026'</span> and table_name=<span class="string">'bns_qm_processtest_archive'</span>;</span><br></pre></td></tr></table></figure>
 
 <h4 id="bns-pm-prodprocess"><a href="#bns-pm-prodprocess" class="headerlink" title="bns_pm_prodprocess"></a>bns_pm_prodprocess</h4><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开始归档</span></span><br><span class="line">nohup pt-archiver --source h=<span class="number">192.168</span>.<span class="number">175.11</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'sre@@p$i'</span>,D=<span class="string">'cosmo_im_1026'</span>,t=bns_pm_prodprocess --charset=utf8 --dest  h=<span class="number">192.168</span>.<span class="number">175.11</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'sre@@p$i'</span>,D=<span class="string">'cosmo_im_1026'</span>,t=bns_pm_prodprocess_archive --where <span class="string">"Order_Code IN (select Code from base_production_order_t where EST &lt; now()-interval 3 month and OrderStatus = '2')"</span> --limit <span class="number">1000</span> --commit-each --bulk-insert --no-version-check &gt; myout4.file <span class="number">2</span>&gt;&amp;<span class="number">1</span> &amp;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看归档进度</span></span><br><span class="line">use information_schema;</span><br><span class="line">select table_name,table_rows from tables where TABLE_SCHEMA = <span class="string">'cosmo_im_1026'</span> and table_name=<span class="string">'bns_pm_prodprocess_archive'</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="每天自动归档"><a href="#每天自动归档" class="headerlink" title="每天自动归档"></a>每天自动归档</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 存储过程</span></span><br><span class="line">DELIMITER $$ </span><br><span class="line">DROP PROCEDURE <span class="keyword">IF</span> EXISTS sp_archive$$ </span><br><span class="line">CREATE PROCEDURE sp_archive()</span><br><span class="line"><span class="keyword">BEGIN</span> 	</span><br><span class="line">	INSERT INTO bns_pm_barcodecode_archive SELECT * FROM bns_pm_barcodecode WHERE </span><br><span class="line">	scan_time &lt; now() - interval <span class="number">3</span> month;</span><br><span class="line">	DELETE FROM bns_pm_barcodecode WHERE scan_time &lt; now() - interval <span class="number">3</span> month;</span><br><span class="line"><span class="keyword">END</span> $$</span><br><span class="line">DELIMITER ;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 事件</span></span><br><span class="line">CREATE EVENT Event_Archive_Daily</span><br><span class="line">ON SCHEDULE EVERY <span class="number">1</span> DAY STARTS <span class="string">'2019-11-01 02:00:00'</span></span><br><span class="line">ON COMPLETION PRESERVE</span><br><span class="line">ENABLE</span><br><span class="line"><span class="keyword">DO</span> call sp_archive();</span><br></pre></td></tr></table></figure>
 
 
           
@@ -1447,7 +1647,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-10-30 08:00:25" itemprop="dateModified" datetime="2019-10-30T08:00:25+08:00">2019-10-30</time>
+                <time title="修改时间：2019-10-31 16:38:27" itemprop="dateModified" datetime="2019-10-31T16:38:27+08:00">2019-10-31</time>
               
             
           </span>
@@ -1502,6 +1702,54 @@
         
           
             <h2 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h2><p><strong><a href="https://dev.mysql.com/doc/refman/5.6/en/sql-mode.html#sql-mode-strict" target="_blank" rel="noopener">sql_mode</a></strong>：它定义了 MySQL 应该支持的 <code>SQL</code> 模式，对数据的校验等。</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Command-Line Format</strong></td>
+<td><code>--sql-mode=name</code></td>
+</tr>
+<tr>
+<td><strong>System Variable</strong></td>
+<td><code>sql_mode</code></td>
+</tr>
+<tr>
+<td><strong>Scope</strong></td>
+<td>Global, Session</td>
+</tr>
+<tr>
+<td><strong>Dynamic</strong></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>Type</strong></td>
+<td>Set</td>
+</tr>
+<tr>
+<td><strong>Default Value</strong> (&gt;= 5.7.8)</td>
+<td><code>ONLY_FULL_GROUP_BY STRICT_TRANS_TABLES NO_ZERO_IN_DATE NO_ZERO_DATE ERROR_FOR_DIVISION_BY_ZERO NO_AUTO_CREATE_USER NO_ENGINE_SUBSTITUTION</code></td>
+</tr>
+<tr>
+<td><strong>Default Value</strong> (5.7.7)</td>
+<td><code>ONLY_FULL_GROUP_BY STRICT_TRANS_TABLES NO_AUTO_CREATE_USER NO_ENGINE_SUBSTITUTION</code></td>
+</tr>
+<tr>
+<td><strong>Default Value</strong> (&gt;= 5.7.5, &lt;= 5.7.6)</td>
+<td><code>ONLY_FULL_GROUP_BY STRICT_TRANS_TABLES NO_ENGINE_SUBSTITUTION</code></td>
+</tr>
+<tr>
+<td><strong>Default Value</strong> (&lt;= 5.7.4)</td>
+<td><code>NO_ENGINE_SUBSTITUTION</code></td>
+</tr>
+<tr>
+<td><strong>Valid Values</strong></td>
+<td>….</td>
+</tr>
+</tbody></table>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select @@global.sql_mode;</span><br><span class="line">+<span class="comment">-------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line">| @@global.sql_mode                                                                                                                         |</span><br><span class="line">+<span class="comment">-------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line">| ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION |</span><br><span class="line">+<span class="comment">-------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
 
 <ul>
@@ -2192,223 +2440,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/25/mysql-config-sync-binlog/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/25/mysql-config-sync-binlog/" class="post-title-link" itemprop="url">MySQL · 配置参数 · sync_binlog</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-25 09:35:46 / 修改时间：21:54:10" itemprop="dateCreated datePublished" datetime="2019-10-25T09:35:46+08:00">2019-10-25</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h2><p><a href="https://dev.mysql.com/doc/refman/5.7/en/replication-options-binary-log.html#sysvar_sync_binlog" target="_blank" rel="noopener"><strong>sync_binlog</strong></a>：控制 MySQL 二进制日志（<code>binlog</code>）同步到磁盘的频率。</p>
-<table>
-<thead>
-<tr>
-<th>Property</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Command-Line Format</strong></td>
-<td><code>--sync-binlog=#</code></td>
-</tr>
-<tr>
-<td><strong>System Variable</strong></td>
-<td><code>sync_binlog</code></td>
-</tr>
-<tr>
-<td><strong>Scope</strong></td>
-<td>Global</td>
-</tr>
-<tr>
-<td><strong>Dynamic</strong></td>
-<td>Yes</td>
-</tr>
-<tr>
-<td><strong>Type</strong></td>
-<td>Integer</td>
-</tr>
-<tr>
-<td><strong>Default Value</strong> (&gt;= 5.7.7)</td>
-<td><code>1</code></td>
-</tr>
-<tr>
-<td><strong>Default Value</strong> (&lt;= 5.7.6)</td>
-<td><code>0</code></td>
-</tr>
-<tr>
-<td><strong>Minimum Value</strong></td>
-<td><code>0</code></td>
-</tr>
-<tr>
-<td><strong>Maximum Value</strong></td>
-<td><code>4294967295</code></td>
-</tr>
-</tbody></table>
-<ul>
-<li><strong>sync_binlog = 0</strong>，每进行事务提交后，MySQL 不做 <code>fsync</code> 之类的磁盘同步指令刷新 <code>binlog_cache</code> 中的信息到磁盘，而让文件系统自行决定什么时候来做同步，或者 <code>cache</code> 满了之后才同步到磁盘。</li>
-<li><strong>sync_binlog = 1</strong>，每进行 <code>1</code> 次事务提交，MySQL 将进行一次 <code>fsync</code> 之类的磁盘同步指令来将 <code>binlog_cache</code> 中的数据强制写入磁盘。</li>
-<li><strong>sync_binlog = N</strong>，每进行 <code>N</code> 次事务提交，MySQL 将进行一次 <code>fsync</code> 之类的磁盘同步指令来将 <code>binlog_cache</code> 中的数据强制写入磁盘。</li>
-</ul>
-<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><ul>
-<li><strong>性能</strong>：0 &gt; N &gt; 1</li>
-<li><strong>安全</strong>：1 &gt; N &gt; 0</li>
-<li><strong>建议</strong>：区分业务场景进行设置 </li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 支付场景：sync_binlog = 1</span></span><br><span class="line"><span class="comment"># 其他场景：sync_binlog = 0</span></span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2457,7 +2488,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">116</span>
+                    <span class="site-state-item-count">117</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
