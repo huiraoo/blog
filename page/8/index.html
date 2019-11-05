@@ -323,6 +323,1075 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/10/aliyun-dbgateway/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/10/aliyun-dbgateway/" class="post-title-link" itemprop="url">阿里云 · 数据库网关</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-10 16:10:41" itemprop="dateCreated datePublished" datetime="2019-10-10T16:10:41+08:00">2019-10-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-24 10:18:23" itemprop="dateModified" datetime="2019-10-24T10:18:23+08:00">2019-10-24</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/阿里云/" itemprop="url" rel="index"><span itemprop="name">阿里云</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>数据库网关</strong>（Database Gateway，<code>DG</code>）无需本地开通公网端口，将本地数据库与云服务连接起来，且可以与阿里云产品（如：数据传输服务 <code>DTS</code>，数据库备份 <code>DBS</code>，数据管理 <code>DMS</code>，混合数据库管理 <code>HDM</code> 等）集成使用，提供安全、可靠、低成本的私网数据库接入能力。</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>通过数据库网关，可以使用应用程序或云服务访问并管理本地 <code>IDC</code> 数据库和其他云厂商数据库。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-10-161400.png" alt></p>
+<p><strong>工作原理</strong>：</p>
+<p>① 本地安装一个<strong>数据库网关代理</strong>（database gateway agent）</p>
+<p>② 网关代理负责与<strong>数据库网关云端服务</strong>（database gateway cloud service）建立安全的、可信任的通道，不同账号、不同网关所建立的通道彼此隔离</p>
+<p>③ 通道建立后，当在云端使用数据库产品（如 <code>HDM</code>、<code>DBS</code>）需要访问该网络内的本地数据库时，数据库产品会通过已建立好的通道，访问至本地网络</p>
+<h2 id="DBGateway"><a href="#DBGateway" class="headerlink" title="DBGateway"></a>DBGateway</h2><p>是 <code>HDM</code> 的一个组件，部署在用户环境中的 <code>Daemon</code> 程序，它负责进行数据库性能数据的采集、计算，不读取用户业务数据，并且通过加密压缩的方式进行通信。</p>
+<p><strong>目录结构</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── bin</span><br><span class="line">│   ├── dbgateway</span><br><span class="line">│   └── dbgateway-manager</span><br><span class="line">├── conf</span><br><span class="line">│   ├── dbgateway.conf</span><br><span class="line">│   └── server.crt</span><br><span class="line">└── log</span><br><span class="line">    ├── dbgateway.err</span><br><span class="line">    ├── dbgateway.log</span><br><span class="line">    └── dbgateway_manager.log</span><br></pre></td></tr></table></figure>
+
+<p><strong>常用命令</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 重启 </span></span><br><span class="line">/opt/dbgateway/bin/dbgateway-manager -d restart</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动 </span></span><br><span class="line">/opt/dbgateway/bin/dbgateway-manager -d start</span><br><span class="line"></span><br><span class="line"><span class="comment"># 停止 </span></span><br><span class="line">/opt/dbgateway/bin/dbgateway-manager -d stop</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除</span></span><br><span class="line">rm -rf /opt/dbgateway</span><br></pre></td></tr></table></figure>
+
+<h2 id="API参考"><a href="#API参考" class="headerlink" title="API参考"></a>API参考</h2><table>
+<thead>
+<tr>
+<th align="left">API</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123415.html#concept-861901" target="_blank" rel="noopener">CreateGateway</a></td>
+<td align="left">创建网关</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123570.html#concept-878728" target="_blank" rel="noopener">ModifyGateway</a></td>
+<td align="left">修改网关</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123572.html#concept-878734" target="_blank" rel="noopener">DeleteGateway</a></td>
+<td align="left">删除网关</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123575.html#concept-878745" target="_blank" rel="noopener">StopGateway</a></td>
+<td align="left">停止网关</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123579.html#concept-878753" target="_blank" rel="noopener">CreateGatewayVerifyCode</a></td>
+<td align="left">生成线下安装网关时需要的验证码</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123581.html#concept-878756" target="_blank" rel="noopener">DownloadGatewayProgram</a></td>
+<td align="left">返回网关程序的下载地址</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123590.html#concept-878811" target="_blank" rel="noopener">ConnectDatabase</a></td>
+<td align="left">通过网关连接数据库</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123703.html#concept-895452" target="_blank" rel="noopener">GetUserDatabases</a></td>
+<td align="left">返回用户数据库列表信息</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123602.html#concept-878845" target="_blank" rel="noopener">AddDatabase</a></td>
+<td align="left">添加数据库</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123604.html#concept-878851" target="_blank" rel="noopener">ModifyDatabase</a></td>
+<td align="left">修改数据库</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123600.html#concept-878841" target="_blank" rel="noopener">DeleteDatabase</a></td>
+<td align="left">删除数据库</td>
+</tr>
+</tbody></table>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/09/aliyun-hdm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/09/aliyun-hdm/" class="post-title-link" itemprop="url">阿里云 · HDM</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-09 14:29:06" itemprop="dateCreated datePublished" datetime="2019-10-09T14:29:06+08:00">2019-10-09</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-29 22:49:19" itemprop="dateModified" datetime="2019-10-29T22:49:19+08:00">2019-10-29</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/阿里云/" itemprop="url" rel="index"><span itemprop="name">阿里云</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>混合云数据库管理 （Hybrid Cloud Database Management， 简称 <a href="https://www.aliyun.com/product/hdm" target="_blank" rel="noopener"><strong>HDM</strong></a>) ，帮助企业打通混合云数据库架构，提供<strong>多环境</strong>、<strong>多数据库</strong>的统一<strong>监控</strong>、<strong>报警</strong>、<strong>运维</strong>、<strong>管理</strong>的能力，<a href="https://help.aliyun.com/product/63907.html?spm=a2c4g.750001.list.48.4cc17b13Z8O4eh" target="_blank" rel="noopener">帮助文档</a>。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-09-162000.png" alt></p>
+<p><strong>核心功能</strong>：集群管理、统一监控、统一告警、<code>Dashboard</code>、故障诊断、性能优化、安全审计、诊断报告等</p>
+<p><strong>目前支持数据库</strong>：<code>MySQL</code>、<code>Redis</code>、<code>MongoDB</code>、<code>PostgreSQL</code> </p>
+<p><strong>支持环境</strong>：</p>
+<table>
+<thead>
+<tr>
+<th align="left">环境</th>
+<th align="center">统一接入</th>
+<th align="right">统一监控</th>
+<th align="right">统一告警</th>
+<th align="right">集群管理</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">阿里云 <code>RDS</code></td>
+<td align="center">支持</td>
+<td align="right">支持</td>
+<td align="right">支持</td>
+<td align="right">支持</td>
+</tr>
+<tr>
+<td align="left">阿里云 <code>ECS</code> 自建数据库</td>
+<td align="center">支持</td>
+<td align="right">支持</td>
+<td align="right">支持</td>
+<td align="right">支持</td>
+</tr>
+<tr>
+<td align="left">本地 <code>IDC</code> 自建数据库</td>
+<td align="center">支持</td>
+<td align="right">支持</td>
+<td align="right">支持</td>
+<td align="right">支持</td>
+</tr>
+<tr>
+<td align="left">其他云数据库</td>
+<td align="center">支持</td>
+<td align="right">支持</td>
+<td align="right">支持</td>
+<td align="right">支持</td>
+</tr>
+</tbody></table>
+<p><strong>目标用户</strong>：DBA</p>
+<p><strong>登录地址</strong>：<a href="https://signin.aliyun.com/login.htm" target="_blank" rel="noopener">入口</a></p>
+<p><strong>RAM账号</strong>：sre@1596633715004367.onaliyun.com</p>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><h3 id="开通服务"><a href="#开通服务" class="headerlink" title="开通服务"></a>开通服务</h3><p><a href="https://help.aliyun.com/knowledge_detail/66674.html?spm=a2c4g.11186623.2.12.7ac677adzLmyV7" target="_blank" rel="noopener">手册</a></p>
+<h3 id="实例接入"><a href="#实例接入" class="headerlink" title="实例接入"></a>实例接入</h3><p><strong>接入方式</strong>：<a href="https://help.aliyun.com/document_detail/65405.html?spm=a2c4g.11186623.6.552.58c5b105ScOBwq" target="_blank" rel="noopener">阿里云 RDS</a>、<a href="https://help.aliyun.com/document_detail/65407.html?spm=a2c4g.11186623.6.553.6aa210edll0oBP" target="_blank" rel="noopener">阿里云 ECS 自建数据库</a>、<a href="https://help.aliyun.com/document_detail/65406.html?spm=a2c4g.11186623.6.554.29e19c69mPchPY" target="_blank" rel="noopener">本地 IDC 自建数据库</a>、<a href="https://help.aliyun.com/document_detail/99480.html?spm=a2c4g.11186623.6.555.51a5cf58DNb8ol" target="_blank" rel="noopener">账号直连</a></p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-09-172707.png" alt></p>
+<p><strong>功能对比</strong>：</p>
+<table>
+<thead>
+<tr>
+<th align="left">功能</th>
+<th align="right">直连接入</th>
+<th align="center">集中模式接入</th>
+<th align="center">主机模式接入（推荐）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">数据库监控指标</td>
+<td align="right">支持</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td align="left">实时性能</td>
+<td align="right">支持</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td align="left">实时会话</td>
+<td align="right">支持</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td align="left">空间分析</td>
+<td align="right">支持</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td align="left">SQL诊断</td>
+<td align="right">支持</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td align="left">慢请求分析</td>
+<td align="right">支持</td>
+<td align="center">支持</td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td align="left">主机监控指标</td>
+<td align="right"><em>不支持</em></td>
+<td align="center"><em>不支持</em></td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td align="left">请求诊断</td>
+<td align="right"><em>不支持</em></td>
+<td align="center"><em>不支持</em></td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td align="left">全量请求分析</td>
+<td align="right"><em>不支持</em></td>
+<td align="center"><em>不支持</em></td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td align="left">请求响应时间</td>
+<td align="right"><em>不支持</em></td>
+<td align="center"><em>不支持</em></td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td align="left">安全审计</td>
+<td align="right"><em>不支持</em></td>
+<td align="center"><em>不支持</em></td>
+<td align="center">支持</td>
+</tr>
+</tbody></table>
+<p><strong>接入步骤</strong>：</p>
+<blockquote>
+<p>第一步：选择网络类型</p>
+</blockquote>
+<ul>
+<li>如果是有公网的自建数据库，请选择“公网（经典网络）”。</li>
+<li>如果是通过专线／<code>VPN</code> 方式连接阿里云 <code>VPC</code> 的本地 <code>IDC</code> 或者其他云，请选择“专有网络”。</li>
+</ul>
+<blockquote>
+<p>第二步：部署网关</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo wget -O install-dbgateway http://hdm-dbgateway-cn-hangzhou.oss-cn-hangzhou.aliyuncs.com/DBGateway/install-dbgateway &amp;&amp; sudo /bin/bash install-dbgateway --id idc_iQn5Df7QC5docekj --token <span class="number">70</span>EE4B0C444E215700BEFD8B14DB026EF6A958FBE42DACDEE304FC91880A933D --endpoint master-hdm-cn-hangzhou.aliyuncs.com --region default --native</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>第三步：授权验证</p>
+</blockquote>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">USER</span> <span class="string">'hdm'</span>@<span class="string">'%'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="keyword">PASSWORD</span> <span class="string">'Hdm@123!'</span>;</span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">SHOW</span> <span class="keyword">DATABASES</span>, PROCESS, <span class="keyword">REPLICATION</span> <span class="keyword">SLAVE</span>, <span class="keyword">REPLICATION</span> <span class="keyword">CLIENT</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'hdm'</span>@<span class="string">'%'</span>;</span><br><span class="line"><span class="keyword">GRANT</span> <span class="keyword">SELECT</span> <span class="keyword">ON</span> *.*  <span class="keyword">TO</span> <span class="string">'hdm'</span>@<span class="string">'%'</span>;</span><br></pre></td></tr></table></figure>
+
+<p><strong>三种网络连接方式</strong>：</p>
+<p><strong>专线</strong></p>
+<ul>
+<li>专线是指阿里云接入点和本地数据中心之间的网络线路的抽象。</li>
+<li>您需要通过一条租用的运营商专线将本地 <code>IDC</code> 连接到阿里云接入点，建立专线连接。</li>
+<li>物理专线的私网连接不通过公网，因此与传统的公网相比，专线连接更加安全、可靠、速度更快、延迟更低。</li>
+</ul>
+<p><strong>VPN</strong></p>
+<p><code>VPN</code> 网关是一款基于互联网通信技术，通过加密通道将企业数据中心和阿里云专有网络安全可靠地连接起来的服务。</p>
+<p><strong>互联网</strong></p>
+<p>本地 <code>IDC</code> 直接通过互联网和阿里云公有云互联，<code>HDM</code> 会对数据访问链路进行加密，用户无需担心安全问题。</p>
+<h3 id="统一监控"><a href="#统一监控" class="headerlink" title="统一监控"></a>统一监控</h3><h4 id="MySQL-Server"><a href="#MySQL-Server" class="headerlink" title="MySQL Server"></a>MySQL Server</h4><p><strong>TPS/QPS</strong></p>
+<p>QPS (Queries Per Second)，每秒 <code>SQL</code> 语句执行次数</p>
+<p>TPS (Transactions Per Second)，每秒事务操作次数</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.tps</td>
+<td align="left">Per Second</td>
+<td align="left">计算公式：(Com_commit + Com_rollback) / Uptime</td>
+</tr>
+<tr>
+<td align="left">mysql.qps</td>
+<td align="left">Per Second</td>
+<td align="left">计算公式：Questions / Uptime</td>
+</tr>
+</tbody></table>
+<p><strong>会话连接</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.threads_created</td>
+<td align="left">Count</td>
+<td align="left">当前新创建的线程</td>
+</tr>
+<tr>
+<td align="left">mysql.threads_cached</td>
+<td align="left">Count</td>
+<td align="left">当前 <code>cached</code> 线程</td>
+</tr>
+<tr>
+<td align="left"><strong>mysql.threads_connected</strong></td>
+<td align="left">Count</td>
+<td align="left">当前全部线程数</td>
+</tr>
+<tr>
+<td align="left">mysql.threads_rejected</td>
+<td align="left">Count</td>
+<td align="left">当前 <code>rejected</code> 线程</td>
+</tr>
+<tr>
+<td align="left"><strong>mysql.threads_running</strong></td>
+<td align="left">Count</td>
+<td align="left">当前活跃线程数</td>
+</tr>
+</tbody></table>
+<p><strong>执行次数</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.insert_ps</td>
+<td align="left">Per Second</td>
+<td align="left">平均每秒 <code>insert</code> 语句执行次数</td>
+</tr>
+<tr>
+<td align="left">mysql.select_ps</td>
+<td align="left">Per Second</td>
+<td align="left">平均每秒 <code>select</code> 语句执行次数</td>
+</tr>
+<tr>
+<td align="left">mysql.update_ps</td>
+<td align="left">Per Second</td>
+<td align="left">平均每秒 <code>update</code> 语句执行次数</td>
+</tr>
+<tr>
+<td align="left">mysql.delete_ps</td>
+<td align="left">Per Second</td>
+<td align="left">平均每秒 <code>delete</code> 语句执行次数</td>
+</tr>
+<tr>
+<td align="left">mysql.replace_ps</td>
+<td align="left">Per Second</td>
+<td align="left">平均每秒 <code>replace</code> 语句执行次数</td>
+</tr>
+</tbody></table>
+<p><strong>流量吞吐</strong>（单位：<code>KB</code>）</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.bytes_received</td>
+<td align="left">KByte</td>
+<td align="left">平均每秒从所有客户端接收到的字节数</td>
+</tr>
+<tr>
+<td align="left">mysql.bytes_sent</td>
+<td align="left">KByte</td>
+<td align="left">平均每秒发送给所有客户端的字节数</td>
+</tr>
+</tbody></table>
+<h4 id="InnoDB-存储引擎"><a href="#InnoDB-存储引擎" class="headerlink" title="InnoDB 存储引擎"></a>InnoDB 存储引擎</h4><p><strong>InnoDB Buffer Pool 命中率</strong>（%）</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.innodb_bp_dirty_pct</td>
+<td align="left">%</td>
+<td align="left">脏页比率：Innodb_buffer_pool_pages_dirty / Innodb_buffer_pool_pages_data * 100%</td>
+</tr>
+<tr>
+<td align="left">mysql.innodb_bp_hit</td>
+<td align="left">%</td>
+<td align="left">读缓存命中率：(Innodb_buffer_pool_read_requests - Innodb_buffer_pool_reads) / Innodb_buffer_pool_read_requests * 100%</td>
+</tr>
+<tr>
+<td align="left"><strong>mysql.innodb_bp_usage_pct</strong></td>
+<td align="left">%</td>
+<td align="left">使用率：innodb_buffer_pool_pages_data / ( innodb_buffer_pool_pages_data + innodb_buffer_pool_pages_free ) * 100%</td>
+</tr>
+</tbody></table>
+<p><strong>InnoDB Data 读写吞吐量</strong>（单位：<code>KB</code>）</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.innodb_data_written</td>
+<td align="left">KByte</td>
+<td align="left"><code>InnoDB</code> 平均每秒写字节数</td>
+</tr>
+<tr>
+<td align="left">mysql.innodb_data_read</td>
+<td align="left">KByte</td>
+<td align="left"><code>InnoDB</code> 平均每秒读字节数</td>
+</tr>
+</tbody></table>
+<p><strong>InnoDB Row Operations</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.innodb_rows_deleted</td>
+<td align="left">Per Second</td>
+<td align="left"><code>InnoDB</code> 平均每秒删除的行数</td>
+</tr>
+<tr>
+<td align="left">mysql.innodb_rows_read</td>
+<td align="left">Per Second</td>
+<td align="left"><code>InnoDB</code> 平均每秒读取的行数</td>
+</tr>
+<tr>
+<td align="left">mysql.innodb_rows_inserted</td>
+<td align="left">Per Second</td>
+<td align="left"><code>InnoDB</code> 平均每秒插入的行数</td>
+</tr>
+<tr>
+<td align="left">mysql.innodb_rows_updated</td>
+<td align="left">Per Second</td>
+<td align="left"><code>InnoDB</code> 平均每秒更新的行数</td>
+</tr>
+</tbody></table>
+<h4 id="MySQL-服务进程"><a href="#MySQL-服务进程" class="headerlink" title="MySQL 服务进程"></a>MySQL 服务进程</h4><p><strong>MySQL CPU 利用率</strong>（%）</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.cpu_usage</td>
+<td align="left">%</td>
+<td align="left">MySQL 服务进程 <code>CPU</code> 使用率（ <code>200%</code> 代表使用 2 个 <code>CPU Core</code>）</td>
+</tr>
+</tbody></table>
+<p><strong>MySQL 内存使用量</strong>（单位：<code>GB</code>）</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.mem_used</td>
+<td align="left">GByte</td>
+<td align="left">MySQL 服务进程内存使用量</td>
+</tr>
+</tbody></table>
+<p><strong>MySQL 存储空间使用量</strong>（单位：<code>GB</code>）</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">mysql.storage.data.used</td>
+<td align="left">GByte</td>
+<td align="left">数据文件目录的空间使用量</td>
+</tr>
+<tr>
+<td align="left">mysql.storage.log.used</td>
+<td align="left">GByte</td>
+<td align="left">日志文件目录的空间使用量</td>
+</tr>
+</tbody></table>
+<h4 id="主机"><a href="#主机" class="headerlink" title="主机"></a>主机</h4><p><strong>主机 Load 负载</strong></p>
+<p>在 <code>UNIX</code> 系统中，系统负载是对当前 <code>CPU</code> 工作量的度量，被定义为特定时间间隔内运行队列中的平均线程数对于单个 <code>CPU</code>，有人认为如果 <code>Load</code> 超过 <code>0.7</code> 就算是超出正常范围了，这个值越低越好，负载过高会导致机器无法处理其他请求及操作，甚至导致宕机。</p>
+<table>
+<thead>
+<tr>
+<th align="left">指标</th>
+<th align="left">单位</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">load1</td>
+<td align="left">Count</td>
+<td align="left">主机负载 <code>load1</code></td>
+</tr>
+</tbody></table>
+<p><strong>主机 CPU 利用率</strong>（%）</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>单位</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>host.cpu.user_usage</td>
+<td>Count</td>
+<td>系统 <code>CPU user</code> 利用率</td>
+</tr>
+<tr>
+<td>host.cpu.si_usage</td>
+<td>Count</td>
+<td>系统 <code>CPU</code> 软中断利用率</td>
+</tr>
+<tr>
+<td><strong>host.cpu.usage</strong></td>
+<td>Count</td>
+<td>系统 <code>CPU</code> 利用率</td>
+</tr>
+<tr>
+<td>host.cpu.hi_usage</td>
+<td>Count</td>
+<td>系统 <code>CPU</code> 硬中断利用率</td>
+</tr>
+<tr>
+<td>host.cpu.iowait_usage</td>
+<td>Count</td>
+<td>系统 <code>CPU iowait</code> 利用率</td>
+</tr>
+<tr>
+<td>host.cpu.sys_usage</td>
+<td>Count</td>
+<td>系统 <code>CPU sys</code> 利用率</td>
+</tr>
+</tbody></table>
+<p><strong>主机内存使用量</strong>（单位：<code>MB</code>）</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>单位</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>mem.buffers</td>
+<td>MByte</td>
+<td>系统 <code>IO Buffer</code> 占用内存大小</td>
+</tr>
+<tr>
+<td><strong>mem.used</strong></td>
+<td>MByte</td>
+<td>系统已用内存</td>
+</tr>
+<tr>
+<td>mem.cached</td>
+<td>MByte</td>
+<td>系统 <code>Page Cache</code> 占用内存大小</td>
+</tr>
+<tr>
+<td>gw.pidstat.mem_used</td>
+<td>MByte</td>
+<td><code>DBGateway</code> 内存使用量</td>
+</tr>
+<tr>
+<td>mem.swap_used</td>
+<td>MByte</td>
+<td>系统 <code>swap</code> 使用大小</td>
+</tr>
+<tr>
+<td><strong>mem.total</strong></td>
+<td>MByte</td>
+<td>系统总可用内存</td>
+</tr>
+</tbody></table>
+<p><strong>主机网络吞吐</strong>（单位：<code>KB</code>）</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>单位</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>net.recv</td>
+<td>KByte</td>
+<td>网卡每秒接收数据量</td>
+</tr>
+<tr>
+<td>net.send</td>
+<td>KByte</td>
+<td>网卡每秒发送数据量</td>
+</tr>
+</tbody></table>
+<h3 id="统一告警"><a href="#统一告警" class="headerlink" title="统一告警"></a>统一告警</h3><p><strong>告警功能</strong>：配置模版、触发规则、屏蔽告警、解除屏蔽、告警订阅等</p>
+<p><strong>告警配置</strong>：告警模板  -&gt;  告警联系组  -&gt;  关联资源，告警模板默认配置 <code>8</code> 条告警，可自定义</p>
+<table>
+<thead>
+<tr>
+<th>告警项</th>
+<th>告警规则</th>
+<th>发送间隔</th>
+<th>告警类型</th>
+<th>告警对象</th>
+<th>通知方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>主机 <code>CPU</code> 使用率</td>
+<td>连续 <code>3</code> 次 ≥  <code>90</code></td>
+<td><code>30</code> 分钟</td>
+<td>阈值告警</td>
+<td>联系组</td>
+<td>短信 / 邮件 / 钉钉</td>
+</tr>
+<tr>
+<td>主机内存使用率</td>
+<td>连续 <code>3</code> 次 ≥  <code>95</code></td>
+<td><code>30</code> 分钟</td>
+<td>阈值告警</td>
+<td>联系组</td>
+<td>短信 / 邮件 / 钉钉</td>
+</tr>
+<tr>
+<td>主机网络发送带宽使用率</td>
+<td>连续 <code>3</code> 次 ≥  <code>95</code></td>
+<td><code>30</code> 分钟</td>
+<td>阈值告警</td>
+<td>联系组</td>
+<td>短信 / 邮件 / 钉钉</td>
+</tr>
+<tr>
+<td>主机网络接收带宽使用率</td>
+<td>连续 <code>3</code> 次 ≥  <code>95</code></td>
+<td><code>30</code> 分钟</td>
+<td>阈值告警</td>
+<td>联系组</td>
+<td>短信 / 邮件 / 钉钉</td>
+</tr>
+<tr>
+<td>数据库无法连接</td>
+<td>连续 <code>3</code> 次</td>
+<td><code>30</code> 分钟</td>
+<td>事件告警</td>
+<td>联系组</td>
+<td>短信 / 邮件 / 钉钉</td>
+</tr>
+<tr>
+<td><code>MySQL</code> 复制中断</td>
+<td>连续 <code>3</code> 次</td>
+<td><code>30</code> 分钟</td>
+<td>事件告警</td>
+<td>联系组</td>
+<td>短信 / 邮件 / 钉钉</td>
+</tr>
+<tr>
+<td><code>MySQL</code> 复制延迟</td>
+<td>连续 <code>3</code> 次 ≥  <code>1800</code></td>
+<td><code>30</code> 分钟</td>
+<td>阈值告警</td>
+<td>联系组</td>
+<td>短信 / 邮件 / 钉钉</td>
+</tr>
+<tr>
+<td><code>MySQL</code> 活跃会话数</td>
+<td>连续 <code>3</code> 次 ≥  <code>100</code></td>
+<td><code>30</code> 分钟</td>
+<td>阈值告警</td>
+<td>联系组</td>
+<td>短信 / 邮件 / 钉钉</td>
+</tr>
+</tbody></table>
+<h3 id="问题诊断"><a href="#问题诊断" class="headerlink" title="问题诊断"></a>问题诊断</h3><p><strong>实例会话</strong>：原理是执行 <code>show processlist</code>，查看活跃会话和全部会话，可快速诊断阻塞的 <code>SQL</code>，紧急情况下先结束会话，释放资源。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-10-112617.png" alt></p>
+<p><strong>拓扑结构</strong></p>
+<blockquote>
+<p>注意：目前实例拓扑仅支持 <code>MySQL</code></p>
+</blockquote>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-140100.png" alt></p>
+<p><strong>性能快照</strong></p>
+<p>与告警规则关联，通过自动触发方式产生性能快照，保存异常现场，方便 DBA 排查数据库异常。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">场景示例：</span><br><span class="line">MySQL数据库凌晨<span class="number">1</span>点发生了CPU <span class="number">90</span>%的告警，导致正常业务响应时间变长，但是等DBA登录数据库上进行排查，异常已经消失，从监控历史上只能看到CPU飙高、活跃会话增长，没有慢SQL。在这种缺少数据、缺少现场的情况下，没有办法确认根本原因，同样的问题可能会持续发生，影响业务可用性。</span><br></pre></td></tr></table></figure>
+
+<h3 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h3><p><strong>慢 SQL</strong>：架构设计、SQL分析  [<a href="https://help.aliyun.com/document_detail/87374.html?spm=a2c4g.11186623.6.577.5e2f690dVvEL0F" target="_blank" rel="noopener">样本</a> | <a href="https://help.aliyun.com/document_detail/102635.html?spm=a2c4g.11186623.6.568.62631a4cLlP0XJ" target="_blank" rel="noopener">优化</a>]</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-10-111910.png" alt></p>
+<p><strong>死锁</strong></p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-10-145357.png" alt></p>
+<p>可通过以下手段降低死锁发生的概率：</p>
+<ul>
+<li>如果不同程序会并发存取多个表，尽量约定以相同的顺序访问表，可以大大降低死锁机会；</li>
+<li>为表添加合理的索引，如果不走索引将会为表的每一行记录加锁，死锁的概率就会大大增大；</li>
+<li>避免大事务，尽量将大事务拆成多个小事务来处理；大事务占用资源多，耗时长，与其他事务冲突的概率也会变高；</li>
+<li>在同一个事务中，尽可能做到一次锁定所需要的所有资源，减少死锁产生概率；</li>
+<li>对于非常容易产生死锁的业务部分，可以尝试使用升级锁定颗粒度，通过表级锁定来减少死锁产生的概率。</li>
+</ul>
+<p><strong>空间分析</strong>：可以查看每张表的占用空间、索引空间、碎片率等，点击表名可以查看表结构和索引，异常条件：</p>
+<ul>
+<li>实例的空间使用率大于 <code>90%</code>。</li>
+<li>实例的库表总空间（物理）剩余可用天数估计不足 <code>7</code> 天。</li>
+<li>实例可回收空间大于 <code>60GB</code>，且碎片率大于 <code>5%</code>。</li>
+<li>单表大于 <code>6G</code>，并且碎片率大于 <code>30%</code>。</li>
+<li>单表大于 <code>50GB</code>。</li>
+<li>单表行数大于 <code>500w</code>，且平均行长大于 <code>10KB</code>。</li>
+</ul>
+<h3 id="安全审计"><a href="#安全审计" class="headerlink" title="安全审计"></a>安全审计</h3><p><code>HDM</code> 的安全审计功能，采用旁路的技术，采集并分析对数据库服务器的各类操作行为，实时地、智能地解析对数据库服务器的各种操作，自动识别<strong>高危 SQL</strong>、<strong>SQL 注入</strong>、<strong>新增访问来源</strong>等风险。</p>
+<p><strong>高危 SQL</strong></p>
+<p>在 <code>HDM</code> 中，会根据预设的规则库，自动识别三种类型的高危 <code>SQL</code> ：</p>
+<p>① <code>DDL</code>（新建表、修改表结构、修改索引、重命名表等操作)；</p>
+<p>② 全表更新（例如全表 <code>Update</code> 、全表 <code>Delete</code> 等)；</p>
+<p>③ 大请求，默认规则是满足下面三个条件中的任意一个：</p>
+<ul>
+<li>扫描行数 &gt;= <code>100w</code></li>
+<li>返回行数 &gt;= <code>10w</code></li>
+<li>更新行数 &gt;= <code>10w</code></li>
+</ul>
+<p><strong>SQL 注入</strong></p>
+<p>所谓 <code>SQL</code> 注入，就是通过把 <code>SQL</code> 命令插入到 <code>Web</code> 表单提交或输入域名或页面请求的查询字符串，最终达到欺骗服务器执行恶意的 <code>SQL</code> 命令，严重危害数据库的健康。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">示例：</span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">'xx'</span> <span class="keyword">FROM</span> <span class="string">'xx'</span> <span class="keyword">WHERE</span> <span class="number">1</span> = <span class="number">1</span> <span class="keyword">AND</span> <span class="number">1</span> = <span class="number">1</span></span><br><span class="line">- <span class="keyword">Where</span> 子句中连续出现两个常量运算表达式</span><br><span class="line">- <span class="keyword">Where</span> 子句中有部分条件总为真</span><br></pre></td></tr></table></figure>
+
+<p><strong>新增访问来源</strong></p>
+<p>和历史的访问来源纪录进行对比，自动识别新增的访问来源，帮助用户确认是否存在未知的机器在访问或者读取数据库，默认规则是过去<strong>七天</strong>没有出现过的访问来源，即为新增访问来源。</p>
+<h3 id="诊断报告"><a href="#诊断报告" class="headerlink" title="诊断报告"></a>诊断报告</h3><p><strong>功能</strong>：支持用户<strong>创建</strong>、<strong>查看</strong>、<strong>下载</strong>诊断报告</p>
+<p><strong>要求</strong>：诊断时间必须小于 <code>24小时</code></p>
+<p><strong>内容</strong>：实例信息、健康状况（<code>CPU</code> / 连接数 / 活跃会话 / <code>QPS</code> / <code>TPS</code>）、告警列表、活跃会话列表、Top5 慢 SQL、Top5 表空间、死锁分析、性能趋势（<code>CPU</code> / 网络 / 内存 / <code>QPS and TPS</code> / 会话 / 空间变化）</p>
+<h3 id="容量评估"><a href="#容量评估" class="headerlink" title="容量评估"></a>容量评估</h3><blockquote>
+<p>限制：目前仅支持 <code>MySQL RDS</code></p>
+</blockquote>
+<p><strong>功能</strong>：容量建议 | 容量评估（<code>CPU</code> / 内存 / <code>IOPS</code> / 活跃会话 / 存储空间）</p>
+<h2 id="FA-amp-Q"><a href="#FA-amp-Q" class="headerlink" title="FA&amp;Q"></a>FA&amp;Q</h2><p>① 有些数据库服务器未连接外网，<code>dbgateway</code> 无法下载，实例如何接入？</p>
+<p>通过搭建代理服务器 <a href="http://www.squid-cache.org/" target="_blank" rel="noopener"><strong>Squid</strong></a> 进行下载，原理如下图：</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-09-073606.jpg" alt="squid"></p>
+<p><strong>搭建代理服务器</strong></p>
+<blockquote>
+<p>青岛代理服务器地址：<code>10.133.0.53:3128</code></p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装squid</span></span><br><span class="line">yum -y install squid</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置自启动</span></span><br><span class="line">systemctl enable squid.service</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置squid</span></span><br><span class="line">vim /etc/squid/squid.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动squid</span></span><br><span class="line">systemctl start squid.service</span><br></pre></td></tr></table></figure>
+
+<p><strong>使用代理接入HDM</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 增加代理</span></span><br><span class="line">echo  <span class="string">"</span></span><br><span class="line"><span class="string">http_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">https_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">ssl_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">tls_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">ftp_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">tcp_proxy=10.133.0.53:3128</span></span><br><span class="line"><span class="string">export http_proxy</span></span><br><span class="line"><span class="string">export https_proxy</span></span><br><span class="line"><span class="string">export ssl_proxy</span></span><br><span class="line"><span class="string">export ftp_proxy</span></span><br><span class="line"><span class="string">export tcp_proxy</span></span><br><span class="line"><span class="string">export tls_proxy"</span> &gt;&gt; /etc/profile ;  source /etc/profile</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改wget代理配置文件</span></span><br><span class="line">echo <span class="string">"</span></span><br><span class="line"><span class="string">https_proxy=http://10.133.0.53:3128/</span></span><br><span class="line"><span class="string">http_proxy=http://10.133.0.53:3128/</span></span><br><span class="line"><span class="string">ftp_proxy=http://10.133.0.53:3128/"</span> &gt;&gt; /etc/wgetrc ;  source /etc/wgetrc</span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载install-dbgateway</span></span><br><span class="line">sudo wget -O install-dbgateway http://hdm-dbgateway-cn-hangzhou.oss-cn-hangzhou.aliyuncs.com/DBGateway/install-dbgateway &amp;&amp; sudo /bin/bash install-dbgateway --id idc_zqSS2oMpeyKubndD --token <span class="number">3</span>E24C01713C83B7328F9A2F4C411078DC820E63FAFBC058F6635FAC5B0B4B7F2 --endpoint master-hdm-cn-hangzhou.aliyuncs.com --region default --native</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改install-dbgateway</span></span><br><span class="line">注释以下代码</span><br><span class="line">curl -v --connect-timeout <span class="number">3</span> --silent $&#123;endpoint&#125;:<span class="number">80</span> --output -</span><br><span class="line"><span class="keyword">if</span> [ $? != <span class="number">0</span> -a $? != <span class="number">52</span> ]; then</span><br><span class="line">       echo <span class="string">"Error! Can not connect to $&#123;endpoint&#125;:80, please check your network environment."</span></span><br><span class="line">       <span class="keyword">exit</span> <span class="number">1</span></span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装完成</span></span><br><span class="line">sudo /bin/bash install-dbgateway --id idc_zqSS2oMpeyKubndD --token <span class="number">3</span>E24C01713C83B7328F9A2F4C411078DC820E63FAFBC058F6635FAC5B0B4B7F2 --endpoint master-hdm-cn-hangzhou.aliyuncs.com --region default --native</span><br><span class="line"></span><br><span class="line">-------------------------------------------------</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置代理</span></span><br><span class="line">echo  <span class="string">"</span></span><br><span class="line"><span class="string">http_proxy=http://qd-aliyun-proxy.haier.net:3128</span></span><br><span class="line"><span class="string">https_proxy=http://qd-aliyun-proxy.haier.net:3128</span></span><br><span class="line"><span class="string">ssl_proxy=http://qd-aliyun-proxy.haier.net:3128</span></span><br><span class="line"><span class="string">tls_proxy=http://qd-aliyun-proxy.haier.net:3128</span></span><br><span class="line"><span class="string">ftp_proxy=http://qd-aliyun-proxy.haier.net:3128</span></span><br><span class="line"><span class="string">tcp_proxy=http://qd-aliyun-proxy.haier.net:3128</span></span><br><span class="line"><span class="string">export http_proxy</span></span><br><span class="line"><span class="string">export https_proxy</span></span><br><span class="line"><span class="string">export ssl_proxy</span></span><br><span class="line"><span class="string">export ftp_proxy</span></span><br><span class="line"><span class="string">export tcp_proxy</span></span><br><span class="line"><span class="string">export tls_proxy"</span> &gt;&gt; /etc/profile ;  source /etc/profile</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置wget代理</span></span><br><span class="line">echo <span class="string">"</span></span><br><span class="line"><span class="string">https_proxy=http://qd-aliyun-proxy.haier.net:3128/</span></span><br><span class="line"><span class="string">http_proxy=http://qd-aliyun-proxy.haier.net:3128/</span></span><br><span class="line"><span class="string">ftp_proxy=http://qd-aliyun-proxy.haier.net:3128/"</span> &gt;&gt; /etc/wgetrc ;  source /etc/wgetrc</span><br><span class="line"></span><br><span class="line"><span class="comment"># 下载install-dbgateway</span></span><br><span class="line">sudo wget -O install-dbgateway http://hdm-dbgateway-cn-qingdao.vpc100-oss-cn-qingdao.aliyuncs.com/DBGateway/install-dbgateway &amp;&amp; sudo /bin/bash install-dbgateway --id vpc-m5e6olft3vnne1ug6rdcd --token <span class="number">3359</span>FC7C28FB5B29459803F85B808D6D37B16B64FB2D56F485E632868E3C5798 --endpoint master-hdm-inner.cn-qingdao.aliyuncs.com --region cn-qingdao --native</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改install-dbgateway</span></span><br><span class="line">注释以下代码</span><br><span class="line">curl -v --connect-timeout <span class="number">3</span> --silent $&#123;endpoint&#125;:<span class="number">80</span> --output -</span><br><span class="line"><span class="keyword">if</span> [ $? != <span class="number">0</span> -a $? != <span class="number">52</span> ]; then</span><br><span class="line">       echo <span class="string">"Error! Can not connect to $&#123;endpoint&#125;:80, please check your network environment."</span></span><br><span class="line">       <span class="keyword">exit</span> <span class="number">1</span></span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装完成</span></span><br><span class="line">sudo /bin/bash install-dbgateway --id vpc-m5e6olft3vnne1ug6rdcd --token <span class="number">3359</span>FC7C28FB5B29459803F85B808D6D37B16B64FB2D56F485E632868E3C5798 --endpoint master-hdm-inner.cn-qingdao.aliyuncs.com --region cn-qingdao --native</span><br></pre></td></tr></table></figure>
+
+<p>② 实例接入后，显示的 <code>IP</code> 不是真实的业务 <code>IP</code> ？</p>
+<p>经与阿里云开发沟通，新版本在 <code>/opt/dbgateway/conf/dbgateway.conf</code> 中添加 <code>gateway.local.ip=</code>  配置项，<code>dbgateway</code> 优先使用配置中的 <code>ip</code> 。</p>
+<p>③ 服务器断电启动后，<code>dbgateway</code> 服务未自动重启？</p>
+<p>暂不支持</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/29/mysql-datadir/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2023,369 +3092,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/04/mysql-disaster/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/09/04/mysql-disaster/" class="post-title-link" itemprop="url">MySQL · 容灾</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-09-04 16:16:31" itemprop="dateCreated datePublished" datetime="2019-09-04T16:16:31+08:00">2019-09-04</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-22 21:22:49" itemprop="dateModified" datetime="2019-10-22T21:22:49+08:00">2019-10-22</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>数据是企业的生命线，<code>PSI</code> 线上系统数据基本都存储在青岛本地机房，缺少异地容灾能力，当出现机房级灾难场景下（如：地震、海啸、火灾等），业务连续性受到极大的影响，损失不可估量。如下图所示，目前 <code>PSI</code> 已具备前两类故障场景的覆盖能力，需要构建覆盖第三类故障场景能力，全方位保障业务数据安全，有备无患。</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-135300.png" alt></p>
-<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><ul>
-<li>保证极端场景下业务数据可恢复</li>
-<li><code>RPO</code> &lt; 2 小时，<code>RTO</code> &lt; 24 小时</li>
-</ul>
-<h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><p><strong>设计方案</strong>：如下图所示，重要系统生产数据（青岛本地机房：电信机房、联通机房、移动机房…）同步至红岛灾备数据中心，特别重要系统数据压缩存储上传至阿里云 <code>OSS</code>。</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-135600.png" alt></p>
-<p><strong>实施方案</strong>：从库实例再搭建一个从实例形成级联结构，对数据进行实时同步，主要为避免增加主库负载。</p>
-<p>实例拓扑：</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-140100.png" alt></p>
-<p>系统监控：</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-140200.png" alt></p>
-<p>①  主实例：<code>TDDS_M</code></p>
-<p>②  从实例：<code>TDDS_S</code></p>
-<p>③  灾备实例：<code>TDDS_D</code></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/28/docker/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/08/28/docker/" class="post-title-link" itemprop="url">docker</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-28 23:04:00" itemprop="dateCreated datePublished" datetime="2019-08-28T23:04:00+08:00">2019-08-28</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-24 10:20:02" itemprop="dateModified" datetime="2019-10-24T10:20:02+08:00">2019-10-24</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/容器/" itemprop="url" rel="index"><span itemprop="name">容器</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl start docker  // 启动docker</span><br><span class="line">$ systemctl stop docker   // 关闭docker</span><br><span class="line">$ docker restart xxx      // 重启一个容器</span><br><span class="line">$ docker stop xxx         // 停止一个容器</span><br><span class="line">$ docker rm xxx           // 删除一个容器</span><br><span class="line">$ docker rm -f xxx        // 强制删除一个容器</span><br><span class="line">$ docker log xxx          // 查看容器日志</span><br><span class="line">$ docker ps -a            // 查看容器信息</span><br><span class="line">$ docker search xxx       // 查看镜像</span><br></pre></td></tr></table></figure>
-
-<h2 id="学习资源"><a href="#学习资源" class="headerlink" title="学习资源"></a>学习资源</h2><p><a href="http://asdfghjkl.xyz/2019/04/25/%E6%B7%B1%E5%85%A5%E5%89%96%E6%9E%90Kubernetes/" target="_blank" rel="noopener">深入剖析 Kubernetes</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2434,7 +3140,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">117</span>
+                    <span class="site-state-item-count">119</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
