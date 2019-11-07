@@ -96,17 +96,17 @@
 
 
 
-  <meta name="description" content="简介优点 缺点  移植困难，不同数据库的语法差别很大 不易扩展，把过多业务逻辑写在存储过程不好维护，不利于分层管理，容易混乱  适用场景：一般存储过程适用于个别对性能要求较高的业务，其它的必要性不是很大。 定义1234567DELIMITER $$  -- 定义语句结束符为&quot;$$&quot;DROP PROCEDURE IF EXISTS helloworld$$  -- 这里就相当与&quot;;&quot;CREATE P">
+  <meta name="description" content="简介存储过程处理的是一组 SQL 语句，且没有返回值。 优点  简单：把单条 SQL 封装起来，简化复杂的操作。 安全 高性能  缺点  移植困难，不同数据库的语法差别很大 不易扩展，把过多业务逻辑写在存储过程不好维护，不利于分层管理，容易混乱  语法： 123456789101112131415161718192021222324252627282930313233343536373839404">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL · 存储过程">
 <meta property="og:url" content="https://huiraoo.github.io/blog/2019/10/31/mysql-procedure/index.html">
 <meta property="og:site_name" content="Rao&#39;s Blog">
-<meta property="og:description" content="简介优点 缺点  移植困难，不同数据库的语法差别很大 不易扩展，把过多业务逻辑写在存储过程不好维护，不利于分层管理，容易混乱  适用场景：一般存储过程适用于个别对性能要求较高的业务，其它的必要性不是很大。 定义1234567DELIMITER $$  -- 定义语句结束符为&quot;$$&quot;DROP PROCEDURE IF EXISTS helloworld$$  -- 这里就相当与&quot;;&quot;CREATE P">
+<meta property="og:description" content="简介存储过程处理的是一组 SQL 语句，且没有返回值。 优点  简单：把单条 SQL 封装起来，简化复杂的操作。 安全 高性能  缺点  移植困难，不同数据库的语法差别很大 不易扩展，把过多业务逻辑写在存储过程不好维护，不利于分层管理，容易混乱  语法： 123456789101112131415161718192021222324252627282930313233343536373839404">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-31T01:46:09.437Z">
+<meta property="og:updated_time" content="2019-11-07T07:59:17.594Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL · 存储过程">
-<meta name="twitter:description" content="简介优点 缺点  移植困难，不同数据库的语法差别很大 不易扩展，把过多业务逻辑写在存储过程不好维护，不利于分层管理，容易混乱  适用场景：一般存储过程适用于个别对性能要求较高的业务，其它的必要性不是很大。 定义1234567DELIMITER $$  -- 定义语句结束符为&quot;$$&quot;DROP PROCEDURE IF EXISTS helloworld$$  -- 这里就相当与&quot;;&quot;CREATE P">
+<meta name="twitter:description" content="简介存储过程处理的是一组 SQL 语句，且没有返回值。 优点  简单：把单条 SQL 封装起来，简化复杂的操作。 安全 高性能  缺点  移植困难，不同数据库的语法差别很大 不易扩展，把过多业务逻辑写在存储过程不好维护，不利于分层管理，容易混乱  语法： 123456789101112131415161718192021222324252627282930313233343536373839404">
 
 
 
@@ -366,12 +366,24 @@
                 
               
 
-              <time title="创建时间：2019-10-31 09:30:18 / 修改时间：09:46:09" itemprop="dateCreated datePublished" datetime="2019-10-31T09:30:18+08:00">2019-10-31</time>
+              <time title="创建时间：2019-10-31 09:30:18" itemprop="dateCreated datePublished" datetime="2019-10-31T09:30:18+08:00">2019-10-31</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-07 15:59:17" itemprop="dateModified" datetime="2019-11-07T15:59:17+08:00">2019-11-07</time>
               
             
           </span>
@@ -430,22 +442,25 @@
       
 
       
-        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>优点</strong></p>
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://dev.mysql.com/doc/refman/5.7/en/stored-routines.html" target="_blank" rel="noopener">存储过程</a>处理的是一组 SQL 语句，且没有返回值。</p>
+<p><strong>优点</strong></p>
+<ul>
+<li>简单：把单条 SQL 封装起来，简化复杂的操作。</li>
+<li>安全</li>
+<li>高性能</li>
+</ul>
 <p><strong>缺点</strong></p>
 <ul>
 <li>移植困难，不同数据库的语法差别很大</li>
 <li>不易扩展，把过多业务逻辑写在存储过程不好维护，不利于分层管理，容易混乱</li>
 </ul>
-<p><strong>适用场景</strong>：一般存储过程适用于个别对性能要求较高的业务，其它的必要性不是很大。</p>
-<h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">DELIMITER $$  -- 定义语句结束符为<span class="string">"$$"</span></span><br><span class="line">DROP PROCEDURE <span class="keyword">IF</span> EXISTS helloworld$$  -- 这里就相当与<span class="string">";"</span></span><br><span class="line">CREATE PROCEDURE helloworld()</span><br><span class="line"><span class="keyword">BEGIN</span> 	</span><br><span class="line">	SELECT <span class="string">"hello world"</span>;</span><br><span class="line"><span class="keyword">END</span> $$</span><br><span class="line">DELIMITER ;  -- 还原语句结束符为<span class="string">";"</span></span><br></pre></td></tr></table></figure>
+<p><strong>语法</strong>：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建</span></span><br><span class="line"><span class="keyword">CREATE</span></span><br><span class="line">    [DEFINER = <span class="keyword">user</span>]</span><br><span class="line">    <span class="keyword">PROCEDURE</span> sp_name ([proc_parameter[,...]])</span><br><span class="line">    [characteristic ...] routine_body</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span></span><br><span class="line">    [DEFINER = <span class="keyword">user</span>]</span><br><span class="line">    <span class="keyword">FUNCTION</span> sp_name ([func_parameter[,...]])</span><br><span class="line">    <span class="keyword">RETURNS</span> <span class="keyword">type</span></span><br><span class="line">    [characteristic ...] routine_body</span><br><span class="line"></span><br><span class="line">proc_parameter:</span><br><span class="line">    [ <span class="keyword">IN</span> | <span class="keyword">OUT</span> | INOUT ] param_name <span class="keyword">type</span></span><br><span class="line"></span><br><span class="line">func_parameter:</span><br><span class="line">    param_name <span class="keyword">type</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span>:</span><br><span class="line">    <span class="keyword">Any</span> valid MySQL <span class="keyword">data</span> <span class="keyword">type</span></span><br><span class="line"></span><br><span class="line">characteristic:</span><br><span class="line">    <span class="keyword">COMMENT</span> <span class="string">'string'</span></span><br><span class="line">  | <span class="keyword">LANGUAGE</span> <span class="keyword">SQL</span></span><br><span class="line">  | [<span class="keyword">NOT</span>] <span class="keyword">DETERMINISTIC</span></span><br><span class="line">  | &#123; CONTAINS <span class="keyword">SQL</span> | <span class="keyword">NO</span> <span class="keyword">SQL</span> | <span class="keyword">READS</span> <span class="keyword">SQL</span> <span class="keyword">DATA</span> | MODIFIES <span class="keyword">SQL</span> <span class="keyword">DATA</span> &#125;</span><br><span class="line">  | <span class="keyword">SQL</span> <span class="keyword">SECURITY</span> &#123; DEFINER | INVOKER &#125;</span><br><span class="line"></span><br><span class="line">routine_body:</span><br><span class="line">    Valid <span class="keyword">SQL</span> routine <span class="keyword">statement</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">PROCEDURE</span> proc_name [characteristic ...]</span><br><span class="line"></span><br><span class="line">characteristic:</span><br><span class="line">    <span class="keyword">COMMENT</span> <span class="string">'string'</span></span><br><span class="line">  | <span class="keyword">LANGUAGE</span> <span class="keyword">SQL</span></span><br><span class="line">  | &#123; CONTAINS <span class="keyword">SQL</span> | <span class="keyword">NO</span> <span class="keyword">SQL</span> | <span class="keyword">READS</span> <span class="keyword">SQL</span> <span class="keyword">DATA</span> | MODIFIES <span class="keyword">SQL</span> <span class="keyword">DATA</span> &#125;</span><br><span class="line">  | <span class="keyword">SQL</span> <span class="keyword">SECURITY</span> &#123; DEFINER | INVOKER &#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment"># 删除</span></span><br><span class="line"><span class="keyword">DROP</span> &#123;<span class="keyword">PROCEDURE</span> | <span class="keyword">FUNCTION</span>&#125; [<span class="keyword">IF</span> <span class="keyword">EXISTS</span>] sp_name</span><br><span class="line"></span><br><span class="line"><span class="comment"># 调用</span></span><br><span class="line"><span class="keyword">CALL</span> sp_name([parameter[,...]])</span><br><span class="line"><span class="keyword">CALL</span> sp_name[()]</span><br></pre></td></tr></table></figure>
 
-<p>创建存储过程的方法</p>
-<ul>
-<li>IN</li>
-<li>OUT</li>
-<li>INOUT</li>
-</ul>
-<h2 id="调用"><a href="#调用" class="headerlink" title="调用"></a>调用</h2>
+<p><strong>权限</strong>：<a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_create-routine" target="_blank" rel="noopener"><code>CREATE ROUTINE</code></a> 、<a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_alter-routine" target="_blank" rel="noopener"><code>ALTER ROUTINE</code></a> 、<a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_execute" target="_blank" rel="noopener"><code>EXECUTE</code></a></p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; delimiter //</span><br><span class="line"></span><br><span class="line">mysql&gt; CREATE PROCEDURE simpleproc (OUT <span class="keyword">param</span>1 INT)</span><br><span class="line">    -&gt; <span class="keyword">BEGIN</span></span><br><span class="line">    -&gt;   SELECT COUNT(*) INTO <span class="keyword">param</span>1 FROM t;</span><br><span class="line">    -&gt; <span class="keyword">END</span>//</span><br><span class="line">Query OK, <span class="number">0</span> rows affected (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; delimiter ;</span><br><span class="line"></span><br><span class="line">mysql&gt; CALL simpleproc(@a);</span><br><span class="line">Query OK, <span class="number">0</span> rows affected (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; SELECT @a;</span><br><span class="line">+------+</span><br><span class="line">| @a   |</span><br><span class="line">+------+</span><br><span class="line">| <span class="number">3</span>    |</span><br><span class="line">+------+</span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+
       
     </div>
 
@@ -558,7 +573,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">123</span>
+                    <span class="site-state-item-count">127</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -716,7 +731,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#定义"><span class="nav-number">2.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#调用"><span class="nav-number">3.</span> <span class="nav-text">调用</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#示例"><span class="nav-number">2.</span> <span class="nav-text">示例</span></a></li></ol></div>
             
 
           </div>

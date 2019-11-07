@@ -323,6 +323,1019 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/05/mysql-sql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/05/mysql-sql/" class="post-title-link" itemprop="url">MySQL · SQL</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-05 17:39:23" itemprop="dateCreated datePublished" datetime="2019-07-05T17:39:23+08:00">2019-07-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-24 15:10:27" itemprop="dateModified" datetime="2019-10-24T15:10:27+08:00">2019-10-24</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="库"><a href="#库" class="headerlink" title="库"></a>库</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建数据库</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">DATABASE</span> <span class="string">'dbname'</span> <span class="comment">/*!40100 DEFAULT CHARACTER SET utf8 */</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除数据库</span></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">DATABASE</span> <span class="string">'dbname'</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="表"><a href="#表" class="headerlink" title="表"></a>表</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 插入表</span></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> tabname(field1,field2) <span class="keyword">values</span>(value1,value2)</span><br><span class="line">mysql&gt; <span class="keyword">insert</span> <span class="keyword">into</span> <span class="keyword">test</span>(<span class="keyword">name</span>,age) <span class="keyword">values</span>(<span class="string">'raohui'</span>,<span class="number">29</span>);</span><br><span class="line">mysql&gt; insert into test(name,age) values('yangnan',22);</span><br><span class="line">mysql&gt; select * from test;</span><br><span class="line">+<span class="comment">----+---------+-----+---------------------+---------------------+</span></span><br><span class="line">| id | name    | age | gmt_create          | gmt_modified        |</span><br><span class="line">+<span class="comment">----+---------+-----+---------------------+---------------------+</span></span><br><span class="line">|  1 | raohui  |  29 | 2019-09-24 16:19:13 | 2019-09-24 16:29:16 |</span><br><span class="line">|  2 | yangnan |  22 | 2019-09-24 16:19:24 | 2019-09-24 16:19:24 |</span><br><span class="line">+<span class="comment">----+---------+-----+---------------------+---------------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改表名</span></span><br><span class="line"><span class="keyword">rename</span> <span class="keyword">table</span> <span class="string">'oldname'</span> <span class="keyword">to</span> <span class="string">'newname'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建表</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`testdemo`</span> (</span><br><span class="line">	<span class="string">`id`</span> <span class="built_in">bigint</span> <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">	<span class="string">`name`</span> <span class="built_in">char</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span>,</span><br><span class="line">  <span class="string">`address`</span> <span class="built_in">varchar</span>(<span class="number">50</span>),</span><br><span class="line">	<span class="string">`age`</span> <span class="built_in">tinyint</span> <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="number">0</span>,</span><br><span class="line">	<span class="string">`gmt_create`</span> datetime <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">CURRENT_TIMESTAMP</span>,</span><br><span class="line">	<span class="string">`gmt_modified`</span> datetime <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">CURRENT_TIMESTAMP</span> <span class="keyword">ON</span> <span class="keyword">UPDATE</span> <span class="keyword">CURRENT_TIMESTAMP</span>,</span><br><span class="line">	PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看表结构</span></span><br><span class="line">desc test;</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">create</span> <span class="keyword">table</span> <span class="keyword">test</span>\G</span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制表</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">'newname'</span> <span class="keyword">LIKE</span> <span class="string">'oldname'</span>;</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">'newname'</span> <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="string">'oldname'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改表存储引擎</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">'table_name'</span> <span class="keyword">engine</span>=myisam;</span><br></pre></td></tr></table></figure>
+
+<h3 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 删除索引</span></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">index</span> idx_name <span class="keyword">on</span> <span class="string">'table_name'</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加自增主键</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">'table_name'</span> <span class="keyword">ADD</span> <span class="keyword">id</span> <span class="built_in">bigint</span>(<span class="number">10</span>) PRIMARY <span class="keyword">KEY</span> AUTO_INCREMENT;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看表索引</span></span><br><span class="line"><span class="keyword">SHOW</span> <span class="keyword">INDEX</span> <span class="keyword">FROM</span> <span class="string">'table_name'</span>；</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加主键</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">'table_name'</span> <span class="keyword">ADD</span> PRIMARY <span class="keyword">KEY</span> (<span class="keyword">column</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建唯一索引</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">'table_name'</span> <span class="keyword">ADD</span> <span class="keyword">UNIQUE</span> (<span class="keyword">column</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建普通索引</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">'table_name'</span> <span class="keyword">ADD</span> <span class="string">'index_name'</span>(<span class="keyword">column</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建聚合索引</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">'table_name'</span> <span class="keyword">ADD</span> <span class="keyword">INDEX</span> <span class="string">'index_name'</span> (column1, column2, column3)</span><br></pre></td></tr></table></figure>
+
+<h3 id="视图"><a href="#视图" class="headerlink" title="视图"></a>视图</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查询视图</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> information_schema.views;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建视图</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">view</span> <span class="string">'viewname'</span> <span class="keyword">as</span> <span class="string">'sql'</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除视图</span></span><br><span class="line"><span class="keyword">drop</span> <span class="keyword">view</span> <span class="string">'viewname'</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="复杂查询"><a href="#复杂查询" class="headerlink" title="复杂查询"></a>复杂查询</h3><h4 id="LIKE"><a href="#LIKE" class="headerlink" title="LIKE"></a>LIKE</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="string">'table'</span> <span class="keyword">where</span> <span class="keyword">field</span> <span class="keyword">like</span> <span class="string">'%value%'</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="UNION-amp-UNION-ALL"><a href="#UNION-amp-UNION-ALL" class="headerlink" title="UNION &amp; UNION ALL"></a>UNION &amp; UNION ALL</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> column_name(s) <span class="keyword">FROM</span> table_name1</span><br><span class="line"><span class="keyword">UNION</span></span><br><span class="line"><span class="keyword">SELECT</span> column_name(s) <span class="keyword">FROM</span> table_name2</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> column_name(s) <span class="keyword">FROM</span> table_name1</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line"><span class="keyword">SELECT</span> column_name(s) <span class="keyword">FROM</span> table_name2</span><br><span class="line"></span><br><span class="line">注意：默认地，<span class="keyword">UNION</span> 操作符选取不同的值，如果允许重复的值，请使用 <span class="keyword">UNION</span> <span class="keyword">ALL</span>。</span><br></pre></td></tr></table></figure>
+
+<h4 id="子查询"><a href="#子查询" class="headerlink" title="子查询"></a>子查询</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> a,b,c <span class="keyword">from</span> a <span class="keyword">where</span> d <span class="keyword">IN</span> (<span class="keyword">select</span> d <span class="keyword">from</span> b )</span><br></pre></td></tr></table></figure>
+
+<h4 id="BETWEEN-AND"><a href="#BETWEEN-AND" class="headerlink" title="BETWEEN AND"></a>BETWEEN AND</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> table1 <span class="keyword">where</span> <span class="built_in">time</span> <span class="keyword">between</span> time1 <span class="keyword">and</span> time2</span><br></pre></td></tr></table></figure>
+
+<h4 id="IN"><a href="#IN" class="headerlink" title="IN"></a>IN</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> table1 <span class="keyword">where</span> a [<span class="keyword">not</span>] <span class="keyword">in</span> (‘值<span class="number">1</span>’,’值<span class="number">2</span>’,’值<span class="number">4</span>’,’值<span class="number">6</span>’)</span><br></pre></td></tr></table></figure>
+
+<h4 id="Group-By"><a href="#Group-By" class="headerlink" title="Group By"></a>Group By</h4><h4 id="ORDER-BY"><a href="#ORDER-BY" class="headerlink" title="ORDER BY"></a>ORDER BY</h4><p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> field1, field2,...fieldN <span class="keyword">FROM</span> table_name1, table_name2...</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> field1, [field2...] [<span class="keyword">ASC</span> [<span class="keyword">DESC</span>]]</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>你可以使用 ASC 或 DESC 关键字来设置查询结果是按升序或降序排列，默认情况下，按升序排列。</li>
+<li>你可以添加 WHERE…LIKE 子句来设置条件。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="string">'tabname'</span> <span class="keyword">order</span> <span class="keyword">by</span> field1,field2 [<span class="keyword">desc</span>]</span><br></pre></td></tr></table></figure>
+
+<h4 id="分页"><a href="#分页" class="headerlink" title="分页"></a>分页</h4><h4 id="JOIN"><a href="#JOIN" class="headerlink" title="JOIN"></a>JOIN</h4><h3 id="统计信息"><a href="#统计信息" class="headerlink" title="统计信息"></a>统计信息</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查询所有库数据量并排序</span></span><br><span class="line"><span class="keyword">SELECT</span> table_schema, <span class="keyword">CONCAT</span>(</span><br><span class="line"><span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(data_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> data_size, <span class="keyword">CONCAT</span>(</span><br><span class="line"><span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(index_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> index_size</span><br><span class="line"><span class="keyword">FROM</span> information_schema.tables</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> table_schema</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="keyword">SUM</span>(data_length) <span class="keyword">DESC</span>;</span><br><span class="line"></span><br><span class="line">+<span class="comment">--------------------+------------+------------+</span></span><br><span class="line">| table_schema       | data_size  | index_size |</span><br><span class="line">+<span class="comment">--------------------+------------+------------+</span></span><br><span class="line">| csomo-barcode      | 51872.64MB | 49203.56MB |</span><br><span class="line">| cosmodb            | 30257.57MB | 13855.68MB |</span><br><span class="line">| cosmo_im_1001      | 19769.54MB | 6251.67MB  |</span><br><span class="line">| cosmoimbase        | 17594.54MB | 18239.81MB |</span><br><span class="line">| cosmo_im_1004      | 3141.99MB  | 4099.13MB  |</span><br><span class="line">| cosmo_im_1012      | 1524.87MB  | 1592.03MB  |</span><br><span class="line">| cosmo_im_1010      | 1464.20MB  | 2176.00MB  |</span><br><span class="line">| cosmo_im_1016      | 1092.29MB  | 1543.65MB  |</span><br><span class="line">| cosmo_im_1009      | 793.96MB   | 1612.11MB  |</span><br><span class="line">| cosmo_im_1003      | 662.42MB   | 1417.97MB  |</span><br><span class="line">| cosmo_im_1006      | 200.44MB   | 288.24MB   |</span><br><span class="line">| cosmo_im_1047      | 184.14MB   | 90.46MB    |</span><br><span class="line">| cosmo_im_1038      | 32.15MB    | 46.03MB    |</span><br><span class="line">| mysql              | 22.60MB    | 0.14MB     |</span><br><span class="line">| test               | 7.06MB     | 0.03MB     |</span><br><span class="line">| information_schema | 0.00MB     | 0.00MB     |</span><br><span class="line">| performance_schema | 0.00MB     | 0.00MB     |</span><br><span class="line">+<span class="comment">--------------------+------------+------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询单个表数据量</span></span><br><span class="line"><span class="keyword">select</span> table_name,table_rows,<span class="keyword">CONCAT</span>(</span><br><span class="line"><span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(data_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> data_size, <span class="keyword">CONCAT</span>(</span><br><span class="line"><span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(index_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> index_size <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> TABLE_SCHEMA = <span class="string">'mqm'</span> <span class="keyword">and</span> table_name=<span class="string">'t_batch'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询单个库中表数据排序</span></span><br><span class="line"><span class="keyword">select</span> table_name,table_rows <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> TABLE_SCHEMA= <span class="string">'employees'</span> <span class="keyword">order</span> <span class="keyword">by</span> table_rows <span class="keyword">desc</span>;</span><br><span class="line">+<span class="comment">----------------------+------------+</span></span><br><span class="line">| table_name           | table_rows |</span><br><span class="line">+<span class="comment">----------------------+------------+</span></span><br><span class="line">| salaries             |    2838426 |</span><br><span class="line">| titles               |     441772 |</span><br><span class="line">| dept_emp             |     331570 |</span><br><span class="line">| employees            |     299600 |</span><br><span class="line">| dept_manager         |         24 |</span><br><span class="line">| departments          |          9 |</span><br><span class="line">| current_dept_emp     |       NULL |</span><br><span class="line">| dept_emp_latest_date |       NULL |</span><br><span class="line">+<span class="comment">----------------------+------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询单个库中表排序</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">CONCAT</span>(table_schema,<span class="string">'.'</span>,table_name) <span class="keyword">AS</span> <span class="string">'Table Name'</span>, table_rows <span class="keyword">AS</span> <span class="string">'Rows'</span>, <span class="keyword">CONCAT</span>(<span class="keyword">ROUND</span>(data_length/(<span class="number">1024</span>*<span class="number">1024</span>),<span class="number">2</span>),<span class="string">'M'</span>) <span class="keyword">AS</span> <span class="string">'Data Size'</span>,<span class="keyword">CONCAT</span>(<span class="keyword">ROUND</span>(index_length/(<span class="number">1024</span>*<span class="number">1024</span>),<span class="number">2</span>),<span class="string">'M'</span>) <span class="keyword">AS</span> <span class="string">'Index Size'</span>, <span class="keyword">CONCAT</span>(<span class="keyword">ROUND</span>((data_length+index_length)/(<span class="number">1024</span>*<span class="number">1024</span>),<span class="number">2</span>),<span class="string">'M'</span>) <span class="keyword">AS</span><span class="string">'Total'</span><span class="keyword">FROM</span> information_schema.TABLES <span class="keyword">WHERE</span> TABLE_SCHEMA= <span class="string">'employees'</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="comment">--total DESC;</span></span><br><span class="line">+<span class="comment">--------------------------------+---------+-----------+------------+--------+</span></span><br><span class="line">| <span class="keyword">Table</span> <span class="keyword">Name</span>                     | <span class="keyword">Rows</span>    | <span class="keyword">Data</span> <span class="keyword">Size</span> | <span class="keyword">Index</span> <span class="keyword">Size</span> | Total  |</span><br><span class="line">+<span class="comment">--------------------------------+---------+-----------+------------+--------+</span></span><br><span class="line">| employees.salaries             | <span class="number">2838426</span> | <span class="number">95.63</span>M    | <span class="number">0.00</span>M      | <span class="number">95.63</span>M |</span><br><span class="line">| employees.titles               |  <span class="number">441772</span> | <span class="number">19.56</span>M    | <span class="number">0.00</span>M      | <span class="number">19.56</span>M |</span><br><span class="line">| employees.dept_emp             |  <span class="number">331570</span> | <span class="number">11.52</span>M    | <span class="number">5.52</span>M      | <span class="number">17.03</span>M |</span><br><span class="line">| employees.employees            |  <span class="number">299600</span> | <span class="number">14.52</span>M    | <span class="number">0.00</span>M      | <span class="number">14.52</span>M |</span><br><span class="line">| employees.dept_manager         |      <span class="number">24</span> | <span class="number">0.02</span>M     | <span class="number">0.02</span>M      | <span class="number">0.03</span>M  |</span><br><span class="line">| employees.departments          |       <span class="number">9</span> | <span class="number">0.02</span>M     | <span class="number">0.02</span>M      | <span class="number">0.03</span>M  |</span><br><span class="line">| employees.current_dept_emp     |    <span class="literal">NULL</span> | <span class="literal">NULL</span>      | <span class="literal">NULL</span>       | <span class="literal">NULL</span>   |</span><br><span class="line">| employees.dept_emp_latest_date |    <span class="literal">NULL</span> | <span class="literal">NULL</span>      | <span class="literal">NULL</span>       | <span class="literal">NULL</span>   |</span><br><span class="line">+<span class="comment">--------------------------------+---------+-----------+------------+--------+</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="复制"><a href="#复制" class="headerlink" title="复制"></a>复制</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 取消复制</span></span><br><span class="line"><span class="keyword">stop</span> <span class="keyword">slave</span>;</span><br><span class="line"><span class="keyword">reset</span> <span class="keyword">slave</span> <span class="keyword">all</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 建立复制</span></span><br><span class="line"><span class="keyword">CHANGE</span> <span class="keyword">MASTER</span> <span class="keyword">TO</span> </span><br><span class="line">MASTER_HOST=<span class="string">'10.133.7.18'</span>,</span><br><span class="line">MASTER_USER=<span class="string">'repl'</span>,</span><br><span class="line">MASTER_PASSWORD=<span class="string">'Changeme_123'</span>,</span><br><span class="line">MASTER_PORT=<span class="number">3306</span>,</span><br><span class="line">MASTER_LOG_FILE=<span class="string">'mysql-binlog.000297'</span>, </span><br><span class="line">MASTER_LOG_POS=<span class="number">900834433</span>,</span><br><span class="line">MASTER_CONNECT_RETRY=<span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/05/mysql-toolkit/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/05/mysql-toolkit/" class="post-title-link" itemprop="url">Percona Toolkit · 简介安装</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-05 15:28:49" itemprop="dateCreated datePublished" datetime="2019-07-05T15:28:49+08:00">2019-07-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-19 23:58:11" itemprop="dateModified" datetime="2019-10-19T23:58:11+08:00">2019-10-19</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://github.com/percona/percona-toolkit" target="_blank" rel="noopener"><strong>Percona Toolkit</strong></a> 简称 <code>pt</code>，专用于 <code>MySQL</code> 运维管理的工具箱，几乎能满足 <code>MySQL</code> 日常运维的所有需求，使用 <code>Perl</code> 编写。</p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>①  安装</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ wget http://devops-files.oss-cn-qingdao.aliyuncs.com/percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-el7-x86_64-bundle.tar</span><br><span class="line">$ tar xvf percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-el7-x86_64-bundle.tar</span><br><span class="line">$ rpm -ivh percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br><span class="line"></span><br><span class="line">warning: percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64.rpm: Header V4 RSA/SHA256 Signature, key ID <span class="number">8507</span>efa5: NOKEY</span><br><span class="line">error: Failed dependencies:</span><br><span class="line">	perl(DBD::mysql) &gt;= <span class="number">1.0</span> is needed by percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64</span><br><span class="line">	perl(IO::Socket::SSL) is needed by percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64</span><br><span class="line">	perl(Digest::MD5) is needed by percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64</span><br></pre></td></tr></table></figure>
+
+<p>②  解决依赖</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ yum -y install perl-DBD-MySQL</span><br><span class="line">$ yum -y install perl-Digest-MD5</span><br><span class="line">$ yum -y install perl-IO-Socket-SSL</span><br><span class="line">$ yum -y install perl-TermReadKey</span><br><span class="line">$ rpm -ivh percona-toolkit-<span class="number">3.0</span>.<span class="number">13</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br><span class="line"></span><br><span class="line">$ pt-archiver --help</span><br><span class="line">Usage: pt-archiver [OPTIONS] --source DSN --where WHERE</span><br></pre></td></tr></table></figure>
+
+<h2 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h2><table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>pt-align</td>
+<td>对齐其他工具的输出</td>
+</tr>
+<tr>
+<td>pt-archiver</td>
+<td>将表数据归档到另一个表或文件中</td>
+</tr>
+<tr>
+<td>pt-config-diff</td>
+<td>比较配置文件和参数</td>
+</tr>
+<tr>
+<td>pt-deadlock-logger</td>
+<td>提取和记录 <code>mysql</code> 死锁信息</td>
+</tr>
+<tr>
+<td>pt-diskstats</td>
+<td>查看系统磁盘状态</td>
+</tr>
+<tr>
+<td>pt-duplicate-key-checker</td>
+<td>列出并删除重复的索引和外键</td>
+</tr>
+<tr>
+<td>pt-fifo-split</td>
+<td>模拟切割文件并输出</td>
+</tr>
+<tr>
+<td>pt-find</td>
+<td>查找表并执行命令</td>
+</tr>
+<tr>
+<td>pt-fingerprint</td>
+<td>将查询转成密文</td>
+</tr>
+<tr>
+<td>pt-fk-error-logger</td>
+<td>提取和记录外键信息</td>
+</tr>
+<tr>
+<td>pt-heartbeat</td>
+<td>监控复制延迟</td>
+</tr>
+<tr>
+<td>pt-index-usage</td>
+<td>分析日志中索引使用情况，并出报告</td>
+</tr>
+<tr>
+<td>pt-ioprofile</td>
+<td>查询进程 <code>IO</code> 并打印活动表</td>
+</tr>
+<tr>
+<td>pt-kill</td>
+<td><code>kill</code> 掉符合条件的 <code>sql</code></td>
+</tr>
+<tr>
+<td>pt-mext</td>
+<td>并行查看 <code>status</code> 样本信息</td>
+</tr>
+<tr>
+<td>pt-mysql-summary</td>
+<td>对 <code>mysql</code> 配置和 <code>status</code> 进行汇总</td>
+</tr>
+<tr>
+<td>pt-online-schema-change</td>
+<td>在线修改表结构</td>
+</tr>
+<tr>
+<td>pt-pmp</td>
+<td>为查询结果跟踪，并汇总跟踪结果</td>
+</tr>
+<tr>
+<td>pt-query-digest</td>
+<td>分析查询日志，并产生报告</td>
+</tr>
+<tr>
+<td>pt-secure-collect</td>
+<td>收集、打包、加密数据</td>
+</tr>
+<tr>
+<td>pt-show-grants</td>
+<td>规范化和打印权限</td>
+</tr>
+<tr>
+<td>pt-sift</td>
+<td>浏览由 <code>pt-stalk</code> 创建的文件</td>
+</tr>
+<tr>
+<td>pt-slave-delay</td>
+<td>设定从落后主的时间</td>
+</tr>
+<tr>
+<td>pt-slave-find</td>
+<td>查找和打印所有复制层级关系</td>
+</tr>
+<tr>
+<td>pt-slave-restart</td>
+<td>监控 <code>salve</code> 错误，并尝试重启 <code>salve</code></td>
+</tr>
+<tr>
+<td>pt-stalk</td>
+<td>出现问题时，收集诊断数据</td>
+</tr>
+<tr>
+<td>pt-summary</td>
+<td>收集和显示系统概况</td>
+</tr>
+<tr>
+<td>pt-table-checksum</td>
+<td>校验主从复制一致性</td>
+</tr>
+<tr>
+<td>pt-table-sync</td>
+<td>高效同步表数据</td>
+</tr>
+<tr>
+<td>pt-table-usage</td>
+<td>分析日志中查询并分析表使用情况</td>
+</tr>
+<tr>
+<td>pt-upgrade</td>
+<td>在多个服务器上执行查询，并比较不同</td>
+</tr>
+<tr>
+<td>pt-variable-advisor</td>
+<td>分析参数，并提出建议</td>
+</tr>
+<tr>
+<td>pt-visual-explain</td>
+<td>格式化执行计划</td>
+</tr>
+</tbody></table>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/06/18/mysql-innodb_buffer_pool_size/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/06/18/mysql-innodb_buffer_pool_size/" class="post-title-link" itemprop="url">MySQL · 配置参数 · innodb_buffer_pool_size</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-18 14:09:04" itemprop="dateCreated datePublished" datetime="2019-06-18T14:09:04+08:00">2019-06-18</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-20 00:11:46" itemprop="dateModified" datetime="2019-10-20T00:11:46+08:00">2019-10-20</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>缓存</strong>是计算机系统非常重要的组成部分，因为访问硬盘相比缓存可能会慢 <code>100</code> 到 <code>100000</code> 倍，取决于访问的数据量。<code>MySQL</code> 作为一个存储系统，同样具有<strong>缓冲池</strong>（<code>Buffer Pool</code>）机制，以避免每次查询数据都进行磁盘 <code>IO</code>，不同存储引擎缓存方式有所区别：</p>
+<ul>
+<li><p><a href="https://baike.baidu.com/item/myisam" target="_blank" rel="noopener"><strong>MyISAM</strong></a> 使用的是操作系统的文件系统缓存，来缓存那些经常被查询的数据。</p>
+</li>
+<li><p><a href="https://baike.baidu.com/item/innodb" target="_blank" rel="noopener"><strong>InnoDB</strong></a> 不依赖操作系统的缓存，自己在 <a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-buffer-pool-resize.html" target="_blank" rel="noopener"><strong>InnoDB Buffer Pool</strong></a> 处理缓存。</p>
+</li>
+</ul>
+<p><strong>①  InnoDB Buffer Pool 主要作用？</strong></p>
+<p>缓存表数据与索引数据，把磁盘上的数据加载到缓冲池，避免每次访问都进行磁盘 <code>IO</code>，起到加速访问的作用。</p>
+<p><strong>②  为什么不把所有数据都放到缓冲池里？</strong></p>
+<p>凡事都具备两面性，抛开数据易失性不说，访问快速的反面是存储容量小：</p>
+<ul>
+<li>缓存访问快，但容量小，数据库存储了 <code>200G</code> 数据，缓存容量可能只有 <code>64G</code>；</li>
+<li>内存访问快，但容量小，买一台笔记本磁盘有 <code>2T</code>，内存可能只有 <code>16G</code>；</li>
+</ul>
+<p>因此，<strong>只能把“最热”的数据放到“最近”的地方，以“最大限度” 的降低磁盘访问</strong>。</p>
+<p><strong>③  如何管理与淘汰缓冲池，使得性能最大化呢？</strong></p>
+<h2 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h2><p><strong>参数</strong>：innodb_buffer_pool_size</p>
+<p><strong>介绍</strong>：配置缓冲池的大小，在内存允许的情况下，DBA 往往会建议调大这个参数，越多数据和索引放到内存里，数据库的性能会越好。</p>
+<p><strong>参数</strong>：innodb_old_blocks_pct</p>
+<p><strong>介绍</strong>：老生代占整个 <code>LRU</code> 链长度的比例，默认是 <code>37</code>，即整个 <code>LRU</code> 中新生代与老生代长度比例是 <code>63:37</code>。</p>
+<p><strong>参数</strong>：innodb_old_blocks_time</p>
+<p><strong>介绍</strong>：老生代停留时间窗口，单位是毫秒，默认是 <code>1000</code>，即同时满足“被访问”与“在老生代停留时间超过 <code>1</code> 秒两个条件，才会被插入到新生代头部。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select @@innodb_buffer_pool_size/1024/1024;</span><br><span class="line">+<span class="comment">-----------------------------------	--+</span></span><br><span class="line">| @@innodb_buffer_pool_size/1024/1024 |</span><br><span class="line">+<span class="comment">-------------------------------------+</span></span><br><span class="line">|                       1024.00000000 |</span><br><span class="line">+<span class="comment">-------------------------------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">show</span> <span class="keyword">variables</span> <span class="keyword">like</span> <span class="string">'innodb_old%'</span>;</span><br><span class="line">+<span class="comment">------------------------+-------+</span></span><br><span class="line">| Variable_name          | Value |</span><br><span class="line">+<span class="comment">------------------------+-------+</span></span><br><span class="line">| innodb_old_blocks_pct  | 37    |</span><br><span class="line">| innodb_old_blocks_time | 1000  |</span><br><span class="line">+<span class="comment">------------------------+-------+</span></span><br><span class="line">2 rows in <span class="keyword">set</span> (<span class="number">0.01</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p>InnoDB Buffer Pool 缓存命中率计算：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">脏页率计算公式：innodb_buffer_pool_pages_dirty / innodb_buffer_pool_pages_data * <span class="number">100</span>%</span><br><span class="line">使用率计算公式：innodb_buffer_pool_pages_data / ( innodb_buffer_pool_pages_data + innodb_buffer_pool_pages_free ) * <span class="number">100</span>%</span><br></pre></td></tr></table></figure>
+
+<p>将缓冲池划分为多个单独的实例，通过减少不同线程读取和写入缓存的争用来提高并发性。<code>Buffer Pool</code> 可以存放多个 <code>Instance</code>，每个 <code>Instance</code> 由多个 <code>Chunk</code> 组成。<code>Instance</code> 的数量范围和 <code>Chunk</code> 的总数量范围分别为 <code>1-64</code>，<code>1-1000</code>。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-26-093000.png" alt="img"></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 默认值</span></span><br><span class="line">innodb_buffer_pool_size 默认值为<span class="number">128</span>M</span><br><span class="line">innodb_buffer_pool_instances 默认值为<span class="number">1</span></span><br><span class="line">innodb_buffer_pool_chunk_size 默认值为<span class="number">128</span>M</span><br><span class="line"></span><br><span class="line"><span class="comment"># 计算公式</span></span><br><span class="line">innodb_buffer_pool_size = innodb_buffer_pool_chunk_size * innodb_buffer_pool_instances * N</span><br><span class="line"></span><br><span class="line"><span class="comment"># 总缓存大小</span></span><br><span class="line">select @@innodb_buffer_pool_size/<span class="number">1024</span>/<span class="number">1024</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 缓存池数量</span></span><br><span class="line">select @@innodb_buffer_pool_instances;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 每个缓存池的大小</span></span><br><span class="line">select @@innodb_buffer_pool_chunk_size/<span class="number">1024</span>/<span class="number">1024</span>;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Tips：当设置的 <code>Buffer Pool</code> 不等于 <code>Chunk</code> * <code>Instance</code> 倍数时，MySQL 会自动调整 <code>Buffer Pool</code> 的大小 ( 向上取值到最近的一次倍数 )。</p>
+</blockquote>
+<p><strong>小结</strong>：</p>
+<ul>
+<li><p>缓冲池（buffer pool）是一种常见的<strong>降低磁盘访问的机制</strong></p>
+</li>
+<li><p>缓冲池通常以<strong>页（page）</strong>为单位缓存数据</p>
+</li>
+<li><p>缓冲池的常见管理算法是 <strong>LRU</strong>，memcache，OS，InnoDB 都使用了这种算法</p>
+</li>
+<li><p>InnoDB 对普通 LRU 进行了优化：（1）将缓冲池分为老生代和新生代，入缓冲池的页，优先进入老生代，页被访问才进入新生代，以解决预读失效的问题；（2）页被访问，且在老生代停留时间超过配置阈值的，才进入新生代，以解决批量数据访问，大量热数据淘汰的问题。</p>
+</li>
+</ul>
+<h2 id="设置-InnoDB-Buffer-Pool"><a href="#设置-InnoDB-Buffer-Pool" class="headerlink" title="设置 InnoDB Buffer Pool"></a>设置 InnoDB Buffer Pool</h2><p>InnoDB Buffer Pool 缓存了表数据和二级索引在内存中，设置 <code>innodb_buffer_pool_size</code> 合理数值对实例性能影响很大。</p>
+<ul>
+<li>设置偏小，会导致数据库大量直接对磁盘的访问，查询效率低。</li>
+<li>设置过大，会导致数据库进程占用内存太多，发生 <code>OOM</code>。</li>
+</ul>
+<p><strong>独立服务器</strong></p>
+<p>如果仅 <code>MySQL</code> 服务独享服务器资源，推荐设置 <code>innodb_buffer_pool_size</code> 为服务器总可用内存的 <code>80%</code>，具体设置多少，需要根据服务器内存大小和消耗进行调整。</p>
+<p>设置 <code>80%</code> 的原因，是因为其它也需要内存：</p>
+<ul>
+<li>单次查询至少需要几K（甚至几M）的内存</li>
+<li>其他各种内部的 <code>MySQL</code> 结构和缓存</li>
+<li>有一些 <code>MySQL</code> 文件是在 <code>OS</code> 缓存里（<code>binary</code> 日志，<code>relay</code> 日志，事务日志等）</li>
+<li>操作系统消耗内存</li>
+</ul>
+<h2 id="修改方法"><a href="#修改方法" class="headerlink" title="修改方法"></a>修改方法</h2><ul>
+<li><code>MySQL 5.7</code> 版本之后，可以在线修改</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">set global innodb_buffer_pool_size = size_in_bytes;</span><br><span class="line">select @@innodb_buffer_pool_size/<span class="number">1024</span>/<span class="number">1024</span>;</span><br><span class="line">+-------------------------------------+</span><br><span class="line">| @@innodb_buffer_pool_size/<span class="number">1024</span>/<span class="number">1024</span> |</span><br><span class="line">+-------------------------------------+</span><br><span class="line">|                        <span class="number">128.00000000</span> |</span><br><span class="line">+-------------------------------------+</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Tips:</span><br><span class="line">① innodb_buffer_pool_size 在线修改时，用户的请求将会阻塞，需要在业务低峰期和没有大事务操作时候进行</span><br><span class="line">② 同时要修改配置文件 my.cnf，防止重启后恢复到原来的值</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>MySQL 5.7</code> 版本之前，需要修改 <code>my.cnf</code> 配置文件，然后重启 <code>MySQL</code> 服务</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">innodb_buffer_pool_size  = <span class="number">20480</span>M</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>参考</strong></p>
+</blockquote>
+<p><a href="http://mysql.taobao.org/monthly/2018/03/06/" target="_blank" rel="noopener"><strong>数据库内核月报</strong></a></p>
+<p><a href="https://www.centos.bz/2016/11/innodb_buffer_pool_size-set-the-right-size/" target="_blank" rel="noopener"><strong>INNODB_BUFFER_POOL_SIZE：设置最佳内存值</strong></a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/06/18/mysql-xtrabackup/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/06/18/mysql-xtrabackup/" class="post-title-link" itemprop="url">MySQL · 备份工具 · Percona XtraBackup</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-18 10:24:13" itemprop="dateCreated datePublished" datetime="2019-06-18T10:24:13+08:00">2019-06-18</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-22 17:37:47" itemprop="dateModified" datetime="2019-10-22T17:37:47+08:00">2019-10-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://github.com/percona/percona-xtrabackup" target="_blank" rel="noopener"><strong>Percona XtraBackup</strong></a> 是 <code>Percona</code> 公司基于 <code>C++</code> 开发的一个用于 <code>MySQL</code> 数据库 <strong>物理热备</strong> 的 <strong>免费开源</strong> 的备份工具。</p>
+<p><strong>XtraBackup 优势</strong></p>
+<ul>
+<li>支持 <code>InnoDB</code> 热备和增量备份</li>
+<li>支持流压缩传输到其它服务器</li>
+<li>备份速度快，比较容易地创建主从同步</li>
+<li>备份时不会增加服务器负载</li>
+</ul>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>1、下载 <code>Percona-XtraBackup</code></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ wget http://devops-files.oss-cn-qingdao.aliyuncs.com/percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<p>2、<code>rpm</code> 方式安装</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rpm -ivh percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<p><strong>报错信息</strong>：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">warning: percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64.rpm: Header V4 DSA/SHA1 Signature, key ID cd2efd2a: NOKEY</span><br><span class="line">error: Failed dependencies:</span><br><span class="line">	libev.so.<span class="number">4</span>()(<span class="number">64</span>bit) is needed by percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64</span><br><span class="line">	perl(DBD::mysql) is needed by percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64</span><br><span class="line">	perl(Digest::MD5) is needed by percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64</span><br></pre></td></tr></table></figure>
+
+<p><strong>解决方法</strong>：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ wget http://devops-files.oss-cn-qingdao.aliyuncs.com/libev-<span class="number">4.15</span>-<span class="number">1</span>.el6.x86_64.rpm</span><br><span class="line">$ yum -y install perl-DBD-MySQL</span><br><span class="line">$ yum -y install perl-Digest-MD5</span><br><span class="line">$ rpm -ivh libev-<span class="number">4.15</span>-<span class="number">1</span>.el6.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ rpm -ivh percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br><span class="line">Preparing...                           <span class="comment">################################# [100%]</span></span><br><span class="line">Updating / installing...</span><br><span class="line">   <span class="number">1</span>:percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el <span class="comment">################################# [100%]</span></span><br><span class="line"></span><br><span class="line">$ xtrabackup --version </span><br><span class="line">xtrabackup version <span class="number">2.4</span>.<span class="number">12</span> based on MySQL server <span class="number">5.7</span>.<span class="number">19</span> Linux (x86_64)</span><br></pre></td></tr></table></figure>
+
+<p><strong>报错信息</strong>：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@hop02 src]<span class="comment"># rpm -ivh percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span></span><br><span class="line">warning: percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64.rpm: Header V4 DSA/SHA1 Signature, key ID cd2efd2a: NOKEY</span><br><span class="line">error: Failed dependencies:</span><br><span class="line">​	libc.so.<span class="number">6</span>(GLIBC_2.<span class="number">14</span>)(<span class="number">64</span>bit) is needed by percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64</span><br><span class="line">​	libstdc++.so.<span class="number">6</span>(GLIBCXX_3.<span class="number">4.15</span>)(<span class="number">64</span>bit) is needed by percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64</span><br></pre></td></tr></table></figure>
+
+<p><strong>解决方法</strong>：</p>
+<p>查看操作系统版本，<code>CentOS 6</code> 下载 <code>el6</code> 的安装包即可。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/redhat-release</span><br><span class="line">CentOS release <span class="number">6.5</span> (Final)</span><br><span class="line"></span><br><span class="line">$ wget http://devops-files.oss-cn-qingdao.aliyuncs.com/percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el6.x86_64.rpm</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Tips：不要轻易在真实生产环境中直接安装，因为升级的过程中比较容易出现系统出错。</p>
+</blockquote>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p><strong>备份原理</strong></p>
+<p><code>innobackupex</code> 在后台线程不断追踪 <code>InnoDB</code> 的日志文件，然后复制 <code>InnoDB</code> 的数据文件。数据文件复制完成之后，日志的复制线程也会结束。这样就得到了不在同一时间点的数据副本和开始备份以后的事务日志。完成上面的步骤之后，就可以使用 <code>InnoDB</code> 崩溃恢复代码执行事务日志（<code>redo log</code>），以达到数据的一致性。备份分为两个过程：</p>
+<ul>
+<li><strong>backup</strong>，备份阶段，追踪事务日志和复制数据文件（物理备份）。</li>
+<li><strong>preparing</strong>，重放事务日志，使所有的数据处于同一个时间点，达到一致性状态。</li>
+</ul>
+<p><strong>备份过程</strong></p>
+<p><img src="http://ww4.sinaimg.cn/large/006tNc79ly1g5r4dhuzpvj30hi0srwtk.jpg" alt="PXB"></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>）复制已有的redo log，然后监听redo log变化并持续复制</span><br><span class="line"><span class="number">2</span>）复制事务引擎数据文件</span><br><span class="line"><span class="number">3</span>）等到数据文件复制完成</span><br><span class="line"><span class="number">4</span>）加锁：全局读锁</span><br><span class="line"><span class="number">5</span>）备份非事务引擎数据文件及其他文件</span><br><span class="line"><span class="number">6</span>）获取binlog点位信息等元数据</span><br><span class="line"><span class="number">7</span>）停止复制redo log</span><br><span class="line"><span class="number">8</span>）解锁：全局读锁</span><br><span class="line"><span class="number">9</span>）复制buffer pool dump</span><br><span class="line"><span class="number">10</span>）备份完成</span><br></pre></td></tr></table></figure>
+
+<p><code>XtraBackup</code> 基于 <code>InnoDB</code> 的 <code>crash recovery</code> 机制，在备份还原时利用 <code>redo log</code> 得到完整的数据文件，并通过全局读锁，保证 <code>InnoDB</code> 数据与非 <code>InnoDB</code> 数据的一致性，最终完成备份还原的功能。</p>
+<p><strong>恢复过程</strong></p>
+<p>apply-log</p>
+<ul>
+<li>模拟 <code>MySQL</code> 进行 <code>recover</code>，将 <code>redo log</code> 回放到数据文件中。</li>
+<li>等到 <code>recover</code> 完成 。</li>
+<li>重建 <code>redo log</code>，为启动数据库做准备。</li>
+</ul>
+<p>copy-back</p>
+<ul>
+<li>将数据文件复制回 <code>MySQL</code> 数据目录。</li>
+<li>还原完成。</li>
+</ul>
+<p><code>InnoDB</code> 数据会被恢复至备份结束时（全局读锁时）的状态，而非 <code>InnoDB</code> 数据本身即是在全局读锁时被复制出来，它们的数据一致。</p>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p><strong>全量备份</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># !/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#############################################################################</span></span><br><span class="line"><span class="comment"># Full Backup Using XtraBackup For MySQL</span></span><br><span class="line"><span class="comment">#############################################################################</span></span><br><span class="line"></span><br><span class="line">mode=<span class="variable">$1</span></span><br><span class="line">backupdir=<span class="string">'/data/backup'</span>   <span class="comment"># backup dir</span></span><br><span class="line"></span><br><span class="line">backup() &#123;</span><br><span class="line"><span class="keyword">if</span> [ ! -d <span class="variable">$backupdir</span> ]; then</span><br><span class="line">    mkdir -p <span class="variable">$backupdir</span> </span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份主库：</span></span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --user=root --password=Haier@<span class="number">123</span> --no-timestamp /<span class="variable">$backupdir</span>/full-`date +%Y%m%d%H%M`-bak</span><br><span class="line">find <span class="variable">$backupdir</span> -mtime +<span class="number">2</span> -name <span class="string">'full-*-bak'</span> -exec rm -rf &#123;&#125; \;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 传输到从库：</span></span><br><span class="line"><span class="comment"># scp -r /data/backup/* root@10.133.7.19:/data/backup</span></span><br><span class="line"><span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">case <span class="string">"<span class="variable">$mode</span>"</span> <span class="keyword">in</span></span><br><span class="line">    <span class="string">'full'</span>) backup ;;</span><br><span class="line">*)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># usage</span></span><br><span class="line">    basename=`basename <span class="string">"<span class="variable">$0</span>"</span>`</span><br><span class="line">    echo <span class="string">"Usage: <span class="variable">$basename</span> &#123;full&#125;"</span></span><br><span class="line">    <span class="keyword">exit</span> <span class="number">1</span></span><br><span class="line">    ;;</span><br><span class="line">esac</span><br><span class="line"><span class="keyword">exit</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 每天中午12:00执行全量备份，保留前1天数据</span></span><br><span class="line">crontab -e</span><br><span class="line"><span class="number">0</span> <span class="number">12</span> * * <span class="number">0</span> sh /<span class="keyword">data</span>/backup.sh full</span><br></pre></td></tr></table></figure>
+
+<p><strong>备份报错</strong>：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">190812</span> <span class="number">13</span>:<span class="number">39</span>:<span class="number">54</span> &gt;&gt; log scanned up to (<span class="number">491275222500</span>)</span><br><span class="line">xtrabackup: Generating a list of tablespaces</span><br><span class="line">InnoDB: Allocated tablespace ID <span class="number">2</span> <span class="keyword">for</span> mysql/plugin, old maximum was <span class="number">0</span></span><br><span class="line">InnoDB: Operating system error number <span class="number">24</span> <span class="keyword">in</span> a file operation.</span><br><span class="line">InnoDB: Error number <span class="number">24</span> means <span class="string">'Too many open files'</span></span><br><span class="line">InnoDB: Some operating system error numbers are described at http://dev.mysql.com/doc/refman/<span class="number">5.7</span>/en/operating-system-error-codes.html</span><br><span class="line">InnoDB: File ./cosmo_im_1023/bns_io_sapsourcinglist.ibd: <span class="string">'open'</span> returned OS error <span class="number">124</span>. Cannot <span class="keyword">continue</span> operation</span><br><span class="line">InnoDB: Cannot <span class="keyword">continue</span> operation.</span><br></pre></td></tr></table></figure>
+
+<p><strong>解决方案</strong>：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>）shell&gt; ulimit -n <span class="number">65535</span></span><br><span class="line"><span class="number">2</span>）修改 my.cnf 配置文件的参数</span><br><span class="line">innodb_open_files = <span class="number">10240</span></span><br><span class="line">open_files_limit = <span class="number">10240</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li>优先使用高版本 <code>XtraBackup</code> 。</li>
+<li>尽量不要使用 <code>XtraBackup</code> 自带的增量 备份，因为后期使用或者恢复不太方便。</li>
+<li>备份结束时，请立即 <code>apply-log</code> ，这样能够知道备份集是否可用。</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/06/12/mysql-pmm/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1055,7 +2068,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">123</span>
+                    <span class="site-state-item-count">127</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
