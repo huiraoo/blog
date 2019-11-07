@@ -323,6 +323,187 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/07/mysql-case-state-init/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/11/07/mysql-case-state-init/" class="post-title-link" itemprop="url">MySQL · 案例分析 · 连接中出现大量的 init 状态</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-07 09:11:04 / 修改时间：11:23:22" itemprop="dateCreated datePublished" datetime="2019-11-07T09:11:04+08:00">2019-11-07</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><p><strong>HDM 监控告警</strong></p>
+<blockquote>
+<p>您的自建DB实例</p>
+<p>cosmo-aps|cosmo-aps-t@10.138.232.84:3306 ( 别名: COSMOAPS_S, 集群: 智能制造 )</p>
+<p>MySQL活跃会话数达到551</p>
+</blockquote>
+<p>查看当前会话情况，发现出现大量的 State is init.</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line">+--------+-------------+---------------------+--------------------+---------+---------+----------------------------------------+------------------------------------------------------------------------------------------------------+</span><br><span class="line">| Id     | User        | Host                | db                 | Command | Time    | State                                  | Info                                                                                                 |</span><br><span class="line">+--------+-------------+---------------------+--------------------+---------+---------+----------------------------------------+------------------------------------------------------------------------------------------------------+</span><br><span class="line">|     <span class="number">34</span> | system user |                     | NULL               | Connect | <span class="number">4814602</span> | Queueing master event to the relay log | NULL                                                                                                 |</span><br><span class="line">| <span class="number">312112</span> | sre         | <span class="number">10.138</span>.<span class="number">232.84</span>:<span class="number">39700</span> | information_schema | Query   |   <span class="number">36129</span> | checking query cache <span class="keyword">for</span> query         | /* rds internal mark */ /* hdm internal mark */ /* rds internal mark */ /* hdm internal mark */ SHOW |</span><br><span class="line">| <span class="number">312113</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43690</span>     | NULL               | Query   |   <span class="number">36131</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312117</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43698</span>     | NULL               | Query   |   <span class="number">36071</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312120</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43704</span>     | NULL               | Query   |   <span class="number">36011</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312123</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43710</span>     | NULL               | Query   |   <span class="number">35951</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312126</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43716</span>     | NULL               | Query   |   <span class="number">35891</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312128</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43720</span>     | NULL               | Query   |   <span class="number">35831</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312131</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43726</span>     | NULL               | Query   |   <span class="number">35771</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312135</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43734</span>     | NULL               | Query   |   <span class="number">35711</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312138</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43740</span>     | NULL               | Query   |   <span class="number">35651</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312141</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43746</span>     | NULL               | Query   |   <span class="number">35591</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312143</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43750</span>     | NULL               | Query   |   <span class="number">35531</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312146</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43756</span>     | NULL               | Query   |   <span class="number">35471</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312149</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43762</span>     | NULL               | Query   |   <span class="number">35411</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312152</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43768</span>     | NULL               | Query   |   <span class="number">35351</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312155</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43774</span>     | NULL               | Query   |   <span class="number">35291</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312157</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43778</span>     | NULL               | Query   |   <span class="number">35231</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312160</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43784</span>     | NULL               | Query   |   <span class="number">35171</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312164</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43792</span>     | NULL               | Query   |   <span class="number">35111</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312167</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43798</span>     | NULL               | Query   |   <span class="number">35051</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312170</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43804</span>     | NULL               | Query   |   <span class="number">34991</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312172</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43808</span>     | NULL               | Query   |   <span class="number">34931</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312175</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43814</span>     | NULL               | Query   |   <span class="number">34871</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312178</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43820</span>     | NULL               | Query   |   <span class="number">34811</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312181</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43826</span>     | NULL               | Query   |   <span class="number">34751</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312184</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43832</span>     | NULL               | Query   |   <span class="number">34691</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312186</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43836</span>     | NULL               | Query   |   <span class="number">34631</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312189</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43842</span>     | NULL               | Query   |   <span class="number">34571</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312193</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43850</span>     | NULL               | Query   |   <span class="number">34511</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312196</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43856</span>     | NULL               | Query   |   <span class="number">34451</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312199</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43862</span>     | NULL               | Query   |   <span class="number">34391</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312201</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43866</span>     | NULL               | Query   |   <span class="number">34331</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312204</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43872</span>     | NULL               | Query   |   <span class="number">34271</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312207</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43878</span>     | NULL               | Query   |   <span class="number">34211</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312210</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43884</span>     | NULL               | Query   |   <span class="number">34151</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312213</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43890</span>     | NULL               | Query   |   <span class="number">34091</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312215</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43894</span>     | NULL               | Query   |   <span class="number">34031</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312218</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43900</span>     | NULL               | Query   |   <span class="number">33971</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312222</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43908</span>     | NULL               | Query   |   <span class="number">33911</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312225</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43914</span>     | NULL               | Query   |   <span class="number">33851</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312228</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43920</span>     | NULL               | Query   |   <span class="number">33791</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312230</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43924</span>     | NULL               | Query   |   <span class="number">33731</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312233</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43930</span>     | NULL               | Query   |   <span class="number">33671</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312236</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43936</span>     | NULL               | Query   |   <span class="number">33611</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312238</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43940</span>     | NULL               | Query   |   <span class="number">33551</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312241</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43946</span>     | NULL               | Query   |   <span class="number">33491</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">312244</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">43952</span>     | NULL               | Query   |   <span class="number">33431</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">313865</span> | prom        | <span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">47194</span>     | NULL               | Query   |      <span class="number">11</span> | init                                   | SHOW SLAVE STATUS                                                                                    |</span><br><span class="line">| <span class="number">313866</span> | sre         | localhost           | NULL               | Query   |       <span class="number">0</span> | init                                   | show processlist                                                                                     </span><br><span class="line">+--------+-------------+---------------------+--------------------+---------+---------+----------------------------------------+------------------------------------------------------------------------------------------------------+</span><br></pre></td></tr></table></figure>
+
+<h2 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h2><p>从错误日志发现，<code>2019-11-06 22:53:40</code> 开始提醒磁盘空间不足</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2019</span>-<span class="number">11</span>-<span class="number">06</span> <span class="number">22</span>:<span class="number">53</span>:<span class="number">40</span> <span class="number">5752</span> [Warning] Disk is full writing <span class="string">'./relay-log.002275'</span> (Errcode: <span class="number">28</span> - No space left on device). Waiting <span class="keyword">for</span> someone to free space...</span><br><span class="line"><span class="number">2019</span>-<span class="number">11</span>-<span class="number">06</span> <span class="number">22</span>:<span class="number">53</span>:<span class="number">40</span> <span class="number">5752</span> [Warning] Retry <span class="keyword">in</span> <span class="number">60</span> secs. Message reprinted <span class="keyword">in</span> <span class="number">600</span> secs</span><br><span class="line"><span class="number">2019</span>-<span class="number">11</span>-<span class="number">06</span> <span class="number">22</span>:<span class="number">53</span>:<span class="number">42</span> <span class="number">5752</span> [ERROR] Slave SQL: Could not execute Update_rows event on table cosmo-aps.bns_aps_versiontolineinfo; Error writing file <span class="string">'/data/mysql/tmp/MLpTCcJu'</span> (Errcode: <span class="number">28</span> - No space left on device), Error_code: <span class="number">3</span>; Error writing file <span class="string">'mysql-bin'</span> (errno: <span class="number">28</span> - No space left on device), Error_code: <span class="number">1026</span>; handler error HA_ERR_RBR_LOGGING_FAILED; the event<span class="string">'s master log mysql-bin.000528, end_log_pos 674303230, Error_code: 3</span></span><br><span class="line"><span class="string">2019-11-06 22:53:42 5752 [Warning] Slave: Error writing file '</span>/<span class="keyword">data</span>/mysql/tmp/MLpTCcJu<span class="string">' (Errcode: 28 - No space left on device) Error_code: 3</span></span><br><span class="line"><span class="string">2019-11-06 22:53:42 5752 [Warning] Slave: Error writing file '</span>mysql-bin<span class="string">' (errno: 28 - No space left on device) Error_code: 1026</span></span><br><span class="line"><span class="string">2019-11-06 22:53:42 5752 [ERROR] Error running query, slave SQL thread aborted. Fix the problem, and restart the slave SQL thread with "SLAVE START". We stopped at log '</span>mysql-bin.<span class="number">000528</span><span class="string">' position 661219322</span></span><br><span class="line"><span class="string">2019-11-06 22:54:40 5752 [Warning] Disk is full writing '</span>./relay-log.<span class="number">002275</span><span class="string">' (Errcode: 28 - No space left on device). Waiting for someone to free space...</span></span><br></pre></td></tr></table></figure>
+
+<p>检查磁盘空间使用情况，发现 <code>/data</code> 目录已占满</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@cosmoim-db04 log]<span class="comment"># df -h</span></span><br><span class="line">Filesystem               Size  Used Avail Use% Mounted on</span><br><span class="line">/dev/mapper/centos-root  <span class="number">100</span>G  <span class="number">7.1</span>G   <span class="number">93</span>G   <span class="number">8</span>% /</span><br><span class="line">devtmpfs                  <span class="number">63</span>G     <span class="number">0</span>   <span class="number">63</span>G   <span class="number">0</span>% /dev</span><br><span class="line">tmpfs                     <span class="number">63</span>G     <span class="number">0</span>   <span class="number">63</span>G   <span class="number">0</span>% /dev/shm</span><br><span class="line">tmpfs                     <span class="number">63</span>G  <span class="number">826</span>M   <span class="number">63</span>G   <span class="number">2</span>% /run</span><br><span class="line">tmpfs                     <span class="number">63</span>G     <span class="number">0</span>   <span class="number">63</span>G   <span class="number">0</span>% /sys/fs/cgroup</span><br><span class="line">/dev/sda1                <span class="number">497</span>M  <span class="number">172</span>M  <span class="number">326</span>M  <span class="number">35</span>% /boot</span><br><span class="line">/dev/mapper/centos-data  <span class="number">888</span>G  <span class="number">888</span>G   <span class="number">20</span>K <span class="number">100</span>% /<span class="keyword">data</span></span><br><span class="line">tmpfs                     <span class="number">13</span>G   <span class="number">12</span>K   <span class="number">13</span>G   <span class="number">1</span>% /run/user/<span class="number">42</span></span><br><span class="line">tmpfs                     <span class="number">13</span>G     <span class="number">0</span>   <span class="number">13</span>G   <span class="number">0</span>% /run/user/<span class="number">1002</span></span><br><span class="line">tmpfs                     <span class="number">13</span>G     <span class="number">0</span>   <span class="number">13</span>G   <span class="number">0</span>% /run/user/<span class="number">0</span></span><br></pre></td></tr></table></figure>
+
+<p><code>/data</code> 目录下磁盘占满的主要原因 <code>Nov  6 14:44</code> 出现主从复制中断导致 <code>relay-log</code> 疯狂增长</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">[root@cosmoim-db04 data]<span class="comment"># ll -h</span></span><br><span class="line">total <span class="number">798</span>G</span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql    <span class="number">56</span> Sep <span class="number">12</span> <span class="number">15</span>:<span class="number">27</span> auto.cnf</span><br><span class="line">drwxr-x--- <span class="number">2</span> mysql mysql  <span class="number">8.0</span>K Oct <span class="number">31</span> <span class="number">18</span>:<span class="number">48</span> cosmo@<span class="number">002</span>daps</span><br><span class="line">drwxr-x--- <span class="number">2</span> mysql mysql  <span class="number">8.0</span>K Oct <span class="number">21</span> <span class="number">20</span>:<span class="number">27</span> cosmo@<span class="number">002</span>daps@<span class="number">002</span>dt</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql   <span class="number">10</span>G Nov  <span class="number">6</span> <span class="number">22</span>:<span class="number">53</span> ibdata1</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql   <span class="number">10</span>G Sep <span class="number">12</span> <span class="number">14</span>:<span class="number">13</span> ibdata2</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql  <span class="number">512</span>M Nov  <span class="number">6</span> <span class="number">22</span>:<span class="number">53</span> ib_logfile0</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql  <span class="number">512</span>M Oct <span class="number">28</span> <span class="number">15</span>:<span class="number">47</span> ib_logfile1</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql  <span class="number">512</span>M Nov  <span class="number">6</span> <span class="number">22</span>:<span class="number">53</span> ib_logfile2</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql   <span class="number">12</span>M Sep <span class="number">12</span> <span class="number">14</span>:<span class="number">13</span> ibtmp1</span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">139</span> Nov  <span class="number">7</span> <span class="number">09</span>:<span class="number">23</span> master.info</span><br><span class="line">drwxr-x--- <span class="number">2</span> mysql mysql  <span class="number">4.0</span>K Sep <span class="number">12</span> <span class="number">14</span>:<span class="number">13</span> mysql</span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">1.1</span>G Oct <span class="number">28</span> <span class="number">14</span>:<span class="number">44</span> mysql-bin.<span class="number">000002</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">895</span>M Nov  <span class="number">6</span> <span class="number">22</span>:<span class="number">27</span> mysql-bin.<span class="number">000003</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql    <span class="number">38</span> Oct <span class="number">28</span> <span class="number">14</span>:<span class="number">44</span> mysql-bin.index</span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql     <span class="number">5</span> Sep <span class="number">12</span> <span class="number">15</span>:<span class="number">27</span> mysql.pid</span><br><span class="line">drwxr-x--- <span class="number">2</span> mysql mysql  <span class="number">4.0</span>K Sep <span class="number">12</span> <span class="number">14</span>:<span class="number">13</span> performance_schema</span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">214</span> Oct <span class="number">28</span> <span class="number">15</span>:<span class="number">23</span> relay-log.<span class="number">000009</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">1.1</span>G Nov  <span class="number">6</span> <span class="number">14</span>:<span class="number">44</span> relay-log.<span class="number">000010</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">4.4</span>M Nov  <span class="number">6</span> <span class="number">14</span>:<span class="number">44</span> relay-log.<span class="number">000011</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">214</span> Nov  <span class="number">6</span> <span class="number">14</span>:<span class="number">44</span> relay-log.<span class="number">000012</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">1.1</span>G Nov  <span class="number">6</span> <span class="number">14</span>:<span class="number">45</span> relay-log.<span class="number">000013</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">17</span>M Nov  <span class="number">6</span> <span class="number">14</span>:<span class="number">45</span> relay-log.<span class="number">000014</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">214</span> Nov  <span class="number">6</span> <span class="number">14</span>:<span class="number">45</span> relay-log.<span class="number">000015</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">1.1</span>G Nov  <span class="number">6</span> <span class="number">14</span>:<span class="number">45</span> relay-log.<span class="number">000016</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">17</span>M Nov  <span class="number">6</span> <span class="number">14</span>:<span class="number">45</span> relay-log.<span class="number">000017</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">214</span> Nov  <span class="number">6</span> <span class="number">14</span>:<span class="number">45</span> relay-log.<span class="number">000018</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">1.1</span>G Nov  <span class="number">6</span> <span class="number">14</span>:<span class="number">46</span> relay-log.<span class="number">000019</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">17</span>M Nov  <span class="number">6</span> <span class="number">14</span>:<span class="number">46</span> relay-log.<span class="number">000020</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">214</span> Nov  <span class="number">6</span> <span class="number">14</span>:<span class="number">46</span> relay-log.<span class="number">000021</span></span><br><span class="line">....</span><br></pre></td></tr></table></figure>
+
+<p>释放部分磁盘空间后，连接会话恢复正常</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show processlist;</span><br><span class="line">+--------+-------------+---------------------+--------------------+---------+---------+----------------------------------+------------------+</span><br><span class="line">| Id     | User        | Host                | db                 | Command | Time    | State                            | Info             |</span><br><span class="line">+--------+-------------+---------------------+--------------------+---------+---------+----------------------------------+------------------+</span><br><span class="line">|     <span class="number">34</span> | system user |                     | NULL               | Connect | <span class="number">4816502</span> | Waiting <span class="keyword">for</span> master to send event | NULL             |</span><br><span class="line">| <span class="number">313974</span> | sre         | <span class="number">10.138</span>.<span class="number">232.84</span>:<span class="number">43874</span> | information_schema | Sleep   |       <span class="number">7</span> |                                  | NULL             |</span><br><span class="line">| <span class="number">313976</span> | sre         | localhost           | NULL               | Query   |       <span class="number">0</span> | init                             | show processlist |</span><br><span class="line">+--------+-------------+---------------------+--------------------+---------+---------+----------------------------------+------------------+</span><br><span class="line"><span class="number">3</span> rows <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/06/tools/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1066,7 +1247,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-11-06 16:41:52" itemprop="dateModified" datetime="2019-11-06T16:41:52+08:00">2019-11-06</time>
+                <time title="修改时间：2019-11-07 10:48:41" itemprop="dateModified" datetime="2019-11-07T10:48:41+08:00">2019-11-07</time>
               
             
           </span>
@@ -1172,7 +1353,7 @@
 <td align="left">适用于快照型容灾，是在阿里云上按需部署的容灾恢复服务器，它可以根据云上容灾存储中的备份数据，在 <code>ECS</code> 上恢复您的云下服务器整机、文件和应用数据。</td>
 </tr>
 </tbody></table>
-<p><a href="http://www.djbh.net/webdev/file/webFiles/File/cpzg/20122616046.pdf?spm=a2c4g.11186623.2.11.6e15f679iwwn7e&file=20122616046.pdf" target="_blank" rel="noopener">GB/T 20988-2007标准</a> 是中国国家标准化管理委员会制定的信息系统灾难恢复规范参考：</p>
+<p><a href="http://www.djbh.net/webdev/file/webFiles/File/cpzg/20122616046.pdf?spm=a2c4g.11186623.2.11.6e15f679iwwn7e&file=20122616046.pdf" target="_blank" rel="noopener">GB/T 20988-2007标准</a>：是中国国家标准化管理委员会制定的信息系统灾难恢复规范参考</p>
 <p><img src="http://static-aliyun-doc.oss-cn-hangzhou.aliyuncs.com/assets/img/64142/156775175432398_zh-CN.png" alt="img"></p>
 <h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><h3 id="需求分析"><a href="#需求分析" class="headerlink" title="需求分析"></a>需求分析</h3><p>数据保护和业务连续性对数据中心的意义重大，关键应用的故障或数据丢失会对您的业务造成重大损失。混合云容灾服务提供了三个层次的能力来保护数据，并确保业务连续性。</p>
 <ul>
@@ -1207,7 +1388,7 @@
 <td align="left">&lt; 50</td>
 </tr>
 </tbody></table>
-<h4 id="SDR"><a href="#SDR" class="headerlink" title="SDR"></a>SDR</h4><p><strong>原理</strong>：基于数据定时备份能力，提供了小时级-天级的 RPO/RTO，并且可以与业务网络流量错峰</p>
+<h4 id="SDR"><a href="#SDR" class="headerlink" title="SDR"></a>SDR</h4><p><strong>原理</strong>：基于数据定时备份能力，提供了小时级-天级的 <code>RPO/RTO</code>，并且可以与业务网络流量错峰</p>
 <table>
 <thead>
 <tr>
@@ -1276,7 +1457,7 @@
 </thead>
 <tbody><tr>
 <td align="left">关键应用秒级 - 分钟级 RPO、RTO 容灾</td>
-<td align="left">企业关键业务允许 5 分钟RPO，宕机后要求 15 分钟内在云上拉起，恢复业务运行。</td>
+<td align="left">企业关键业务允许 5 分钟 RPO，宕机后要求 15 分钟内在云上拉起，恢复业务运行。</td>
 <td align="left">√</td>
 <td align="left">×</td>
 </tr>
@@ -2199,255 +2380,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/30/mysql-tuning-wms/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/30/mysql-tuning-wms/" class="post-title-link" itemprop="url">MySQL · 性能优化 · WMS</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-30 14:41:42 / 修改时间：18:07:19" itemprop="dateCreated datePublished" datetime="2019-10-30T14:41:42+08:00">2019-10-30</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="实例信息"><a href="#实例信息" class="headerlink" title="实例信息"></a>实例信息</h2><table>
-<thead>
-<tr>
-<th>实例</th>
-<th>角色</th>
-<th>版本</th>
-<th>业务库</th>
-<th>数据量</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>10.138.98.20:3306</td>
-<td>Master</td>
-<td>5.7.23</td>
-<td>cosmo_base  (5)</td>
-<td>82.68G</td>
-</tr>
-<tr>
-<td>10.138.98.21:3306</td>
-<td>Slave</td>
-<td>5.7.23</td>
-<td>….</td>
-<td>….</td>
-</tr>
-<tr>
-<td><strong>10.138.228.40:3306</strong></td>
-<td>Master</td>
-<td>5.6.39</td>
-<td>cosmo_wms_xx  (23)</td>
-<td>139.5G</td>
-</tr>
-<tr>
-<td>10.138.228.41:3306</td>
-<td>Slave</td>
-<td>5.6.39</td>
-<td>….</td>
-<td>….</td>
-</tr>
-<tr>
-<td>10.138.228.43:3306</td>
-<td>Master</td>
-<td>5.6.39</td>
-<td>cosmo_wms_xx  (23)</td>
-<td>….</td>
-</tr>
-<tr>
-<td>10.138.42.94:3306</td>
-<td>Master</td>
-<td>10.1.21</td>
-<td>cosmo_wms_xx  (9)</td>
-<td>….</td>
-</tr>
-<tr>
-<td><strong>10.138.232.165:3306</strong></td>
-<td>Master</td>
-<td>5.6.39</td>
-<td>cosmo_xx_xx  (30)</td>
-<td>155.9G</td>
-</tr>
-<tr>
-<td>10.138.232.164:3306</td>
-<td>Slave</td>
-<td>5.6.39</td>
-<td>….</td>
-<td>….</td>
-</tr>
-<tr>
-<td>10.138.232.166:3306</td>
-<td>Slave</td>
-<td>5.6.39</td>
-<td>….</td>
-<td>….</td>
-</tr>
-<tr>
-<td><strong>10.133.7.31:3306</strong></td>
-<td>Master</td>
-<td>5.7.23</td>
-<td>epg_xx  (19)</td>
-<td>66.6G</td>
-</tr>
-</tbody></table>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 10.138.98.20:3306按库大小排序</span></span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line">| table_schema       | data_size | index_size |</span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line">| cosmo_base         | <span class="number">45.28</span>GB   | <span class="number">37.38</span>GB    |</span><br><span class="line">| cosmo_wms          | <span class="number">0.17</span>GB    | <span class="number">0.03</span>GB     |</span><br><span class="line">| xwsy               | <span class="number">0.09</span>GB    | <span class="number">0.03</span>GB     |</span><br><span class="line">| cosmo_epg_5001     | <span class="number">0.02</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| xwsytest           | <span class="number">0.01</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line"><span class="number">9</span> rows <span class="keyword">in</span> set, <span class="number">28</span> warnings (<span class="number">0.30</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 10.138.228.40:3306按库大小排序</span></span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line">| table_schema       | data_size | index_size |</span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line">| cosmo_wms_1006     | <span class="number">17.48</span>GB   | <span class="number">4.73</span>GB     |</span><br><span class="line">| cosmo_wms_1011     | <span class="number">17.00</span>GB   | <span class="number">6.16</span>GB     |</span><br><span class="line">| cosmo_wms_1007     | <span class="number">11.75</span>GB   | <span class="number">7.36</span>GB     |</span><br><span class="line">| cosmo_wms_1013     | <span class="number">9.78</span>GB    | <span class="number">4.60</span>GB     |</span><br><span class="line">| cosmo_wms_1009     | <span class="number">7.82</span>GB    | <span class="number">4.17</span>GB     |</span><br><span class="line">| cosmo_wms_1010     | <span class="number">6.52</span>GB    | <span class="number">3.48</span>GB     |</span><br><span class="line">| cosmo_wms_1012     | <span class="number">5.24</span>GB    | <span class="number">4.32</span>GB     |</span><br><span class="line">| cosmo_wms_1018     | <span class="number">3.39</span>GB    | <span class="number">0.88</span>GB     |</span><br><span class="line">| cosmo_wms_1019     | <span class="number">3.31</span>GB    | <span class="number">0.66</span>GB     |</span><br><span class="line">| cosmo_wms_2012     | <span class="number">2.77</span>GB    | <span class="number">0.61</span>GB     |</span><br><span class="line">| cosmo_wms_2015     | <span class="number">2.45</span>GB    | <span class="number">0.46</span>GB     |</span><br><span class="line">| cosmo_wms_1008     | <span class="number">1.68</span>GB    | <span class="number">1.46</span>GB     |</span><br><span class="line">| cosmo_wms_1015     | <span class="number">1.48</span>GB    | <span class="number">0.68</span>GB     |</span><br><span class="line">| cosmo_wms_2008     | <span class="number">1.31</span>GB    | <span class="number">0.29</span>GB     |</span><br><span class="line">| cosmo_wms_2009     | <span class="number">1.23</span>GB    | <span class="number">0.21</span>GB     |</span><br><span class="line">| cosmo_wms_2005     | <span class="number">1.12</span>GB    | <span class="number">0.23</span>GB     |</span><br><span class="line">| cosmo_wms_2007     | <span class="number">1.04</span>GB    | <span class="number">0.22</span>GB     |</span><br><span class="line">| cosmo_wms_2010     | <span class="number">0.87</span>GB    | <span class="number">0.18</span>GB     |</span><br><span class="line">| cosmo_wms_2065     | <span class="number">0.76</span>GB    | <span class="number">0.30</span>GB     |</span><br><span class="line">| SPC_COM            | <span class="number">0.48</span>GB    | <span class="number">0.29</span>GB     |</span><br><span class="line">| cosmo_wms_2006     | <span class="number">0.27</span>GB    | <span class="number">0.05</span>GB     |</span><br><span class="line">| cosmo_wms_2066     | <span class="number">0.04</span>GB    | <span class="number">0.05</span>GB     |</span><br><span class="line">| cosmo_wms_3001     | <span class="number">0.02</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line"><span class="number">27</span> rows <span class="keyword">in</span> set (<span class="number">3.19</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 10.138.228.43:3306按库大小排序</span></span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line">| table_schema       | data_size | index_size |</span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line">| cosmo_wms_1031     | <span class="number">13.06</span>GB   | <span class="number">4.44</span>GB     |</span><br><span class="line">| cosmo_wms_1026     | <span class="number">9.78</span>GB    | <span class="number">4.22</span>GB     |</span><br><span class="line">| cosmo_wms_1022     | <span class="number">5.39</span>GB    | <span class="number">3.57</span>GB     |</span><br><span class="line">| cosmo_wms_2019     | <span class="number">5.34</span>GB    | <span class="number">1.68</span>GB     |</span><br><span class="line">| cosmo_wms_1028     | <span class="number">4.92</span>GB    | <span class="number">2.38</span>GB     |</span><br><span class="line">| cosmo_wms_1029     | <span class="number">4.20</span>GB    | <span class="number">2.09</span>GB     |</span><br><span class="line">| cosmo_wms_1025     | <span class="number">3.83</span>GB    | <span class="number">2.95</span>GB     |</span><br><span class="line">| cosmo_wms_1032     | <span class="number">3.67</span>GB    | <span class="number">1.95</span>GB     |</span><br><span class="line">| cosmo_wms_1030     | <span class="number">2.96</span>GB    | <span class="number">2.00</span>GB     |</span><br><span class="line">| cosmo_wms_2025     | <span class="number">2.79</span>GB    | <span class="number">0.49</span>GB     |</span><br><span class="line">| cosmo_wms_2026     | <span class="number">2.52</span>GB    | <span class="number">0.36</span>GB     |</span><br><span class="line">| cosmo_wms_1027     | <span class="number">2.47</span>GB    | <span class="number">1.01</span>GB     |</span><br><span class="line">| cosmo_wms_2018     | <span class="number">1.96</span>GB    | <span class="number">0.52</span>GB     |</span><br><span class="line">| cosmo_wms_1024     | <span class="number">1.57</span>GB    | <span class="number">1.30</span>GB     |</span><br><span class="line">| cosmo_wms_2023     | <span class="number">1.02</span>GB    | <span class="number">0.26</span>GB     |</span><br><span class="line">| cosmo_wms_2020     | <span class="number">0.78</span>GB    | <span class="number">0.19</span>GB     |</span><br><span class="line">| cosmo_wms_2022     | <span class="number">0.77</span>GB    | <span class="number">0.18</span>GB     |</span><br><span class="line">| cosmo_wms_2021     | <span class="number">0.44</span>GB    | <span class="number">0.17</span>GB     |</span><br><span class="line">| cosmo_wms_1023     | <span class="number">0.27</span>GB    | <span class="number">0.09</span>GB     |</span><br><span class="line">| cosmo_wms_2024     | <span class="number">0.26</span>GB    | <span class="number">0.12</span>GB     |</span><br><span class="line">| cosmo_wms_2027     | <span class="number">0.14</span>GB    | <span class="number">0.08</span>GB     |</span><br><span class="line">| cosmo_wms          | <span class="number">0.12</span>GB    | <span class="number">0.07</span>GB     |</span><br><span class="line">| cosmo_wms_2028     | <span class="number">0.02</span>GB    | <span class="number">0.03</span>GB     |</span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line"><span class="number">27</span> rows <span class="keyword">in</span> set (<span class="number">3.19</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 10.138.42.94:3306按库大小排序</span></span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line">| table_schema       | data_size | index_size |</span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line">| cosmo_wms_uniall   | <span class="number">8.21</span>GB    | <span class="number">1.36</span>GB     |</span><br><span class="line">| cosmo_wms          | <span class="number">6.10</span>GB    | <span class="number">4.27</span>GB     |</span><br><span class="line">| cosmo_wms_1002     | <span class="number">4.12</span>GB    | <span class="number">3.46</span>GB     |</span><br><span class="line">| cosmo_base         | <span class="number">3.20</span>GB    | <span class="number">1.57</span>GB     |</span><br><span class="line">| cosmo_wms_1005     | <span class="number">1.51</span>GB    | <span class="number">1.03</span>GB     |</span><br><span class="line">| cosmo_wms_test     | <span class="number">0.75</span>GB    | <span class="number">1.00</span>GB     |</span><br><span class="line">| cosmo_wms_testn    | <span class="number">0.48</span>GB    | <span class="number">0.31</span>GB     |</span><br><span class="line">| cosmo_wms_2001     | <span class="number">0.39</span>GB    | <span class="number">0.10</span>GB     |</span><br><span class="line">| cosmo_wms_2002     | <span class="number">0.14</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line"><span class="number">13</span> rows <span class="keyword">in</span> set, <span class="number">1</span> warning (<span class="number">0.63</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 10.138.232.165:3306按库大小排序</span></span><br><span class="line">+------------------------+-----------+------------+</span><br><span class="line">| table_schema           | data_size | index_size |</span><br><span class="line">+------------------------+-----------+------------+</span><br><span class="line">| cosmo_zzkt_1046        | <span class="number">30.88</span>GB   | <span class="number">1.80</span>GB     |</span><br><span class="line">| cosmo_hdgt_1003        | <span class="number">25.19</span>GB   | <span class="number">3.87</span>GB     |</span><br><span class="line">| cosmo_fsgt_1045        | <span class="number">23.05</span>GB   | <span class="number">0.87</span>GB     |</span><br><span class="line">| cosmo_hdzk             | <span class="number">20.03</span>GB   | <span class="number">0.69</span>GB     |</span><br><span class="line">| cosmo_xyyj             | <span class="number">18.18</span>GB   | <span class="number">3.63</span>GB     |</span><br><span class="line">| cosmo_jndr_1017        | <span class="number">5.58</span>GB    | <span class="number">3.21</span>GB     |</span><br><span class="line">| cosmo_zysj             | <span class="number">2.39</span>GB    | <span class="number">1.73</span>GB     |</span><br><span class="line">| cosmo_szjsj_1049       | <span class="number">1.87</span>GB    | <span class="number">0.85</span>GB     |</span><br><span class="line">| cosmo_tjbl_1021        | <span class="number">1.45</span>GB    | <span class="number">0.81</span>GB     |</span><br><span class="line">| cosmo_szjsj_1048       | <span class="number">1.35</span>GB    | <span class="number">0.61</span>GB     |</span><br><span class="line">| cosmo_jzzjc_2064       | <span class="number">1.01</span>GB    | <span class="number">0.28</span>GB     |</span><br><span class="line">| cosmo_zddr_1057        | <span class="number">1.00</span>GB    | <span class="number">0.12</span>GB     |</span><br><span class="line">| cosmo_lycd_1014        | <span class="number">0.92</span>GB    | <span class="number">0.05</span>GB     |</span><br><span class="line">| cosmo_wms              | <span class="number">0.78</span>GB    | <span class="number">0.52</span>GB     |</span><br><span class="line">| cosmo_wms_penghai      | <span class="number">0.52</span>GB    | <span class="number">0.47</span>GB     |</span><br><span class="line">| cosmo_zzktwk_ruig_2053 | <span class="number">0.49</span>GB    | <span class="number">0.17</span>GB     |</span><br><span class="line">| cosmo_zzktwk_2054      | <span class="number">0.16</span>GB    | <span class="number">0.07</span>GB     |</span><br><span class="line">| cosmo_fsgtwk_2047      | <span class="number">0.14</span>GB    | <span class="number">0.05</span>GB     |</span><br><span class="line">| cosmo_zzwk_2048        | <span class="number">0.12</span>GB    | <span class="number">0.05</span>GB     |</span><br><span class="line">| cosmo_plat             | <span class="number">0.12</span>GB    | <span class="number">0.06</span>GB     |</span><br><span class="line">| cosmo_jzkg_2056        | <span class="number">0.11</span>GB    | <span class="number">0.05</span>GB     |</span><br><span class="line">| cosmo_zysjwk_jad       | <span class="number">0.09</span>GB    | <span class="number">0.05</span>GB     |</span><br><span class="line">| cosmo_zysjwk_2085      | <span class="number">0.04</span>GB    | <span class="number">0.01</span>GB     |</span><br><span class="line">| cosmo_qddz_1055        | <span class="number">0.03</span>GB    | <span class="number">0.02</span>GB     |</span><br><span class="line">| cosmo_zysjwk_bw        | <span class="number">0.02</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| cosmo_xyyjwk           | <span class="number">0.02</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| cosmo_eng_1414         | <span class="number">0.01</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| cosmo_penghai_1215     | <span class="number">0.01</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| cosmo_zdbx_1058        | <span class="number">0.00</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| cosmo_plat_penghai     | <span class="number">0.00</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">+------------------------+-----------+------------+</span><br><span class="line"><span class="number">33</span> rows <span class="keyword">in</span> set, <span class="number">20</span> warnings (<span class="number">6.91</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 10.133.7.31:3306按库大小排序</span></span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line">| table_schema       | data_size | index_size |</span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line">| cosmo_epg_5001     | <span class="number">9.37</span>GB    | <span class="number">4.27</span>GB     |</span><br><span class="line">| cosmo_cqjm_5006    | <span class="number">7.32</span>GB    | <span class="number">3.72</span>GB     |</span><br><span class="line">| epg_hdme_5004      | <span class="number">6.64</span>GB    | <span class="number">3.31</span>GB     |</span><br><span class="line">| epg_hdzn_5015      | <span class="number">5.85</span>GB    | <span class="number">3.56</span>GB     |</span><br><span class="line">| epg_hfsj_5007      | <span class="number">5.44</span>GB    | <span class="number">2.64</span>GB     |</span><br><span class="line">| epg_jzbp_5002      | <span class="number">4.44</span>GB    | <span class="number">1.65</span>GB     |</span><br><span class="line">| cosmo_dljm_5005    | <span class="number">3.24</span>GB    | <span class="number">1.08</span>GB     |</span><br><span class="line">| epg_jnjm_5003      | <span class="number">2.63</span>GB    | <span class="number">0.64</span>GB     |</span><br><span class="line">| cosmo_wms          | <span class="number">0.30</span>GB    | <span class="number">0.13</span>GB     |</span><br><span class="line">| cosmo_plat         | <span class="number">0.16</span>GB    | <span class="number">0.07</span>GB     |</span><br><span class="line">| epg_tjwk_2095      | <span class="number">0.01</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| epg_whzn_5012      | <span class="number">0.00</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| epg_cqzn_5009      | <span class="number">0.00</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| epg_hfzn_5013      | <span class="number">0.00</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| epg_qdzn_5016      | <span class="number">0.00</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| epg_sdbp_5011      | <span class="number">0.00</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| epg_whdk_5014      | <span class="number">0.00</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| epg_zzzn_5010      | <span class="number">0.00</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| epg_sddz_5008      | <span class="number">0.00</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line"><span class="number">23</span> rows <span class="keyword">in</span> set (<span class="number">0.90</span> sec)</span><br></pre></td></tr></table></figure>
-
-<h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">wms:</span></span><br><span class="line"><span class="attr">  datasource:</span></span><br><span class="line"><span class="attr">    initialSize:</span> <span class="number">50</span></span><br><span class="line"><span class="attr">    maxActive:</span> <span class="number">400</span></span><br><span class="line"><span class="attr">    maxIdle:</span> <span class="number">50</span></span><br><span class="line"><span class="attr">    minIdle:</span> <span class="number">50</span></span><br><span class="line"><span class="attr">    maxWait:</span> <span class="number">10000</span></span><br><span class="line"><span class="attr">    ds1:</span></span><br><span class="line"><span class="attr">      driver:</span> <span class="string">com.mysql.jdbc.Driver</span></span><br><span class="line"><span class="attr">      url:</span> <span class="attr">jdbc:mysql://10.138.228.165:3306?juseUnicode=true&amp;characterEncoding=utf-8</span></span><br><span class="line"><span class="attr">      username:</span> <span class="string">wms</span></span><br><span class="line"><span class="attr">      password:</span> <span class="string">xx</span></span><br><span class="line"><span class="attr">    ds2:</span></span><br><span class="line"><span class="attr">      driver:</span> <span class="string">com.mysql.jdbc.Driver</span></span><br><span class="line"><span class="attr">      url:</span> <span class="attr">jdbc:mysql://10.133.7.31:3306?useUnicode=true&amp;characterEncoding=utf-8</span></span><br><span class="line"><span class="attr">      username:</span> <span class="string">cosmowms_epg</span></span><br><span class="line"><span class="attr">      password:</span> <span class="string">xx</span></span><br><span class="line"><span class="attr">    ds3:</span></span><br><span class="line"><span class="attr">      driver:</span> <span class="string">com.mysql.jdbc.Driver</span></span><br><span class="line"><span class="attr">      url:</span> <span class="attr">jdbc:mysql://10.138.228.165:3306/cosmo_hdzk?useUnicode=true&amp;characterEncoding=utf-8</span></span><br><span class="line"><span class="attr">      username:</span> <span class="string">wms</span></span><br><span class="line"><span class="attr">      password:</span> <span class="string">xx</span></span><br><span class="line"><span class="attr">    ds4:</span></span><br><span class="line"><span class="attr">      driver:</span> <span class="string">com.mysql.jdbc.Driver</span></span><br><span class="line"><span class="attr">      url:</span> <span class="attr">jdbc:mysql://10.138.228.165:3306/cosmo_hdzkwk?useUnicode=true&amp;characterEncoding=utf-8</span></span><br><span class="line"><span class="attr">      username:</span> <span class="string">wms</span></span><br><span class="line"><span class="attr">      password:</span> <span class="string">xx</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="存在的问题"><a href="#存在的问题" class="headerlink" title="存在的问题"></a>存在的问题</h2><ul>
-<li>大量使用视图</li>
-</ul>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-30-161930.png" alt></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2496,7 +2428,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">121</span>
+                    <span class="site-state-item-count">122</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
