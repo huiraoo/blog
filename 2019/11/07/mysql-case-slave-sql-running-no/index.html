@@ -103,7 +103,7 @@
 <meta property="og:site_name" content="Rao&#39;s Blog">
 <meta property="og:description" content="问题现象123456789101112131415161718192021222324mysql&amp;gt; show slave status\G*************************** 1. row ***************************               Slave_IO_State: Waiting for master to send event">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-07T05:51:44.021Z">
+<meta property="og:updated_time" content="2019-11-07T06:09:43.979Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL · 案例分析 · Slave_SQL_Running:No">
 <meta name="twitter:description" content="问题现象123456789101112131415161718192021222324mysql&amp;gt; show slave status\G*************************** 1. row ***************************               Slave_IO_State: Waiting for master to send event">
@@ -366,7 +366,7 @@
                 
               
 
-              <time title="创建时间：2019-11-07 09:32:48 / 修改时间：13:51:44" itemprop="dateCreated datePublished" datetime="2019-11-07T09:32:48+08:00">2019-11-07</time>
+              <time title="创建时间：2019-11-07 09:32:48 / 修改时间：14:09:43" itemprop="dateCreated datePublished" datetime="2019-11-07T09:32:48+08:00">2019-11-07</time>
             
 
             
@@ -432,7 +432,6 @@
       
         <h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** <span class="number">1</span>. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting <span class="keyword">for</span> master to send event</span><br><span class="line">                  Master_Host: <span class="number">10.138</span>.<span class="number">232.83</span></span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: <span class="number">3306</span></span><br><span class="line">                Connect_Retry: <span class="number">10</span></span><br><span class="line">              Master_Log_File: mysql-bin.<span class="number">001283</span></span><br><span class="line">          Read_Master_Log_Pos: <span class="number">397428472</span></span><br><span class="line">               Relay_Log_File: relay-log.<span class="number">000010</span></span><br><span class="line">                Relay_Log_Pos: <span class="number">661219485</span></span><br><span class="line">        Relay_Master_Log_File: mysql-bin.<span class="number">000528</span></span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: No</span><br><span class="line">              Replicate_Do_DB: </span><br><span class="line">          Replicate_Ignore_DB: test,mysql,information_schema</span><br><span class="line">           Replicate_Do_Table: </span><br><span class="line">       Replicate_Ignore_Table: </span><br><span class="line">      Replicate_Wild_Do_Table: </span><br><span class="line">  Replicate_Wild_Ignore_Table: </span><br><span class="line">                   Last_Errno: <span class="number">3</span></span><br><span class="line">                   Last_Error: Could not execute Update_rows event on table cosmo-aps.bns_aps_versiontolineinfo; Error writing file <span class="string">'/data/mysql/tmp/MLpTCcJu'</span> (Errcode: <span class="number">28</span> - No space left on device), Error_code: <span class="number">3</span>; Error writing file <span class="string">'mysql-bin'</span> (errno: <span class="number">28</span> - No space left on device), Error_code: <span class="number">1026</span>; handler error HA_ERR_RBR_LOGGING_FAILED; the event<span class="string">'s master log mysql-bin.000528, end_log_pos 674303230</span></span><br><span class="line"><span class="string">                           ....</span></span><br><span class="line"><span class="string">        Seconds_Behind_Master: NULL</span></span><br></pre></td></tr></table></figure>
 
-<p><strong>Error_code: 1032; handler error HA_ERR_END_OF_FILE</strong></p>
 <h2 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h2><ul>
 <li><code>Master</code> 和 <code>Slave</code> 上数据不一致导致</li>
 <li><code>Slave</code> 服务器重启，事务回滚造成</li>

@@ -96,17 +96,17 @@
 
 
 
-  <meta name="description" content="参数说明   Property Value    Command-Line Format --event-scheduler[=value]   System Variable event_scheduler   Scope Global   Dynamic Yes   Type Enumeration   Default Value OFF   Valid Values ON、OFF、DISAB">
+  <meta name="description" content="简介MySQL 使用 EVENTS 来处理计划任务，类似于 Linux 上的 cron，默认情况下，事件未启用。 权限：EVENT 语法： 123456789101112131415161718192021CREATE    [DEFINER = user]    EVENT    [IF NOT EXISTS]    event_name    ON SCHEDULE schedule    [">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL · 事件">
 <meta property="og:url" content="https://huiraoo.github.io/blog/2019/10/31/mysql-event/index.html">
 <meta property="og:site_name" content="Rao&#39;s Blog">
-<meta property="og:description" content="参数说明   Property Value    Command-Line Format --event-scheduler[=value]   System Variable event_scheduler   Scope Global   Dynamic Yes   Type Enumeration   Default Value OFF   Valid Values ON、OFF、DISAB">
+<meta property="og:description" content="简介MySQL 使用 EVENTS 来处理计划任务，类似于 Linux 上的 cron，默认情况下，事件未启用。 权限：EVENT 语法： 123456789101112131415161718192021CREATE    [DEFINER = user]    EVENT    [IF NOT EXISTS]    event_name    ON SCHEDULE schedule    [">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-31T10:28:19.741Z">
+<meta property="og:updated_time" content="2019-11-07T07:29:57.315Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL · 事件">
-<meta name="twitter:description" content="参数说明   Property Value    Command-Line Format --event-scheduler[=value]   System Variable event_scheduler   Scope Global   Dynamic Yes   Type Enumeration   Default Value OFF   Valid Values ON、OFF、DISAB">
+<meta name="twitter:description" content="简介MySQL 使用 EVENTS 来处理计划任务，类似于 Linux 上的 cron，默认情况下，事件未启用。 权限：EVENT 语法： 123456789101112131415161718192021CREATE    [DEFINER = user]    EVENT    [IF NOT EXISTS]    event_name    ON SCHEDULE schedule    [">
 
 
 
@@ -366,12 +366,24 @@
                 
               
 
-              <time title="创建时间：2019-10-31 16:31:26 / 修改时间：18:28:19" itemprop="dateCreated datePublished" datetime="2019-10-31T16:31:26+08:00">2019-10-31</time>
+              <time title="创建时间：2019-10-31 16:31:26" itemprop="dateCreated datePublished" datetime="2019-10-31T16:31:26+08:00">2019-10-31</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-07 15:29:57" itemprop="dateModified" datetime="2019-11-07T15:29:57+08:00">2019-11-07</time>
               
             
           </span>
@@ -430,7 +442,12 @@
       
 
       
-        <h2 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h2><table>
+        <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>MySQL 使用 <a href="https://dev.mysql.com/doc/refman/5.7/en/events-table.html" target="_blank" rel="noopener">EVENTS</a> 来处理计划任务，类似于 Linux 上的 <a href="http://cron.qqe2.com/" target="_blank" rel="noopener">cron</a>，默认情况下，事件未启用。</p>
+<p><strong>权限</strong>：<a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_event" target="_blank" rel="noopener"><code>EVENT</code></a></p>
+<p><strong>语法</strong>：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span></span><br><span class="line">    [DEFINER = <span class="keyword">user</span>]</span><br><span class="line">    <span class="keyword">EVENT</span></span><br><span class="line">    [<span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span>]</span><br><span class="line">    event_name</span><br><span class="line">    <span class="keyword">ON</span> SCHEDULE schedule</span><br><span class="line">    [<span class="keyword">ON</span> COMPLETION [<span class="keyword">NOT</span>] <span class="keyword">PRESERVE</span>]</span><br><span class="line">    [<span class="keyword">ENABLE</span> | <span class="keyword">DISABLE</span> | <span class="keyword">DISABLE</span> <span class="keyword">ON</span> <span class="keyword">SLAVE</span>]</span><br><span class="line">    [<span class="keyword">COMMENT</span> <span class="string">'string'</span>]</span><br><span class="line">    <span class="keyword">DO</span> event_body;</span><br><span class="line"></span><br><span class="line">schedule:</span><br><span class="line">    AT timestamp [+ INTERVAL interval] ...</span><br><span class="line">  | EVERY interval</span><br><span class="line">    [STARTS timestamp [+ INTERVAL interval] ...]</span><br><span class="line">    [ENDS timestamp [+ INTERVAL interval] ...]</span><br><span class="line"></span><br><span class="line">interval:</span><br><span class="line">    quantity &#123;YEAR | QUARTER | MONTH | DAY | HOUR | MINUTE |</span><br><span class="line">              WEEK | SECOND | YEAR_MONTH | DAY_HOUR | DAY_MINUTE |</span><br><span class="line">              DAY_SECOND | HOUR_MINUTE | HOUR_SECOND | MINUTE_SECOND&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h2><table>
 <thead>
 <tr>
 <th>Property</th>
@@ -739,7 +756,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#参数说明"><span class="nav-number">1.</span> <span class="nav-text">参数说明</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参数说明"><span class="nav-number">2.</span> <span class="nav-text">参数说明</span></a></li></ol></div>
             
 
           </div>
