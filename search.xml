@@ -1,6 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>CentOS6 与 CentOS7 防火墙设置及开放端口</title>
+    <url>/blog/2019/11/13/linux-firewall/</url>
+    <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://www.centos.org/" target="_blank" rel="noopener">CentOS</a> 升级到 7 之后，内置的防火墙已经从 <code>iptables</code> 变成了 <code>firewalld</code>，所以不同版本设置的方式不同。</p>
+<h2 id="CentOS6"><a href="#CentOS6" class="headerlink" title="CentOS6"></a>CentOS6</h2><ul>
+<li>打开/关闭/重启防火墙</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">chkconfig iptables on   <span class="comment"># 开启防火墙</span></span><br><span class="line">chkconfig iptables off  <span class="comment"># 关闭防火墙</span></span><br><span class="line">service iptables start  <span class="comment"># 开启防火墙</span></span><br><span class="line">service iptables stop   <span class="comment"># 关闭防火墙</span></span><br><span class="line">service iptables restarted  <span class="comment"># 重启防火墙</span></span><br><span class="line">iptables -F             <span class="comment"># 清除防火墙规则</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>打开端口</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">/sbin/iptables -I INPUT -p tcp --dport <span class="number">22</span> -j ACCEPT</span><br><span class="line">/sbin/iptables -I INPUT -p tcp --dport <span class="number">3306</span> -j ACCEPT</span><br><span class="line">/etc/rc.d/init.d/iptables save <span class="comment"># 保存防火墙</span></span><br><span class="line">/etc/init.d/iptables restart   <span class="comment"># 重启防火墙</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>查看打开的端口</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">/etc/init.d/iptables status</span><br></pre></td></tr></table></figure>
+
+<h2 id="CentOS7"><a href="#CentOS7" class="headerlink" title="CentOS7"></a>CentOS7</h2><ul>
+<li>打开/关闭/重启防火墙</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">systemctl start firewalld  <span class="comment"># 启用防火墙</span></span><br><span class="line">systemctl stop firewalld   <span class="comment"># 停止防火墙</span></span><br><span class="line">systemctl status firewalld <span class="comment"># 查看状态</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>打开端口</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-port=<span class="number">80</span>/tcp <span class="comment"># 永久生效再加上--permanent</span></span><br><span class="line">firewall-cmd --reload                        <span class="comment"># 更新防火墙规则</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>查看打开的端口</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">firewall-cmd --zone=public --list-ports</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+  </entry>
+  <entry>
     <title>PostgreSQL</title>
     <url>/blog/2019/11/13/postgresql/</url>
     <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><ul>
@@ -1078,7 +1117,7 @@
 <p><strong>总结</strong>：<code>SSD</code> 的随机 <code>IO</code> 读写能力是 <code>SATA</code> 和 <code>SAS</code> 机械硬盘的一千多倍，顺序读写能力基本和 <code>SSD</code> 保持同样的数量级。</p>
 ]]></content>
       <categories>
-        <category>其他</category>
+        <category>Linux</category>
       </categories>
   </entry>
   <entry>
@@ -2566,7 +2605,7 @@
 
 ]]></content>
       <categories>
-        <category>其他</category>
+        <category>Linux</category>
       </categories>
   </entry>
   <entry>
@@ -7206,7 +7245,7 @@
 
 <h3 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h3><p><strong>问题</strong>：CentOS 7.3 配置 SSH 免密码登录后仍要输入密码的解决方法？</p>
 <p><strong>原因分析</strong>：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> tail /var/<span class="built_in">log</span>/secure -n 20</span></span><br><span class="line">Authentication refused: bad ownership or modes for directory /home/haieradmin</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span> tail /var/log/secure -n 20</span><br><span class="line">Authentication refused: bad ownership or modes for directory /home/haieradmin</span><br></pre></td></tr></table></figure>
 
 <p>sshd 为了安全，对属主的目录和文件权限有所要求，如果权限不对，则ssh的免密码登陆不生效。</p>
 <ul>
@@ -7217,7 +7256,7 @@
 <p><strong>解决方法</strong>：检测目录权限，把不符合要求的按要求设置权限即可。</p>
 ]]></content>
       <categories>
-        <category>其他</category>
+        <category>Linux</category>
       </categories>
       <tags>
         <tag>Linux</tag>

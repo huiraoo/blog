@@ -352,6 +352,162 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/06/mysql-kill-processlist/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/11/06/mysql-kill-processlist/" class="post-title-link" itemprop="url">MySQL · 最佳实践 · 快速杀掉大量会话连接</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-06 15:38:44" itemprop="dateCreated datePublished" datetime="2019-11-06T15:38:44+08:00">2019-11-06</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-07 14:44:19" itemprop="dateModified" datetime="2019-11-07T14:44:19+08:00">2019-11-07</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="kill-sh"><a href="#kill-sh" class="headerlink" title="kill.sh"></a>kill.sh</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># !/bin/sh</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#############################################################################</span></span><br><span class="line"><span class="comment"># Kill all processlist According to status.</span></span><br><span class="line"><span class="comment"># -h: 主机IP</span></span><br><span class="line"><span class="comment"># -u: 用户名</span></span><br><span class="line"><span class="comment"># -p: 密码</span></span><br><span class="line"><span class="comment">#############################################################################</span></span><br><span class="line"></span><br><span class="line">host = <span class="string">''</span></span><br><span class="line">user = <span class="string">''</span></span><br><span class="line">pwd  = <span class="string">''</span></span><br><span class="line">status = <span class="string">''</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> :</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">  n=`mysqladmin processlist -h<span class="variable">$host</span> -u<span class="variable">$user</span> -p<span class="variable">$pwd</span> | grep -i <span class="variable">$status</span> | wc -l`</span><br><span class="line">  date=`date +%Y%m%d\[%H:%M:%S]`</span><br><span class="line">  echo <span class="variable">$n</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> [ <span class="string">"<span class="variable">$n</span>"</span> <span class="nomarkup">-gt</span> <span class="number">10</span> ]</span><br><span class="line">  then</span><br><span class="line">  <span class="keyword">for</span> i <span class="keyword">in</span> `mysqladmin processlist -h<span class="variable">$host</span> -u<span class="variable">$user</span> -p<span class="variable">$pwd</span> | grep -i <span class="variable">$status</span> | awk <span class="string">'&#123;print $2&#125;'</span>`</span><br><span class="line">  <span class="keyword">do</span></span><br><span class="line">  	mysqladmin processlist -h<span class="variable">$host</span> -u<span class="variable">$user</span> -p<span class="variable">$pwd</span> kill <span class="variable">$i</span></span><br><span class="line">  done</span><br><span class="line"></span><br><span class="line">  echo <span class="string">"<span class="variable">$status</span> is too many need killed it "</span> &gt;&gt; /tmp/kill.log</span><br><span class="line">  echo <span class="string">"<span class="variable">$date</span> : <span class="variable">$n</span>"</span> &gt;&gt; /tmp/kill.log</span><br><span class="line">  fi</span><br><span class="line">  sleep <span class="number">1</span></span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/05/mysql-case-writing-to-net/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2463,215 +2619,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/29/mysql-config-skip-name-resolve/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/29/mysql-config-skip-name-resolve/" class="post-title-link" itemprop="url">MySQL · 配置参数 · skip_name_resolve</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-29 10:14:32 / 修改时间：22:45:37" itemprop="dateCreated datePublished" datetime="2019-10-29T10:14:32+08:00">2019-10-29</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h2><p><a href="https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_skip_name_resolve" target="_blank" rel="noopener"><strong>skip_name_resolve</strong></a>：检查客户端连接时是否解析主机名。</p>
-<ul>
-<li><strong>OFF</strong>：默认状态，仅在第一次建立连接时缓存 <code>IP</code> 和 <code>Host Name</code> 的映射关系，同一主机的后续连接将直接查看 <code>Host Cache</code>，而不用再次进行 <code>DNS</code> 解析。</li>
-<li><strong>ON</strong>：禁止 <code>DNS</code> 解析，启用后 MySQL 授权表中就不能使用主机名了，只能使用 <code>IP</code>。</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>Property</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Command-Line Format</strong></td>
-<td><code>--skip-name-resolve=#</code></td>
-</tr>
-<tr>
-<td><strong>System Variable</strong></td>
-<td><code>skip_name_resolve</code></td>
-</tr>
-<tr>
-<td><strong>Scope</strong></td>
-<td>Global</td>
-</tr>
-<tr>
-<td><strong>Dynamic</strong></td>
-<td>No</td>
-</tr>
-<tr>
-<td><strong>Type</strong></td>
-<td>Boolean</td>
-</tr>
-<tr>
-<td><strong>Default Value</strong></td>
-<td><code>OFF</code></td>
-</tr>
-</tbody></table>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; show variables like <span class="string">'skip_name_resolve'</span>;</span><br><span class="line">+-------------------+-------+</span><br><span class="line">| Variable_name     | Value |</span><br><span class="line">+-------------------+-------+</span><br><span class="line">| skip_name_resolve | OFF   |</span><br><span class="line">+-------------------+-------+</span><br><span class="line"></span><br><span class="line">MariaDB [mysql]&gt; select user,host,password from user;</span><br><span class="line">+-------------+---------------+-------------------------------------------+</span><br><span class="line">| user        | host          | password                                  |</span><br><span class="line">+-------------+---------------+-------------------------------------------+</span><br><span class="line">| root        | localhost     | *C655557AE3BD4264288BB5C1ED8126A364A6F7ED |</span><br><span class="line">| root        | hlht\_db3     | *C655557AE3BD4264288BB5C1ED8126A364A6F7ED |</span><br><span class="line">| root        | <span class="number">127.0</span>.<span class="number">0.1</span>     | *C655557AE3BD4264288BB5C1ED8126A364A6F7ED |</span><br><span class="line">| root        | ::<span class="number">1</span>           | *C655557AE3BD4264288BB5C1ED8126A364A6F7ED |</span><br><span class="line">| read_only   | %             | *<span class="number">47646</span>ED664BFD993442F175266B6F4367E8CA123 |</span><br><span class="line">| retl        | %             | *<span class="number">44</span>AB89E92CDF5A148EC5A8BCE2BBEF1E51AAC48D |</span><br><span class="line">| sre         | %             | *<span class="number">66</span>CC8D8F94978869E17ABDA6FD2E1A5D817E619E |</span><br><span class="line">| hdm         | %             | *<span class="number">14533888</span>C6CA3952B3957903FF7E69469C7E3A2B |</span><br><span class="line">+-------------+---------------+-------------------------------------------+</span><br></pre></td></tr></table></figure>
-
-<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><ul>
-<li><strong>配置文件 <code>my.cnf</code></strong> </li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">skip-name-resolve</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>日志警告</strong></li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># skip_name_resolve = OFF</span></span><br><span class="line">[Warning] IP address <span class="string">'10.163.25.68'</span> could not be resolved: Name or service not known</span><br><span class="line"></span><br><span class="line"><span class="comment"># skip_name_resolve = ON</span></span><br><span class="line">[Warning] <span class="string">'user'</span> entry <span class="string">'mysql.session@localhost'</span> ignored <span class="keyword">in</span> --skip-name-resolve mode</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2720,7 +2667,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">128</span>
+                    <span class="site-state-item-count">129</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2767,7 +2714,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">15</span>
+                      
+                    
+                    <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
