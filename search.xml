@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>CentOS6 与 CentOS7 防火墙设置及开放端口</title>
+    <title>CentOS 6 与 CentOS 7 防火墙设置及开放端口</title>
     <url>/blog/2019/11/13/linux-firewall/</url>
-    <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://www.centos.org/" target="_blank" rel="noopener">CentOS</a> 升级到 7 之后，内置的防火墙已经从 <code>iptables</code> 变成了 <code>firewalld</code>，所以不同版本设置的方式不同。</p>
-<h2 id="CentOS6"><a href="#CentOS6" class="headerlink" title="CentOS6"></a>CentOS6</h2><ul>
+    <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://www.centos.org/" target="_blank" rel="noopener">CentOS</a> 升级到 7 之后，内置的防火墙已经从 <code>iptables</code> 变成了 <code>firewalld</code>，不同操作系统设置的方式不同。</p>
+<h2 id="CentOS-6"><a href="#CentOS-6" class="headerlink" title="CentOS 6"></a>CentOS 6</h2><ul>
 <li>打开/关闭/重启防火墙</li>
 </ul>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">chkconfig iptables on   <span class="comment"># 开启防火墙</span></span><br><span class="line">chkconfig iptables off  <span class="comment"># 关闭防火墙</span></span><br><span class="line">service iptables start  <span class="comment"># 开启防火墙</span></span><br><span class="line">service iptables stop   <span class="comment"># 关闭防火墙</span></span><br><span class="line">service iptables restarted  <span class="comment"># 重启防火墙</span></span><br><span class="line">iptables -F             <span class="comment"># 清除防火墙规则</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">chkconfig iptables on       <span class="comment"># 开启防火墙</span></span><br><span class="line">chkconfig iptables off      <span class="comment"># 关闭防火墙</span></span><br><span class="line">service iptables start      <span class="comment"># 开启防火墙</span></span><br><span class="line">service iptables stop       <span class="comment"># 关闭防火墙</span></span><br><span class="line">service iptables restarted  <span class="comment"># 重启防火墙</span></span><br><span class="line">iptables -F                 <span class="comment"># 清除防火墙规则</span></span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>打开端口</li>
 </ul>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">/sbin/iptables -I INPUT -p tcp --dport <span class="number">22</span> -j ACCEPT</span><br><span class="line">/sbin/iptables -I INPUT -p tcp --dport <span class="number">3306</span> -j ACCEPT</span><br><span class="line">/etc/rc.d/init.d/iptables save <span class="comment"># 保存防火墙</span></span><br><span class="line">/etc/init.d/iptables restart   <span class="comment"># 重启防火墙</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">/sbin/iptables -I INPUT -p tcp --dport <span class="number">22</span> -j ACCEPT   <span class="comment"># 打开22端口</span></span><br><span class="line">/sbin/iptables -I INPUT -p tcp --dport <span class="number">3306</span> -j ACCEPT <span class="comment"># 打开3306端口</span></span><br><span class="line">/etc/rc.d/init.d/iptables save   <span class="comment"># 保存防火墙</span></span><br><span class="line">/etc/init.d/iptables restart     <span class="comment"># 重启防火墙</span></span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>查看打开的端口</li>
 </ul>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">/etc/init.d/iptables status</span><br></pre></td></tr></table></figure>
 
-<h2 id="CentOS7"><a href="#CentOS7" class="headerlink" title="CentOS7"></a>CentOS7</h2><ul>
+<h2 id="CentOS-7"><a href="#CentOS-7" class="headerlink" title="CentOS 7"></a>CentOS 7</h2><ul>
 <li>打开/关闭/重启防火墙</li>
 </ul>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">systemctl start firewalld  <span class="comment"># 启用防火墙</span></span><br><span class="line">systemctl stop firewalld   <span class="comment"># 停止防火墙</span></span><br><span class="line">systemctl status firewalld <span class="comment"># 查看状态</span></span><br></pre></td></tr></table></figure>
