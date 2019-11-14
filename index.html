@@ -352,6 +352,183 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/14/mysql-case-waiting-for-table-flush/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/11/14/mysql-case-waiting-for-table-flush/" class="post-title-link" itemprop="url">MySQL · 案例分析 · Waiting for table flush</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-14 09:19:28 / 修改时间：10:00:53" itemprop="dateCreated datePublished" datetime="2019-11-14T09:19:28+08:00">2019-11-14</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p><code>MES</code> 工厂反馈业务查询慢，登录数据库手工执行 <code>SQL</code> 操作也没有响应，怀疑是 <code>02:00</code> 执行的备份任务导致。</p>
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><ul>
+<li>登录数据库，执行 <code>show processlist</code> 查看当前会话，发现大量线程状态为 <code>Waiting for tables flush</code>。</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show processlist;</span><br><span class="line">+---------+-----------------+----------------------+--------------------+-------------+-------+---------------------------------------------------------------+------------------------------------------------------------------------------------------------------+</span><br><span class="line">| Id      | User            | Host                 | db                 | Command     | Time  | State                                                         | Info                                                                                                 |</span><br><span class="line">+---------+-----------------+----------------------+--------------------+-------------+-------+---------------------------------------------------------------+------------------------------------------------------------------------------------------------------+</span><br><span class="line">| <span class="number">3074726</span> | cosmo_dsj       | <span class="number">10.138</span>.<span class="number">225.194</span>:<span class="number">41311</span> | NULL               | Binlog Dump | <span class="number">31808</span> | Master has sent all binlog to slave; waiting <span class="keyword">for</span> more updates | NULL                                                                                                 |</span><br><span class="line">| <span class="number">3080884</span> | cosmo_t         | %                    | cosmo_im_1021      | Connect     | <span class="number">12515</span> | Sending <span class="keyword">data</span>                                                  | CALL  procedure_imp_table                                                                            |</span><br><span class="line">| <span class="number">3082179</span> | cosmo_t         | <span class="number">10.138</span>.<span class="number">228.42</span>:<span class="number">36560</span>  | cosmo_im_1021      | Sleep       |    <span class="number">19</span> |                                                               | NULL                                                                                                 |</span><br><span class="line">| <span class="number">3082727</span> | root            | localhost            | NULL               | Query       |  <span class="number">6180</span> | Waiting <span class="keyword">for</span> table flush                                       | FLUSH NO_WRITE_TO_BINLOG TABLES                                                                      |</span><br><span class="line">| <span class="number">3082888</span> | cosmo_r         | <span class="number">10.180</span>.<span class="number">221.43</span>:<span class="number">52153</span>  | cosmo_im_1021      | Sleep       |     <span class="number">5</span> |                                                               | NULL                                                                                                 |</span><br><span class="line">| <span class="number">3082892</span> | cosmo_r         | <span class="number">10.180</span>.<span class="number">221.43</span>:<span class="number">52155</span>  | cosmo_im_1021      | Sleep       |     <span class="number">1</span> |                                                               | NULL                                                                                                 |</span><br><span class="line">| <span class="number">3082919</span> | cosmo_t         | %                    | cosmo_im_1021      | Connect     |  <span class="number">6125</span> | Waiting <span class="keyword">for</span> table flush                                       | CALL procedure_assembly_work                                                                         |</span><br><span class="line">| <span class="number">3082940</span> | cosmo_t         | %                    | cosmo_im_1021      | Connect     |  <span class="number">6104</span> | Waiting <span class="keyword">for</span> table flush                                       | UPDATE board_datas bo inner join (</span><br><span class="line">            SELECT times,</span><br><span class="line">                   cNum                 |</span><br><span class="line">| <span class="number">3083094</span> | cosmo_t         | <span class="number">10.180</span>.<span class="number">221.45</span>:<span class="number">59111</span>  | cosmo_im_1021      | Query       |     <span class="number">6</span> | Waiting <span class="keyword">for</span> table flush                                       | SELECT a.*,TIMESTAMPDIFF(MINUTE,a.CallTime,NOW()) as Tdiff from</span><br><span class="line">(SELECT DISTINCT pmcall.Call_ID ,ca |</span><br><span class="line">| <span class="number">3083127</span> | cosmo_t         | %                    | cosmo_im_1021      | Connect     |  <span class="number">5924</span> | Waiting <span class="keyword">for</span> table flush                                       | UPDATE board_datas bo inner join (</span><br><span class="line">            SELECT times,</span><br><span class="line">                   cNum                 |</span><br><span class="line">| <span class="number">3083260</span> | cosmo_t         | %                    | cosmo_im_1021      | Connect     |  <span class="number">5744</span> | Waiting <span class="keyword">for</span> table flush                                       | UPDATE board_datas bo inner join (</span><br><span class="line">            SELECT times,</span><br><span class="line">                   cNum                 |</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p>首次出现此状态执行的操作是 <code>FLUSH NO_WRITE_TO_BINLOG TABLES</code>，这是 <code>XtraBackup</code> 执行全量备份的一个线程，主要作用是关闭所有打开的表，强制关闭所有正在使用的表，并刷新查询缓存和预准备语句缓存。</p>
+</li>
+<li><p>备份正常执行这个操作是不会锁表的，但是如果在此期间存在慢查询 <code>CALL procedure_imp_table</code>，就会占用全局只读锁，阻止关闭打开的表。</p>
+</li>
+<li><p><strong>结论</strong>：使用 <code>mysqldump、XtraBackup</code> 备份期间出现了慢查询并且慢查询长时间阻塞，就会出现  <code>Waiting for tables flush</code>。</p>
+</li>
+</ul>
+<h2 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h2><ul>
+<li>执行 <code>kill 3080884</code> ，杀掉超时的慢查询</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/13/vpn/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2084,190 +2261,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/06/mysql-connection/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/11/06/mysql-connection/" class="post-title-link" itemprop="url">MySQL · 连接</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-11-06 16:02:44" itemprop="dateCreated datePublished" datetime="2019-11-06T16:02:44+08:00">2019-11-06</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-07 14:43:11" itemprop="dateModified" datetime="2019-11-07T14:43:11+08:00">2019-11-07</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h2><ul>
-<li><strong><code>TCP/IP</code> 方式</strong></li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用场景：mysql客户端在一台服务器上，mysql实例在另外一台服务器上</span></span><br><span class="line">mysql [options] [database]</span><br><span class="line">$ mysql -h IP -u username -p password -P port</span><br><span class="line"></span><br><span class="line">[options]</span><br><span class="line">-u, --user=name          <span class="comment"># 指定用户名</span></span><br><span class="line">-p, --password[=name]    <span class="comment"># 指定密码  </span></span><br><span class="line">-h, --host=name          <span class="comment"># 指定服务器IP  </span></span><br><span class="line">-P, --port=<span class="comment">#             # 指定连接端口</span></span><br><span class="line"></span><br><span class="line">[client]</span><br><span class="line">user=<span class="string">'xx'</span></span><br><span class="line">password=<span class="string">'xx'</span></span><br><span class="line">port = <span class="number">3306</span></span><br><span class="line">socket = /tmp/mysql.sock</span><br><span class="line">default-character-set = utf8mb4</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong><code>Socket</code> 方式</strong></li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用场景：mysql客户端和实例在同一台服务器上</span></span><br><span class="line">$ mysql -S /<span class="keyword">data</span>/mysql/mysql.sock -u username -p password</span><br></pre></td></tr></table></figure>
-
-<p><strong><code>Windows</code> 客户端工具</strong>：<a href="https://www.navicat.com.cn/products/navicat-for-mysql" target="_blank" rel="noopener">Navicate</a>、<a href="https://www.webyog.com/product/sqlyog" target="_blank" rel="noopener">SQLyog</a>、<a href="https://www.heidisql.com/" target="_blank" rel="noopener">HeidiSQL</a>、<a href="https://www.phpmyadmin.net/" target="_blank" rel="noopener">phpMyAdmin</a>、<a href="https://dev.mysql.com/downloads/workbench/" target="_blank" rel="noopener">MySQL Workbench</a> 等。</p>
-<p><strong><code>Mac</code> 客户端工具</strong>：<a href="http://www.sequelpro.com" target="_blank" rel="noopener">Selquel Pro</a>、<a href="https://dev.mysql.com/downloads/workbench/" target="_blank" rel="noopener">MySQL Workbench</a> 等。</p>
-<h2 id="SQL"><a href="#SQL" class="headerlink" title="SQL"></a>SQL</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 数据库最大连接数</span></span><br><span class="line">mysql&gt; show variables like ‘%max_connections%’;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 已使用最大连接数</span></span><br><span class="line">mysql&gt; show global status like ‘Max_used_connections’;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 当前连接线程数</span></span><br><span class="line">mysql&gt; show status like ‘Threads%’;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 当前连接详细信息</span></span><br><span class="line">mysql&gt; show full processlist;</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2316,7 +2309,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">129</span>
+                    <span class="site-state-item-count">130</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
