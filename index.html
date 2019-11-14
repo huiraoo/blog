@@ -397,7 +397,7 @@
                 
               
 
-              <time title="创建时间：2019-11-14 09:19:28 / 修改时间：10:02:21" itemprop="dateCreated datePublished" datetime="2019-11-14T09:19:28+08:00">2019-11-14</time>
+              <time title="创建时间：2019-11-14 09:19:28 / 修改时间：10:08:59" itemprop="dateCreated datePublished" datetime="2019-11-14T09:19:28+08:00">2019-11-14</time>
             
 
             
@@ -463,9 +463,9 @@
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show processlist;</span><br><span class="line">+---------+-----------------+----------------------+--------------------+-------------+-------+---------------------------------------------------------------+------------------------------------------------------------------------------------------------------+</span><br><span class="line">| Id      | User            | Host                 | db                 | Command     | Time  | State                                                         | Info                                                                                                 |</span><br><span class="line">+---------+-----------------+----------------------+--------------------+-------------+-------+---------------------------------------------------------------+------------------------------------------------------------------------------------------------------+</span><br><span class="line">| <span class="number">3074726</span> | cosmo_dsj       | <span class="number">10.138</span>.<span class="number">225.194</span>:<span class="number">41311</span> | NULL               | Binlog Dump | <span class="number">31808</span> | Master has sent all binlog to slave; waiting <span class="keyword">for</span> more updates | NULL                                                                                                 |</span><br><span class="line">| <span class="number">3080884</span> | cosmo_t         | %                    | cosmo_im_1021      | Connect     | <span class="number">12515</span> | Sending <span class="keyword">data</span>                                                  | CALL  procedure_imp_table                                                                            |</span><br><span class="line">| <span class="number">3082179</span> | cosmo_t         | <span class="number">10.138</span>.<span class="number">228.42</span>:<span class="number">36560</span>  | cosmo_im_1021      | Sleep       |    <span class="number">19</span> |                                                               | NULL                                                                                                 |</span><br><span class="line">| <span class="number">3082727</span> | root            | localhost            | NULL               | Query       |  <span class="number">6180</span> | Waiting <span class="keyword">for</span> table flush                                       | FLUSH NO_WRITE_TO_BINLOG TABLES                                                                      |</span><br><span class="line">| <span class="number">3082888</span> | cosmo_r         | <span class="number">10.180</span>.<span class="number">221.43</span>:<span class="number">52153</span>  | cosmo_im_1021      | Sleep       |     <span class="number">5</span> |                                                               | NULL                                                                                                 |</span><br><span class="line">| <span class="number">3082892</span> | cosmo_r         | <span class="number">10.180</span>.<span class="number">221.43</span>:<span class="number">52155</span>  | cosmo_im_1021      | Sleep       |     <span class="number">1</span> |                                                               | NULL                                                                                                 |</span><br><span class="line">| <span class="number">3082919</span> | cosmo_t         | %                    | cosmo_im_1021      | Connect     |  <span class="number">6125</span> | Waiting <span class="keyword">for</span> table flush                                       | CALL procedure_assembly_work                                                                         |</span><br><span class="line">| <span class="number">3082940</span> | cosmo_t         | %                    | cosmo_im_1021      | Connect     |  <span class="number">6104</span> | Waiting <span class="keyword">for</span> table flush                                       | UPDATE board_datas bo inner join (</span><br><span class="line">            SELECT times,</span><br><span class="line">                   cNum                 |</span><br><span class="line">| <span class="number">3083094</span> | cosmo_t         | <span class="number">10.180</span>.<span class="number">221.45</span>:<span class="number">59111</span>  | cosmo_im_1021      | Query       |     <span class="number">6</span> | Waiting <span class="keyword">for</span> table flush                                       | SELECT a.*,TIMESTAMPDIFF(MINUTE,a.CallTime,NOW()) as Tdiff from</span><br><span class="line">(SELECT DISTINCT pmcall.Call_ID ,ca |</span><br><span class="line">| <span class="number">3083127</span> | cosmo_t         | %                    | cosmo_im_1021      | Connect     |  <span class="number">5924</span> | Waiting <span class="keyword">for</span> table flush                                       | UPDATE board_datas bo inner join (</span><br><span class="line">            SELECT times,</span><br><span class="line">                   cNum                 |</span><br><span class="line">| <span class="number">3083260</span> | cosmo_t         | %                    | cosmo_im_1021      | Connect     |  <span class="number">5744</span> | Waiting <span class="keyword">for</span> table flush                                       | UPDATE board_datas bo inner join (</span><br><span class="line">            SELECT times,</span><br><span class="line">                   cNum                 |</span><br></pre></td></tr></table></figure>
 
 <ul>
-<li><p>首次出现此状态执行的操作是 <code>FLUSH NO_WRITE_TO_BINLOG TABLES</code>，这是 <code>XtraBackup</code> 执行全量备份的一个线程，主要作用是关闭所有打开的表，强制关闭所有正在使用的表，并刷新查询缓存和预准备语句缓存。</p>
+<li><p>找到首次出现此状态执行的操作 <code>FLUSH NO_WRITE_TO_BINLOG TABLES</code>，执行时间 <code>6125s</code>，线程ID <code>3082727</code>，这是 <code>XtraBackup</code> 执行全量备份的一个线程，主要作用是关闭所有打开的表，强制关闭所有正在使用的表，并刷新查询缓存和预准备语句缓存。</p>
 </li>
-<li><p>备份正常执行这个操作是不会锁表的，但是如果在此期间存在慢查询 <code>CALL procedure_imp_table</code>，就会占用全局只读锁，阻止关闭打开的表。</p>
+<li><p>备份正常执行这个操作是不会锁表的，但是如果在此期间存在慢查询 <code>CALL procedure_imp_table</code>，执行时间 <code>12515s</code>，线程ID <code>3080884</code>，就会占用全局只读锁，阻止关闭打开的表。</p>
 </li>
 <li><p><strong>结论</strong>：使用 <code>mysqldump、XtraBackup</code> 备份期间出现了慢查询并且慢查询长时间阻塞，就会出现  <code>Waiting for tables flush</code>。</p>
 </li>
@@ -1742,7 +1742,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/blog/2019/11/07/mysql-case-slave-sql-running-no/" class="post-title-link" itemprop="url">MySQL · 案例分析 · Slave_SQL_Running:No</a>
+                <a href="/blog/2019/11/07/mysql-case-slave-sql-running-no/" class="post-title-link" itemprop="url">MySQL · 案例分析 · Slave_SQL_Running</a>
               
             
           </h1>
@@ -1767,12 +1767,24 @@
                 
               
 
-              <time title="创建时间：2019-11-07 09:32:48 / 修改时间：22:50:42" itemprop="dateCreated datePublished" datetime="2019-11-07T09:32:48+08:00">2019-11-07</time>
+              <time title="创建时间：2019-11-07 09:32:48" itemprop="dateCreated datePublished" datetime="2019-11-07T09:32:48+08:00">2019-11-07</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-14 10:04:12" itemprop="dateModified" datetime="2019-11-14T10:04:12+08:00">2019-11-14</time>
               
             
           </span>
