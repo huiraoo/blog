@@ -84,7 +84,7 @@
   <entry>
     <title>MySQL · 案例分析 · Waiting for table flush</title>
     <url>/blog/2019/11/14/mysql-case-waiting-for-table-flush/</url>
-    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p><code>MES</code> 工厂反馈业务查询慢，登录数据库手工执行 <code>SQL</code> 操作也没有响应，怀疑是 <code>02:00</code> 执行的备份任务导致。</p>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>MES 工厂反馈业务查询慢，登录数据库手工执行 <code>SQL</code> 操作也没有响应，怀疑是 <code>02:00</code> 执行的备份任务导致。</p>
 <h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><ul>
 <li>登录数据库，执行 <code>show processlist</code> 查看当前会话，发现大量线程状态为 <code>Waiting for tables flush</code>。</li>
 </ul>
@@ -253,7 +253,7 @@
   <entry>
     <title>MySQL · binlog 日志</title>
     <url>/blog/2019/11/07/mysql-binlog/</url>
-    <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong><code>binlog</code></strong>：也称二进制日志，是 MySQL 最重要的日志，记录所有数据库表结构变更（如 <code>CREATE</code>、<code>ALTER TABLE</code>）以及表数据修改（如 <code>INSERT</code>、<code>UPDATE</code>、<code>DELETE</code>），不会记录 <code>SELECT</code> 和 <code>SHOW</code> 这类操作，主要作用：<strong>复制</strong>（主从同步）、<strong>恢复</strong>和<strong>审计</strong>。</p>
+    <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>Binlog</strong>：也称二进制日志，是 MySQL 最重要的日志，记录所有数据库表结构变更（如 <code>CREATE</code>、<code>ALTER TABLE</code>）以及表数据修改（如 <code>INSERT</code>、<code>UPDATE</code>、<code>DELETE</code>），不会记录 <code>SELECT</code> 和 <code>SHOW</code> 这类操作，主要作用：<strong>复制</strong>（主从同步）、<strong>恢复</strong>和<strong>审计</strong>。</p>
 <table>
 <thead>
 <tr>
@@ -328,8 +328,10 @@
 <td>指定写缓冲多少次，刷一次盘</td>
 </tr>
 </tbody></table>
-<h2 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h2><p><strong>查看 <code>binlog</code></strong>：<a href="https://huiraoo.github.io/blog/2019/11/07/mysql-tool-mysqlbinlog/">mysqlbinlog</a></p>
-<p><strong>删除 <code>binlog</code></strong></p>
+<h2 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h2><ul>
+<li><strong>查看 binlog</strong>：<a href="https://huiraoo.github.io/blog/2019/11/07/mysql-tool-mysqlbinlog/">mysqlbinlog</a></li>
+<li><strong>删除 binlog</strong></li>
+</ul>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 手工删除</span></span><br><span class="line">purge master logs to <span class="string">"mysql-bin.xx"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 自动清理</span></span><br><span class="line">set global expire_logs_days=N;</span><br><span class="line">flush logs;</span><br></pre></td></tr></table></figure>
 
 <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><ul>
@@ -460,7 +462,7 @@
       </categories>
   </entry>
   <entry>
-    <title>MySQL · 案例分析 · 大量连接状态 "Writing to net"</title>
+    <title>MySQL · 案例分析 · 大量连接状态 Writing to net</title>
     <url>/blog/2019/11/05/mysql-case-writing-to-net/</url>
     <content><![CDATA[<h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><p><strong>HDM 告警</strong></p>
 <blockquote>
@@ -1114,7 +1116,7 @@
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">sql_mode = NO_ENGINE_SUBSTITUTION</span><br></pre></td></tr></table></figure>
 
 <ul>
-<li><strong>阿里云 <code>RDS</code> 的设置</strong></li>
+<li><strong>阿里云 RDS 设置</strong></li>
 </ul>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">sql_mode=REAL_AS_FLOAT,PIPES_AS_CONCAT,ANSI_QUOTES,IGNORE_SPACE,NO_UNSIGNED_SUBTRACTION,NO_DIR_</span><br><span class="line">IN_CREATE,POSTGRESQL,ORACLE,MSSQL,DB2,MAXDB,NO_KEY_OPTIONS,NO_TABLE_OPTIONS,NO_FIELD_OPTIONS,MYSQL</span><br><span class="line"><span class="number">323</span>,MYSQL40,ANSI,NO_AUTO_VALUE_ON_ZERO,NO_BACKSLASH_ESCAPES,STRICT_TRANS_TABLES,STRICT_ALL_TABLES,</span><br><span class="line">NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,HIGH_NOT</span><br><span class="line">_PRECEDENCE,NO_ENGINE_SUBSTITUTION,PAD_CHAR_TO_FULL_LENGTH</span><br></pre></td></tr></table></figure>
 
@@ -1459,30 +1461,6 @@
       </categories>
   </entry>
   <entry>
-    <title>MySQL · 性能优化 · order by</title>
-    <url>/blog/2019/10/24/mysql-tuning-order/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>MySQL</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>MySQL · 性能优化 · group by</title>
-    <url>/blog/2019/10/24/mysql-tuning-group/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>MySQL</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>MySQL · 性能优化 · in</title>
-    <url>/blog/2019/10/24/mysql-tuning-in/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>MySQL</category>
-      </categories>
-  </entry>
-  <entry>
     <title>MySQL · 性能优化 · JOIN</title>
     <url>/blog/2019/10/24/mysql-tuning-join/</url>
     <content><![CDATA[<h2 id="JOIN"><a href="#JOIN" class="headerlink" title="JOIN"></a>JOIN</h2><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-13-175000.jpg" alt></p>
@@ -1562,7 +1540,7 @@
   <entry>
     <title>Python · 网络编程</title>
     <url>/blog/2019/10/24/python-socket/</url>
-    <content><![CDATA[<p>用 TCP 协议进行 Socket 编程在 Python 中十分简单，对于客户端，要主动连接服务器的 IP 和指定端口，对于服务器，要首先监听指定端口，然后，对每一个新的连接，创建一个线程或进程来处理。通常，服务器程序会无限运行下去。同一个端口，被一个 Socket 绑定了以后，就不能被别的 Socket 绑定了。</p>
+    <content><![CDATA[<h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><p>用 TCP 协议进行 Socket 编程在 Python 中十分简单，对于客户端，要主动连接服务器的 IP 和指定端口，对于服务器，要首先监听指定端口，然后，对每一个新的连接，创建一个线程或进程来处理。通常，服务器程序会无限运行下去。同一个端口，被一个 Socket 绑定了以后，就不能被别的 Socket 绑定了。</p>
 <h4 id="TCP编程"><a href="#TCP编程" class="headerlink" title="TCP编程"></a>TCP编程</h4><p><strong>客户端</strong>：</p>
 <figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line">s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line"><span class="comment"># 建立连接:</span></span><br><span class="line">s.connect((<span class="string">'127.0.0.1'</span>, <span class="number">9999</span>))</span><br><span class="line"><span class="comment"># 接收欢迎消息:</span></span><br><span class="line">print(s.recv(<span class="number">1024</span>).decode(<span class="string">'utf-8'</span>))</span><br><span class="line"><span class="keyword">for</span> data <span class="keyword">in</span> [<span class="string">b'Michael'</span>, <span class="string">b'Tracy'</span>, <span class="string">b'Sarah'</span>]:</span><br><span class="line">    <span class="comment"># 发送数据:</span></span><br><span class="line">    s.send(data)</span><br><span class="line">    print(s.recv(<span class="number">1024</span>).decode(<span class="string">'utf-8'</span>))</span><br><span class="line">s.send(<span class="string">b'exit'</span>)</span><br><span class="line">s.close()</span><br></pre></td></tr></table></figure>
 
@@ -2329,15 +2307,28 @@
     <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>JIRA 是 Atlassian 公司的产品，Atlassian 最核心的产品仍然是 <strong>JIRA</strong> 和 <strong>Confluence</strong>，JIRA 被业界公认为最好的项目管理和开发管理工具，Confluence 被认为是最好用的企业级知识管理工具。</p>
 <h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><h3 id="Project"><a href="#Project" class="headerlink" title="Project"></a>Project</h3><p><strong>创建项目</strong>：项目名称、简称、URL</p>
 <p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-22-100515.png" alt></p>
-<p>Story：故事</p>
-<p>Sprint：迭代</p>
-<p>Backlog：需求列表</p>
-<p>项目创建</p>
-<p>项目组件和版本</p>
-<p>项目角色</p>
-<h3 id="Issue"><a href="#Issue" class="headerlink" title="Issue"></a>Issue</h3><p>创建、编辑与删除问题</p>
-<p>问题跟踪</p>
-<p>子任务</p>
+<ul>
+<li><p>Story：故事</p>
+</li>
+<li><p>Sprint：迭代</p>
+</li>
+<li><p>Backlog：需求列表</p>
+</li>
+<li><p>项目创建</p>
+</li>
+<li><p>项目组件和版本</p>
+</li>
+<li><p>项目角色</p>
+</li>
+</ul>
+<h3 id="Issue"><a href="#Issue" class="headerlink" title="Issue"></a>Issue</h3><ul>
+<li><p>创建、编辑与删除问题</p>
+</li>
+<li><p>问题跟踪</p>
+</li>
+<li><p>子任务</p>
+</li>
+</ul>
 <h4 id="Issue-Type（问题单类型）"><a href="#Issue-Type（问题单类型）" class="headerlink" title="Issue Type（问题单类型）"></a>Issue Type（问题单类型）</h4><ul>
 <li><strong>Bug</strong> - 故障，功能失效</li>
 <li><strong>Improvement</strong> - 提升，既有功能增强</li>
@@ -2367,31 +2358,30 @@
 <li><strong>Cannot Reproduce</strong> - 不能重现，如果以后有更多信息可以继续可以重新打开这张单子ß</li>
 <li><strong>Won’t Do</strong> - 不做，类似于不用修复的方案，试用于软件项目的默认状态</li>
 </ul>
-<h3 id="工作流"><a href="#工作流" class="headerlink" title="工作流"></a>工作流</h3><h2 id="Jira-管理员"><a href="#Jira-管理员" class="headerlink" title="Jira 管理员"></a>Jira 管理员</h2><h3 id="配置方案"><a href="#配置方案" class="headerlink" title="配置方案"></a>配置方案</h3><p>仪表盘配置</p>
-<p>项目报表</p>
+<h3 id="工作流"><a href="#工作流" class="headerlink" title="工作流"></a>工作流</h3><h2 id="Jira-管理员"><a href="#Jira-管理员" class="headerlink" title="Jira 管理员"></a>Jira 管理员</h2><h3 id="配置方案"><a href="#配置方案" class="headerlink" title="配置方案"></a>配置方案</h3><p>项目报表</p>
 <p>敏捷管理</p>
 <p>用户、用户组、项目角色配置</p>
-<p>问题类型</p>
-<p>界面</p>
-<p>权限</p>
-<p>工作流</p>
-<p>通知</p>
-<h3 id="登录"><a href="#登录" class="headerlink" title="登录"></a>登录</h3><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 普通用户登录</span></span><br><span class="line">http://jira.qd-aliyun-internal.haier.net</span><br><span class="line"></span><br><span class="line"><span class="comment"># 管理员登录</span></span><br><span class="line">http://jira.qd-aliyun-internal.haier.net/login.jsp?oauth_sso=false</span><br><span class="line">账号：admin</span><br><span class="line">密码：Pwd123456</span><br><span class="line"></span><br><span class="line"><span class="comment"># 版本</span></span><br><span class="line">Jira v8.<span class="number">3.0</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>问题类型</p>
+</li>
+<li><p>权限</p>
+</li>
+<li><p>工作流</p>
+</li>
+</ul>
+<h3 id="登录"><a href="#登录" class="headerlink" title="登录"></a>登录</h3><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 普通用户登录</span></span><br><span class="line">http://jira.qd-aliyun-internal.haier.net</span><br><span class="line"></span><br><span class="line"><span class="comment"># 管理员登录</span></span><br><span class="line">http://jira.qd-aliyun-internal.haier.net/login.jsp?oauth_sso=false</span><br><span class="line"></span><br><span class="line"><span class="comment"># 版本</span></span><br><span class="line">Jira v8.<span class="number">3.0</span></span><br></pre></td></tr></table></figure>
 
-<h3 id="最佳使用实践"><a href="#最佳使用实践" class="headerlink" title="最佳使用实践"></a>最佳使用实践</h3><p>互联网化工作：开放透明（开发任务和排期）、提高效率、固化流程</p>
-<p>敏捷开发管理</p>
-<p>Bug 跟踪管理</p>
-<p>任务流程管理</p>
-<p>项目协作流程：工作流、分析统计报表</p>
-<p>项目</p>
-<p>问题</p>
+<h3 id="最佳使用实践"><a href="#最佳使用实践" class="headerlink" title="最佳使用实践"></a>最佳使用实践</h3><ul>
+<li><p>Bug 跟踪管理</p>
+</li>
+<li><p>任务流程管理</p>
+</li>
+</ul>
 <p><strong>删除任务</strong></p>
 <ul>
 <li>权限说明：删除任务需要具备项目管理员权限</li>
 <li>项目设置  -&gt;  用户和角色  -&gt;  添加用户到 <code>Administrators</code> 组</li>
 </ul>
-<p>团队协同管理工具：JIRA、Confluence</p>
-<p>搭建、管理、培训</p>
 ]]></content>
       <categories>
         <category>项目</category>
@@ -2657,23 +2647,6 @@
       </categories>
   </entry>
   <entry>
-    <title>Shell</title>
-    <url>/blog/2019/10/22/shell/</url>
-    <content><![CDATA[<p>bash</p>
-<p>cat</p>
-<p>grep</p>
-<p>sed</p>
-<p>awk</p>
-<p>curl or wget</p>
-<p>sort</p>
-<p>tr</p>
-<p>tcpdump</p>
-]]></content>
-      <categories>
-        <category>Shell</category>
-      </categories>
-  </entry>
-  <entry>
     <title>MySQL · 案例分析 · 磁盘空间不足</title>
     <url>/blog/2019/10/21/mysql-case-diskspace/</url>
     <content><![CDATA[<h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">$ df -h</span><br><span class="line">Filesystem                               Size  Used Avail Use% Mounted on</span><br><span class="line">/dev/mapper/centos_cosmoim--zdyq05-root  <span class="number">100</span>G   <span class="number">13</span>G   <span class="number">87</span>G  <span class="number">13</span>% /</span><br><span class="line">devtmpfs                                  <span class="number">63</span>G     <span class="number">0</span>   <span class="number">63</span>G   <span class="number">0</span>% /dev</span><br><span class="line">tmpfs                                     <span class="number">63</span>G     <span class="number">0</span>   <span class="number">63</span>G   <span class="number">0</span>% /dev/shm</span><br><span class="line">tmpfs                                     <span class="number">63</span>G  <span class="number">130</span>M   <span class="number">63</span>G   <span class="number">1</span>% /run</span><br><span class="line">tmpfs                                     <span class="number">63</span>G     <span class="number">0</span>   <span class="number">63</span>G   <span class="number">0</span>% /sys/fs/cgroup</span><br><span class="line">/dev/sda1                                <span class="number">497</span>M  <span class="number">172</span>M  <span class="number">326</span>M  <span class="number">35</span>% /boot</span><br><span class="line">/dev/mapper/centos_cosmoim--zdyq05-data  <span class="number">888</span>G  <span class="number">581</span>G  <span class="number">308</span>G  <span class="number">66</span>% /<span class="keyword">data</span></span><br><span class="line">tmpfs                                     <span class="number">13</span>G   <span class="number">12</span>K   <span class="number">13</span>G   <span class="number">1</span>% /run/user/<span class="number">42</span></span><br><span class="line">tmpfs                                     <span class="number">13</span>G     <span class="number">0</span>   <span class="number">13</span>G   <span class="number">0</span>% /run/user/<span class="number">1001</span></span><br><span class="line">tmpfs                                     <span class="number">13</span>G     <span class="number">0</span>   <span class="number">13</span>G   <span class="number">0</span>% /run/user/<span class="number">1002</span></span><br><span class="line">tmpfs                                     <span class="number">13</span>G     <span class="number">0</span>   <span class="number">13</span>G   <span class="number">0</span>% /run/user/<span class="number">0</span></span><br></pre></td></tr></table></figure>
@@ -2843,40 +2816,8 @@
       </categories>
   </entry>
   <entry>
-    <title>Percona Toolkit · 冗余索引检测工具 pt-duplicate-key-checker</title>
-    <url>/blog/2019/10/19/pt-duplicate-key-checker/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>Percona Toolkit</category>
-      </categories>
-  </entry>
-  <entry>
     <title>Percona Toolkit · 磁盘分析工具 pt-diskstats</title>
     <url>/blog/2019/10/19/pt-diskstats/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>Percona Toolkit</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>Percona Toolkit · 死锁监控工具 pt-deadlock-logger</title>
-    <url>/blog/2019/10/19/pt-deadlock-logger/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>Percona Toolkit</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>Percona Toolkit · 配置对比工具 pt-config-diff</title>
-    <url>/blog/2019/10/19/pt-config-diff/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>Percona Toolkit</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>Percona Toolkit · 格式化输出工具 pt-align</title>
-    <url>/blog/2019/10/19/pt-align/</url>
     <content><![CDATA[]]></content>
       <categories>
         <category>Percona Toolkit</category>
@@ -3013,7 +2954,7 @@
   <entry>
     <title>Percona Toolkit · 信息收集工具 pt-summary</title>
     <url>/blog/2019/10/18/pt-summary/</url>
-    <content><![CDATA[<h2 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h2><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><h2 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h2><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">$ pt-summary</span><br><span class="line"><span class="comment"># Percona Toolkit System Summary Report ######################</span></span><br><span class="line">        Date | <span class="number">2019</span>-<span class="number">10</span>-<span class="number">18</span> <span class="number">09</span>:<span class="number">41</span>:<span class="number">24</span> UTC (local TZ: CST +<span class="number">0800</span>)</span><br><span class="line">    Hostname | hrmk-Dubbo4</span><br><span class="line">      Uptime | <span class="number">182</span> days, <span class="number">20</span>:<span class="number">56</span>,  <span class="number">1</span> user,  load average: <span class="number">0.66</span>, <span class="number">0.69</span>, <span class="number">0.69</span></span><br><span class="line">      System | Dell Inc.; PowerEdge R730; vNot Specified (Rack Mount Chassis)</span><br><span class="line"> Service Tag | <span class="number">5</span>K6GBD2</span><br><span class="line">    Platform | Linux</span><br><span class="line">     Release | CentOS release <span class="number">6.10</span> (Final)</span><br><span class="line">      Kernel | <span class="number">2.6</span>.<span class="number">32</span>-<span class="number">431</span>.el6.x86_64</span><br><span class="line">Architecture | CPU = <span class="number">64</span>-bit, OS = <span class="number">64</span>-bit</span><br><span class="line">   Threading | NPTL <span class="number">2.12</span></span><br><span class="line">     SELinux | Enforcing</span><br><span class="line"> Virtualized | No virtualization detected</span><br><span class="line"> </span><br><span class="line"><span class="comment"># Processor ##################################################</span></span><br><span class="line">  Processors | physical = <span class="number">2</span>, cores = <span class="number">12</span>, virtual = <span class="number">24</span>, hyperthreading = yes</span><br><span class="line">      Speeds | <span class="number">24</span>x2400.<span class="number">128</span></span><br><span class="line">      Models | <span class="number">24</span>xIntel(R) Xeon(R) CPU E5-<span class="number">2620</span> v3 @ <span class="number">2.40</span>GHz</span><br><span class="line">      Caches | <span class="number">24</span>x15360 KB</span><br><span class="line">      </span><br><span class="line"><span class="comment"># Memory #####################################################</span></span><br><span class="line">       Total | <span class="number">15.6</span>G</span><br><span class="line">        Free | <span class="number">217.5</span>M</span><br><span class="line">        Used | physical = <span class="number">15.4</span>G, swap allocated = <span class="number">7.8</span>G, swap used = <span class="number">96.0</span>k, virtual = <span class="number">15.4</span>G</span><br><span class="line">      Shared | <span class="number">1.2</span>M</span><br><span class="line">     Buffers | <span class="number">221.9</span>M</span><br><span class="line">      Caches | <span class="number">2.2</span>G</span><br><span class="line">       Dirty | <span class="number">344</span> kB</span><br><span class="line">     UsedRSS | <span class="number">12.4</span>G</span><br><span class="line">  Swappiness | <span class="number">60</span></span><br><span class="line"> DirtyPolicy | <span class="number">20</span>, <span class="number">10</span></span><br><span class="line"> DirtyStatus | <span class="number">0</span>, <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Network Devices ############################################</span></span><br><span class="line">  Device    Speed     Duplex</span><br><span class="line">  ========= ========= =========</span><br><span class="line">  em2        <span class="number">1000</span>Mb/s   Full      </span><br><span class="line">  em3        Unknown!   Unknown!  </span><br><span class="line">  em4        <span class="number">1000</span>Mb/s   Full      </span><br><span class="line">  bond0      <span class="number">1000</span>Mb/s   Full      </span><br><span class="line">  virbr0-nic <span class="number">10</span>Mb/s     Full      </span><br><span class="line">  virbr0                          </span><br><span class="line">  em1        <span class="number">1000</span>Mb/s   Full</span><br></pre></td></tr></table></figure>
+    <content><![CDATA[<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">$ pt-summary</span><br><span class="line"><span class="comment"># Percona Toolkit System Summary Report ######################</span></span><br><span class="line">        Date | <span class="number">2019</span>-<span class="number">10</span>-<span class="number">18</span> <span class="number">09</span>:<span class="number">41</span>:<span class="number">24</span> UTC (local TZ: CST +<span class="number">0800</span>)</span><br><span class="line">    Hostname | hrmk-Dubbo4</span><br><span class="line">      Uptime | <span class="number">182</span> days, <span class="number">20</span>:<span class="number">56</span>,  <span class="number">1</span> user,  load average: <span class="number">0.66</span>, <span class="number">0.69</span>, <span class="number">0.69</span></span><br><span class="line">      System | Dell Inc.; PowerEdge R730; vNot Specified (Rack Mount Chassis)</span><br><span class="line"> Service Tag | <span class="number">5</span>K6GBD2</span><br><span class="line">    Platform | Linux</span><br><span class="line">     Release | CentOS release <span class="number">6.10</span> (Final)</span><br><span class="line">      Kernel | <span class="number">2.6</span>.<span class="number">32</span>-<span class="number">431</span>.el6.x86_64</span><br><span class="line">Architecture | CPU = <span class="number">64</span>-bit, OS = <span class="number">64</span>-bit</span><br><span class="line">   Threading | NPTL <span class="number">2.12</span></span><br><span class="line">     SELinux | Enforcing</span><br><span class="line"> Virtualized | No virtualization detected</span><br><span class="line"> </span><br><span class="line"><span class="comment"># Processor ##################################################</span></span><br><span class="line">  Processors | physical = <span class="number">2</span>, cores = <span class="number">12</span>, virtual = <span class="number">24</span>, hyperthreading = yes</span><br><span class="line">      Speeds | <span class="number">24</span>x2400.<span class="number">128</span></span><br><span class="line">      Models | <span class="number">24</span>xIntel(R) Xeon(R) CPU E5-<span class="number">2620</span> v3 @ <span class="number">2.40</span>GHz</span><br><span class="line">      Caches | <span class="number">24</span>x15360 KB</span><br><span class="line">      </span><br><span class="line"><span class="comment"># Memory #####################################################</span></span><br><span class="line">       Total | <span class="number">15.6</span>G</span><br><span class="line">        Free | <span class="number">217.5</span>M</span><br><span class="line">        Used | physical = <span class="number">15.4</span>G, swap allocated = <span class="number">7.8</span>G, swap used = <span class="number">96.0</span>k, virtual = <span class="number">15.4</span>G</span><br><span class="line">      Shared | <span class="number">1.2</span>M</span><br><span class="line">     Buffers | <span class="number">221.9</span>M</span><br><span class="line">      Caches | <span class="number">2.2</span>G</span><br><span class="line">       Dirty | <span class="number">344</span> kB</span><br><span class="line">     UsedRSS | <span class="number">12.4</span>G</span><br><span class="line">  Swappiness | <span class="number">60</span></span><br><span class="line"> DirtyPolicy | <span class="number">20</span>, <span class="number">10</span></span><br><span class="line"> DirtyStatus | <span class="number">0</span>, <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Network Devices ############################################</span></span><br><span class="line">  Device    Speed     Duplex</span><br><span class="line">  ========= ========= =========</span><br><span class="line">  em2        <span class="number">1000</span>Mb/s   Full      </span><br><span class="line">  em3        Unknown!   Unknown!  </span><br><span class="line">  em4        <span class="number">1000</span>Mb/s   Full      </span><br><span class="line">  bond0      <span class="number">1000</span>Mb/s   Full      </span><br><span class="line">  virbr0-nic <span class="number">10</span>Mb/s     Full      </span><br><span class="line">  virbr0                          </span><br><span class="line">  em1        <span class="number">1000</span>Mb/s   Full</span><br></pre></td></tr></table></figure>
 
 ]]></content>
       <categories>
@@ -4682,7 +4623,14 @@
 </ul>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like <span class="string">'character%'</span>;</span><br><span class="line">+--------------------------+----------------------------------------------------+</span><br><span class="line">| Variable_name            | Value                                              |</span><br><span class="line">+--------------------------+----------------------------------------------------+</span><br><span class="line">| character_set_client     | utf8                                               |</span><br><span class="line">| character_set_connection | utf8                                               |</span><br><span class="line">| character_set_database   | utf8                                               |</span><br><span class="line">| character_set_filesystem | binary                                             |</span><br><span class="line">| character_set_results    | utf8                                               |</span><br><span class="line">| character_set_server     | latin1                                             |</span><br><span class="line">| character_set_system     | utf8                                               |</span><br><span class="line">| character_sets_dir       | /usr/local/mysql-<span class="number">5.7</span>.<span class="number">23</span>-el7-x86_64/share/charsets/ |</span><br><span class="line">+--------------------------+----------------------------------------------------+</span><br></pre></td></tr></table></figure>
 
-<p><strong>character_set_server</strong>： 默认的内部操作字符集<br><strong>character_set_client</strong>： 服务器解码请求时使用的字符集<br><strong>character_set_connection</strong>：连接层字符集<br><strong>character_set_results</strong>： 服务器向客户端返回数据时使用的字符集<br><strong>character_set_database</strong>： 当前选中数据库的默认字符集<br><strong>character_set_system</strong>： 系统元数据(字段名等)字符集</p>
+<ul>
+<li>character_set_server： 默认的内部操作字符集</li>
+<li>character_set_client： 服务器解码请求时使用的字符集</li>
+<li>character_set_connection：连接层字符集</li>
+<li>character_set_results： 服务器向客户端返回数据时使用的字符集</li>
+<li>character_set_database： 当前选中数据库的默认字符集</li>
+<li>character_set_system： 系统元数据(字段名等)字符集</li>
+</ul>
 <h3 id="服务器级别"><a href="#服务器级别" class="headerlink" title="服务器级别"></a>服务器级别</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 控制参数</span></span><br><span class="line">character_set_server</span><br><span class="line">collation_server</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置文件设置</span></span><br><span class="line">[client]</span><br><span class="line">default-character-<span class="keyword">set</span>  = utf8</span><br><span class="line"></span><br><span class="line">[mysql]</span><br><span class="line"><span class="keyword">default</span>-<span class="built_in">character</span>-<span class="keyword">set</span>  = utf8</span><br><span class="line"></span><br><span class="line">[mysqld]</span><br><span class="line"><span class="built_in">character</span>-<span class="keyword">set</span>-<span class="keyword">server</span>   = utf8</span><br><span class="line"><span class="keyword">collation</span>-<span class="keyword">server</span>       = utf8_general_ci</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看方法</span></span><br><span class="line">mysql&gt; <span class="keyword">SHOW</span> <span class="keyword">VARIABLES</span> <span class="keyword">LIKE</span> <span class="string">'character_set_server'</span>;</span><br><span class="line">+<span class="comment">----------------------+--------+</span></span><br><span class="line">| Variable_name        | Value  |</span><br><span class="line">+<span class="comment">----------------------+--------+</span></span><br><span class="line">| character_set_server | utf8   |</span><br><span class="line">+<span class="comment">----------------------+--------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">SHOW</span> <span class="keyword">VARIABLES</span> <span class="keyword">LIKE</span> <span class="string">'collation_server'</span>;</span><br><span class="line">+<span class="comment">------------------+-------------------+</span></span><br><span class="line">| Variable_name    | Value             |</span><br><span class="line">+<span class="comment">------------------+-------------------+</span></span><br><span class="line">| collation_server | utf8_general_ci   |</span><br><span class="line">+<span class="comment">------------------+-------------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
 
 <h3 id="数据库级别"><a href="#数据库级别" class="headerlink" title="数据库级别"></a>数据库级别</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 控制参数</span></span><br><span class="line">character_set_database</span><br><span class="line">collation_database</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建语法</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">DATABASE</span> 数据库名</span><br><span class="line">    [[<span class="keyword">DEFAULT</span>] <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> 字符集名称]</span><br><span class="line">    [[<span class="keyword">DEFAULT</span>] <span class="keyword">COLLATE</span> 比较规则名称];</span><br><span class="line"></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">DATABASE</span> 数据库名</span><br><span class="line">    [[<span class="keyword">DEFAULT</span>] <span class="built_in">CHARACTER</span> <span class="keyword">SET</span> 字符集名称]</span><br><span class="line">    [[<span class="keyword">DEFAULT</span>] <span class="keyword">COLLATE</span> 比较规则名称];</span><br><span class="line">    </span><br><span class="line"><span class="comment"># 查看方法</span></span><br><span class="line">mysql&gt; use test;</span><br><span class="line">mysql&gt; SELECT @@character_set_database, @@collation_database;</span><br><span class="line">+<span class="comment">--------------------------+----------------------+</span></span><br><span class="line">| @@character_set_database | @@collation_database |</span><br><span class="line">+<span class="comment">--------------------------+----------------------+</span></span><br><span class="line">| utf8                     | utf8_general_ci      |</span><br><span class="line">+<span class="comment">--------------------------+----------------------+</span></span><br></pre></td></tr></table></figure>
@@ -4718,8 +4666,8 @@
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
 <li><strong>字符集</strong>是某个字符范围的编码规则。</li>
 <li><strong>比较规则</strong>是针对某个字符集中的字符比较大小的一种规则。</li>
-<li><code>MySQL</code> 中一个字符集可以有若干种比较规则，其中有一个默认的比较规则。</li>
-<li><code>MySQL</code> 有四个级别的字符集和比较规则，优先级排序：列 &gt; 表 &gt; 库 &gt; 服务器。</li>
+<li>MySQL 中一个字符集可以有若干种比较规则，其中有一个默认的比较规则。</li>
+<li>MySQL 有四个级别的字符集和比较规则，优先级排序：列 &gt; 表 &gt; 库 &gt; 服务器。</li>
 </ul>
 ]]></content>
       <categories>
@@ -4956,20 +4904,25 @@
 <h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><p><strong>设计方案</strong>：如下图所示，重要系统生产数据（青岛本地机房：电信机房、联通机房、移动机房…）同步至红岛灾备数据中心，特别重要系统数据压缩存储上传至阿里云 <code>OSS</code>。</p>
 <p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-135600.png" alt></p>
 <p><strong>实施方案</strong>：从库实例再搭建一个从实例形成级联结构，对数据进行实时同步，主要为避免增加主库负载。</p>
-<p>实例拓扑：</p>
+<p><strong>实例拓扑：</strong></p>
 <p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-140100.png" alt></p>
-<p>系统监控：</p>
+<p><strong>系统监控：</strong></p>
 <p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-140200.png" alt></p>
-<p>①  主实例：<code>TDDS_M</code></p>
-<p>②  从实例：<code>TDDS_S</code></p>
-<p>③  灾备实例：<code>TDDS_D</code></p>
+<ul>
+<li><p>主实例：<code>TDDS_M</code></p>
+</li>
+<li><p>从实例：<code>TDDS_S</code></p>
+</li>
+<li><p>灾备实例：<code>TDDS_D</code></p>
+</li>
+</ul>
 ]]></content>
       <categories>
         <category>MySQL</category>
       </categories>
   </entry>
   <entry>
-    <title>docker</title>
+    <title>容器</title>
     <url>/blog/2019/08/28/docker/</url>
     <content><![CDATA[<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">$ systemctl start docker  // 启动docker</span><br><span class="line">$ systemctl stop docker   // 关闭docker</span><br><span class="line">$ docker restart xxx      // 重启一个容器</span><br><span class="line">$ docker stop xxx         // 停止一个容器</span><br><span class="line">$ docker rm xxx           // 删除一个容器</span><br><span class="line">$ docker rm -f xxx        // 强制删除一个容器</span><br><span class="line">$ docker log xxx          // 查看容器日志</span><br><span class="line">$ docker ps -a            // 查看容器信息</span><br><span class="line">$ docker search xxx       // 查看镜像</span><br></pre></td></tr></table></figure>
 
@@ -5499,14 +5452,6 @@
       </categories>
   </entry>
   <entry>
-    <title>MySQL · 高可用</title>
-    <url>/blog/2019/07/26/mysql-ha/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>MySQL</category>
-      </categories>
-  </entry>
-  <entry>
     <title>MySQL · 最佳实践</title>
     <url>/blog/2019/07/25/mysql-best-practices/</url>
     <content><![CDATA[<h2 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a>最佳实践</h2><ul>
@@ -5883,40 +5828,6 @@
       </categories>
   </entry>
   <entry>
-    <title>MySQL · 开发运维之路</title>
-    <url>/blog/2019/07/24/mysql-devops/</url>
-    <content><![CDATA[<p>传统 MySQL 到云上 MySQL 的演变？云数据库的诞生，符合社会分工精细化的发展趋势。也是人类产能效率提升的必要。当前不仅国外 AWS、Oracle 云蓬勃发展，国内 阿里、腾讯、华为 …. 尝试拥抱云数据库产品。</p>
-<p>海尔缺少技术基因</p>
-<p>趋势不可挡：MySQL 社区火爆（<a href="https://db-engines.com/en/ranking" target="_blank" rel="noopener">DB-Engines</a>），仍然在不断进步，升级至最新稳定版是优化的最好措施。</p>
-<h2 id="深陷泥沼"><a href="#深陷泥沼" class="headerlink" title="深陷泥沼"></a>深陷泥沼</h2><ol>
-<li>缺乏专业运维人员。</li>
-<li>人力投入有限。</li>
-</ol>
-<p>发力点在哪里？</p>
-<p>去IOE</p>
-<h2 id="云中漫步"><a href="#云中漫步" class="headerlink" title="云中漫步"></a>云中漫步</h2><p>云数据库服务 + 业务系统</p>
-<p>云数据库：基于 MySQL 提供的一种数据库服务（DBaaS）</p>
-<p>腾讯：CDB</p>
-<p>阿里：RDS</p>
-<p>AWS：RDS</p>
-<p>华为：DRDS</p>
-<p>云数据库架构：</p>
-<ul>
-<li><p>深度定制的云数据库内核（基础能力：基础版、高可用版、三节点企业版 [搭配异地灾备实例，具备跨可用区容灾能力 RPO=0]）</p>
-</li>
-<li><p>云化功能的管控平台：数据库管理、备份恢复、弹性扩展、安全升级、线上调优、归档（本地IDC痛点）</p>
-</li>
-</ul>
-<p>接入？</p>
-<p>MySQL 内核引擎优化：阿里云的 <a href="https://github.com/alibaba/AliSQL" target="_blank" rel="noopener">AliSQL</a>、腾讯云的 TxSQL</p>
-<p>复制优化：CDB 的 logbus，阿里云的双通道复制</p>
-<p>存储优化：本地SSD</p>
-]]></content>
-      <categories>
-        <category>MySQL</category>
-      </categories>
-  </entry>
-  <entry>
     <title>MySQL · 备份恢复</title>
     <url>/blog/2019/07/24/mysql-backup/</url>
     <content><![CDATA[<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>物理备份：直接备份数据库的数据文件，适用于大数据量，需要快速恢复的数据库。</p>
@@ -5950,8 +5861,11 @@
 <li>存储集中式管理</li>
 <li>数据可靠性更好</li>
 </ul>
-<h2 id="备份方案"><a href="#备份方案" class="headerlink" title="备份方案"></a>备份方案</h2><h3 id="mysqldump"><a href="#mysqldump" class="headerlink" title="mysqldump"></a>mysqldump</h3><h3 id="XtraBackup"><a href="#XtraBackup" class="headerlink" title="XtraBackup"></a>XtraBackup</h3><h2 id="恢复实践"><a href="#恢复实践" class="headerlink" title="恢复实践"></a>恢复实践</h2><p>目前的MySQL数据恢复方案主要还是基于备份来恢复，可见备份的重要性。比如我今天下午15点删除了线上一张表，该如何恢复呢？首先确认删除语句，然后用备份扩容实例启动，假设备份时间点是凌晨3点，就还需要把凌晨3点到现在关于这个表的binlog导出来，然后应用到新扩容的实例上，确认好恢复的时间点，然后把删除表的数据导出来应用到线上。</p>
-<p><strong>关于备份，binlog备份自然不用说了，物理备份有很多方式，有没有推荐的一种，逻辑备份在量大的时候恢复速度比较慢，一般用在什么场景？</strong></p>
+<h2 id="备份方案"><a href="#备份方案" class="headerlink" title="备份方案"></a>备份方案</h2><ul>
+<li>mysqldump</li>
+<li>XtraBackup</li>
+</ul>
+<h2 id="恢复实践"><a href="#恢复实践" class="headerlink" title="恢复实践"></a>恢复实践</h2><p><strong>关于备份，binlog备份自然不用说了，物理备份有很多方式，有没有推荐的一种，逻辑备份在量大的时候恢复速度比较慢，一般用在什么场景？</strong></p>
 <p>物理备份采用xtrabackup热备方案比较好。逻辑备份一般用在单表恢复效果会非常好。比如你删了一个2G表，但你总数据量2T，用物理备份就会要慢了，逻辑备份就非常有用了。</p>
 ]]></content>
       <categories>
@@ -6387,19 +6301,9 @@
       </categories>
   </entry>
   <entry>
-    <title>MySQL · 开发篇</title>
+    <title>MySQL · 开发</title>
     <url>/blog/2019/07/22/mysql-develop/</url>
-    <content><![CDATA[<h2 id="选择合适的数据类型？"><a href="#选择合适的数据类型？" class="headerlink" title="选择合适的数据类型？"></a>选择合适的数据类型？</h2><p><strong>如何选择合适的数据类型？</strong></p>
-<p><strong>如何编写高质量的SQL？</strong></p>
-<p><strong>Druid + Mybatis + MySQL</strong></p>
-<p>MySQL 开发设计规范</p>
-<p>SQL 审核</p>
-<p>开发的难点：如何建表？如何写SQL？Index优化？</p>
-<p>数据库规范已制定好，如何保证开发人员必须按照规范来开发？</p>
-<p>第一、定期给开发培训开发规范，让开发能更了解。</p>
-<p>第二、还是在流程上规范，比如把我们日常通用的建表和字段策略固化到程序，做成自动化审核系统。</p>
-<p>这两方面结合，效果会比较好。</p>
-<h2 id="百万级数据量"><a href="#百万级数据量" class="headerlink" title="百万级数据量"></a>百万级数据量</h2><p>这个阶段的性能问题开始显露，优化几乎是最重要的，因为到后期千万级，甚至亿级别的阶段，数据库几乎无法动弹，可调整性很低。</p>
+    <content><![CDATA[<h2 id="百万级数据量"><a href="#百万级数据量" class="headerlink" title="百万级数据量"></a>百万级数据量</h2><p>这个阶段的性能问题开始显露，优化几乎是最重要的，因为到后期千万级，甚至亿级别的阶段，数据库几乎无法动弹，可调整性很低。</p>
 <p><strong>字段优化</strong></p>
 <ul>
 <li>表字段 not null，因为 null 值很难查询优化且占用额外的索引空间，推荐默认数字 0</li>
@@ -6557,13 +6461,22 @@
 
 <p><strong>Slave_IO_Running：Yes</strong>，从库 I/O 线程负责请求和接收主库传递的 bin-log 信息</p>
 <p><strong>Slave_SQL_Running：Yes</strong>，从库 SQL 线程负责重放 relay-log 信息</p>
-<p><code>Master_Log_File</code>：当前主库的 bin-log 日志文件名</p>
-<p><code>Read_Master_Log_Pos</code>：正在读取主库当前 bin-log 中 position 位置</p>
-<p><code>Exec_Master_Log_Pos</code>：执行到主库 bin-log 中 position 位置</p>
-<p><code>Relay_Log_File</code>：</p>
-<p><code>Relay_Log_Pos</code>：</p>
-<p><code>Relay_Master_Log_File</code>：</p>
-<p><code>Seconds_Behind_Master</code>：</p>
+<ul>
+<li><p><code>Master_Log_File</code>：当前主库的 bin-log 日志文件名</p>
+</li>
+<li><p><code>Read_Master_Log_Pos</code>：正在读取主库当前 bin-log 中 position 位置</p>
+</li>
+<li><p><code>Exec_Master_Log_Pos</code>：执行到主库 bin-log 中 position 位置</p>
+</li>
+<li><p><code>Relay_Log_File</code>：</p>
+</li>
+<li><p><code>Relay_Log_Pos</code>：</p>
+</li>
+<li><p><code>Relay_Master_Log_File</code>：</p>
+</li>
+<li><p><code>Seconds_Behind_Master</code>：</p>
+</li>
+</ul>
 <p>Master_Log_File = Relay_Master_Log_File，Read_Master_Log_Pos = Exec_Master_Log_Pos：说明从库无延迟</p>
 <h3 id="主从延时问题"><a href="#主从延时问题" class="headerlink" title="主从延时问题"></a>主从延时问题</h3><p>原因：一般都会做读写分离，其实从库压力反而比主库大／从库读写压力大非常容易导致延时。</p>
 <p>解决方案：</p>
@@ -7006,112 +6919,9 @@
       </categories>
   </entry>
   <entry>
-    <title>MySQL · 运维篇</title>
-    <url>/blog/2019/07/12/mysql-ops/</url>
-    <content><![CDATA[<h2 id="运维体系变迁"><a href="#运维体系变迁" class="headerlink" title="运维体系变迁"></a>运维体系变迁</h2><p><img src="http://ww3.sinaimg.cn/large/006tNc79ly1g64slqzr2ij30nx0d5agy.jpg" alt="img"></p>
-<p>监控告警：<a href="http://pmm.ilearning.fun/" target="_blank" rel="noopener">http://pmm.ilearning.fun</a></p>
-<p>解决的是服务可用性问题（目标：99.99%）</p>
-<p>– 资源隔离？</p>
-<p>– 能力建设？</p>
-<p>聚焦业务，基础能力建设交给云服务供应商</p>
-<p>安装、启动、关闭</p>
-<p>监控告警</p>
-<p>用户授权</p>
-<p>备份恢复</p>
-<p>主从复制</p>
-<p>MHA：高可用方案</p>
-<p>mysqlbinlog</p>
-<p>是否需要产品化？</p>
-<p>阿里云：CloudDBA、HDM、DBS、DMS</p>
-<p>华为云：DBM、DDM</p>
-<p>运维体系建设？</p>
-<p>百万级规模服务器运维体系如何设计？</p>
-]]></content>
-      <categories>
-        <category>MySQL</category>
-      </categories>
-  </entry>
-  <entry>
     <title>MySQL · 构建知识体系</title>
     <url>/blog/2019/07/12/mysql-cookbook/</url>
-    <content><![CDATA[<h2 id="数据库基础"><a href="#数据库基础" class="headerlink" title="数据库基础"></a>数据库基础</h2><h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>OLTP、OLAP、事务、库、表、行、列、主键、外键</p>
-<p><strong>数据库</strong>：物理操作系统或其他形式文件类型的集合。在mysql下数据库文件可以是 frm，myd，myi，ibd 结尾的文件。</p>
-<p><strong>数据库实例</strong>：由数据库后台进程/线程以及一个共享内存区组成。数据库实例才是真正用来操作数据库文件的。<br>mysql数据库：是单进程多线程的程序，与sql server比较类似。也就是说，Mysql数据库实例在系统上的表现就是一个进程</p>
-<p>数据库应用主要有两类：<strong>OLAP</strong>（联机分析处理）和 <strong>OLTP</strong>（联机事务处理）</p>
-<p>OLAP的主要特点是:</p>
-<ul>
-<li>实时性要求不高</li>
-<li>数据量大</li>
-<li>并发量小</li>
-</ul>
-<p>OLTP的主要特点是:</p>
-<ul>
-<li>实时性要求高</li>
-<li>数据量小</li>
-<li>高并发</li>
-<li>要求满足ACID</li>
-</ul>
-<h3 id="DBMS-vs-NoSQL-vs-NewSQL"><a href="#DBMS-vs-NoSQL-vs-NewSQL" class="headerlink" title="DBMS vs NoSQL vs NewSQL"></a>DBMS vs NoSQL vs NewSQL</h3><ul>
-<li>Oracle，典型的高富帅；</li>
-<li>SQL Server，微软自家产品，Windows定制专款；</li>
-<li>DB2，IBM的产品，听起来挺高端；</li>
-<li>Sybase，曾经跟微软是好基友，后来关系破裂，现在家境惨淡；</li>
-<li>MySQL，大家都在用，一般错不了；</li>
-<li>PostgreSQL，学术气息有点重，其实挺不错，但知名度没有MySQL高；</li>
-<li>SQLite，嵌入式数据库，适合桌面和移动应用；</li>
-</ul>
-<h3 id="MySQL基础"><a href="#MySQL基础" class="headerlink" title="MySQL基础"></a>MySQL基础</h3><h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><h4 id="主流分支版本"><a href="#主流分支版本" class="headerlink" title="主流分支版本"></a>主流分支版本</h4><p>官方版本</p>
-<p>Percona Server</p>
-<p>MariaDB</p>
-<h2 id="核心知识点"><a href="#核心知识点" class="headerlink" title="核心知识点"></a>核心知识点</h2><h3 id="体系结构"><a href="#体系结构" class="headerlink" title="体系结构"></a>体系结构</h3><h3 id="InnoDB存储引擎"><a href="#InnoDB存储引擎" class="headerlink" title="InnoDB存储引擎"></a>InnoDB存储引擎</h3><p><img src="http://ww4.sinaimg.cn/large/006tNc79ly1g5tdauxzpzj313i0u0qag.jpg" alt></p>
-<h3 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h3><p>什么是索引？</p>
-<p>B+Tree索引和Hash索引区别？</p>
-<ul>
-<li>哈希索引适合等值查询，但是无法进行范围查询；</li>
-<li>哈希索引没办法利用索引完成排序 ；</li>
-<li>哈希索引不支持多列联合索引的最左匹配规则；</li>
-<li>如果有大量重复键值的情况下，哈希索引的效率会很低，因为存在哈希碰撞问题。</li>
-</ul>
-<p>最左前缀匹配原则</p>
-<p>查询优化器</p>
-<p>一条SQL语句的查询，可以有不同的执行方案，至于最终选择哪种方案，需要通过优化器进行选择，选择执行成本最低的方案。</p>
-<p>在一条单表查询语句真正执行之前，MySQL的查询优化器会找出执行该语句所有可能使用的方案，对比之后找出成本最低的方案。 </p>
-<p>这个成本最低的方案就是所谓的执行计划。优化过程大致如下：</p>
-<ul>
-<li>根据搜索条件，找出所有可能使用的索引；</li>
-<li>计算全表扫描的代价；</li>
-<li>计算使用不同索引执行查询的代价；</li>
-<li>对比各种执行方案的代价，找出成本最低的那一个。</li>
-</ul>
-<h3 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h3><h3 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h3><h3 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h3><h3 id="SQL"><a href="#SQL" class="headerlink" title="SQL"></a>SQL</h3><p>视图</p>
-<p>存储过程</p>
-<p>触发器</p>
-<p>事件</p>
-<p>函数</p>
-<p>分区</p>
-<h2 id="运维实践"><a href="#运维实践" class="headerlink" title="运维实践"></a>运维实践</h2><h3 id="安装部署"><a href="#安装部署" class="headerlink" title="安装部署"></a>安装部署</h3><p>安装</p>
-<p>升级</p>
-<h3 id="监控告警"><a href="#监控告警" class="headerlink" title="监控告警"></a>监控告警</h3><p>监控指标、定制告警</p>
-<h3 id="备份恢复"><a href="#备份恢复" class="headerlink" title="备份恢复"></a>备份恢复</h3><h3 id="主从复制"><a href="#主从复制" class="headerlink" title="主从复制"></a>主从复制</h3><h3 id="性能优化"><a href="#性能优化" class="headerlink" title="性能优化"></a>性能优化</h3><p>慢查询、配置优化、SQL优化、索引优化、分库分表</p>
-<h3 id="高可用"><a href="#高可用" class="headerlink" title="高可用"></a>高可用</h3><p>读写分离</p>
-<p>同城双活</p>
-<p>两地三中心架构</p>
-<h3 id="安全"><a href="#安全" class="headerlink" title="安全"></a>安全</h3><h2 id="其它"><a href="#其它" class="headerlink" title="其它"></a>其它</h2><p><strong>工具</strong></p>
-<p><strong>阅读源码</strong></p>
-<p><strong>数据库设计</strong></p>
-<p><strong>自动化运维</strong></p>
-<p>主键</p>
-<p>外键：外键为某个表中的一列，它包含另一个表的主键值，定义了两个表之间的关系。</p>
-<p>优点：更有效的存储和处理数据，具有很强的可伸缩性（能够适应不断增加的工作量而不失败）。</p>
-<p>代价：数据存储在多个表中，如何快速检索出数据？（联结）</p>
-<p>唯一键</p>
-<p>行</p>
-<p>列</p>
-<p>函数</p>
-<p>优点：很高效地完成一些数据处理类任务。</p>
-<p>缺点：不同DBMS之间函数定义区别大，可移植性差。函数没有SQL的可移植性强。</p>
-<p>如果决定使用函数，就需要做好注释</p>
-<p>子查询：难以阅读和调试，需要格式化SQL</p>
+    <content><![CDATA[<h2 id="InnoDB-存储引擎架构"><a href="#InnoDB-存储引擎架构" class="headerlink" title="InnoDB 存储引擎架构"></a>InnoDB 存储引擎架构</h2><p><img src="http://ww4.sinaimg.cn/large/006tNc79ly1g5tdauxzpzj313i0u0qag.jpg" alt></p>
 ]]></content>
       <categories>
         <category>MySQL</category>
@@ -7147,29 +6957,29 @@
 </ul>
 <h2 id="2009-2019"><a href="#2009-2019" class="headerlink" title="2009-2019"></a>2009-2019</h2><p>互联网崛起的这十年，国内数据库厂商：</p>
 <p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134144.png" alt="db"></p>
-<p><strong>去IOE</strong>：IBM小型机、Oracle数据库、EMC存储设备</p>
-<p><strong>取代品</strong>：X86服务器、MySQL数据库、分布式存储</p>
+<p><strong>去IOE</strong>：IBM 小型机、Oracle 数据库、EMC 存储设备</p>
+<p><strong>取代品</strong>：X86 服务器、MySQL 数据库、分布式存储</p>
 <blockquote>
 <p>IBM大型机：IBM Z系列，目前市场无性能相当替代品，国家民生、银行电信等关键核心业务</p>
 </blockquote>
 <p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134144.jpg" alt="big"></p>
 <blockquote>
-<p>小型机：UNIX服务器，IBM 的 POWER 处理器 + AIX 操作系统，RAS（Reliability， Availability，Serviceability 高可靠性、高可用性、高服务性）特性。解决方案从处理器到平台、操作系统、中间件，再到应用软件，都出于自家门下。好处就是各层次之间能有一个较好的优化和配合，让用户在从采购到部署、再到应用和维护的过程中无需自己太过操心。反过来说，这种模式使得用户容易被厂商锁定，后续IT系统采购、维护和应用，全部处于被垄断后的弱势地位，采购后的维护和更新也只能被动接受。</p>
+<p>小型机：UNIX 服务器，IBM 的 POWER 处理器 + AIX 操作系统，RAS（Reliability， Availability，Serviceability 高可靠性、高可用性、高服务性）特性。解决方案从处理器到平台、操作系统、中间件，再到应用软件，都出于自家门下。好处就是各层次之间能有一个较好的优化和配合，让用户在从采购到部署、再到应用和维护的过程中无需自己太过操心。反过来说，这种模式使得用户容易被厂商锁定，后续IT系统采购、维护和应用，全部处于被垄断后的弱势地位，采购后的维护和更新也只能被动接受。</p>
 </blockquote>
 <p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134145.png" alt="small"></p>
 <blockquote>
-<p>x86服务器：成本低、易扩展、易维护更新</p>
+<p>x86 服务器：成本低、易扩展、易维护更新</p>
 </blockquote>
 <p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134145.jpg" alt="x86"></p>
 <ul>
-<li>ARM架构：广泛适用于移动端，优点是低功耗。</li>
-<li>x86架构：广泛用于PC端，便宜、易扩展、易集成第三方软件。</li>
+<li>ARM 架构：广泛适用于移动端，优点是低功耗。</li>
+<li>x86 架构：广泛用于 PC 端，便宜、易扩展、易集成第三方软件。</li>
 </ul>
-<p>中国IT信息技术的崛起</p>
+<p><strong>中国 IT 信息技术的崛起</strong></p>
 <p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134146.jpg" alt="it信息技术"></p>
-<p>国内工业级应用软件发展</p>
+<p><strong>国内工业级应用软件发展</strong></p>
 <p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134148.jpg" alt="it信息技术"></p>
-<p>服务器演进</p>
+<p><strong>服务器演进</strong></p>
 <p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134149.jpg" alt="服务器"></p>
 ]]></content>
       <categories>
@@ -7406,7 +7216,7 @@
   <entry>
     <title>前端学习笔记</title>
     <url>/blog/2019/07/10/front/</url>
-    <content><![CDATA[<h2 id="前端学习路径"><a href="#前端学习路径" class="headerlink" title="前端学习路径"></a>前端学习路径</h2><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134136.png" alt="前端技能图谱"></p>
+    <content><![CDATA[<h2 id="学习路径"><a href="#学习路径" class="headerlink" title="学习路径"></a>学习路径</h2><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134136.png" alt="前端技能图谱"></p>
 <h2 id="如何搭建-一个-vue-项目？"><a href="#如何搭建-一个-vue-项目？" class="headerlink" title="如何搭建 一个 vue 项目？"></a>如何搭建 一个 vue 项目？</h2><h3 id="安装-node-环境"><a href="#安装-node-环境" class="headerlink" title="安装 node 环境"></a>安装 node 环境</h3><blockquote>
 <p>下载 <a href="http://nodejs.cn/download/" target="_blank" rel="noopener">Node.js</a></p>
 </blockquote>
@@ -7435,36 +7245,48 @@
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">$ cd vue-test</span><br><span class="line">$ npm run dev</span><br><span class="line"></span><br><span class="line">&gt; vue-test@<span class="number">1.0</span>.<span class="number">0</span> dev D:\vue\vue-test</span><br><span class="line">&gt; webpack-dev-server --inline --progress --config build/webpack.dev.conf.js</span><br><span class="line"></span><br><span class="line"> <span class="number">13</span>% building modules <span class="number">26</span>/<span class="number">33</span> modules <span class="number">7</span> active ...ue-test\src\components\HelloWorld.vue&#123; parser: <span class="string">"babylon"</span> &#125; is deprecated; we now treat it as &#123; parser: <span class="string">"babel"</span> &#125;.</span><br><span class="line"> <span class="number">95</span>% emitting DONE  Compiled successfully <span class="keyword">in</span> <span class="number">11954</span>ms14:<span class="number">06</span>:<span class="number">01</span></span><br><span class="line"></span><br><span class="line"> I  Your application is running here: http://localhost:<span class="number">8080</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="vue-项目目录解析"><a href="#vue-项目目录解析" class="headerlink" title="vue 项目目录解析"></a>vue 项目目录解析</h3><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134137.png" alt="vue"></p>
-<p><strong>build</strong>：构建脚本目录</p>
-<p><strong>config</strong>：项目配置目录</p>
-<p><strong>node_modules</strong>：npm 加载的项目依赖目录</p>
-<p><strong>src</strong>：开发目录，基本上要做的事情都集中在这个目录，里面包含几个目录和文件：</p>
 <ul>
-<li>assets：资源目录，放置一些图片或者公共 js、公共 css，这里的资源会被 webpack 构建</li>
-<li>components：组件目录，我们写的组件就放在这个目录里面</li>
-<li>router：前端路由，我们需要配置的路由路径写在 index.js 里面</li>
-<li>App.vue：根组件</li>
-<li>main.js：入口 js 文件</li>
+<li><p><strong>build</strong>：构建脚本目录</p>
+</li>
+<li><p><strong>config</strong>：项目配置目录</p>
+</li>
+<li><p><strong>node_modules</strong>：npm 加载的项目依赖目录</p>
+</li>
+<li><p><strong>src</strong>：开发目录，基本上要做的事情都集中在这个目录，里面包含几个目录和文件：</p>
+<ul>
+<li><p>assets：资源目录，放置一些图片或者公共 js、公共 css，这里的资源会被 webpack 构建</p>
+</li>
+<li><p>components：组件目录，我们写的组件就放在这个目录里面</p>
+</li>
+<li><p>router：前端路由，我们需要配置的路由路径写在 index.js 里面</p>
+</li>
+<li><p>App.vue：根组件</p>
+</li>
+<li><p>main.js：入口 js 文件</p>
+</li>
 </ul>
-<p><strong>static</strong>：静态资源目录，如图片、字体等，不会被 webpack 构建</p>
-<p><strong>index.html</strong>：首页入口文件，可以添加一些 meta 信息等</p>
-<p><strong>package.json</strong>：npm 包配置文件，定义了项目的 npm 脚本，依赖包等信息</p>
-<h3 id="开发-Frist-vue-项目"><a href="#开发-Frist-vue-项目" class="headerlink" title="开发 Frist.vue 项目"></a>开发 Frist.vue 项目</h3><blockquote>
-<p>1）components 目录下新建一个 views 目录，并新建组件 First.vue</p>
-</blockquote>
-<blockquote>
-<p>2）router 目录下的 index.js 配置路由路径</p>
-</blockquote>
+</li>
+<li><p><strong>static</strong>：静态资源目录，如图片、字体等，不会被 webpack 构建</p>
+</li>
+<li><p><strong>index.html</strong>：首页入口文件，可以添加一些 meta 信息等</p>
+</li>
+<li><p><strong>package.json</strong>：npm 包配置文件，定义了项目的 npm 脚本，依赖包等信息</p>
+</li>
+</ul>
+<h3 id="开发-Frist-vue-项目"><a href="#开发-Frist-vue-项目" class="headerlink" title="开发 Frist.vue 项目"></a>开发 Frist.vue 项目</h3><ul>
+<li>components 目录下新建一个 views 目录，并新建组件 First.vue</li>
+<li>router 目录下的 index.js 配置路由路径</li>
+</ul>
 <figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> Vue <span class="keyword">from</span> <span class="string">'vue'</span></span><br><span class="line"><span class="keyword">import</span> Router <span class="keyword">from</span> <span class="string">'vue-router'</span></span><br><span class="line"><span class="keyword">import</span> HelloWorld <span class="keyword">from</span> <span class="string">'@/components/HelloWorld'</span></span><br><span class="line"><span class="keyword">import</span> First <span class="keyword">from</span> <span class="string">'@/components/views/First'</span></span><br><span class="line"></span><br><span class="line">Vue.use(Router)</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">new</span> Router(&#123;</span><br><span class="line"></span><br><span class="line">  routes: [</span><br><span class="line">    &#123;</span><br><span class="line">      path: <span class="string">'/'</span>,</span><br><span class="line">      name: <span class="string">'HelloWorld'</span>,</span><br><span class="line">      component: HelloWorld</span><br><span class="line">    &#125;,&#123;</span><br><span class="line">      path: <span class="string">'/first'</span>,</span><br><span class="line">      name: <span class="string">'First'</span>,</span><br><span class="line">      component: First</span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>3）First.vue 文件 template 写 html，script 写 js，style 写 css</p>
-</blockquote>
+<ul>
+<li>First.vue 文件 template 写 html，script 写 js，style 写 css</li>
+</ul>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">    &lt;div class=&quot;first-app&quot;&gt;</span><br><span class="line">        &#123;&#123;msg&#125;&#125;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">&lt;/template&gt;</span><br><span class="line"></span><br><span class="line">&lt;script&gt;</span><br><span class="line">export default &#123;</span><br><span class="line">    name: &quot;First&quot;,</span><br><span class="line">    data() &#123;</span><br><span class="line">        return &#123;</span><br><span class="line">            msg: &quot;Welcome to FirstApp&quot;</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line">&lt;/script&gt;</span><br><span class="line"></span><br><span class="line">&lt;style&gt;</span><br><span class="line">&lt;/style&gt;</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>4）<a href="http://localhost:8080/#/first，查看页面效果" target="_blank" rel="noopener">http://localhost:8080/#/first，查看页面效果</a></p>
-</blockquote>
+<ul>
+<li><a href="http://localhost:8080/#/first，查看页面效果" target="_blank" rel="noopener">http://localhost:8080/#/first，查看页面效果</a></li>
+</ul>
 ]]></content>
       <categories>
         <category>前端</category>
@@ -7499,7 +7321,7 @@
 <p><strong>sftp</strong>：Secure File Transfer Protocol，安全文件传输命令行工具，使用方式和 <code>ftp</code> 类似，但它使用 <code>SSH</code> 作为底层传输协议，安全性比 <code>ftp</code> 好很多。</p>
 <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">语法：sftp</span> <span class="bullet">-oPort=&lt;port&gt;</span> <span class="string">&lt;user&gt;@&lt;host&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="string">常用命令：</span></span><br><span class="line"><span class="string">help/?：打印帮助信息。</span></span><br><span class="line"><span class="string">pwd：查看远程服务器当前目录</span></span><br><span class="line"><span class="string">cd</span> <span class="string">&lt;dir&gt;：将远程服务器的当前目录更改为&lt;dir&gt;</span></span><br><span class="line"><span class="string">ls：显示远程服务器上当前目录的文件名</span></span><br><span class="line"><span class="string">ls</span> <span class="bullet">-l：显示远程服务器上当前目录的文件详细列表</span></span><br><span class="line"><span class="string">get</span> <span class="string">&lt;file&gt;：下载指定文件</span> <span class="string">&lt;file&gt;</span></span><br><span class="line"><span class="string">put</span> <span class="string">&lt;file&gt;：上传指定文件&lt;file&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="string">示例：</span></span><br><span class="line"><span class="string">[iteblog@www.iteblog.com</span> <span class="string">~]$</span> <span class="string">sftp</span> <span class="bullet">-oPort=22</span> <span class="string">iteblog@sftp.iteblog.com</span></span><br><span class="line"><span class="string">Connecting</span> <span class="string">to</span> <span class="string">sftp.iteblog.com...</span></span><br><span class="line"><span class="string">iteblog@sftp.iteblog.com's</span> <span class="attr">password:</span> </span><br><span class="line"><span class="string">sftp&gt;</span> <span class="string">ls</span> <span class="string">/</span></span><br><span class="line"><span class="string">/iteblog.txt</span>  </span><br><span class="line"><span class="string">sftp&gt;</span> <span class="string">ls</span> <span class="bullet">-l</span> <span class="string">/iteblog.txt</span></span><br><span class="line"><span class="bullet">-</span><span class="string">rw-r--r--</span>    <span class="number">2</span> <span class="number">50049</span>    <span class="number">50049</span>        <span class="number">4096</span> <span class="string">Jun</span> <span class="number">21</span> <span class="number">03</span><span class="string">:23</span> <span class="string">/iteblog.txt</span></span><br><span class="line"><span class="string">sftp&gt;</span></span><br></pre></td></tr></table></figure>
 
-<p>也可以使用 <code>FileZilla</code> 连接 <code>SFTP</code> 服务器：主机IP地址、用户名、密码、端口，端口默认为 <code>22</code>。</p>
+<p>也可以使用 <code>FileZilla</code> 连接 <code>SFTP</code> 服务器：主机 IP 地址、用户名、密码、端口，端口默认为 <code>22</code>。</p>
 <p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g6797j8u3kj30ng0l9400.jpg" alt="img"></p>
 <p><strong>ssh-keygen</strong>：生成密钥的工具</p>
 <ul>
@@ -7577,13 +7399,13 @@
 </ul>
 <h2 id="SSH-实践"><a href="#SSH-实践" class="headerlink" title="SSH 实践"></a>SSH 实践</h2><h3 id="设置免密登录"><a href="#设置免密登录" class="headerlink" title="设置免密登录"></a>设置免密登录</h3><h4 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h4><p><img src="http://ww3.sinaimg.cn/large/006y8mN6ly1g67a12hm04j30rs0jcjtl.jpg" alt="img"></p>
 <p><strong>认证流程</strong>：</p>
-<ol>
+<ul>
 <li><code>Client</code> 将自己的公钥存放在 <code>Server</code> 上，追加在文件 <code>authorized_keys</code> 中。</li>
 <li><code>Server</code> 端接收到 <code>Client</code> 的连接请求后，会在 <code>authorized_keys</code> 中匹配到 <code>Client</code> 的公钥 <code>pubKey</code>，并生成随机数 <code>R</code>，用 <code>Client</code> 的公钥对该随机数进行加密得到 <code>pubKey(R)</code>，然后将加密后信息发送给 <code>Client</code>。</li>
 <li><code>Client</code> 端通过私钥进行解密得到随机数 <code>R</code>，然后对随机数 <code>R</code> 和本次会话的 <code>SessionKey</code> 利用 <code>MD5</code> 生成摘要 <code>Digest1</code>，发送给 <code>Server</code> 端。</li>
 <li><code>Server</code> 端会也会对 <code>R</code> 和 <code>SessionKey</code> 利用同样摘要算法生成 <code>Digest2</code>。</li>
 <li><code>Server</code> 端会最后比较 <code>Digest1</code> 和 <code>Digest2</code> 是否相同，完成认证过程。</li>
-</ol>
+</ul>
 <h4 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h4><p>（1）获取客户端公钥：<code>~/.ssh/id_rsa.pub</code></p>
 <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># cat ~/.ssh/id_rsa.pub</span></span><br><span class="line"><span class="string">ssh-rsa</span> <span class="string">AAAAB3NzaC1yc2EAAAADAQABAAABAQCp7KnYj1baMhQn4FPfV6YiMogWw5cu57kfGoZYMdp8KNyJ5zmqz7UZUfmURYeoiMQB7v8oY3zVq13X8Gmmw/rzROS/vR/mqSbbnSruHh+x42oVtjZz67/UtFLTO1DT/+YmT+XkrkuI2Cx6CxWFQgThLXMNStYif3Rl0+aKC7Gb0hlPwoNT+UPHMLAW7Y2x+R7I8Tdvt75jSI4TANq8QzG+/Iy9tZiG80VC2KbgGdTkDLDZrIoftfVWihm4Ec29uJocpbxMRNpMTb7yn12ySWbY7mJ2fpqGAh+s1toF94ASPfg4Hlv6Y6lx2QumePKKIGQh1bWEOirxKljUbVfqD6NF</span> <span class="string">root@hlhtapp29</span></span><br></pre></td></tr></table></figure>
 
@@ -7647,7 +7469,7 @@
 </ul>
 <figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="string">'tabname'</span> <span class="keyword">order</span> <span class="keyword">by</span> field1,field2 [<span class="keyword">desc</span>]</span><br></pre></td></tr></table></figure>
 
-<h4 id="分页"><a href="#分页" class="headerlink" title="分页"></a>分页</h4><h4 id="JOIN"><a href="#JOIN" class="headerlink" title="JOIN"></a>JOIN</h4><h3 id="统计信息"><a href="#统计信息" class="headerlink" title="统计信息"></a>统计信息</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 查询所有库数据量并排序</span></span><br><span class="line"><span class="keyword">SELECT</span> table_schema, <span class="keyword">CONCAT</span>(</span><br><span class="line"><span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(data_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> data_size, <span class="keyword">CONCAT</span>(</span><br><span class="line"><span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(index_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> index_size</span><br><span class="line"><span class="keyword">FROM</span> information_schema.tables</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> table_schema</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="keyword">SUM</span>(data_length) <span class="keyword">DESC</span>;</span><br><span class="line"></span><br><span class="line">+<span class="comment">--------------------+------------+------------+</span></span><br><span class="line">| table_schema       | data_size  | index_size |</span><br><span class="line">+<span class="comment">--------------------+------------+------------+</span></span><br><span class="line">| csomo-barcode      | 51872.64MB | 49203.56MB |</span><br><span class="line">| cosmodb            | 30257.57MB | 13855.68MB |</span><br><span class="line">| cosmo_im_1001      | 19769.54MB | 6251.67MB  |</span><br><span class="line">| cosmoimbase        | 17594.54MB | 18239.81MB |</span><br><span class="line">| cosmo_im_1004      | 3141.99MB  | 4099.13MB  |</span><br><span class="line">| cosmo_im_1012      | 1524.87MB  | 1592.03MB  |</span><br><span class="line">| cosmo_im_1010      | 1464.20MB  | 2176.00MB  |</span><br><span class="line">| cosmo_im_1016      | 1092.29MB  | 1543.65MB  |</span><br><span class="line">| cosmo_im_1009      | 793.96MB   | 1612.11MB  |</span><br><span class="line">| cosmo_im_1003      | 662.42MB   | 1417.97MB  |</span><br><span class="line">| cosmo_im_1006      | 200.44MB   | 288.24MB   |</span><br><span class="line">| cosmo_im_1047      | 184.14MB   | 90.46MB    |</span><br><span class="line">| cosmo_im_1038      | 32.15MB    | 46.03MB    |</span><br><span class="line">| mysql              | 22.60MB    | 0.14MB     |</span><br><span class="line">| test               | 7.06MB     | 0.03MB     |</span><br><span class="line">| information_schema | 0.00MB     | 0.00MB     |</span><br><span class="line">| performance_schema | 0.00MB     | 0.00MB     |</span><br><span class="line">+<span class="comment">--------------------+------------+------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询单个表数据量</span></span><br><span class="line"><span class="keyword">select</span> table_name,table_rows,<span class="keyword">CONCAT</span>(</span><br><span class="line"><span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(data_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> data_size, <span class="keyword">CONCAT</span>(</span><br><span class="line"><span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(index_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> index_size <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> TABLE_SCHEMA = <span class="string">'mqm'</span> <span class="keyword">and</span> table_name=<span class="string">'t_batch'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询单个库中表数据排序</span></span><br><span class="line"><span class="keyword">select</span> table_name,table_rows <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> TABLE_SCHEMA= <span class="string">'employees'</span> <span class="keyword">order</span> <span class="keyword">by</span> table_rows <span class="keyword">desc</span>;</span><br><span class="line">+<span class="comment">----------------------+------------+</span></span><br><span class="line">| table_name           | table_rows |</span><br><span class="line">+<span class="comment">----------------------+------------+</span></span><br><span class="line">| salaries             |    2838426 |</span><br><span class="line">| titles               |     441772 |</span><br><span class="line">| dept_emp             |     331570 |</span><br><span class="line">| employees            |     299600 |</span><br><span class="line">| dept_manager         |         24 |</span><br><span class="line">| departments          |          9 |</span><br><span class="line">| current_dept_emp     |       NULL |</span><br><span class="line">| dept_emp_latest_date |       NULL |</span><br><span class="line">+<span class="comment">----------------------+------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询单个库中表排序</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">CONCAT</span>(table_schema,<span class="string">'.'</span>,table_name) <span class="keyword">AS</span> <span class="string">'Table Name'</span>, table_rows <span class="keyword">AS</span> <span class="string">'Rows'</span>, <span class="keyword">CONCAT</span>(<span class="keyword">ROUND</span>(data_length/(<span class="number">1024</span>*<span class="number">1024</span>),<span class="number">2</span>),<span class="string">'M'</span>) <span class="keyword">AS</span> <span class="string">'Data Size'</span>,<span class="keyword">CONCAT</span>(<span class="keyword">ROUND</span>(index_length/(<span class="number">1024</span>*<span class="number">1024</span>),<span class="number">2</span>),<span class="string">'M'</span>) <span class="keyword">AS</span> <span class="string">'Index Size'</span>, <span class="keyword">CONCAT</span>(<span class="keyword">ROUND</span>((data_length+index_length)/(<span class="number">1024</span>*<span class="number">1024</span>),<span class="number">2</span>),<span class="string">'M'</span>) <span class="keyword">AS</span><span class="string">'Total'</span><span class="keyword">FROM</span> information_schema.TABLES <span class="keyword">WHERE</span> TABLE_SCHEMA= <span class="string">'employees'</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="comment">--total DESC;</span></span><br><span class="line">+<span class="comment">--------------------------------+---------+-----------+------------+--------+</span></span><br><span class="line">| <span class="keyword">Table</span> <span class="keyword">Name</span>                     | <span class="keyword">Rows</span>    | <span class="keyword">Data</span> <span class="keyword">Size</span> | <span class="keyword">Index</span> <span class="keyword">Size</span> | Total  |</span><br><span class="line">+<span class="comment">--------------------------------+---------+-----------+------------+--------+</span></span><br><span class="line">| employees.salaries             | <span class="number">2838426</span> | <span class="number">95.63</span>M    | <span class="number">0.00</span>M      | <span class="number">95.63</span>M |</span><br><span class="line">| employees.titles               |  <span class="number">441772</span> | <span class="number">19.56</span>M    | <span class="number">0.00</span>M      | <span class="number">19.56</span>M |</span><br><span class="line">| employees.dept_emp             |  <span class="number">331570</span> | <span class="number">11.52</span>M    | <span class="number">5.52</span>M      | <span class="number">17.03</span>M |</span><br><span class="line">| employees.employees            |  <span class="number">299600</span> | <span class="number">14.52</span>M    | <span class="number">0.00</span>M      | <span class="number">14.52</span>M |</span><br><span class="line">| employees.dept_manager         |      <span class="number">24</span> | <span class="number">0.02</span>M     | <span class="number">0.02</span>M      | <span class="number">0.03</span>M  |</span><br><span class="line">| employees.departments          |       <span class="number">9</span> | <span class="number">0.02</span>M     | <span class="number">0.02</span>M      | <span class="number">0.03</span>M  |</span><br><span class="line">| employees.current_dept_emp     |    <span class="literal">NULL</span> | <span class="literal">NULL</span>      | <span class="literal">NULL</span>       | <span class="literal">NULL</span>   |</span><br><span class="line">| employees.dept_emp_latest_date |    <span class="literal">NULL</span> | <span class="literal">NULL</span>      | <span class="literal">NULL</span>       | <span class="literal">NULL</span>   |</span><br><span class="line">+<span class="comment">--------------------------------+---------+-----------+------------+--------+</span></span><br></pre></td></tr></table></figure>
+<h4 id="JOIN"><a href="#JOIN" class="headerlink" title="JOIN"></a>JOIN</h4><h3 id="统计信息"><a href="#统计信息" class="headerlink" title="统计信息"></a>统计信息</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 查询所有库数据量并排序</span></span><br><span class="line"><span class="keyword">SELECT</span> table_schema, <span class="keyword">CONCAT</span>(</span><br><span class="line"><span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(data_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> data_size, <span class="keyword">CONCAT</span>(</span><br><span class="line"><span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(index_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> index_size</span><br><span class="line"><span class="keyword">FROM</span> information_schema.tables</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> table_schema</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="keyword">SUM</span>(data_length) <span class="keyword">DESC</span>;</span><br><span class="line"></span><br><span class="line">+<span class="comment">--------------------+------------+------------+</span></span><br><span class="line">| table_schema       | data_size  | index_size |</span><br><span class="line">+<span class="comment">--------------------+------------+------------+</span></span><br><span class="line">| csomo-barcode      | 51872.64MB | 49203.56MB |</span><br><span class="line">| cosmodb            | 30257.57MB | 13855.68MB |</span><br><span class="line">| cosmo_im_1001      | 19769.54MB | 6251.67MB  |</span><br><span class="line">| cosmoimbase        | 17594.54MB | 18239.81MB |</span><br><span class="line">| cosmo_im_1004      | 3141.99MB  | 4099.13MB  |</span><br><span class="line">| cosmo_im_1012      | 1524.87MB  | 1592.03MB  |</span><br><span class="line">| cosmo_im_1010      | 1464.20MB  | 2176.00MB  |</span><br><span class="line">| cosmo_im_1016      | 1092.29MB  | 1543.65MB  |</span><br><span class="line">| cosmo_im_1009      | 793.96MB   | 1612.11MB  |</span><br><span class="line">| cosmo_im_1003      | 662.42MB   | 1417.97MB  |</span><br><span class="line">| cosmo_im_1006      | 200.44MB   | 288.24MB   |</span><br><span class="line">| cosmo_im_1047      | 184.14MB   | 90.46MB    |</span><br><span class="line">| cosmo_im_1038      | 32.15MB    | 46.03MB    |</span><br><span class="line">| mysql              | 22.60MB    | 0.14MB     |</span><br><span class="line">| test               | 7.06MB     | 0.03MB     |</span><br><span class="line">| information_schema | 0.00MB     | 0.00MB     |</span><br><span class="line">| performance_schema | 0.00MB     | 0.00MB     |</span><br><span class="line">+<span class="comment">--------------------+------------+------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询单个表数据量</span></span><br><span class="line"><span class="keyword">select</span> table_name,table_rows,<span class="keyword">CONCAT</span>(</span><br><span class="line"><span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(data_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> data_size, <span class="keyword">CONCAT</span>(</span><br><span class="line"><span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(index_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> index_size <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> TABLE_SCHEMA = <span class="string">'mqm'</span> <span class="keyword">and</span> table_name=<span class="string">'t_batch'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询单个库中表数据排序</span></span><br><span class="line"><span class="keyword">select</span> table_name,table_rows <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> TABLE_SCHEMA= <span class="string">'employees'</span> <span class="keyword">order</span> <span class="keyword">by</span> table_rows <span class="keyword">desc</span>;</span><br><span class="line">+<span class="comment">----------------------+------------+</span></span><br><span class="line">| table_name           | table_rows |</span><br><span class="line">+<span class="comment">----------------------+------------+</span></span><br><span class="line">| salaries             |    2838426 |</span><br><span class="line">| titles               |     441772 |</span><br><span class="line">| dept_emp             |     331570 |</span><br><span class="line">| employees            |     299600 |</span><br><span class="line">| dept_manager         |         24 |</span><br><span class="line">| departments          |          9 |</span><br><span class="line">| current_dept_emp     |       NULL |</span><br><span class="line">| dept_emp_latest_date |       NULL |</span><br><span class="line">+<span class="comment">----------------------+------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询单个库中表排序</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">CONCAT</span>(table_schema,<span class="string">'.'</span>,table_name) <span class="keyword">AS</span> <span class="string">'Table Name'</span>, table_rows <span class="keyword">AS</span> <span class="string">'Rows'</span>, <span class="keyword">CONCAT</span>(<span class="keyword">ROUND</span>(data_length/(<span class="number">1024</span>*<span class="number">1024</span>),<span class="number">2</span>),<span class="string">'M'</span>) <span class="keyword">AS</span> <span class="string">'Data Size'</span>,<span class="keyword">CONCAT</span>(<span class="keyword">ROUND</span>(index_length/(<span class="number">1024</span>*<span class="number">1024</span>),<span class="number">2</span>),<span class="string">'M'</span>) <span class="keyword">AS</span> <span class="string">'Index Size'</span>, <span class="keyword">CONCAT</span>(<span class="keyword">ROUND</span>((data_length+index_length)/(<span class="number">1024</span>*<span class="number">1024</span>),<span class="number">2</span>),<span class="string">'M'</span>) <span class="keyword">AS</span><span class="string">'Total'</span><span class="keyword">FROM</span> information_schema.TABLES <span class="keyword">WHERE</span> TABLE_SCHEMA= <span class="string">'employees'</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="comment">--total DESC;</span></span><br><span class="line">+<span class="comment">--------------------------------+---------+-----------+------------+--------+</span></span><br><span class="line">| <span class="keyword">Table</span> <span class="keyword">Name</span>                     | <span class="keyword">Rows</span>    | <span class="keyword">Data</span> <span class="keyword">Size</span> | <span class="keyword">Index</span> <span class="keyword">Size</span> | Total  |</span><br><span class="line">+<span class="comment">--------------------------------+---------+-----------+------------+--------+</span></span><br><span class="line">| employees.salaries             | <span class="number">2838426</span> | <span class="number">95.63</span>M    | <span class="number">0.00</span>M      | <span class="number">95.63</span>M |</span><br><span class="line">| employees.titles               |  <span class="number">441772</span> | <span class="number">19.56</span>M    | <span class="number">0.00</span>M      | <span class="number">19.56</span>M |</span><br><span class="line">| employees.dept_emp             |  <span class="number">331570</span> | <span class="number">11.52</span>M    | <span class="number">5.52</span>M      | <span class="number">17.03</span>M |</span><br><span class="line">| employees.employees            |  <span class="number">299600</span> | <span class="number">14.52</span>M    | <span class="number">0.00</span>M      | <span class="number">14.52</span>M |</span><br><span class="line">| employees.dept_manager         |      <span class="number">24</span> | <span class="number">0.02</span>M     | <span class="number">0.02</span>M      | <span class="number">0.03</span>M  |</span><br><span class="line">| employees.departments          |       <span class="number">9</span> | <span class="number">0.02</span>M     | <span class="number">0.02</span>M      | <span class="number">0.03</span>M  |</span><br><span class="line">| employees.current_dept_emp     |    <span class="literal">NULL</span> | <span class="literal">NULL</span>      | <span class="literal">NULL</span>       | <span class="literal">NULL</span>   |</span><br><span class="line">| employees.dept_emp_latest_date |    <span class="literal">NULL</span> | <span class="literal">NULL</span>      | <span class="literal">NULL</span>       | <span class="literal">NULL</span>   |</span><br><span class="line">+<span class="comment">--------------------------------+---------+-----------+------------+--------+</span></span><br></pre></td></tr></table></figure>
 
 <h3 id="复制"><a href="#复制" class="headerlink" title="复制"></a>复制</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 取消复制</span></span><br><span class="line"><span class="keyword">stop</span> <span class="keyword">slave</span>;</span><br><span class="line"><span class="keyword">reset</span> <span class="keyword">slave</span> <span class="keyword">all</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 建立复制</span></span><br><span class="line"><span class="keyword">CHANGE</span> <span class="keyword">MASTER</span> <span class="keyword">TO</span> </span><br><span class="line">MASTER_HOST=<span class="string">'10.133.7.18'</span>,</span><br><span class="line">MASTER_USER=<span class="string">'repl'</span>,</span><br><span class="line">MASTER_PASSWORD=<span class="string">'Changeme_123'</span>,</span><br><span class="line">MASTER_PORT=<span class="number">3306</span>,</span><br><span class="line">MASTER_LOG_FILE=<span class="string">'mysql-binlog.000297'</span>, </span><br><span class="line">MASTER_LOG_POS=<span class="number">900834433</span>,</span><br><span class="line">MASTER_CONNECT_RETRY=<span class="number">10</span>;</span><br></pre></td></tr></table></figure>
 
@@ -8099,37 +7921,6 @@
         <tag>Grafana</tag>
         <tag>Consul</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>MySQL · 数据安全</title>
-    <url>/blog/2019/04/29/mysql-security/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>2018年3月，Facebook数据泄露事件，共享第三方剑桥分析公司，泄露5千万条</p>
-<p>2017年3月，58同城简历数据泄露事件，黑客，泄露数千份用户简历数据</p>
-<p>2016年10月，湖南某银行信息泄露，内部人员，50万余份公民个人征信报告</p>
-<p>2015年10月，网易邮箱数据泄露事件，黑客，泄露5亿条邮件信息</p>
-<p> …..</p>
-<p>从这些事件的分析来看，究其原因既有安全意识的薄弱，也有由于安全体系的老旧而导致的数据泄露。</p>
-<h2 id="安全风险"><a href="#安全风险" class="headerlink" title="安全风险"></a>安全风险</h2><p>管理层面</p>
-<p>主要表现为人员职责、工作流程架构有待完善，内部员工的日常操作有待规范，第三方维护人员的操作监控不足，致使安全事件发生时，无法追溯并定位真实的操作者。</p>
-<p>技术层面</p>
-<p>现有的数据库内部操作不透明，无法通过外部的任何安全工具（比如防火墙、白名单等）来阻止来自内部用户的恶意操作、滥用资源和泄露企业机密信息等行为。</p>
-<p>审计层面</p>
-<p>黑客攻击（<a href="http://www.cnnvd.org.cn" target="_blank" rel="noopener">CVE漏洞</a>、SQL注入、恶意操作、数据泄露、滥用资源）</p>
-<p>自然灾害（地震、海啸）</p>
-<p>内部隐患</p>
-<p>外部攻击（授权外包人员、监控内部人员）</p>
-<h2 id="安全策略"><a href="#安全策略" class="headerlink" title="安全策略"></a>安全策略</h2><p>操作系统级别安全配置</p>
-<p>文件系统权限安全配置</p>
-<p>MySQL基本安全配置</p>
-<p>MySQL 权限安全配置</p>
-<p>审计和日志安全配置</p>
-<p>身份认证安全配置</p>
-<p>网络安全配置</p>
-<p>复制数据传输中的安全配置</p>
-]]></content>
-      <categories>
-        <category>MySQL</category>
-      </categories>
   </entry>
   <entry>
     <title>Github Page + Hexo + Next 搭建个人博客</title>

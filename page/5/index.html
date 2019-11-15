@@ -352,570 +352,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/python-exception/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/24/python-exception/" class="post-title-link" itemprop="url">Python · 错误与异常</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-24 09:26:45" itemprop="dateCreated datePublished" datetime="2019-10-24T09:26:45+08:00">2019-10-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-28 14:04:36" itemprop="dateModified" datetime="2019-10-28T14:04:36+08:00">2019-10-28</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="异常处理"><a href="#异常处理" class="headerlink" title="异常处理"></a>异常处理</h2><ul>
-<li><code>try..except</code>：一般来说我们会将所有可能引发异常或错误的语句放在 <code>try</code> 代码块中，将错误处理代码放置在 <code>except</code> 代码块中。</li>
-<li><code>finally</code>：总是会执行代码块，不论程序正常还是异常都会执行到。</li>
-<li><code>raise</code>：抛出异常，你能够引发的错误或异常必须是直接或间接从属于 <code>Exception</code>（异常） 类的派生类。</li>
-<li><code>as</code>：异常类别名。</li>
-</ul>
-<p><strong>示例</strong>：<code>exceptions_finally.py</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line">f = <span class="literal">None</span></span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">    f = open(<span class="string">"poem.txt"</span>)</span><br><span class="line">    <span class="comment"># 我们常用的文件阅读风格</span></span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        line = f.readline()</span><br><span class="line">        <span class="keyword">if</span> len(line) == <span class="number">0</span>:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        print(line, end=<span class="string">''</span>)</span><br><span class="line">        sys.stdout.flush()</span><br><span class="line">        print(<span class="string">"Press ctrl+c now"</span>)</span><br><span class="line">        <span class="comment"># 为了确保它能运行一段时间</span></span><br><span class="line">        time.sleep(<span class="number">2</span>)</span><br><span class="line"><span class="keyword">except</span> IOError:</span><br><span class="line">    print(<span class="string">"Could not find file poem.txt"</span>)</span><br><span class="line"><span class="keyword">except</span> KeyboardInterrupt <span class="keyword">as</span> ki:</span><br><span class="line">    print(<span class="string">"!! You cancelled the reading from the file."</span>)</span><br><span class="line"><span class="keyword">finally</span>:</span><br><span class="line">    <span class="keyword">if</span> f:</span><br><span class="line">        f.close()</span><br><span class="line">    print(<span class="string">"(Cleaning up: Closed the file)"</span>)</span><br><span class="line">    </span><br><span class="line">输出：</span><br><span class="line">$ python exceptions_finally.py</span><br><span class="line">Programming <span class="keyword">is</span> fun</span><br><span class="line">Press ctrl+c now</span><br><span class="line">^C!! You cancelled the reading <span class="keyword">from</span> the file.</span><br><span class="line">(Cleaning up: Closed the file)</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/python-oop/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/24/python-oop/" class="post-title-link" itemprop="url">Python · 面向对象</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-24 09:25:41" itemprop="dateCreated datePublished" datetime="2019-10-24T09:25:41+08:00">2019-10-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-28 14:05:43" itemprop="dateModified" datetime="2019-10-28T14:05:43+08:00">2019-10-28</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p>一个<strong>类（Class）</strong>能够创建一种新的类型（Type），其中<strong>对象（Object）</strong>就是类的<strong>实例（Instance）</strong>，这种从属于对象或类的变量叫作<strong>字段（Field）</strong>，对象还可以使用属于类的函数来实现某些功能，这种函数叫作类的<strong>方法（Method）</strong>，字段与方法通称类的<strong>属性（Attribute）</strong>。</p>
-<p><strong><code>self</code></strong>：类方法与普通函数只有一种特定的区别，前者必须多加一个 <code>self</code> 参数在参数列表开头。</p>
-<p><strong>示例</strong>：<code>oop_method.py</code></p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">say_hi</span><span class="params">(self)</span>:</span></span><br><span class="line">        print(<span class="string">'Hello, how are you?'</span>)</span><br><span class="line"></span><br><span class="line">p = Person()</span><br><span class="line">p.say_hi()</span><br><span class="line"><span class="comment"># 前面两行同样可以写作</span></span><br><span class="line"><span class="comment"># Person().say_hi()</span></span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line">$ python oop_method.py</span><br><span class="line">Hello, how are you?</span><br></pre></td></tr></table></figure>
-
-<p><strong><code>__init__</code></strong> ：此方法会在类的对象被实例化（Instantiated）时立即运行，对目标对象进行初始化操作。</p>
-<p><strong>示例</strong>：<code>oop_init.py</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, name)</span>:</span></span><br><span class="line">        self.name = name</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">say_hi</span><span class="params">(self)</span>:</span></span><br><span class="line">        print(<span class="string">'Hello, my name is'</span>, self.name)</span><br><span class="line"></span><br><span class="line">p = Person(<span class="string">'Swaroop'</span>)</span><br><span class="line">p.say_hi()</span><br><span class="line"><span class="comment"># 前面两行同时也能写作</span></span><br><span class="line"><span class="comment"># Person('Swaroop').say_hi()</span></span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line">$ python oop_init.py</span><br><span class="line">Hello, my name <span class="keyword">is</span> Swaroop</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>类变量（Class Variable）</strong>：共享的，可以被属于该类的所有实例访问。</li>
-<li><strong>对象变量（Object variable）</strong>：由类的每一个独立的对象或实例所拥有。</li>
-</ul>
-<p><strong>示例</strong>：<code>oop_objvar.py</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding=UTF-8</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Robot</span>:</span></span><br><span class="line">    <span class="string">"""表示有一个带有名字的机器人"""</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 一个类变量，用来计数机器人的数量</span></span><br><span class="line">    population = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, name)</span>:</span></span><br><span class="line">        <span class="string">"""初始化数据"""</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment"># 一个对象变量</span></span><br><span class="line">        self.name = name</span><br><span class="line">        print(<span class="string">"(Initializing &#123;&#125;)"</span>.format(self.name))</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 当有人被创建时，机器人将会增加人口数量</span></span><br><span class="line">        Robot.population += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">die</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""我挂了"""</span></span><br><span class="line">        print(<span class="string">"&#123;&#125; is being destroyed!"</span>.format(self.name))</span><br><span class="line"></span><br><span class="line">        Robot.population -= <span class="number">1</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> Robot.population == <span class="number">0</span>:</span><br><span class="line">            print(<span class="string">"&#123;&#125; was the last one."</span>.format(self.name))</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            print(<span class="string">"There are still &#123;:d&#125; robots working."</span>.format(</span><br><span class="line">                Robot.population))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">say_hi</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""来自机器人的诚挚问候：没问题，你做得到！"""</span></span><br><span class="line">        print(<span class="string">"Greetings, my masters call me &#123;&#125;."</span>.format(self.name))</span><br><span class="line">        </span><br><span class="line">    <span class="comment"># 类方法</span></span><br><span class="line"><span class="meta">    @classmethod  </span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">how_many</span><span class="params">(cls)</span>:</span></span><br><span class="line">        <span class="string">"""打印出当前的人口数量"""</span></span><br><span class="line">        print(<span class="string">"We have &#123;:d&#125; robots."</span>.format(cls.population))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">droid1 = Robot(<span class="string">"R2-D2"</span>)</span><br><span class="line">droid1.say_hi()</span><br><span class="line">Robot.how_many()</span><br><span class="line"></span><br><span class="line">droid2 = Robot(<span class="string">"C-3PO"</span>)</span><br><span class="line">droid2.say_hi()</span><br><span class="line">Robot.how_many()</span><br><span class="line"></span><br><span class="line">print(<span class="string">"\nRobots can do some work here.\n"</span>)</span><br><span class="line"></span><br><span class="line">print(<span class="string">"Robots have finished their work. So let's destroy them."</span>)</span><br><span class="line">droid1.die()</span><br><span class="line">droid2.die()</span><br><span class="line"></span><br><span class="line">Robot.how_many()</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line">$ python oop_objvar.py</span><br><span class="line">(Initializing R2-D2)</span><br><span class="line">Greetings, my masters call me R2-D2.</span><br><span class="line">We have <span class="number">1</span> robots.</span><br><span class="line">(Initializing C<span class="number">-3</span>PO)</span><br><span class="line">Greetings, my masters call me C<span class="number">-3</span>PO.</span><br><span class="line">We have <span class="number">2</span> robots.</span><br><span class="line"></span><br><span class="line">Robots can do some work here.</span><br><span class="line"></span><br><span class="line">Robots have finished their work. So let<span class="string">'s destroy them.</span></span><br><span class="line"><span class="string">R2-D2 is being destroyed!</span></span><br><span class="line"><span class="string">There are still 1 robots working.</span></span><br><span class="line"><span class="string">C-3PO is being destroyed!</span></span><br><span class="line"><span class="string">C-3PO was the last one.</span></span><br><span class="line"><span class="string">We have 0 robots.</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h2><p>面向对象编程的一大优点是对代码的<strong>重用（Reuse）</strong>，重用的一种实现方法就是通过<strong>继承（Inheritance）</strong>机制，继承最好是想象成在类之间实现<strong>类型与子类型（Type and Subtype）</strong>关系的工具。</p>
-<ul>
-<li><strong>多态性（Polymorphism）</strong>：子类和父类存在相同的方法时，子类覆盖了父类的方法。</li>
-<li><strong>基类（Base Class）</strong>/ <strong>超类（Superclass）</strong>：<code>SchoolMember</code> 类</li>
-<li><strong>派生类（Derived Classes）</strong>/ <strong>子类（Subclass）</strong>：<code>Teacher</code> 和 <code>Student</code> 类</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">            ┌───────────────┐</span><br><span class="line">            │ SchoolMember  │</span><br><span class="line">            └───────────────┘</span><br><span class="line">                    │</span><br><span class="line">       ┌────────────┴────────────┐</span><br><span class="line">       │                         │</span><br><span class="line">       ▼                         ▼</span><br><span class="line">┌─────────────┐           ┌─────────────┐</span><br><span class="line">│   Teacher   │           │   Student   │</span><br><span class="line">└─────────────┘           └─────────────┘</span><br></pre></td></tr></table></figure>
-
-<p><strong>示例</strong>：<code>oop_subclass.py</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># coding=UTF-8</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SchoolMember</span>:</span></span><br><span class="line">    <span class="string">'''代表任何学校里的成员。'''</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, name, age)</span>:</span></span><br><span class="line">        self.name = name</span><br><span class="line">        self.age = age</span><br><span class="line">        print(<span class="string">'(Initialized SchoolMember: &#123;&#125;)'</span>.format(self.name))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">tell</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">'''告诉我有关我的细节。'''</span></span><br><span class="line">        print(<span class="string">'Name:"&#123;&#125;" Age:"&#123;&#125;"'</span>.format(self.name, self.age), end=<span class="string">" "</span>)</span><br><span class="line">  </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Teacher</span><span class="params">(SchoolMember)</span>:</span></span><br><span class="line">    <span class="string">'''代表一位老师。'''</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, name, age, salary)</span>:</span></span><br><span class="line">        SchoolMember.__init__(self, name, age)</span><br><span class="line">        self.salary = salary</span><br><span class="line">        print(<span class="string">'(Initialized Teacher: &#123;&#125;)'</span>.format(self.name))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">tell</span><span class="params">(self)</span>:</span></span><br><span class="line">        SchoolMember.tell(self)</span><br><span class="line">        print(<span class="string">'Salary: "&#123;:d&#125;"'</span>.format(self.salary))</span><br><span class="line">        </span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span><span class="params">(SchoolMember)</span>:</span></span><br><span class="line">    <span class="string">'''代表一位学生。'''</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, name, age, marks)</span>:</span></span><br><span class="line">        SchoolMember.__init__(self, name, age)</span><br><span class="line">        self.marks = marks</span><br><span class="line">        print(<span class="string">'(Initialized Student: &#123;&#125;)'</span>.format(self.name))</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">tell</span><span class="params">(self)</span>:</span></span><br><span class="line">        SchoolMember.tell(self)</span><br><span class="line">        print(<span class="string">'Marks: "&#123;:d&#125;"'</span>.format(self.marks))</span><br><span class="line">        </span><br><span class="line">t = Teacher(<span class="string">'Mrs. Shrividya'</span>, <span class="number">40</span>, <span class="number">30000</span>)</span><br><span class="line">s = Student(<span class="string">'Swaroop'</span>, <span class="number">25</span>, <span class="number">75</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 打印一行空白行</span></span><br><span class="line">print()</span><br><span class="line"></span><br><span class="line">members = [t, s]</span><br><span class="line"><span class="keyword">for</span> member <span class="keyword">in</span> members:</span><br><span class="line">    <span class="comment"># 对全体师生工作</span></span><br><span class="line">    member.tell()</span><br><span class="line">    </span><br><span class="line">输出：</span><br><span class="line">$ python oop_subclass.py</span><br><span class="line">(Initialized SchoolMember: Mrs. Shrividya)</span><br><span class="line">(Initialized Teacher: Mrs. Shrividya)</span><br><span class="line">(Initialized SchoolMember: Swaroop)</span><br><span class="line">(Initialized Student: Swaroop)</span><br><span class="line"></span><br><span class="line">Name:<span class="string">"Mrs. Shrividya"</span> Age:<span class="string">"40"</span> Salary: <span class="string">"30000"</span></span><br><span class="line">Name:<span class="string">"Swaroop"</span> Age:<span class="string">"25"</span> Marks: <span class="string">"75"</span></span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/python-module/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/24/python-module/" class="post-title-link" itemprop="url">Python · 模块和包</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-24 09:20:51" itemprop="dateCreated datePublished" datetime="2019-10-24T09:20:51+08:00">2019-10-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-25 16:46:45" itemprop="dateModified" datetime="2019-10-25T16:46:45+08:00">2019-10-25</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="模块"><a href="#模块" class="headerlink" title="模块"></a>模块</h2><p><strong>模块（Modules）</strong>：重用代码是函数，重用函数是模块，以 <code>.py</code> 为扩展名就可以是一个模块，可以避免函数命名冲突。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># module1.py</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">foo</span><span class="params">()</span>:</span></span><br><span class="line">    print(<span class="string">'hello, world!'</span>)</span><br><span class="line">   </span><br><span class="line"><span class="comment"># module2.py</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">foo</span><span class="params">()</span>:</span></span><br><span class="line">    print(<span class="string">'goodbye, world!'</span>)</span><br><span class="line">    </span><br><span class="line"><span class="comment"># test.py</span></span><br><span class="line"><span class="keyword">import</span> module1 <span class="keyword">as</span> m1</span><br><span class="line"><span class="keyword">import</span> module2 <span class="keyword">as</span> m2</span><br><span class="line"></span><br><span class="line">m1.foo()  <span class="comment"># 输出hello, world!</span></span><br><span class="line">m2.foo()  <span class="comment"># 输出goodbye, world!</span></span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p><strong>Warning：</strong>一般来说，你应该尽量避免使用 <code>from...import</code> 语句，而去使用 <code>import</code> 语句。这是为了避免在你的程序中出现名称冲突，同时也为了使程序更加易读。</p>
-</blockquote>
-<p> <code>__name__</code> ：是 Python 中一个隐含的变量，它代表了模块的名字，只有被 Python 解释器直接执行的模块的名字才是 <code>__main__</code>。</p>
-<p><strong>示例</strong>：<code>module_using_name.py</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    print(<span class="string">'This program is being run by itself'</span>)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    print(<span class="string">'I am being imported from another module'</span>)</span><br><span class="line">    </span><br><span class="line">输出：</span><br><span class="line">$ python module_using_name.py</span><br><span class="line">This program <span class="keyword">is</span> being run by itself</span><br><span class="line"></span><br><span class="line">$ python</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> module_using_name</span><br><span class="line">I am being imported <span class="keyword">from</span> another module</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
-
-<h2 id="包"><a href="#包" class="headerlink" title="包"></a>包</h2><p><strong>包（Packages）</strong>：是指一个包含模块与一个特殊的 <code>__init__.py</code> 文件的文件夹，能够方便地组织模块的层次结构。</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mycompany</span><br><span class="line"> ├─ web</span><br><span class="line"> │  ├─ __init__.py</span><br><span class="line"> │  ├─ utils.py</span><br><span class="line"> │  └─ www.py</span><br><span class="line"> ├─ __init__.py</span><br><span class="line"> ├─ emploees.py</span><br><span class="line"> └─ utils.py</span><br></pre></td></tr></table></figure>
-
-<p><strong>总结</strong>：如同函数是程序中的可重用部分那般，模块是一种可重用的程序，包是用以组织模块的另一种层次结构。Python 所附带的标准库就是这样一组有关包与模块的例子。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/python-function/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2198,12 +1634,24 @@
                 
               
 
-              <time title="创建时间：2019-10-22 11:25:04 / 修改时间：21:21:56" itemprop="dateCreated datePublished" datetime="2019-10-22T11:25:04+08:00">2019-10-22</time>
+              <time title="创建时间：2019-10-22 11:25:04" itemprop="dateCreated datePublished" datetime="2019-10-22T11:25:04+08:00">2019-10-22</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-15 16:26:08" itemprop="dateModified" datetime="2019-11-15T16:26:08+08:00">2019-11-15</time>
               
             
           </span>
@@ -2307,11 +1755,636 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/22/mysql-tuning-like/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/22/mysql-tuning-like/" class="post-title-link" itemprop="url">MySQL · 性能优化 · 千万级大表模糊查询</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-22 10:54:49" itemprop="dateCreated datePublished" datetime="2019-10-22T10:54:49+08:00">2019-10-22</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-24 22:41:34" itemprop="dateModified" datetime="2019-10-24T22:41:34+08:00">2019-10-24</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p><strong>模糊查询</strong>：使用 <code>like %%</code> 类 <code>SQL</code></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生产环境执行的SQL</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">''</span> <span class="keyword">AS</span> batch_fail_id, <span class="string">''</span> <span class="keyword">AS</span> uuid_Fail, b.send_goods_No, b.test_type, b.order_no</span><br><span class="line">	, b.row_no, b.bu, b.mtl_no, b.mtl_name, b.mtl_group, b.mtl_group_name</span><br><span class="line">	, b.materiel_category_id, b.materiel_category_name, b.pattern_amount</span><br><span class="line">	, b.plan_pattern_amount, b.goods_unit, b.plan_send_day, b.fact_send_Day, b.stock_Day</span><br><span class="line">	, b.supply_code, b.supply_name, b.supply_check_level, b.sap_mark_id, b.sap_mark_name</span><br><span class="line">	, b.syb_id, b.syb_name, b.check_style_id, b.check_style_name, b.check_type_id</span><br><span class="line">	, b.check_type_name, b.QC_STATUS, b.QC_STATUS_INSTR_DATE, b.QC_NO, b.factory_code</span><br><span class="line">	, b.goods_sort, b.price_unit, b.stock_price, b.LICHA, b.BSART, b.LGORT</span><br><span class="line">	, b.plan_Date, b.TEST_CONCLUSION, b.IQC_manager_id, b.IQC_manager_name, b.iqc_leader_id</span><br><span class="line">	, b.iqc_leader_name, b.test_complete_day, b.test_start_day, b.new_or_old,b.check_status_id</span><br><span class="line">	, b.is_appeal, b.is_start_check, b.standard_type, b.check_reason, b.is_stop</span><br><span class="line">	, b.check_time, b.instance_id, b.create_date <span class="keyword">AS</span> createDate, b.delete_status</span><br><span class="line"><span class="keyword">FROM</span> t_batch b</span><br><span class="line"><span class="keyword">WHERE</span> b.mtl_no <span class="keyword">LIKE</span> <span class="string">'%0594A%'</span> <span class="keyword">AND</span> b.delete_status = <span class="string">'N'</span></span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line"><span class="keyword">SELECT</span> f.batch_fail_id, f.uuid, f.send_goods_No, f.test_type, f.order_no, f.row_no</span><br><span class="line">        , f.bu, f.mtl_no, f.mtl_name, f.mtl_group, f.mtl_group_name</span><br><span class="line">        , f.materiel_category_id,f.materiel_category_name, f.pattern_amount</span><br><span class="line">        , f.plan_pattern_amount</span><br><span class="line">	, f.goods_unit, f.plan_send_day, f.fact_send_Day, f.stock_Day, f.supply_code</span><br><span class="line">	, f.supply_name, f.supply_check_level, f.sap_mark_id, f.sap_mark_name, f.syb_id</span><br><span class="line">	, f.syb_name, f.check_style_id, f.check_style_name, f.check_type_id, f.check_type_name</span><br><span class="line">	, f.QC_STATUS, f.QC_STATUS_INSTR_DATE, f.QC_NO, f.factory_code, f.goods_sort</span><br><span class="line">	, f.price_unit, f.stock_price, f.LICHA, f.BSART, f.LGORT</span><br><span class="line">	, f.plan_Date, f.TEST_CONCLUSION, f.IQC_manager_id, f.IQC_manager_name, f.iqc_leader_id</span><br><span class="line">	, f.iqc_leader_name, f.test_complete_day, f.test_start_day, f.new_or_old</span><br><span class="line">	, f.check_status_id, f.is_appeal, f.is_start_check, f.standard_type, f.check_reason</span><br><span class="line">	, f.is_stop, f.check_time, f.instance_id, f.create_date <span class="keyword">AS</span> createDate, f.delete_status</span><br><span class="line"><span class="keyword">FROM</span> t_batch_fail f</span><br><span class="line"><span class="keyword">WHERE</span> f.mtl_no <span class="keyword">LIKE</span> <span class="string">'%0594A%'</span> <span class="keyword">AND</span> f.delete_status = <span class="string">'N'</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> createDate <span class="keyword">DESC</span></span><br><span class="line"><span class="keyword">LIMIT</span> <span class="number">0</span>, <span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 表数据量</span></span><br><span class="line">mysql&gt; <span class="keyword">select</span> table_name,table_rows,<span class="keyword">CONCAT</span>(<span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(data_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> data_size, <span class="keyword">CONCAT</span>(<span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(index_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> index_size <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> TABLE_SCHEMA = <span class="string">'mqm'</span> <span class="keyword">and</span> table_name=<span class="string">'t_batch'</span>;</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| table_name | table_rows | data_size | index_size |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| t_batch    |   10261904 | 4895.00MB | 8643.23MB  |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">+<span class="comment">--------------+------------+-----------+------------+</span></span><br><span class="line">| table_name   | table_rows | data_size | index_size |</span><br><span class="line">+<span class="comment">--------------+------------+-----------+------------+</span></span><br><span class="line">| t_batch_fail |      <span class="number">43683</span> | <span class="number">19.56</span>MB   | <span class="number">14.57</span>MB    |</span><br><span class="line">+<span class="comment">--------------+------------+-----------+------------+</span></span><br><span class="line"><span class="number">1</span> <span class="keyword">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.01</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行时间</span></span><br><span class="line"><span class="number">10</span> <span class="keyword">rows</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">1</span> <span class="keyword">min</span> <span class="number">26.92</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p><strong>Union All</strong>：对两个结果集进行并集操作，包括重复行。</p>
+<p><strong>执行计划</strong>：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br><span class="line">| id | select_type  | table      | type | possible_keys     | key               | key_len | ref   | rows    | Extra                              |</span><br><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br><span class="line">|  1 | PRIMARY      | b          | ALL  | NULL              | NULL              | NULL    | NULL  | 9527271 | Using where                        |</span><br><span class="line">|  2 | UNION        | f          | ref  | idx_delete_status | idx_delete_status | 9       | const |   20469 | Using index condition; Using where |</span><br><span class="line">| NULL | UNION RESULT | &lt;union1,2&gt; | ALL  | NULL              | NULL              | NULL    | NULL  |    NULL | Using temporary; Using filesort    |</span><br><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加索引</span></span><br><span class="line">mysql&gt; ALTER TABLE t_batch ADD INDEX idx_delete_status (delete_status);</span><br><span class="line">Query OK, 0 rows affected (2 min 47.24 sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行计划</span></span><br><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br><span class="line">| id | select_type  | table      | type | possible_keys     | key               | key_len | ref   | rows    | Extra                              |</span><br><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br><span class="line">|  1 | PRIMARY      | b          | ref  | idx_delete_status | idx_delete_status | 9       | const | 5130952 | Using index condition; Using where |</span><br><span class="line">|  2 | UNION        | f          | ref  | idx_delete_status | idx_delete_status | 9       | const |   20469 | Using index condition; Using where |</span><br><span class="line">| NULL | UNION RESULT | &lt;union1,2&gt; | ALL  | NULL              | NULL              | NULL    | NULL  |    NULL | Using temporary; Using filesort    |</span><br><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br><span class="line">3 rows in <span class="keyword">set</span> (<span class="number">0.07</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p><strong>模糊查询方法对比</strong>：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">① mtl_no like <span class="string">'%0594A%'</span></span><br><span class="line"><span class="number">10</span> rows <span class="keyword">in</span> set (<span class="number">1</span> min <span class="number">26.92</span> sec)</span><br><span class="line"></span><br><span class="line">② locate(<span class="string">'0594A'</span>, mtl_no) &gt; <span class="number">0</span></span><br><span class="line"><span class="number">10</span> rows <span class="keyword">in</span> set (<span class="number">32.71</span> sec)</span><br><span class="line"></span><br><span class="line">③ instr(mtl_no,<span class="string">'0594A'</span>) &gt; <span class="number">0</span></span><br><span class="line"><span class="number">10</span> rows <span class="keyword">in</span> set (<span class="number">32.72</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p><strong>结论：</strong></p>
+<ul>
+<li>这三种方法都只能用全表扫描的方式进行查询，但 <code>locate</code> 和 <code>instr</code> 方法速度比 <code>like</code> 稍快。</li>
+<li><code>like %%</code> 此类模糊查询，推荐使用搜索引擎，比如 <code>Elasticsearch</code>。</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/22/confluence/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/22/confluence/" class="post-title-link" itemprop="url">Confluence</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-22 10:43:11" itemprop="dateCreated datePublished" datetime="2019-10-22T10:43:11+08:00">2019-10-22</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-15 15:52:51" itemprop="dateModified" datetime="2019-11-15T15:52:51+08:00">2019-11-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/项目/" itemprop="url" rel="index"><span itemprop="name">项目</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="基础概念"><a href="#基础概念" class="headerlink" title="基础概念"></a>基础概念</h2><p><strong>空间（Space）</strong></p>
+<ul>
+<li>团队空间：存放与该项目相关的文档信息放置到该空间中，对项目成员开设访问/编辑权限</li>
+<li>个人空间：存放工作总结或笔记等文档放置到自己的空间中</li>
+</ul>
+<p><strong>页面（Page）</strong></p>
+<ul>
+<li>页面是存储和共享信息的主要方式，以树状结构进行组织，放置于空间之中。</li>
+<li>页面支持大量的内容展现形式，除了富文本文档外，还包括图表、视频、附件（可预览）、流程图、公式等等，如果还不够，还可以通过海量的第三方插件进行扩展。</li>
+</ul>
+<p><strong>权限（Permission）</strong></p>
+<p>权限控制分 3 个维度，分别是团队（Group），个人（Individual Users），匿名用户（Anonymous）。</p>
+<h2 id="登录"><a href="#登录" class="headerlink" title="登录"></a>登录</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 普通地址</span></span><br><span class="line">http://wiki.qd-aliyun-internal.haier.net</span><br><span class="line"></span><br><span class="line"><span class="comment"># 管理员地址</span></span><br><span class="line">http://wiki.qd-aliyun-internal.haier.net/login.action?oauth_sso=false</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/22/jira/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/22/jira/" class="post-title-link" itemprop="url">Jira</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-22 09:27:51" itemprop="dateCreated datePublished" datetime="2019-10-22T09:27:51+08:00">2019-10-22</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-15 16:22:34" itemprop="dateModified" datetime="2019-11-15T16:22:34+08:00">2019-11-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/项目/" itemprop="url" rel="index"><span itemprop="name">项目</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>JIRA 是 Atlassian 公司的产品，Atlassian 最核心的产品仍然是 <strong>JIRA</strong> 和 <strong>Confluence</strong>，JIRA 被业界公认为最好的项目管理和开发管理工具，Confluence 被认为是最好用的企业级知识管理工具。</p>
+<h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><h3 id="Project"><a href="#Project" class="headerlink" title="Project"></a>Project</h3><p><strong>创建项目</strong>：项目名称、简称、URL</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-22-100515.png" alt></p>
+<ul>
+<li><p>Story：故事</p>
+</li>
+<li><p>Sprint：迭代</p>
+</li>
+<li><p>Backlog：需求列表</p>
+</li>
+<li><p>项目创建</p>
+</li>
+<li><p>项目组件和版本</p>
+</li>
+<li><p>项目角色</p>
+</li>
+</ul>
+<h3 id="Issue"><a href="#Issue" class="headerlink" title="Issue"></a>Issue</h3><ul>
+<li><p>创建、编辑与删除问题</p>
+</li>
+<li><p>问题跟踪</p>
+</li>
+<li><p>子任务</p>
+</li>
+</ul>
+<h4 id="Issue-Type（问题单类型）"><a href="#Issue-Type（问题单类型）" class="headerlink" title="Issue Type（问题单类型）"></a>Issue Type（问题单类型）</h4><ul>
+<li><strong>Bug</strong> - 故障，功能失效</li>
+<li><strong>Improvement</strong> - 提升，既有功能增强</li>
+<li><strong>New Feature</strong> - 新功能</li>
+<li><strong>Task</strong> - 任务</li>
+<li><strong>Custom Issue</strong> - 根据需要客户化定制</li>
+</ul>
+<h4 id="Priority（优先级）"><a href="#Priority（优先级）" class="headerlink" title="Priority（优先级）"></a>Priority（优先级）</h4><ul>
+<li><strong>Highest</strong> - 最高级别，表明问题阻塞了业务流程正常进行</li>
+<li><strong>High</strong> - 高级，表明问题引发明显故障，需要紧急关注</li>
+<li><strong>Medium</strong> - 中级，表明问题有一个明显的影响</li>
+<li><strong>Low</strong> - 低级，表明问题有一个轻微的影响</li>
+<li><strong>Lowest</strong> - 最低级</li>
+</ul>
+<h4 id="Status（状态）"><a href="#Status（状态）" class="headerlink" title="Status（状态）"></a>Status（状态）</h4><ul>
+<li><strong>Open</strong> - 打开状态，表明问题单已经被创建，等待被分配到开始处理状态</li>
+<li><strong>In Progress</strong> - 处理中状态，表明问题单已经被分配人激活，并处于被处理状态中</li>
+<li><strong>Resolved</strong> - 已解决状态，表明问题已经被处理完成，等待问题报告人的验证。从这个状态，问题单一般可以进一步变更为重新打开状态（Reopened）或关闭状态（Closed）</li>
+<li><strong>Reopened</strong> - 重新打开状态，问题经过验证发现没有被解决，就可以变更到这个状态</li>
+<li><strong>Closed</strong> - 关闭状态，问题被彻底解决就可以转为这个状态</li>
+</ul>
+<h4 id="Resolution（解决结果）"><a href="#Resolution（解决结果）" class="headerlink" title="Resolution（解决结果）"></a>Resolution（解决结果）</h4><ul>
+<li><strong>Fixed</strong> - 修复</li>
+<li><strong>Won’t Fix</strong> - 不用修复，例如这个问题所描述的现象已不再有影响了</li>
+<li><strong>Duplicate</strong> - 重复，同其它已经存在的问题重复了，推荐把相关的单子链接起来</li>
+<li><strong>Incomplete</strong> - 未完成，没有足够的信息继续完成这个问题</li>
+<li><strong>Cannot Reproduce</strong> - 不能重现，如果以后有更多信息可以继续可以重新打开这张单子ß</li>
+<li><strong>Won’t Do</strong> - 不做，类似于不用修复的方案，试用于软件项目的默认状态</li>
+</ul>
+<h3 id="工作流"><a href="#工作流" class="headerlink" title="工作流"></a>工作流</h3><h2 id="Jira-管理员"><a href="#Jira-管理员" class="headerlink" title="Jira 管理员"></a>Jira 管理员</h2><h3 id="配置方案"><a href="#配置方案" class="headerlink" title="配置方案"></a>配置方案</h3><p>项目报表</p>
+<p>敏捷管理</p>
+<p>用户、用户组、项目角色配置</p>
+<ul>
+<li><p>问题类型</p>
+</li>
+<li><p>权限</p>
+</li>
+<li><p>工作流</p>
+</li>
+</ul>
+<h3 id="登录"><a href="#登录" class="headerlink" title="登录"></a>登录</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 普通用户登录</span></span><br><span class="line">http://jira.qd-aliyun-internal.haier.net</span><br><span class="line"></span><br><span class="line"><span class="comment"># 管理员登录</span></span><br><span class="line">http://jira.qd-aliyun-internal.haier.net/login.jsp?oauth_sso=false</span><br><span class="line"></span><br><span class="line"><span class="comment"># 版本</span></span><br><span class="line">Jira v8.<span class="number">3.0</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="最佳使用实践"><a href="#最佳使用实践" class="headerlink" title="最佳使用实践"></a>最佳使用实践</h3><ul>
+<li><p>Bug 跟踪管理</p>
+</li>
+<li><p>任务流程管理</p>
+</li>
+</ul>
+<p><strong>删除任务</strong></p>
+<ul>
+<li>权限说明：删除任务需要具备项目管理员权限</li>
+<li>项目设置  -&gt;  用户和角色  -&gt;  添加用户到 <code>Administrators</code> 组</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/4/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/blog/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/13/">13</a><a class="extend next" rel="next" href="/blog/page/6/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/page/4/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/4/">4</a><span class="page-number current">5</span><a class="page-number" href="/blog/page/6/">6</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/12/">12</a><a class="extend next" rel="next" href="/blog/page/6/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -2355,7 +2428,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">130</span>
+                    <span class="site-state-item-count">118</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2400,11 +2473,7 @@
                     
                       
                     
-                      
-                    
-                      
-                    
-                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-count">14</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
