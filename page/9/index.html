@@ -352,6 +352,403 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/17/mysql-archiver/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/17/mysql-archiver/" class="post-title-link" itemprop="url">MySQL · 数据归档</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-17 09:02:06" itemprop="dateCreated datePublished" datetime="2019-10-17T09:02:06+08:00">2019-10-17</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-22 21:21:14" itemprop="dateModified" datetime="2019-10-22T21:21:14+08:00">2019-10-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>大表 <code>base_barcode_info</code> 数据量 <code>5000w+</code>，遇到很大的性能瓶颈，需要将表中的历史数据进行归档。</p>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><ol>
+<li><p>安装 <a href="https://huiraoo.github.io/blog/2019/07/05/mysql-toolkit/"><strong>Percona Toolkit</strong></a></p>
+</li>
+<li><p>创建归档表 <code>base_barcode_info_history_20190801</code></p>
+</li>
+<li><p>使用 <a href="https://tool.lu/crontab/" target="_blank" rel="noopener"><strong>crontab</strong></a> 执行定时任务，<code>archiver.sh</code> 脚本</p>
+</li>
+</ol>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 后台执行任务</span></span><br><span class="line">nohup sh archiver.sh &gt; myout.file <span class="number">2</span>&gt;&amp;<span class="number">1</span> &amp;</span><br><span class="line"></span><br><span class="line"><span class="comment"># archiver.sh</span></span><br><span class="line">pt-archiver --source h=<span class="number">10.138</span>.<span class="number">232.85</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'xx'</span>,D=<span class="string">'csomo-barcode'</span>,t=base_barcode_info --charset=utf8 --dest  h=<span class="number">10.138</span>.<span class="number">232.85</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'xx'</span>,D=<span class="string">'csomo-barcode'</span>,t=base_barcode_info_history_20190801 --where <span class="string">"barcode_request_id IN (SELECT id FROM base_barcode_request WHERE TYPE = '5' AND est &lt; '2019-08-01 00:00:00')"</span> --limit <span class="number">1000</span> --commit-each --bulk-insert --no-version-check</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>查看归档进度</li>
+</ol>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; use information_schema;</span><br><span class="line">mysql&gt; select table_name,table_rows from tables where TABLE_SCHEMA = 'csomo-barcode' and table_name='base_barcode_info_history_20190801';</span><br><span class="line">mysql&gt; select table_name,table_rows from tables where TABLE_SCHEMA = 'csomo-barcode' and table_name='base_barcode_info';</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>归档 <code>46598706</code> 花费约 <code>16</code> 小时</li>
+</ol>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Fri Sep 13 08:19:34 CST 2019</span></span><br><span class="line">+------------------------------------+------------+</span><br><span class="line">| table_name                         | table_rows |</span><br><span class="line">+------------------------------------+------------+</span><br><span class="line">| base_barcode_info_history_20190801 |     <span class="number">0</span>      |</span><br><span class="line">+------------------------------------+------------+</span><br><span class="line"></span><br><span class="line"><span class="comment"># Fri Sep 13 12:29:07 CST 2019</span></span><br><span class="line">+------------------------------------+------------+</span><br><span class="line">| table_name                         | table_rows |</span><br><span class="line">+------------------------------------+------------+</span><br><span class="line">| base_barcode_info_history_20190801 |   <span class="number">13462385</span> |</span><br><span class="line">+------------------------------------+------------+</span><br><span class="line"></span><br><span class="line"><span class="comment"># Fri Sep 13 17:29:47 CST 2019</span></span><br><span class="line">+------------------------------------+------------+</span><br><span class="line">| table_name                         | table_rows |</span><br><span class="line">+------------------------------------+------------+</span><br><span class="line">| base_barcode_info_history_20190801 |   <span class="number">26300649</span> |</span><br><span class="line">+------------------------------------+------------+</span><br><span class="line"></span><br><span class="line"><span class="comment"># Fri Sep 13 22:21:25 CST 2019</span></span><br><span class="line">+------------------------------------+------------+</span><br><span class="line">| table_name                         | table_rows |</span><br><span class="line">+------------------------------------+------------+</span><br><span class="line">| base_barcode_info_history_20190801 |   <span class="number">36529410</span> |</span><br><span class="line">+------------------------------------+------------+</span><br><span class="line"></span><br><span class="line"><span class="comment"># ?</span></span><br><span class="line">+------------------------------------+------------+</span><br><span class="line">| table_name                         | table_rows |</span><br><span class="line">+------------------------------------+------------+</span><br><span class="line">| base_barcode_info_history_20190801 |   <span class="number">46598706</span> |</span><br><span class="line">+------------------------------------+------------+</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/13/training/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/13/training/" class="post-title-link" itemprop="url">创客专项提升课</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-13 19:00:24" itemprop="dateCreated datePublished" datetime="2019-10-13T19:00:24+08:00">2019-10-13</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-22 21:28:35" itemprop="dateModified" datetime="2019-10-22T21:28:35+08:00">2019-10-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/其他/" itemprop="url" rel="index"><span itemprop="name">其他</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="课程一：沟通影响技术"><a href="#课程一：沟通影响技术" class="headerlink" title="课程一：沟通影响技术"></a>课程一：沟通影响技术</h2><p><strong>背景</strong>：在日常工作中，难免碰到冲突、误解、矛盾，你是否遇到以下沟通问题的误区：</p>
+<ul>
+<li>权利至上论：谁权力大、谁就说的算，不行就让领导出面吧。</li>
+<li>利益至上论：大家各有各的利益，说了也没用，多说反而有害。</li>
+<li>道理为王论：流程规定该由谁负责就是谁负责。</li>
+</ul>
+<p>为帮助走出沟通误区，提升合作效率，巩固合作关系，看清对方“被影响”的本质，掌握“影响”他人的原则和方法，成为优秀的影响者，有能力驾驭“挑战的”沟通。</p>
+<p><strong>时间</strong>：2019年9月5日  09:00~17:00</p>
+<p><strong>地点</strong>：海尔大学 B201</p>
+<p><strong>老师</strong>：王辰阳</p>
+<p><strong>学习收获</strong>：</p>
+<p>① 自我介绍时，是拉近人与人距离最重要时机，期望达到的目标是“<strong>让人不讨厌</strong>”，王老师在介绍自己的时候，我觉得达到了这种目的，值得参考，他写了三个关键字：</p>
+<ul>
+<li>北（工）大，<code>5年</code></li>
+<li>西门子，<code>10年</code></li>
+<li>竞越，<code>15年</code></li>
+</ul>
+<p>用<strong>幽默、戏谑</strong>的语气介绍自己，并着重说明这 3 个关键词之间的关系，简明扼要地完成自我介绍。</p>
+<p>② 咨询别人意见态度时，将第一人称改为第三人称</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">示例：你爱我吗？你觉得我怎么样？</span><br><span class="line">修改为：你觉得赵薇怎么样？你觉得他有什么优缺点？</span><br></pre></td></tr></table></figure>
+
+<h2 id="课程二：业务面试官培训"><a href="#课程二：业务面试官培训" class="headerlink" title="课程二：业务面试官培训"></a><strong>课程二</strong>：业务面试官培训</h2><p><strong>培训时间</strong>：2019年8月20日 14:00-17:00</p>
+<p><strong>地点</strong>：创牌一楼会议室 A09</p>
+<p><strong>培训内容</strong>：</p>
+<ul>
+<li><strong>招聘面试基本含义</strong>：测评及面试的基本概念和历史，面试的基本态度及仪表要求，面试中常见的误差，面试对于企业的公关价值及意义。</li>
+<li><strong>面谈的操作方法及技巧</strong>：BEI（行为事件访谈）需要注意的事项，如何识别虚假的 BEI（谎言识别）及事件访谈技巧。BEI 行为事件面试法最核心的概念即 “人过去表现出来的行为方式是人未来行为最可靠的预测指标”，从招聘“<strong>最优秀的人</strong>”转变落地为招聘“<strong>最适合的人</strong>”。</li>
+<li><strong>面试的方法和技巧</strong>：不同情景下的常见面试方法概览（校园招聘&amp; 社会招聘 &amp; 内部竞聘 ），结构化面试的概念及六种问题类型，如何追问和识别虚假回答。</li>
+<li><strong>基于岗位胜任力模型的面试评价</strong>：胜任特征的概念及由来，岗位胜任力模型与人才甄选的关系，面试选拔的依据和标准，常见的维度及行为观测点。</li>
+<li><strong>如何阅读简历并进行有效提问</strong>：从简历中寻找与面试相关的几类信息，依靠简历面试的步骤，标准化面试招聘流程建议，面试的评分要点及技巧重申。</li>
+</ul>
+<p><strong>学习收获</strong>：</p>
+<p>① 你最近读什么书？是一个好问题的切入点，通过书展开了解知识广度和深度。</p>
+<p>② 在确认某件事情的真实性时，可以提问 “请举一个例子？”</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/13/mysql-dataset/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -3237,456 +3634,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/24/mysql-stringtype/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/09/24/mysql-stringtype/" class="post-title-link" itemprop="url">MySQL · 参数选择 · varchar vs char</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-09-24 15:33:55" itemprop="dateCreated datePublished" datetime="2019-09-24T15:33:55+08:00">2019-09-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-22 21:24:19" itemprop="dateModified" datetime="2019-10-22T21:24:19+08:00">2019-10-22</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>CHAR</strong> ：是一种<strong>定长字符串</strong>类型，并且必须在圆括号内用一个大小修饰符来定义，这个大小修饰符的范围从 0～255。比指定长度大的值将被截短，而比指定长度小的值将会用空格作填补。</p>
-<p><strong>VARCHAR</strong> ：是一种<strong>可变长度</strong>的字符串类型，并且也必须带有一个范围指示器。</p>
-<table>
-<thead>
-<tr>
-<th align="left">Value</th>
-<th align="left">CHAR(4)</th>
-<th align="left">Storage Required</th>
-<th align="left">VARCHAR(4)</th>
-<th align="left">Storage Required</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">‘’</td>
-<td align="left">‘’</td>
-<td align="left">4 bytes</td>
-<td align="left">‘’</td>
-<td align="left">1 byte</td>
-</tr>
-<tr>
-<td align="left">‘ab’</td>
-<td align="left">‘ab’</td>
-<td align="left">4 bytes</td>
-<td align="left">‘ab’</td>
-<td align="left">3 bytes</td>
-</tr>
-<tr>
-<td align="left">‘abcd’</td>
-<td align="left">‘abcd’</td>
-<td align="left">4 bytes</td>
-<td align="left">‘abcd’</td>
-<td align="left">5 bytes</td>
-</tr>
-<tr>
-<td align="left">‘abcdefgh’</td>
-<td align="left">‘abcd’</td>
-<td align="left">4 bytes</td>
-<td align="left">‘abcd’</td>
-<td align="left">5 bytes</td>
-</tr>
-</tbody></table>
-<p><strong>性能对比</strong></p>
-<p>char &gt; varchar</p>
-<p><strong>选择</strong></p>
-<p>选择最小的数据范围，因为这样可以大大减少磁盘空间及磁盘 I/O 读写开销，<strong>减少内存占用，减少CPU占用率</strong></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/24/mysql-timetype/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/09/24/mysql-timetype/" class="post-title-link" itemprop="url">MySQL · 参数选择 · datetime vs timestamp</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-09-24 11:50:26" itemprop="dateCreated datePublished" datetime="2019-09-24T11:50:26+08:00">2019-09-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-22 21:24:27" itemprop="dateModified" datetime="2019-10-22T21:24:27+08:00">2019-10-22</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>MySQL 中常用的两种时间储存类型分别是 <code>datetime</code> 和 <code>timestamp</code>，建表时该如何选择呢？</p>
-<p><strong>占用空间</strong></p>
-<table>
-<thead>
-<tr>
-<th align="left">类型</th>
-<th align="left">占据字节</th>
-<th align="left">表示形式</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">datetime</td>
-<td align="left">8 字节</td>
-<td align="left">yyyy-mm-dd hh:mm:ss</td>
-</tr>
-<tr>
-<td align="left">timestamp</td>
-<td align="left">4 字节</td>
-<td align="left">yyyy-mm-dd hh:mm:ss</td>
-</tr>
-</tbody></table>
-<p><strong>表示范围</strong></p>
-<table>
-<thead>
-<tr>
-<th align="left">类型</th>
-<th align="left">表示范围</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">datetime</td>
-<td align="left">‘1000-01-01 00:00:00.000000’ to ‘9999-12-31 23:59:59.999999’</td>
-</tr>
-<tr>
-<td align="left">timestamp</td>
-<td align="left">‘1970-01-01 00:00:01.000000’ to ‘2038-01-19 03:14:07.999999’</td>
-</tr>
-</tbody></table>
-<p><strong>时区</strong></p>
-<ul>
-<li><p><code>timestamp</code> 占 4 个字节，而且是以 <code>utc</code> 格式储存，它会自动检索当前时区并进行转换，存和取可能不一样。</p>
-</li>
-<li><p><code>datetime</code> 占 8 个字节储存，不会进行时区的检索，存和取一样。</p>
-</li>
-<li><p>区别：如果存进去的是 <code>NULL</code>，<code>timestamp</code> 会自动储存当前时间，而 <code>datetime</code> 会储存 <code>NULL</code>。</p>
-</li>
-</ul>
-<p><strong>测试</strong></p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建测试表</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">table</span> timedemo(st <span class="built_in">timestamp</span>,dt datetime);</span><br><span class="line"></span><br><span class="line"><span class="comment"># 插入数据</span></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> timedemo <span class="keyword">values</span> (<span class="literal">null</span>,<span class="literal">null</span>), (<span class="keyword">now</span>(),<span class="keyword">now</span>()), (<span class="string">'20161001193450'</span>,<span class="string">'20161001193450'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment"># timestamp 会自动储存当前时间，而 datetime 会储存 NULL</span></span><br><span class="line">mysql&gt; select * from timedemo;</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line">| st                  | dt                  |</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line">| 2019-09-24 14:00:15 | NULL                |</span><br><span class="line">| 2019-09-24 14:00:15 | 2019-09-24 14:00:15 |</span><br><span class="line">| 2016-10-01 19:34:50 | 2016-10-01 19:34:50 |</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 将时区修改为东9区，会发现 timestamp 比 datetime 多一小时</span></span><br><span class="line">mysql&gt; set time_zone='+9:00';</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; show variables like "time_zone";</span><br><span class="line">+<span class="comment">---------------+--------+</span></span><br><span class="line">| Variable_name | Value  |</span><br><span class="line">+<span class="comment">---------------+--------+</span></span><br><span class="line">| time_zone     | +09:00 |</span><br><span class="line">+<span class="comment">---------------+--------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">select</span> * <span class="keyword">from</span> timedemo;</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line">| st                  | dt                  |</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line">| 2019-09-24 15:00:15 | NULL                |</span><br><span class="line">| 2019-09-24 15:00:15 | 2019-09-24 14:00:15 |</span><br><span class="line">| 2016-10-01 20:34:50 | 2016-10-01 19:34:50 |</span><br><span class="line">+<span class="comment">---------------------+---------------------+</span></span><br><span class="line">3 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-
-<p><strong>选择</strong></p>
-<ul>
-<li>如果在时间上要超过 <code>Linux</code> 时间的，或者服务器时区不一样的就建议选择 <code>datetime</code>。</li>
-<li>如果是想要使用自动插入时间或者自动更新时间功能，可以使用 <code>timestamp</code>。</li>
-<li>存储年使用 <code>year</code>，存储日期使用 <code>date</code>，存储时间使用 <code>datetime</code>。</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/8/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/blog/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/13/">13</a><a class="extend next" rel="next" href="/blog/page/10/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/page/8/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/blog/page/10/">10</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/14/">14</a><a class="extend next" rel="next" href="/blog/page/10/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -3730,7 +3682,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">130</span>
+                    <span class="site-state-item-count">132</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

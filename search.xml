@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>CentOS 6 与 CentOS 7 启停服务</title>
+    <url>/blog/2019/11/15/liunx-service/</url>
+    <content><![CDATA[<h2 id="CentOS-6"><a href="#CentOS-6" class="headerlink" title="CentOS 6"></a>CentOS 6</h2><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 设置服务自启动</span></span><br><span class="line">chkconfig --add mysqld          <span class="comment"># 添加服务</span></span><br><span class="line">chkconfig mysqld on             <span class="comment"># 开机自启服务</span></span><br><span class="line">chkconfig mysqld off            <span class="comment"># 关闭开机自启</span></span><br><span class="line">chkconfig --list | grep mysqld  <span class="comment"># 查看</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看状态、启动、停止、重启</span></span><br><span class="line">service mysqld status/start/stop/restart</span><br></pre></td></tr></table></figure>
+
+<h2 id="CentOS-7"><a href="#CentOS-7" class="headerlink" title="CentOS 7"></a>CentOS 7</h2><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">systemctl enable mysqld.service  <span class="comment"># 开机自启服务</span></span><br><span class="line">systemctl disable mysqld.service <span class="comment"># 关闭开机自启</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看状态、启动、停止、重启</span></span><br><span class="line">systemctl status/start/stop/restart mysqld.service</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>MySQL · 实时会话解析</title>
+    <url>/blog/2019/11/15/mysql-live-session/</url>
+    <content><![CDATA[<h2 id="实时会话"><a href="#实时会话" class="headerlink" title="实时会话"></a>实时会话</h2>]]></content>
+      <categories>
+        <category>MySQL</category>
+      </categories>
+  </entry>
+  <entry>
     <title>MySQL · 健康检查</title>
     <url>/blog/2019/11/15/mysql-health-check/</url>
     <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>MySQL 运行状况健康检查，提供技术评估和建议供您优化数据库部署。MySQL 技术人员将与您的团队紧密合作，部署 <strong>MySQL Enterprise Monitor</strong>，查看警报和建议，从而优化模式、服务器配置、查询和复制。这将显著提高性能、可扩展性、可用性和安全性。MySQL 技术人员还可以帮助您的团队评估新的审计功能、LDAP 或 Active Directory 服务器的外部身份验证，以及非阻塞的高速备份功能。</p>
@@ -406,6 +426,9 @@
     <content><![CDATA[<h2 id="kill-sh"><a href="#kill-sh" class="headerlink" title="kill.sh"></a>kill.sh</h2><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># !/bin/sh</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#############################################################################</span></span><br><span class="line"><span class="comment"># Kill all processlist According to status.</span></span><br><span class="line"><span class="comment"># -h: 主机IP</span></span><br><span class="line"><span class="comment"># -u: 用户名</span></span><br><span class="line"><span class="comment"># -p: 密码</span></span><br><span class="line"><span class="comment">#############################################################################</span></span><br><span class="line"></span><br><span class="line">host = <span class="string">''</span></span><br><span class="line">user = <span class="string">''</span></span><br><span class="line">pwd  = <span class="string">''</span></span><br><span class="line">status = <span class="string">''</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> :</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">  n=`mysqladmin processlist -h<span class="variable">$host</span> -u<span class="variable">$user</span> -p<span class="variable">$pwd</span> | grep -i <span class="variable">$status</span> | wc -l`</span><br><span class="line">  date=`date +%Y%m%d\[%H:%M:%S]`</span><br><span class="line">  echo <span class="variable">$n</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> [ <span class="string">"<span class="variable">$n</span>"</span> <span class="nomarkup">-gt</span> <span class="number">10</span> ]</span><br><span class="line">  then</span><br><span class="line">  <span class="keyword">for</span> i <span class="keyword">in</span> `mysqladmin processlist -h<span class="variable">$host</span> -u<span class="variable">$user</span> -p<span class="variable">$pwd</span> | grep -i <span class="variable">$status</span> | awk <span class="string">'&#123;print $2&#125;'</span>`</span><br><span class="line">  <span class="keyword">do</span></span><br><span class="line">  	mysqladmin processlist -h<span class="variable">$host</span> -u<span class="variable">$user</span> -p<span class="variable">$pwd</span> kill <span class="variable">$i</span></span><br><span class="line">  done</span><br><span class="line"></span><br><span class="line">  echo <span class="string">"<span class="variable">$status</span> is too many need killed it "</span> &gt;&gt; /tmp/kill.log</span><br><span class="line">  echo <span class="string">"<span class="variable">$date</span> : <span class="variable">$n</span>"</span> &gt;&gt; /tmp/kill.log</span><br><span class="line">  fi</span><br><span class="line">  sleep <span class="number">1</span></span><br><span class="line">done</span><br></pre></td></tr></table></figure>
 
 ]]></content>
+      <categories>
+        <category>MySQL</category>
+      </categories>
   </entry>
   <entry>
     <title>MySQL · 案例分析 · 大量连接状态 "Writing to net"</title>
