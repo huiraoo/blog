@@ -15,7 +15,34 @@
   <entry>
     <title>MySQL · 实时会话解析</title>
     <url>/blog/2019/11/15/mysql-live-session/</url>
-    <content><![CDATA[<h2 id="实时会话"><a href="#实时会话" class="headerlink" title="实时会话"></a>实时会话</h2>]]></content>
+    <content><![CDATA[<h2 id="命令"><a href="#命令" class="headerlink" title="命令"></a>命令</h2><p><code>show processlist</code>，查看正在运行的线程，列出前100条</p>
+<p><code>show full processlist</code>，列出所有正在运行的线程</p>
+<h2 id="解析"><a href="#解析" class="headerlink" title="解析"></a>解析</h2><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">mysql&gt; show processlist;</span><br><span class="line">+--------+---------+--------------------+--------------------+---------+------+----------+------------------+</span><br><span class="line">| Id     | User    | Host               | db                 | Command | Time | State    | Info             |</span><br><span class="line">+--------+---------+--------------------+--------------------+---------+------+----------+------------------+</span><br><span class="line">| <span class="number">106125</span> | tdmsdev | <span class="number">10.153</span>.<span class="number">96.89</span>:<span class="number">56808</span> | tdm                | Sleep   |  <span class="number">597</span> |          | NULL             |</span><br><span class="line">| <span class="number">106134</span> | tdmsdev | <span class="number">10.153</span>.<span class="number">96.89</span>:<span class="number">56827</span> | tdm                | Sleep   |  <span class="number">596</span> |          | NULL             |</span><br><span class="line">| <span class="number">106178</span> | hdm     | <span class="number">10.133</span>.<span class="number">0.53</span>:<span class="number">60606</span>  | information_schema | Sleep   |    <span class="number">4</span> |          | NULL             |</span><br><span class="line">| <span class="number">106179</span> | sre     | localhost          | NULL               | Query   |    <span class="number">0</span> | starting | show processlist |</span><br><span class="line">+--------+---------+--------------------+--------------------+---------+------+----------+------------------+</span><br><span class="line"><span class="number">4</span> rows <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>Id</strong>：线程标识，<code>kill</code> 某线程时使用</li>
+<li><strong>User</strong>：显示当前用户，也就是执行 <code>SQL</code> 语句的用户</li>
+<li><strong>Host</strong>：显示执行 <code>SQL</code> 的 <code>IP</code> 和端口，可以用来追踪问题的来源</li>
+<li><strong>db</strong>：显示该线程连接的是哪个数据库</li>
+<li><strong>Command</strong>：显示当前执行的命令，一般：<code>Sleep</code> 休眠，<code>Query</code> 查询，<code>Connect</code> 连接，<code>Binlog Dump</code> 复制</li>
+<li><strong>Time</strong>：会话持续时间，单位（秒）</li>
+<li><strong>State</strong>：显示使用当前连接的状态，很重要列。请注意，<code>State</code> 只是语句执行中的某一个状态，以查询为例，需要经过 <code>copying to tmp table，sorting result，sending data</code> 等状态才算完成。</li>
+<li><strong>Info</strong>：显示执行的 <code>SQL</code> 语句，判断问题的重要依据。</li>
+</ul>
+<h2 id="State"><a href="#State" class="headerlink" title="State"></a>State</h2><ul>
+<li><strong>Sleeping</strong>：已处理完，正在等待客户端发送新请求。</li>
+<li><strong>Sending data</strong>：线程正在处理 <code>select</code> 语句，并将数据发送到客户端。由于在此状态期间发生的操作往往会执行大量磁盘访问（读取），因此它通常是给定查询生命周期中运行时间最长的状态，属于慢查询。</li>
+<li><strong>Creating tmp table</strong>：正在创建临时表以存放部分查询结果。</li>
+<li><strong>Copying to tmp table on disk</strong>：由于临时结果集大于 <code>tmp_table_size</code>，正在将临时表从内存存储转为磁盘存储以此节省内存。</li>
+<li><strong>Waiting for table flush</strong>：线程正在执行 <code>flush tables</code> 并且正在等待所有线程关闭它们的表。但是，要重新打开表，它必须等到所有其他线程关闭了相关表。</li>
+<li><strong>Writing to net</strong>：服务器正在将数据包写入网络。</li>
+<li><strong>Killed</strong>：通常发送了一个 kill 请求给某线程，某些情况下，线程可能仍然需要很短的时间才能死掉，如果线程被某个其他线程锁定，则一旦另一个线程释放其锁定，kill 就会马上生效。</li>
+<li><strong>System lock</strong>：正在等待取得一个外部的系统锁。如果当前没有运行多个 <code>mysqld</code> 服务同时请求同一个表，那么可以通过增加 <code>--skip-external-locking</code> 参数来禁止外部系统锁。</li>
+</ul>
+<blockquote>
+<p><a href="https://dev.mysql.com/doc/refman/5.7/en/general-thread-states.html" target="_blank" rel="noopener">官方参考</a></p>
+</blockquote>
+]]></content>
       <categories>
         <category>MySQL</category>
       </categories>
@@ -32,7 +59,7 @@
 <li><strong>备份：</strong>评估备份配置并提出更改建议，以提高备份/还原性能</li>
 <li><strong>安全性：</strong>发现安全漏洞并推荐更严格的安全配置</li>
 </ul>
-<p><strong>受众</strong></p>
+<p><strong>对象</strong></p>
 <ul>
 <li>MySQL 应用开发</li>
 <li>项目经理</li>
@@ -46,7 +73,7 @@
 <li><strong>MySQL 分区：</strong>改善高负载情况下的性能</li>
 <li><strong>MySQL 企业级备份：</strong>快速、一致的联机“热”备份</li>
 </ul>
-<h2 id="MySQL-技术支持"><a href="#MySQL-技术支持" class="headerlink" title="MySQL 技术支持"></a>MySQL 技术支持</h2><p>MySQL 提供技术支持服务，用户可直接联系 MySQL 专业支持工程师，获取关于 MySQL 应用开发、部署和管理的全方位支持。</p>
+<h2 id="MySQL-技术支持"><a href="#MySQL-技术支持" class="headerlink" title="MySQL 技术支持"></a>MySQL 技术支持</h2><p>MySQL 提供技术支持服务，用户可直接联系 MySQL 专业支持工程师，获取关于应用开发、部署和管理的全方位支持。</p>
 ]]></content>
       <categories>
         <category>MySQL</category>
@@ -6608,7 +6635,7 @@
 
 <h3 id="设置开机自启动"><a href="#设置开机自启动" class="headerlink" title="设置开机自启动"></a>设置开机自启动</h3><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">cd /usr/local/mysql/bin</span><br><span class="line">cp mysql mysqladmin mysqlbinlog mysqld mysqld_safe mysqldump /usr/bin/</span><br><span class="line"></span><br><span class="line">vi /usr/local/mysql/support-files/mysql.server <span class="comment"># mysqld_pid_file_path=/data/mysql/mysql.pid</span></span><br><span class="line">cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld</span><br><span class="line">chmod +x /etc/init.d/mysqld</span><br><span class="line">chkconfig --add mysqld</span><br><span class="line">chkconfig mysqld on</span><br><span class="line">chkconfig --list</span><br></pre></td></tr></table></figure>
 
-<h3 id="设置用户"><a href="#设置用户" class="headerlink" title="设置用户"></a>设置用户</h3><figure class="highlight"><table><tr><td class="code"><pre><span class="line">$ cat /data/mysql/error.log | grep password</span><br><span class="line"></span><br><span class="line"><span class="comment"># root账号</span></span><br><span class="line">mysql&gt; SET PASSWORD = 'xx';</span><br><span class="line">mysql&gt; ALTER USER 'root'@'localhost' PASSWORD EXPIRE NEVER;</span><br><span class="line"></span><br><span class="line"><span class="comment"># sre账号</span></span><br><span class="line">mysql&gt; CREATE USER 'sre'@'%' IDENTIFIED BY PASSWORD 'xx';</span><br><span class="line">mysql&gt; GRANT all privileges on *.* to 'sre'@'%' WITH GRANT OPTION;</span><br><span class="line"></span><br><span class="line"><span class="comment"># hdm账号</span></span><br><span class="line">mysql&gt; CREATE USER 'hdm'@'%' IDENTIFIED BY PASSWORD 'xx';</span><br><span class="line">mysql&gt; GRANT SELECT, SHOW DATABASES, PROCESS, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO 'hdm'@'%';</span><br><span class="line"></span><br><span class="line">mysql&gt; flush privileges;</span><br><span class="line">mysql&gt; select user,host,authentication_string from mysql.user;</span><br></pre></td></tr></table></figure>
+<h3 id="设置用户"><a href="#设置用户" class="headerlink" title="设置用户"></a>设置用户</h3><figure class="highlight"><table><tr><td class="code"><pre><span class="line">$ cat /data/mysql/error.log | grep password</span><br><span class="line"></span><br><span class="line"><span class="comment"># root账号</span></span><br><span class="line">mysql&gt; SET PASSWORD = 'D3B241D209799DD7EC0A97A19F77086483D3BBF9';</span><br><span class="line">mysql&gt; ALTER USER 'root'@'localhost' PASSWORD EXPIRE NEVER;</span><br><span class="line"></span><br><span class="line"><span class="comment"># sre账号</span></span><br><span class="line">mysql&gt; CREATE USER 'sre'@'%' IDENTIFIED BY PASSWORD '66CC8D8F94978869E17ABDA6FD2E1A5D817E619E';</span><br><span class="line">mysql&gt; GRANT all privileges on *.* to 'sre'@'%' WITH GRANT OPTION;</span><br><span class="line"></span><br><span class="line"><span class="comment"># hdm账号</span></span><br><span class="line">mysql&gt; CREATE USER 'hdm'@'%' IDENTIFIED BY PASSWORD '14533888C6CA3952B3957903FF7E69469C7E3A2B';</span><br><span class="line">mysql&gt; GRANT SELECT, SHOW DATABASES, PROCESS, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO 'hdm'@'%';</span><br><span class="line"></span><br><span class="line">mysql&gt; flush privileges;</span><br><span class="line">mysql&gt; select user,host,authentication_string from mysql.user;</span><br></pre></td></tr></table></figure>
 
 <h2 id="MySQL-5-6"><a href="#MySQL-5-6" class="headerlink" title="MySQL 5.6"></a>MySQL 5.6</h2><h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">/usr/local/mysql/scripts/mysql_install_db  --basedir=/usr/local/mysql --defaults-file=/etc/my.cnf --user=mysql</span><br></pre></td></tr></table></figure>
 
