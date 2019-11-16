@@ -352,6 +352,347 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/27/mysql-privilege/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/08/27/mysql-privilege/" class="post-title-link" itemprop="url">MySQL · 用户权限</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-27 17:45:40" itemprop="dateCreated datePublished" datetime="2019-08-27T17:45:40+08:00">2019-08-27</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-07 15:24:23" itemprop="dateModified" datetime="2019-11-07T15:24:23+08:00">2019-11-07</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <table>
+<thead>
+<tr>
+<th>Privilege</th>
+<th>Grant Table Column</th>
+<th>Context</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_all" target="_blank" rel="noopener"><code>ALL PRIVILEGES</code></a></td>
+<td>Synonym for “all privileges”</td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_alter" target="_blank" rel="noopener"><code>ALTER</code></a></td>
+<td><code>Alter_priv</code></td>
+<td>Tables</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_alter-routine" target="_blank" rel="noopener"><code>ALTER ROUTINE</code></a></td>
+<td><code>Alter_routine_priv</code></td>
+<td>Stored routines</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_create" target="_blank" rel="noopener"><code>CREATE</code></a></td>
+<td><code>Create_priv</code></td>
+<td>Databases, tables, or indexes</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_create-routine" target="_blank" rel="noopener"><code>CREATE ROUTINE</code></a></td>
+<td><code>Create_routine_priv</code></td>
+<td>Stored routines</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_create-tablespace" target="_blank" rel="noopener"><code>CREATE TABLESPACE</code></a></td>
+<td><code>Create_tablespace_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_create-temporary-tables" target="_blank" rel="noopener"><code>CREATE TEMPORARY TABLES</code></a></td>
+<td><code>Create_tmp_table_priv</code></td>
+<td>Tables</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_create-user" target="_blank" rel="noopener"><code>CREATE USER</code></a></td>
+<td><code>Create_user_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_create-view" target="_blank" rel="noopener"><code>CREATE VIEW</code></a></td>
+<td><code>Create_view_priv</code></td>
+<td>Views</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_delete" target="_blank" rel="noopener"><code>DELETE</code></a></td>
+<td><code>Delete_priv</code></td>
+<td>Tables</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_drop" target="_blank" rel="noopener"><code>DROP</code></a></td>
+<td><code>Drop_priv</code></td>
+<td>Databases, tables, or views</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_event" target="_blank" rel="noopener"><code>EVENT</code></a></td>
+<td><code>Event_priv</code></td>
+<td>Databases</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_execute" target="_blank" rel="noopener"><code>EXECUTE</code></a></td>
+<td><code>Execute_priv</code></td>
+<td>Stored routines</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_file" target="_blank" rel="noopener"><code>FILE</code></a></td>
+<td><code>File_priv</code></td>
+<td>File access on server host</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_grant-option" target="_blank" rel="noopener"><code>GRANT OPTION</code></a></td>
+<td><code>Grant_priv</code></td>
+<td>Databases, tables, or stored routines</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_index" target="_blank" rel="noopener"><code>INDEX</code></a></td>
+<td><code>Index_priv</code></td>
+<td>Tables</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_insert" target="_blank" rel="noopener"><code>INSERT</code></a></td>
+<td><code>Insert_priv</code></td>
+<td>Tables or columns</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_lock-tables" target="_blank" rel="noopener"><code>LOCK TABLES</code></a></td>
+<td><code>Lock_tables_priv</code></td>
+<td>Databases</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_process" target="_blank" rel="noopener"><code>PROCESS</code></a></td>
+<td><code>Process_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_proxy" target="_blank" rel="noopener"><code>PROXY</code></a></td>
+<td>See <code>proxies_priv</code> table</td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_references" target="_blank" rel="noopener"><code>REFERENCES</code></a></td>
+<td><code>References_priv</code></td>
+<td>Databases or tables</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_reload" target="_blank" rel="noopener"><code>RELOAD</code></a></td>
+<td><code>Reload_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_replication-client" target="_blank" rel="noopener"><code>REPLICATION CLIENT</code></a></td>
+<td><code>Repl_client_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_replication-slave" target="_blank" rel="noopener"><code>REPLICATION SLAVE</code></a></td>
+<td><code>Repl_slave_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_select" target="_blank" rel="noopener"><code>SELECT</code></a></td>
+<td><code>Select_priv</code></td>
+<td>Tables or columns</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_show-databases" target="_blank" rel="noopener"><code>SHOW DATABASES</code></a></td>
+<td><code>Show_db_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_show-view" target="_blank" rel="noopener"><code>SHOW VIEW</code></a></td>
+<td><code>Show_view_priv</code></td>
+<td>Views</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_shutdown" target="_blank" rel="noopener"><code>SHUTDOWN</code></a></td>
+<td><code>Shutdown_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_super" target="_blank" rel="noopener"><code>SUPER</code></a></td>
+<td><code>Super_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_trigger" target="_blank" rel="noopener"><code>TRIGGER</code></a></td>
+<td><code>Trigger_priv</code></td>
+<td>Tables</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_update" target="_blank" rel="noopener"><code>UPDATE</code></a></td>
+<td><code>Update_priv</code></td>
+<td>Tables or columns</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_usage" target="_blank" rel="noopener"><code>USAGE</code></a></td>
+<td>Synonym for “no privileges”</td>
+<td>Server administration</td>
+</tr>
+</tbody></table>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/21/mysql-index/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2531,215 +2872,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/24/mysql-backup/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/24/mysql-backup/" class="post-title-link" itemprop="url">MySQL · 备份恢复</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-24 10:00:24" itemprop="dateCreated datePublished" datetime="2019-07-24T10:00:24+08:00">2019-07-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-15 16:25:03" itemprop="dateModified" datetime="2019-11-15T16:25:03+08:00">2019-11-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>物理备份：直接备份数据库的数据文件，适用于大数据量，需要快速恢复的数据库。</p>
-<p>逻辑备份：备份数据库中数据结构和内容的SQL语句，适用于较小数据量或是跨版本的数据库备份恢复。</p>
-<p>目前备份方式的几个纬度：</p>
-<ul>
-<li>全量备份 VS 增量备份</li>
-<li>热备 VS 冷备</li>
-<li>物理备份 VS 逻辑备份</li>
-<li>延时备份</li>
-<li>全量binlog备份</li>
-</ul>
-<p>建议方式：</p>
-<ul>
-<li>热备＋物理备份</li>
-<li>核心业务：延时备份＋逻辑备份</li>
-<li>全量binlog备份</li>
-</ul>
-<p>主要做的几点：</p>
-<ul>
-<li>备份策略集中式调度管理</li>
-<li>xtrabackup热备</li>
-<li>备份结果统计分析</li>
-<li>备份数据一致性校验</li>
-<li>采用分布式文件系统存储备份</li>
-</ul>
-<p>备份系统采用分布式文件系统原因：</p>
-<ul>
-<li>解决存储分配的问题</li>
-<li>解决存储NFS备份效率低下问题</li>
-<li>存储集中式管理</li>
-<li>数据可靠性更好</li>
-</ul>
-<h2 id="备份方案"><a href="#备份方案" class="headerlink" title="备份方案"></a>备份方案</h2><ul>
-<li>mysqldump</li>
-<li>XtraBackup</li>
-</ul>
-<h2 id="恢复实践"><a href="#恢复实践" class="headerlink" title="恢复实践"></a>恢复实践</h2><p><strong>关于备份，binlog备份自然不用说了，物理备份有很多方式，有没有推荐的一种，逻辑备份在量大的时候恢复速度比较慢，一般用在什么场景？</strong></p>
-<p>物理备份采用xtrabackup热备方案比较好。逻辑备份一般用在单表恢复效果会非常好。比如你删了一个2G表，但你总数据量2T，用物理备份就会要慢了，逻辑备份就非常有用了。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2788,7 +2920,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">119</span>
+                    <span class="site-state-item-count">120</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

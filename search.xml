@@ -1,6 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>MySQL · 运维实践 · 备份恢复</title>
+    <url>/blog/2019/11/16/mysql-practice-recovery/</url>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><ul>
+<li><strong>项目</strong>：海尔模块商资源平台（HDY）</li>
+<li><strong>数据库</strong>：MySQL 5.5.27</li>
+<li><strong>数据量</strong>：</li>
+</ul>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><ul>
+<li>申请服务器 - 项目经理</li>
+<li>申请特权账号（DBA、DTS 备份）- 项目经理</li>
+<li>搭建数据库 - DBA</li>
+<li>安装恢复软件，并进行相关参数配置 - DTS</li>
+<li>启动恢复</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 数据恢复</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">26</span>K Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">36</span> mysql-bin.<span class="number">000001</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">919</span>K Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">36</span> mysql-bin.<span class="number">000002</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">126</span> Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">38</span> mysql-bin.<span class="number">000003</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">126</span> Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">38</span> mysql-bin.<span class="number">000004</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">126</span> Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">39</span> mysql-bin.<span class="number">000005</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">126</span> Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">45</span> mysql-bin.<span class="number">000006</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">126</span> Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">46</span> mysql-bin.<span class="number">000007</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">1.1</span>G Nov <span class="number">15</span> <span class="number">16</span>:<span class="number">18</span> mysql-bin.<span class="number">000008</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">1.1</span>G Nov <span class="number">15</span> <span class="number">16</span>:<span class="number">21</span> mysql-bin.<span class="number">000009</span></span><br><span class="line">...</span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql <span class="number">1073790463</span> Nov <span class="number">16</span> <span class="number">08</span>:<span class="number">27</span> mysql-bin.<span class="number">000325</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">681747155</span> Nov <span class="number">16</span> <span class="number">08</span>:<span class="number">31</span> mysql-bin.<span class="number">000326</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql       <span class="number">6194</span> Nov <span class="number">16</span> <span class="number">08</span>:<span class="number">27</span> mysql-bin.index</span><br><span class="line"></span><br><span class="line"><span class="comment"># 回滚日志</span></span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>MySQL</category>
+      </categories>
+  </entry>
+  <entry>
     <title>低空掠过，精确制导</title>
     <url>/blog/2019/11/15/think-direction/</url>
     <content><![CDATA[<p><a href="https://baike.baidu.com/item/%E8%92%8B%E5%87%A1/21973556?fr=aladdin" target="_blank" rel="noopener">蒋凡 </a>谈职场进化历程，总结的八字经验：低空掠过，精确制导</p>
@@ -4836,22 +4858,34 @@
 <li>单主模式，升级为主从模式</li>
 </ul>
 <h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><p>使用 Percona XtraBackup 工具不停机不锁表在线搭建从库。</p>
-<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p>（1）主从服务器，<a href="https://huiraoo.github.io/blog/2019/06/18/mysql-xtrabackup/"><strong>安装 XtraBackup</strong></a></p>
-<p>（2）<a href="https://huiraoo.github.io/blog/2019/07/08/linux-ssh/"><strong>配置主从互信</strong></a></p>
-<p>（3）备份主库</p>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><ul>
+<li>主从服务器，<a href="https://huiraoo.github.io/blog/2019/06/18/mysql-xtrabackup/"><strong>安装 XtraBackup</strong></a></li>
+</ul>
+<ul>
+<li><p><a href="https://huiraoo.github.io/blog/2019/07/08/linux-ssh/"><strong>配置主从互信</strong></a></p>
+</li>
+<li><p>备份主库</p>
+</li>
+</ul>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">$ innobackupex --defaults-file=/etc/my.cnf --user=<span class="string">'xx'</span> --password=<span class="string">'xx'</span> --no-timestamp /<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
 
 <blockquote>
 <p>Tips：备份目录要依据服务器磁盘分配，否则会占满磁盘，影响业务。</p>
 </blockquote>
-<p>（4）传输到从库</p>
+<ul>
+<li>传输到从库</li>
+</ul>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">$ scp -r /<span class="keyword">data</span>/backup/* root@x.x.x.x:/<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
 
-<p>（5）恢复数据</p>
+<ul>
+<li>恢复数据</li>
+</ul>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">$ mysqladmin -uroot -p<span class="string">'xx'</span> shutdown</span><br><span class="line">$ innobackupex --apply-log /<span class="keyword">data</span>/backup</span><br><span class="line">$ mv mysql mysql_bak</span><br><span class="line">$ mkdir mysql</span><br><span class="line">$ innobackupex --copy-back /<span class="keyword">data</span>/backup</span><br><span class="line">$ chown -R mysql:mysql mysql</span><br><span class="line">$ /usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql &gt;/dev/null &amp;</span><br></pre></td></tr></table></figure>
 
-<p>（6）建立复制关系</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">$ cat xtrabackup_binlog_info</span><br><span class="line">mysql-binlog.<span class="number">000297</span>	<span class="number">900834433</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置同步</span></span><br><span class="line">CHANGE MASTER TO </span><br><span class="line">MASTER_HOST=<span class="string">'x.x.x.x'</span>,</span><br><span class="line">MASTER_USER=<span class="string">'repl'</span>,</span><br><span class="line">MASTER_PASSWORD=<span class="string">'Changeme_123'</span>,</span><br><span class="line">MASTER_PORT=<span class="number">3306</span>,</span><br><span class="line">MASTER_LOG_FILE=<span class="string">'mysql-binlog.000297'</span>, </span><br><span class="line">MASTER_LOG_POS=<span class="number">900834433</span>,</span><br><span class="line">MASTER_CONNECT_RETRY=<span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 开启同步</span></span><br><span class="line">mysql&gt; start slave;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 主库检查参数</span></span><br><span class="line">mysql&gt; show master status;</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line">| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB |</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line">| mysql-bin.<span class="number">001958</span> | <span class="number">32629730</span> |              |                  |</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line"></span><br><span class="line"><span class="comment"># 从库检查参数</span></span><br><span class="line">show slave status\G</span><br><span class="line">Slave_IO_Running: Yes</span><br><span class="line">Slave_SQL_Running: Yes</span><br></pre></td></tr></table></figure>
+<ul>
+<li>建立复制关系</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">$ cat xtrabackup_binlog_info</span><br><span class="line">mysql-binlog.<span class="number">000297</span>	<span class="number">900834433</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置同步</span></span><br><span class="line">CHANGE MASTER TO </span><br><span class="line">MASTER_HOST=<span class="string">'x.x.x.x'</span>,</span><br><span class="line">MASTER_USER=<span class="string">'repl'</span>,</span><br><span class="line">MASTER_PASSWORD=<span class="string">'xx'</span>,</span><br><span class="line">MASTER_PORT=<span class="number">3306</span>,</span><br><span class="line">MASTER_LOG_FILE=<span class="string">'mysql-bin.000297'</span>, </span><br><span class="line">MASTER_LOG_POS=<span class="number">900834433</span>,</span><br><span class="line">MASTER_CONNECT_RETRY=<span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 开启同步</span></span><br><span class="line">mysql&gt; start slave;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 主库检查参数</span></span><br><span class="line">mysql&gt; show master status;</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line">| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB |</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line">| mysql-bin.<span class="number">001958</span> | <span class="number">32629730</span> |              |                  |</span><br><span class="line">+------------------+----------+--------------+------------------+</span><br><span class="line"></span><br><span class="line"><span class="comment"># 从库检查参数</span></span><br><span class="line">show slave status\G</span><br><span class="line">Slave_IO_Running: Yes</span><br><span class="line">Slave_SQL_Running: Yes</span><br></pre></td></tr></table></figure>
 
 ]]></content>
       <categories>
