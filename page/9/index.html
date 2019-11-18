@@ -352,6 +352,244 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/10/aliyun-dbgateway/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/10/aliyun-dbgateway/" class="post-title-link" itemprop="url">阿里云 · 数据库网关</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-10 16:10:41" itemprop="dateCreated datePublished" datetime="2019-10-10T16:10:41+08:00">2019-10-10</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-24 10:18:23" itemprop="dateModified" datetime="2019-10-24T10:18:23+08:00">2019-10-24</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/阿里云/" itemprop="url" rel="index"><span itemprop="name">阿里云</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>数据库网关</strong>（Database Gateway，<code>DG</code>）无需本地开通公网端口，将本地数据库与云服务连接起来，且可以与阿里云产品（如：数据传输服务 <code>DTS</code>，数据库备份 <code>DBS</code>，数据管理 <code>DMS</code>，混合数据库管理 <code>HDM</code> 等）集成使用，提供安全、可靠、低成本的私网数据库接入能力。</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>通过数据库网关，可以使用应用程序或云服务访问并管理本地 <code>IDC</code> 数据库和其他云厂商数据库。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-10-161400.png" alt></p>
+<p><strong>工作原理</strong>：</p>
+<p>① 本地安装一个<strong>数据库网关代理</strong>（database gateway agent）</p>
+<p>② 网关代理负责与<strong>数据库网关云端服务</strong>（database gateway cloud service）建立安全的、可信任的通道，不同账号、不同网关所建立的通道彼此隔离</p>
+<p>③ 通道建立后，当在云端使用数据库产品（如 <code>HDM</code>、<code>DBS</code>）需要访问该网络内的本地数据库时，数据库产品会通过已建立好的通道，访问至本地网络</p>
+<h2 id="DBGateway"><a href="#DBGateway" class="headerlink" title="DBGateway"></a>DBGateway</h2><p>是 <code>HDM</code> 的一个组件，部署在用户环境中的 <code>Daemon</code> 程序，它负责进行数据库性能数据的采集、计算，不读取用户业务数据，并且通过加密压缩的方式进行通信。</p>
+<p><strong>目录结构</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── bin</span><br><span class="line">│   ├── dbgateway</span><br><span class="line">│   └── dbgateway-manager</span><br><span class="line">├── conf</span><br><span class="line">│   ├── dbgateway.conf</span><br><span class="line">│   └── server.crt</span><br><span class="line">└── log</span><br><span class="line">    ├── dbgateway.err</span><br><span class="line">    ├── dbgateway.log</span><br><span class="line">    └── dbgateway_manager.log</span><br></pre></td></tr></table></figure>
+
+<p><strong>常用命令</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 重启 </span></span><br><span class="line">/opt/dbgateway/bin/dbgateway-manager -d restart</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动 </span></span><br><span class="line">/opt/dbgateway/bin/dbgateway-manager -d start</span><br><span class="line"></span><br><span class="line"><span class="comment"># 停止 </span></span><br><span class="line">/opt/dbgateway/bin/dbgateway-manager -d stop</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除</span></span><br><span class="line">rm -rf /opt/dbgateway</span><br></pre></td></tr></table></figure>
+
+<h2 id="API参考"><a href="#API参考" class="headerlink" title="API参考"></a>API参考</h2><table>
+<thead>
+<tr>
+<th align="left">API</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123415.html#concept-861901" target="_blank" rel="noopener">CreateGateway</a></td>
+<td align="left">创建网关</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123570.html#concept-878728" target="_blank" rel="noopener">ModifyGateway</a></td>
+<td align="left">修改网关</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123572.html#concept-878734" target="_blank" rel="noopener">DeleteGateway</a></td>
+<td align="left">删除网关</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123575.html#concept-878745" target="_blank" rel="noopener">StopGateway</a></td>
+<td align="left">停止网关</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123579.html#concept-878753" target="_blank" rel="noopener">CreateGatewayVerifyCode</a></td>
+<td align="left">生成线下安装网关时需要的验证码</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123581.html#concept-878756" target="_blank" rel="noopener">DownloadGatewayProgram</a></td>
+<td align="left">返回网关程序的下载地址</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123590.html#concept-878811" target="_blank" rel="noopener">ConnectDatabase</a></td>
+<td align="left">通过网关连接数据库</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123703.html#concept-895452" target="_blank" rel="noopener">GetUserDatabases</a></td>
+<td align="left">返回用户数据库列表信息</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123602.html#concept-878845" target="_blank" rel="noopener">AddDatabase</a></td>
+<td align="left">添加数据库</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123604.html#concept-878851" target="_blank" rel="noopener">ModifyDatabase</a></td>
+<td align="left">修改数据库</td>
+</tr>
+<tr>
+<td align="left"><a href="https://help.aliyun.com/document_detail/123600.html#concept-878841" target="_blank" rel="noopener">DeleteDatabase</a></td>
+<td align="left">删除数据库</td>
+</tr>
+</tbody></table>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/09/aliyun-hdm/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2921,199 +3159,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/04/mysql-disaster/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/09/04/mysql-disaster/" class="post-title-link" itemprop="url">MySQL · 容灾</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-09-04 16:16:31" itemprop="dateCreated datePublished" datetime="2019-09-04T16:16:31+08:00">2019-09-04</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-15 16:33:54" itemprop="dateModified" datetime="2019-11-15T16:33:54+08:00">2019-11-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>数据是企业的生命线，<code>PSI</code> 线上系统数据基本都存储在青岛本地机房，缺少异地容灾能力，当出现机房级灾难场景下（如：地震、海啸、火灾等），业务连续性受到极大的影响，损失不可估量。如下图所示，目前 <code>PSI</code> 已具备前两类故障场景的覆盖能力，需要构建覆盖第三类故障场景能力，全方位保障业务数据安全，有备无患。</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-135300.png" alt></p>
-<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><ul>
-<li>保证极端场景下业务数据可恢复</li>
-<li><code>RPO</code> &lt; 2 小时，<code>RTO</code> &lt; 24 小时</li>
-</ul>
-<h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><p><strong>设计方案</strong>：如下图所示，重要系统生产数据（青岛本地机房：电信机房、联通机房、移动机房…）同步至红岛灾备数据中心，特别重要系统数据压缩存储上传至阿里云 <code>OSS</code>。</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-135600.png" alt></p>
-<p><strong>实施方案</strong>：从库实例再搭建一个从实例形成级联结构，对数据进行实时同步，主要为避免增加主库负载。</p>
-<p><strong>实例拓扑：</strong></p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-140100.png" alt></p>
-<p><strong>系统监控：</strong></p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-140200.png" alt></p>
-<ul>
-<li><p>主实例：<code>TDDS_M</code></p>
-</li>
-<li><p>从实例：<code>TDDS_S</code></p>
-</li>
-<li><p>灾备实例：<code>TDDS_D</code></p>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3162,7 +3207,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">121</span>
+                    <span class="site-state-item-count">122</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

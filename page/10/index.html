@@ -352,6 +352,199 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/04/mysql-disaster/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/04/mysql-disaster/" class="post-title-link" itemprop="url">MySQL · 容灾</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-04 16:16:31" itemprop="dateCreated datePublished" datetime="2019-09-04T16:16:31+08:00">2019-09-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-15 16:33:54" itemprop="dateModified" datetime="2019-11-15T16:33:54+08:00">2019-11-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>数据是企业的生命线，<code>PSI</code> 线上系统数据基本都存储在青岛本地机房，缺少异地容灾能力，当出现机房级灾难场景下（如：地震、海啸、火灾等），业务连续性受到极大的影响，损失不可估量。如下图所示，目前 <code>PSI</code> 已具备前两类故障场景的覆盖能力，需要构建覆盖第三类故障场景能力，全方位保障业务数据安全，有备无患。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-135300.png" alt></p>
+<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><ul>
+<li>保证极端场景下业务数据可恢复</li>
+<li><code>RPO</code> &lt; 2 小时，<code>RTO</code> &lt; 24 小时</li>
+</ul>
+<h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><p><strong>设计方案</strong>：如下图所示，重要系统生产数据（青岛本地机房：电信机房、联通机房、移动机房…）同步至红岛灾备数据中心，特别重要系统数据压缩存储上传至阿里云 <code>OSS</code>。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-135600.png" alt></p>
+<p><strong>实施方案</strong>：从库实例再搭建一个从实例形成级联结构，对数据进行实时同步，主要为避免增加主库负载。</p>
+<p><strong>实例拓扑：</strong></p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-140100.png" alt></p>
+<p><strong>系统监控：</strong></p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-140200.png" alt></p>
+<ul>
+<li><p>主实例：<code>TDDS_M</code></p>
+</li>
+<li><p>从实例：<code>TDDS_S</code></p>
+</li>
+<li><p>灾备实例：<code>TDDS_D</code></p>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/28/docker/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2359,491 +2552,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/25/mysql-guide/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/25/mysql-guide/" class="post-title-link" itemprop="url">MySQL · 简介</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-25 10:23:48" itemprop="dateCreated datePublished" datetime="2019-07-25T10:23:48+08:00">2019-07-25</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-15 09:25:19" itemprop="dateModified" datetime="2019-11-15T09:25:19+08:00">2019-11-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="历史"><a href="#历史" class="headerlink" title="历史"></a>历史</h2><ul>
-<li>1979年，Monty Widenius 写了最初的版本</li>
-<li>1996年，发布 1.0 版本</li>
-<li>1995-2000年，MySQL AB 成立</li>
-<li>2000年4月，集成 MyISAM 和 Replication</li>
-<li>2001年，Heikki Tuuri 向 MySQL 建议集成 InnoDB</li>
-<li>2005年，发布 5.0 版本（提供了视图、存储过程等功能）</li>
-<li><strong>2008年，MySQL AB 被 Sun 收购，出价 10 亿美元</strong></li>
-<li><strong>2009年，推出 5.1 版本，同年 4 月，Oracle 收购 Sun</strong></li>
-<li>2010年12月，推出 5.5 GA 版本，InnoDB 改为默认存储引擎</li>
-<li>2013年2月，推出 5.6 GA 版本</li>
-<li>2015年10月，推出 5.7 GA 版本</li>
-<li>2018年5月，推出 8.0 GA 版本</li>
-</ul>
-<h3 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h3><p><strong>优点</strong></p>
-<ul>
-<li>免费</li>
-<li>开源（源码、社区工具丰富）</li>
-<li>简单（部署简单、门槛低、上手快）</li>
-</ul>
-<p><strong>缺点</strong></p>
-<ul>
-<li>优化器对复杂 SQL 支持不好</li>
-<li>大规模集群方案不成熟，主要指中间件</li>
-<li>备份和恢复方案还是比较复杂，需要依赖外部组件</li>
-<li>缺少分库分表解决方案</li>
-</ul>
-<h3 id="分支"><a href="#分支" class="headerlink" title="分支"></a>分支</h3><ul>
-<li>MySQL 社区版</li>
-<li>Percona</li>
-<li>MariaDB</li>
-<li>MySQL 企业版</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>MySQL Standard Edition</th>
-<th>MySQL Enterprise Edition</th>
-<th>MySQL Cluster CGE</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><a href="https://www.mysql.com/cn/support/" target="_blank" rel="noopener"><strong>Oracle Premier Support</strong></a></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>24x7 Support</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Unlimited Support Incidents</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Knowledge Base</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Maintenance Releases</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/support/consultative.html" target="_blank" rel="noopener">MySQL Consultative Support</a></td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Features</strong></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/database/" target="_blank" rel="noopener">MySQL Database Server</a></td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/document_store.html" target="_blank" rel="noopener">MySQL Document Store</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/connector/" target="_blank" rel="noopener">MySQL Connectors</a></td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://dev.mysql.com/doc/refman/5.7/en/replication.html" target="_blank" rel="noopener">MySQL Replication</a></td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/router.html" target="_blank" rel="noopener">MySQL Router</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://dev.mysql.com/doc/refman/5.7/en/partitioning.html" target="_blank" rel="noopener">MySQL Partitioning</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Workbench</strong></td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Storage Engine: MyISAM</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Storage Engine: InnoDB</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Storage Engine: NDB</td>
-<td></td>
-<td></td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Enterprise Monitor</strong></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>MySQL Enterprise Dashboard</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>MySQL Enterprise Advisors</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>MySQL Query Analyzer</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>MySQL Replication Monitor</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Enterprise Backup</strong></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Hot backup for InnoDB</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Full, Incremental, Partial, Optimistic Backups</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Full, Partial, Selective, Hot Selective restore</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Encryption and Compression</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Point-In-Time-Recovery</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Enterprise Security</strong></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/security.html" target="_blank" rel="noopener">MySQL Enterprise Authentication</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/tde.html" target="_blank" rel="noopener">MySQL Enterprise TDE</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/encryption.html" target="_blank" rel="noopener">MySQL Enterprise Encryption</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/masking.html" target="_blank" rel="noopener">MySQL Enterprise Masking</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/firewall.html" target="_blank" rel="noopener">MySQL Enterprise Firewall</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/audit.html" target="_blank" rel="noopener">MySQL Enterprise Audit</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Enterprise Scalability</strong></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Thread Pool</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Enterprise High-Availability</strong></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>MySQL Group Replication</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>MySQL InnoDB Cluster</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Cluster Manager</strong></td>
-<td></td>
-<td></td>
-<td>√</td>
-</tr>
-<tr>
-<td>Configuration &amp; Provisioning</td>
-<td></td>
-<td></td>
-<td>√</td>
-</tr>
-<tr>
-<td>Automatic Scaling</td>
-<td></td>
-<td></td>
-<td>√</td>
-</tr>
-<tr>
-<td>Management &amp; Monitoring</td>
-<td></td>
-<td></td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/cluster/" target="_blank" rel="noopener">MySQL Cluster Geo-Replication</a></td>
-<td></td>
-<td></td>
-<td>√</td>
-</tr>
-</tbody></table>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2892,7 +2600,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">121</span>
+                    <span class="site-state-item-count">122</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
