@@ -352,6 +352,312 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/16/nginx/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/16/nginx/" class="post-title-link" itemprop="url">Nginx</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-16 18:11:56" itemprop="dateCreated datePublished" datetime="2019-07-16T18:11:56+08:00">2019-07-16</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-24 10:20:35" itemprop="dateModified" datetime="2019-10-24T10:20:35+08:00">2019-10-24</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/其他/" itemprop="url" rel="index"><span itemprop="name">其他</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p><a href="http://nginx.org/" target="_blank" rel="noopener"><strong>Nginx</strong></a>：是一款自由的、开源的、高性能的 HTTP 服务器和反向代理服务器，同时也是一个 IMAP、POP3、SMTP 代理服务器，它可以作为一个 HTTP 服务器进行网站的发布处理，另外也可以作为反向代理进行负载均衡的实现。</p>
+<p><strong>代理</strong>：代理就是一个代表、一个渠道。涉及到两个角色，一个是被代理角色，一个是目标角色，被代理角色通过这个代理访问目标角色完成一些任务的过程称为代理操作过程。如同生活中的专卖店，客人到 adidas 专卖店买了一双鞋，这个专卖店就是代理，被代理角色就是 adidas 厂家，目标角色就是用户。</p>
+<h3 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h3><p>在如今的网络环境下，我们如果由于技术需要要去访问国外的某些网站，此时你会发现位于国外的某网站我们通过浏览器是没有办法访问的，此时大家可能都会用一个操作翻墙进行访问，翻墙的方式主要是找到一个可以访问国外网站的代理服务器，我们将请求发送给代理服务器，代理服务器去访问国外的网站，然后将访问到的数据传递给我们，这种代理模式称为正向代理。</p>
+<p>正向代理最大的特点是客户端非常明确要访问的服务器地址，服务器只清楚请求来自哪个代理服务器，而不清楚来自哪个具体的客户端，正向代理模式屏蔽或者隐藏了真实客户端信息。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133811.png" alt></p>
+<p>客户端必须设置正向代理服务器，当然前提是要知道正向代理服务器的 IP 地址，还有代理程序的端口。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133807.png" alt></p>
+<p><strong>总结来说</strong>：正向代理，”它代理的是客户端，代客户端发出请求”，是一个位于客户端和原始服务器（origin server）之间的服务器，为了从原始服务器取得内容，客户端向代理发送一个请求并指定目标（原始服务器），然后代理向原始服务器转交请求并将获得的内容返回给客户端，客户端必须要进行一些特别的设置才能使用正向代理。</p>
+<p>正向代理的用途：</p>
+<ul>
+<li>访问原来无法访问的资源，如 Google</li>
+<li>可以做缓存，加速访问资源</li>
+<li>对客户端访问授权，上网进行认证</li>
+<li>代理可以记录用户访问记录（上网行为管理），对外隐藏用户信息</li>
+</ul>
+<h3 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h3><p>多个客户端给服务器发送的请求，Nginx 服务器接收到之后，按照一定的规则分发给了后端的业务处理服务器进行处理了。此时，请求的来源也就是客户端是明确的，但是请求具体由哪台服务器处理的并不明确了，Nginx 扮演的就是一个反向代理角色。客户端是无感知代理的存在的，反向代理对外都是透明的，访问者并不知道自己访问的是一个代理。因为客户端不需要任何配置就可以访问。</p>
+<p>反向代理，”它代理的是服务端，代服务端接收请求”，主要用于服务器集群分布式部署的情况下，反向代理隐藏了服务器的信息。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133801.png" alt></p>
+<p>反向代理的作用：</p>
+<ul>
+<li>保证内网的安全，通常将反向代理作为公网访问地址，Web服务器是内网</li>
+<li>负载均衡，通过反向代理服务器来优化网站的负载</li>
+</ul>
+<p><strong>项目场景</strong>：通常情况下，我们在实际项目操作时，正向代理和反向代理很有可能会存在在一个应用场景中，正向代理代理客户端的请求去访问目标服务器，目标服务器是一个反向单利服务器，反向代理了多台真实的业务处理服务器。具体的拓扑图如下：</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133752.png" alt></p>
+<p>二者之间的区别：</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133744.png" alt></p>
+<p>在正向代理中，Proxy 和 Client 同属于一个 LAN（图中方框内），隐藏了客户端信息；</p>
+<p>在反向代理中，Proxy 和 Server 同属于一个LAN（图中方框内），隐藏了服务端信息；</p>
+<p>实际上，Proxy 在两种代理中做的事情都是替服务器代为收发请求和响应，不过从结构上看正好左右互换了一下，所以把后出现的那种代理方式称为反向代理了。</p>
+<h3 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h3><p>这里提到的客户端发送的、Nginx反向代理服务器接收到的请求数量，就是我们说的负载量。请求数量按照一定的规则进行分发到不同的服务器处理的规则，就是一种均衡规则。所以，将服务器接收到的请求按照规则分发的过程，称为负载均衡。</p>
+<p>负载均衡在实际项目操作过程中，有硬件负载均衡和软件负载均衡两种，硬件负载均衡也称为硬负载，如F5负载均衡，相对造价昂贵成本较高，但是数据的稳定性安全性等等有非常好的保障，如中国移动中国联通这样的公司才会选择硬负载进行操作；更多的公司考虑到成本原因，会选择使用软件负载均衡，软件负载均衡是利用现有的技术结合主机硬件实现的一种消息队列分发机制。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133716.png" alt></p>
+<h3 id="几种-web-服务器对比"><a href="#几种-web-服务器对比" class="headerlink" title="几种 web 服务器对比"></a>几种 web 服务器对比</h3><table>
+<thead>
+<tr>
+<th><strong>对比项 \ 服务器</strong></th>
+<th><strong>Apache</strong></th>
+<th><strong>Nginx</strong></th>
+<th><strong>Lighttpd</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Proxy代理</td>
+<td>非常好</td>
+<td>非常好</td>
+<td>一般</td>
+</tr>
+<tr>
+<td>Rewriter</td>
+<td>好</td>
+<td>非常好</td>
+<td>一般</td>
+</tr>
+<tr>
+<td>Fcgi</td>
+<td>不好</td>
+<td>好</td>
+<td>非常好</td>
+</tr>
+<tr>
+<td>热部署</td>
+<td>不支持</td>
+<td>支持</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>系统压力</td>
+<td>很大</td>
+<td>很小</td>
+<td>比较小</td>
+</tr>
+<tr>
+<td>稳定性</td>
+<td>好</td>
+<td>非常好</td>
+<td>不好</td>
+</tr>
+<tr>
+<td>安全性</td>
+<td>好</td>
+<td>一般</td>
+<td>一般</td>
+</tr>
+<tr>
+<td>静态文件处理</td>
+<td>一般</td>
+<td>非常好</td>
+<td>好</td>
+</tr>
+<tr>
+<td>反向代理</td>
+<td>一般</td>
+<td>非常好</td>
+<td>一般</td>
+</tr>
+</tbody></table>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><blockquote>
+<p>yum方式安装</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm</span><br><span class="line">yum install -y nginx</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>安装路径</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">whereis nginx</span><br><span class="line">nginx: /usr/sbin/nginx /usr/lib64/nginx /etc/nginx /usr/share/nginx /usr/share/man/man8/nginx.8.gz</span><br><span class="line"></span><br><span class="line">(1) Nginx配置路径：/etc/nginx/nginx.conf</span><br><span class="line">(2) PID目录：/var/run/nginx.pid</span><br><span class="line">(3) 错误日志：/var/log/nginx/error.log</span><br><span class="line">(4) 访问日志：/var/log/nginx/access.log</span><br><span class="line">(5) 默认站点目录：/usr/share/nginx/html</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">        listen       80;</span><br><span class="line">        server_name  zentao.smocer.top;</span><br><span class="line"></span><br><span class="line">        access_log  /var/log/nginx/zentao.access.log;</span><br><span class="line"></span><br><span class="line">        location / &#123;</span><br><span class="line">          try_files /_not_exists_ @backend;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        location @backend &#123;</span><br><span class="line">           proxy_set_header X-Forwarded-For $remote_addr;</span><br><span class="line">           proxy_set_header Host            $http_host;</span><br><span class="line">           proxy_set_header X-Forwarded-Proto $scheme;</span><br><span class="line">           </span><br><span class="line">        proxy_pass http://10.133.0.53:8080;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><blockquote>
+<p>启动</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>测试 Nginx 配置</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -t</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>重启</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -s reload</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>查询进程</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ps -ef | grep nginx</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>停止服务</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nginx -s stop</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/15/mysql-cases/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2753,248 +3059,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/06/18/mysql-xtrabackup/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/06/18/mysql-xtrabackup/" class="post-title-link" itemprop="url">MySQL · 备份工具 · Percona XtraBackup</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-06-18 10:24:13" itemprop="dateCreated datePublished" datetime="2019-06-18T10:24:13+08:00">2019-06-18</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-22 17:37:47" itemprop="dateModified" datetime="2019-10-22T17:37:47+08:00">2019-10-22</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://github.com/percona/percona-xtrabackup" target="_blank" rel="noopener"><strong>Percona XtraBackup</strong></a> 是 <code>Percona</code> 公司基于 <code>C++</code> 开发的一个用于 <code>MySQL</code> 数据库 <strong>物理热备</strong> 的 <strong>免费开源</strong> 的备份工具。</p>
-<p><strong>XtraBackup 优势</strong></p>
-<ul>
-<li>支持 <code>InnoDB</code> 热备和增量备份</li>
-<li>支持流压缩传输到其它服务器</li>
-<li>备份速度快，比较容易地创建主从同步</li>
-<li>备份时不会增加服务器负载</li>
-</ul>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>1、下载 <code>Percona-XtraBackup</code></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ wget http://devops-files.oss-cn-qingdao.aliyuncs.com/percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
-
-<p>2、<code>rpm</code> 方式安装</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ rpm -ivh percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
-
-<p><strong>报错信息</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">warning: percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64.rpm: Header V4 DSA/SHA1 Signature, key ID cd2efd2a: NOKEY</span><br><span class="line">error: Failed dependencies:</span><br><span class="line">	libev.so.<span class="number">4</span>()(<span class="number">64</span>bit) is needed by percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64</span><br><span class="line">	perl(DBD::mysql) is needed by percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64</span><br><span class="line">	perl(Digest::MD5) is needed by percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64</span><br></pre></td></tr></table></figure>
-
-<p><strong>解决方法</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ wget http://devops-files.oss-cn-qingdao.aliyuncs.com/libev-<span class="number">4.15</span>-<span class="number">1</span>.el6.x86_64.rpm</span><br><span class="line">$ yum -y install perl-DBD-MySQL</span><br><span class="line">$ yum -y install perl-Digest-MD5</span><br><span class="line">$ rpm -ivh libev-<span class="number">4.15</span>-<span class="number">1</span>.el6.x86_64.rpm</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ rpm -ivh percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br><span class="line">Preparing...                           <span class="comment">################################# [100%]</span></span><br><span class="line">Updating / installing...</span><br><span class="line">   <span class="number">1</span>:percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el <span class="comment">################################# [100%]</span></span><br><span class="line"></span><br><span class="line">$ xtrabackup --version </span><br><span class="line">xtrabackup version <span class="number">2.4</span>.<span class="number">12</span> based on MySQL server <span class="number">5.7</span>.<span class="number">19</span> Linux (x86_64)</span><br></pre></td></tr></table></figure>
-
-<p><strong>报错信息</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@hop02 src]<span class="comment"># rpm -ivh percona-xtrabackup-24-2.4.12-1.el7.x86_64.rpm</span></span><br><span class="line">warning: percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64.rpm: Header V4 DSA/SHA1 Signature, key ID cd2efd2a: NOKEY</span><br><span class="line">error: Failed dependencies:</span><br><span class="line">​	libc.so.<span class="number">6</span>(GLIBC_2.<span class="number">14</span>)(<span class="number">64</span>bit) is needed by percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64</span><br><span class="line">​	libstdc++.so.<span class="number">6</span>(GLIBCXX_3.<span class="number">4.15</span>)(<span class="number">64</span>bit) is needed by percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el7.x86_64</span><br></pre></td></tr></table></figure>
-
-<p><strong>解决方法</strong>：</p>
-<p>查看操作系统版本，<code>CentOS 6</code> 下载 <code>el6</code> 的安装包即可。</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ cat /etc/redhat-release</span><br><span class="line">CentOS release <span class="number">6.5</span> (Final)</span><br><span class="line"></span><br><span class="line">$ wget http://devops-files.oss-cn-qingdao.aliyuncs.com/percona-xtrabackup-<span class="number">24</span>-<span class="number">2.4</span>.<span class="number">12</span>-<span class="number">1</span>.el6.x86_64.rpm</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>Tips：不要轻易在真实生产环境中直接安装，因为升级的过程中比较容易出现系统出错。</p>
-</blockquote>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p><strong>备份原理</strong></p>
-<p><code>innobackupex</code> 在后台线程不断追踪 <code>InnoDB</code> 的日志文件，然后复制 <code>InnoDB</code> 的数据文件。数据文件复制完成之后，日志的复制线程也会结束。这样就得到了不在同一时间点的数据副本和开始备份以后的事务日志。完成上面的步骤之后，就可以使用 <code>InnoDB</code> 崩溃恢复代码执行事务日志（<code>redo log</code>），以达到数据的一致性。备份分为两个过程：</p>
-<ul>
-<li><strong>backup</strong>，备份阶段，追踪事务日志和复制数据文件（物理备份）。</li>
-<li><strong>preparing</strong>，重放事务日志，使所有的数据处于同一个时间点，达到一致性状态。</li>
-</ul>
-<p><strong>备份过程</strong></p>
-<p><img src="http://ww4.sinaimg.cn/large/006tNc79ly1g5r4dhuzpvj30hi0srwtk.jpg" alt="PXB"></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>）复制已有的redo log，然后监听redo log变化并持续复制</span><br><span class="line"><span class="number">2</span>）复制事务引擎数据文件</span><br><span class="line"><span class="number">3</span>）等到数据文件复制完成</span><br><span class="line"><span class="number">4</span>）加锁：全局读锁</span><br><span class="line"><span class="number">5</span>）备份非事务引擎数据文件及其他文件</span><br><span class="line"><span class="number">6</span>）获取binlog点位信息等元数据</span><br><span class="line"><span class="number">7</span>）停止复制redo log</span><br><span class="line"><span class="number">8</span>）解锁：全局读锁</span><br><span class="line"><span class="number">9</span>）复制buffer pool dump</span><br><span class="line"><span class="number">10</span>）备份完成</span><br></pre></td></tr></table></figure>
-
-<p><code>XtraBackup</code> 基于 <code>InnoDB</code> 的 <code>crash recovery</code> 机制，在备份还原时利用 <code>redo log</code> 得到完整的数据文件，并通过全局读锁，保证 <code>InnoDB</code> 数据与非 <code>InnoDB</code> 数据的一致性，最终完成备份还原的功能。</p>
-<p><strong>恢复过程</strong></p>
-<p>apply-log</p>
-<ul>
-<li>模拟 <code>MySQL</code> 进行 <code>recover</code>，将 <code>redo log</code> 回放到数据文件中。</li>
-<li>等到 <code>recover</code> 完成 。</li>
-<li>重建 <code>redo log</code>，为启动数据库做准备。</li>
-</ul>
-<p>copy-back</p>
-<ul>
-<li>将数据文件复制回 <code>MySQL</code> 数据目录。</li>
-<li>还原完成。</li>
-</ul>
-<p><code>InnoDB</code> 数据会被恢复至备份结束时（全局读锁时）的状态，而非 <code>InnoDB</code> 数据本身即是在全局读锁时被复制出来，它们的数据一致。</p>
-<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p><strong>全量备份</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># !/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#############################################################################</span></span><br><span class="line"><span class="comment"># Full Backup Using XtraBackup For MySQL</span></span><br><span class="line"><span class="comment">#############################################################################</span></span><br><span class="line"></span><br><span class="line">mode=<span class="variable">$1</span></span><br><span class="line">backupdir=<span class="string">'/data/backup'</span>   <span class="comment"># backup dir</span></span><br><span class="line"></span><br><span class="line">backup() &#123;</span><br><span class="line"><span class="keyword">if</span> [ ! -d <span class="variable">$backupdir</span> ]; then</span><br><span class="line">    mkdir -p <span class="variable">$backupdir</span> </span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份主库：</span></span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --user=root --password=Haier@<span class="number">123</span> --no-timestamp /<span class="variable">$backupdir</span>/full-`date +%Y%m%d%H%M`-bak</span><br><span class="line">find <span class="variable">$backupdir</span> -mtime +<span class="number">2</span> -name <span class="string">'full-*-bak'</span> -exec rm -rf &#123;&#125; \;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 传输到从库：</span></span><br><span class="line"><span class="comment"># scp -r /data/backup/* root@10.133.7.19:/data/backup</span></span><br><span class="line"><span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">case <span class="string">"<span class="variable">$mode</span>"</span> <span class="keyword">in</span></span><br><span class="line">    <span class="string">'full'</span>) backup ;;</span><br><span class="line">*)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># usage</span></span><br><span class="line">    basename=`basename <span class="string">"<span class="variable">$0</span>"</span>`</span><br><span class="line">    echo <span class="string">"Usage: <span class="variable">$basename</span> &#123;full&#125;"</span></span><br><span class="line">    <span class="keyword">exit</span> <span class="number">1</span></span><br><span class="line">    ;;</span><br><span class="line">esac</span><br><span class="line"><span class="keyword">exit</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 每天中午12:00执行全量备份，保留前1天数据</span></span><br><span class="line">crontab -e</span><br><span class="line"><span class="number">0</span> <span class="number">12</span> * * <span class="number">0</span> sh /<span class="keyword">data</span>/backup.sh full</span><br></pre></td></tr></table></figure>
-
-<p><strong>备份报错</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">190812</span> <span class="number">13</span>:<span class="number">39</span>:<span class="number">54</span> &gt;&gt; log scanned up to (<span class="number">491275222500</span>)</span><br><span class="line">xtrabackup: Generating a list of tablespaces</span><br><span class="line">InnoDB: Allocated tablespace ID <span class="number">2</span> <span class="keyword">for</span> mysql/plugin, old maximum was <span class="number">0</span></span><br><span class="line">InnoDB: Operating system error number <span class="number">24</span> <span class="keyword">in</span> a file operation.</span><br><span class="line">InnoDB: Error number <span class="number">24</span> means <span class="string">'Too many open files'</span></span><br><span class="line">InnoDB: Some operating system error numbers are described at http://dev.mysql.com/doc/refman/<span class="number">5.7</span>/en/operating-system-error-codes.html</span><br><span class="line">InnoDB: File ./cosmo_im_1023/bns_io_sapsourcinglist.ibd: <span class="string">'open'</span> returned OS error <span class="number">124</span>. Cannot <span class="keyword">continue</span> operation</span><br><span class="line">InnoDB: Cannot <span class="keyword">continue</span> operation.</span><br></pre></td></tr></table></figure>
-
-<p><strong>解决方案</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">1</span>）shell&gt; ulimit -n <span class="number">65535</span></span><br><span class="line"><span class="number">2</span>）修改 my.cnf 配置文件的参数</span><br><span class="line">innodb_open_files = <span class="number">10240</span></span><br><span class="line">open_files_limit = <span class="number">10240</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
-<li>优先使用高版本 <code>XtraBackup</code> 。</li>
-<li>尽量不要使用 <code>XtraBackup</code> 自带的增量 备份，因为后期使用或者恢复不太方便。</li>
-<li>备份结束时，请立即 <code>apply-log</code> ，这样能够知道备份集是否可用。</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3043,7 +3107,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">122</span>
+                    <span class="site-state-item-count">123</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
