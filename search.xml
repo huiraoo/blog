@@ -11,8 +11,6 @@
 <p><strong>反向代理</strong></p>
 <p>当我们在外网访问百度的时候，其实会进行一个转发，代理到内网去，这就是所谓的反向代理，<strong>即反向代理“代理”的是服务器端</strong>，而且这一个过程对于客户端而言是透明的。</p>
 <p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-25-104300.jpeg" alt></p>
-<p><strong>区别</strong></p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133744.png" alt></p>
 <p><strong>web 服务器对比</strong></p>
 <table>
 <thead>
@@ -85,10 +83,10 @@
 <li><strong>Master 进程</strong>：读取并验证配置文件 <code>nginx.conf</code>，管理 worker 进程。</li>
 <li><strong>Worker 进程</strong>：每一个 Worker 进程都维护一个线程（避免线程切换），处理连接和请求，Worker 进程的个数由配置文件决定，一般和 CPU 个数相关（有利于进程切换），配置几个就有几个 Worker 进程。</li>
 </ul>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-25-105500.jpeg" alt></p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-25-134000.jpeg" alt></p>
 <p><strong>思考1：Nginx 如何做到热部署？</strong></p>
-<p>所谓热部署，就是配置文件 nginx.conf 修改后，不需要 stop Nginx，不需要中断请求，就能让配置文件生效！</p>
-<p><strong>实现方案</strong>：修改配置文件 nginx.conf 后，重新生成新的 worker 进程，当然会以新的配置进行处理，而且新的请求都必须交给新的 worker 进程，至于老 worker 进程，等把那些以前的请求处理完毕，kill 掉即可。</p>
+<p>所谓热部署，就是配置文件 <code>nginx.conf</code> 修改后，不需要 stop nginx，不需要中断请求，就能让配置文件生效！</p>
+<p><strong>实现方案</strong>：修改配置文件 <code>nginx.conf</code> 后，重新生成新的 worker 进程，当然会以新的配置进行处理，而且新的请求都必须交给新的 worker 进程，至于老 worker 进程，等把那些以前的请求处理完毕，kill 掉即可。</p>
 <p><strong>思考2：Nginx 如何做到高并发下的高效处理？</strong></p>
 <p><strong>实现方案</strong>：Nginx 采用了 Linux 的 epoll 模型，epoll 模型基于事件驱动机制，它可以监控多个事件是否准备完毕，如果 OK，那么放入 epoll 队列中，这个过程是异步的，worker 只需要从 epoll 队列循环处理即可。</p>
 <p><strong>思考3：Nginx 挂了怎么办？</strong></p>
