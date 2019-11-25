@@ -1,6 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Nginx 笔记</title>
+    <url>/blog/2019/11/25/ilearning-nginx/</url>
+    <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="http://nginx.org/" target="_blank" rel="noopener"><strong>Nginx</strong></a>：是一款轻量级的 Web 服务器、反向代理服务器，由于它的内存占用少（一个 worker 进程只占用 10-12M 内存）、启动极快、高并发能力强，在互联网项目中广泛应用。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-25-104100.jpeg" alt></p>
+<h3 id="代理"><a href="#代理" class="headerlink" title="代理"></a>代理</h3><p><strong>正向代理</strong></p>
+<p>由于防火墙的原因，我们并不能直接访问谷歌，那么我们可以借助 VPN 来实现，这就是一个简单的正向代理的例子。这里你能够发现，<strong>正向代理“代理”的是客户端</strong>，客户端是知道目标的，而目标是不知道客户端是通过 VPN 访问的。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-25-104200.jpeg" alt></p>
+<p><strong>反向代理</strong></p>
+<p>当我们在外网访问百度的时候，其实会进行一个转发，代理到内网去，这就是所谓的反向代理，<strong>即反向代理“代理”的是服务器端</strong>，而且这一个过程对于客户端而言是透明的。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-25-104300.jpeg" alt></p>
+<p><strong>区别</strong></p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133744.png" alt></p>
+<p><strong>web 服务器对比</strong></p>
+<table>
+<thead>
+<tr>
+<th><strong>对比项 \ 服务器</strong></th>
+<th><strong>Apache</strong></th>
+<th><strong>Nginx</strong></th>
+<th><strong>Lighttpd</strong></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Proxy代理</td>
+<td>非常好</td>
+<td>非常好</td>
+<td>一般</td>
+</tr>
+<tr>
+<td>Rewriter</td>
+<td>好</td>
+<td>非常好</td>
+<td>一般</td>
+</tr>
+<tr>
+<td>Fcgi</td>
+<td>不好</td>
+<td>好</td>
+<td>非常好</td>
+</tr>
+<tr>
+<td>热部署</td>
+<td>不支持</td>
+<td>支持</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>系统压力</td>
+<td>很大</td>
+<td>很小</td>
+<td>比较小</td>
+</tr>
+<tr>
+<td>稳定性</td>
+<td>好</td>
+<td>非常好</td>
+<td>不好</td>
+</tr>
+<tr>
+<td>安全性</td>
+<td>好</td>
+<td>一般</td>
+<td>一般</td>
+</tr>
+<tr>
+<td>静态文件处理</td>
+<td>一般</td>
+<td>非常好</td>
+<td>好</td>
+</tr>
+<tr>
+<td>反向代理</td>
+<td>一般</td>
+<td>非常好</td>
+<td>一般</td>
+</tr>
+</tbody></table>
+<h3 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h3><p>负载均衡作为流量转发服务，将来自客户端的请求通过负载均衡集群转发至后端服务器，后端服务器再将响应通过内网返回给负载均衡。基础架构是采用集群部署，提供四层（TCP 协议和 UDP 协议）和七层（HTTP 和 HTTPS 协议）的负载均衡，可实现会话同步，以消除服务器单点故障，提升冗余，保证服务的稳定性。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-25-112200.png" alt></p>
+<h2 id="Nginx-进程"><a href="#Nginx-进程" class="headerlink" title="Nginx 进程"></a>Nginx 进程</h2><p>启动 Nginx 后，其实就是在 80 端口启动了 Socket 服务进行监听，Nginx 涉及 Master 进程和 Worker 进程。</p>
+<ul>
+<li><strong>Master 进程</strong>：读取并验证配置文件 <code>nginx.conf</code>，管理 worker 进程。</li>
+<li><strong>Worker 进程</strong>：每一个 Worker 进程都维护一个线程（避免线程切换），处理连接和请求，Worker 进程的个数由配置文件决定，一般和 CPU 个数相关（有利于进程切换），配置几个就有几个 Worker 进程。</li>
+</ul>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-25-105500.jpeg" alt></p>
+<p><strong>思考1：Nginx 如何做到热部署？</strong></p>
+<p>所谓热部署，就是配置文件 nginx.conf 修改后，不需要 stop Nginx，不需要中断请求，就能让配置文件生效！</p>
+<p><strong>实现方案</strong>：修改配置文件 nginx.conf 后，重新生成新的 worker 进程，当然会以新的配置进行处理，而且新的请求都必须交给新的 worker 进程，至于老 worker 进程，等把那些以前的请求处理完毕，kill 掉即可。</p>
+<p><strong>思考2：Nginx 如何做到高并发下的高效处理？</strong></p>
+<p><strong>实现方案</strong>：Nginx 采用了 Linux 的 epoll 模型，epoll 模型基于事件驱动机制，它可以监控多个事件是否准备完毕，如果 OK，那么放入 epoll 队列中，这个过程是异步的，worker 只需要从 epoll 队列循环处理即可。</p>
+<p><strong>思考3：Nginx 挂了怎么办？</strong></p>
+<p><strong>实现方案</strong>：Keepalived + Nginx 实现高可用</p>
+<ul>
+<li>请求不要直接打到 Nginx 上，应该先通过 Keepalived（这就是所谓虚拟 IP，VIP），消除单点故障</li>
+<li>Keepalived 应该能监控 Nginx 的生命状态（提供一个用户自定义的脚本，定期检查 Nginx 进程状态，进行权重变化，从而实现 Nginx 故障切换）</li>
+</ul>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-25-113000.jpeg" alt></p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ul>
+<li>安装</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">rpm -ivh http://nginx.org/packages/centos/<span class="number">7</span>/noarch/RPMS/nginx-release-centos-<span class="number">7</span>-<span class="number">0</span>.el7.ngx.noarch.rpm</span><br><span class="line">yum install -y nginx</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>路径</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">$ whereis nginx</span><br><span class="line">nginx: /usr/sbin/nginx /usr/lib64/nginx /etc/nginx /usr/share/nginx /usr/share/man/man8/nginx.<span class="number">8</span>.gz</span><br><span class="line"></span><br><span class="line">- Nginx配置路径：/etc/nginx/nginx.conf</span><br><span class="line">- PID目录：/var/run/nginx.pid</span><br><span class="line">- 错误日志：/var/log/nginx/error.log</span><br><span class="line">- 访问日志：/var/log/nginx/access.log</span><br><span class="line">- 默认站点目录：/usr/share/nginx/html</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">        listen       80;</span><br><span class="line">        server_name  zentao.smocer.top;</span><br><span class="line"></span><br><span class="line">        access_log  /var/log/nginx/zentao.access.log;</span><br><span class="line"></span><br><span class="line">        location / &#123;</span><br><span class="line">          try_files /_not_exists_ @backend;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        location @backend &#123;</span><br><span class="line">           proxy_set_header X-Forwarded-For $remote_addr;</span><br><span class="line">           proxy_set_header Host            $http_host;</span><br><span class="line">           proxy_set_header X-Forwarded-Proto $scheme;</span><br><span class="line">           </span><br><span class="line">        proxy_pass http://10.133.0.53:8080;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><blockquote>
+<p>启动</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nginx</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>检查配置</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">nginx -t</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>热加载</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nginx -s reload</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>查询进程</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ps -ef | grep nginx</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>停服务</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nginx -s stop</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>Nginx</category>
+      </categories>
+  </entry>
+  <entry>
     <title>Java · 框架 · MyBatis</title>
     <url>/blog/2019/11/25/java-frame-mybatis/</url>
     <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://mybatis.org/mybatis-3/zh/index.html" target="_blank" rel="noopener">MyBatis</a> 是一款优秀的持久层框架，它支持定制化 SQL、存储过程以及高级映射。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以使用简单的 XML 或注解来配置和映射原生类型、接口和 Java 的 POJO（Plain Old Java Objects，普通老式 Java 对象）为数据库中的记录。</p>
@@ -7346,149 +7486,6 @@
       <categories>
         <category>MySQL</category>
       </categories>
-  </entry>
-  <entry>
-    <title>Nginx 笔记</title>
-    <url>/blog/2019/07/16/nginx/</url>
-    <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="http://nginx.org/" target="_blank" rel="noopener"><strong>Nginx</strong></a>：是一款轻量级的 Web 服务器、反向代理服务器，由于它的内存占用少（一个 worker 进程只占用 10-12M 内存）、启动极快、高并发能力强，在互联网项目中广泛应用。</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-25-104100.jpeg" alt></p>
-<h3 id="代理"><a href="#代理" class="headerlink" title="代理"></a>代理</h3><p><strong>正向代理</strong></p>
-<p>由于防火墙的原因，我们并不能直接访问谷歌，那么我们可以借助 VPN 来实现，这就是一个简单的正向代理的例子。这里你能够发现，<strong>正向代理“代理”的是客户端</strong>，客户端是知道目标的，而目标是不知道客户端是通过 VPN 访问的。</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-25-104200.jpeg" alt></p>
-<p><strong>反向代理</strong></p>
-<p>当我们在外网访问百度的时候，其实会进行一个转发，代理到内网去，这就是所谓的反向代理，<strong>即反向代理“代理”的是服务器端</strong>，而且这一个过程对于客户端而言是透明的。</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-25-104300.jpeg" alt></p>
-<p><strong>区别</strong></p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133744.png" alt></p>
-<p><strong>web 服务器对比</strong></p>
-<table>
-<thead>
-<tr>
-<th><strong>对比项 \ 服务器</strong></th>
-<th><strong>Apache</strong></th>
-<th><strong>Nginx</strong></th>
-<th><strong>Lighttpd</strong></th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Proxy代理</td>
-<td>非常好</td>
-<td>非常好</td>
-<td>一般</td>
-</tr>
-<tr>
-<td>Rewriter</td>
-<td>好</td>
-<td>非常好</td>
-<td>一般</td>
-</tr>
-<tr>
-<td>Fcgi</td>
-<td>不好</td>
-<td>好</td>
-<td>非常好</td>
-</tr>
-<tr>
-<td>热部署</td>
-<td>不支持</td>
-<td>支持</td>
-<td>不支持</td>
-</tr>
-<tr>
-<td>系统压力</td>
-<td>很大</td>
-<td>很小</td>
-<td>比较小</td>
-</tr>
-<tr>
-<td>稳定性</td>
-<td>好</td>
-<td>非常好</td>
-<td>不好</td>
-</tr>
-<tr>
-<td>安全性</td>
-<td>好</td>
-<td>一般</td>
-<td>一般</td>
-</tr>
-<tr>
-<td>静态文件处理</td>
-<td>一般</td>
-<td>非常好</td>
-<td>好</td>
-</tr>
-<tr>
-<td>反向代理</td>
-<td>一般</td>
-<td>非常好</td>
-<td>一般</td>
-</tr>
-</tbody></table>
-<h3 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h3><p>负载均衡作为流量转发服务，将来自客户端的请求通过负载均衡集群转发至后端服务器，后端服务器再将响应通过内网返回给负载均衡。基础架构是采用集群部署，提供四层（TCP 协议和 UDP 协议）和七层（HTTP 和 HTTPS 协议）的负载均衡，可实现会话同步，以消除服务器单点故障，提升冗余，保证服务的稳定性。</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-25-112200.png" alt></p>
-<h2 id="Nginx-进程"><a href="#Nginx-进程" class="headerlink" title="Nginx 进程"></a>Nginx 进程</h2><p>启动 Nginx 后，其实就是在 80 端口启动了 Socket 服务进行监听，Nginx 涉及 Master 进程和 Worker 进程。</p>
-<ul>
-<li><strong>Master 进程</strong>：读取并验证配置文件 <code>nginx.conf</code>，管理 worker 进程。</li>
-<li><strong>Worker 进程</strong>：每一个 Worker 进程都维护一个线程（避免线程切换），处理连接和请求，Worker 进程的个数由配置文件决定，一般和 CPU 个数相关（有利于进程切换），配置几个就有几个 Worker 进程。</li>
-</ul>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-25-105500.jpeg" alt></p>
-<p><strong>思考1：Nginx 如何做到热部署？</strong></p>
-<p>所谓热部署，就是配置文件 nginx.conf 修改后，不需要 stop Nginx，不需要中断请求，就能让配置文件生效！</p>
-<p><strong>实现方案</strong>：修改配置文件 nginx.conf 后，重新生成新的 worker 进程，当然会以新的配置进行处理，而且新的请求都必须交给新的 worker 进程，至于老 worker 进程，等把那些以前的请求处理完毕，kill 掉即可。</p>
-<p><strong>思考2：Nginx 如何做到高并发下的高效处理？</strong></p>
-<p><strong>实现方案</strong>：Nginx 采用了 Linux 的 epoll 模型，epoll 模型基于事件驱动机制，它可以监控多个事件是否准备完毕，如果 OK，那么放入 epoll 队列中，这个过程是异步的，worker 只需要从 epoll 队列循环处理即可。</p>
-<p><strong>思考3：Nginx 挂了怎么办？</strong></p>
-<p><strong>实现方案</strong>：Keepalived + Nginx 实现高可用</p>
-<ul>
-<li>请求不要直接打到 Nginx 上，应该先通过 Keepalived（这就是所谓虚拟 IP，VIP），消除单点故障</li>
-<li>Keepalived 应该能监控 Nginx 的生命状态（提供一个用户自定义的脚本，定期检查 Nginx 进程状态，进行权重变化，从而实现 Nginx 故障切换）</li>
-</ul>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-25-113000.jpeg" alt></p>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ul>
-<li>安装</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">rpm -ivh http://nginx.org/packages/centos/<span class="number">7</span>/noarch/RPMS/nginx-release-centos-<span class="number">7</span>-<span class="number">0</span>.el7.ngx.noarch.rpm</span><br><span class="line">yum install -y nginx</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>路径</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">$ whereis nginx</span><br><span class="line">nginx: /usr/sbin/nginx /usr/lib64/nginx /etc/nginx /usr/share/nginx /usr/share/man/man8/nginx.<span class="number">8</span>.gz</span><br><span class="line"></span><br><span class="line">- Nginx配置路径：/etc/nginx/nginx.conf</span><br><span class="line">- PID目录：/var/run/nginx.pid</span><br><span class="line">- 错误日志：/var/log/nginx/error.log</span><br><span class="line">- 访问日志：/var/log/nginx/access.log</span><br><span class="line">- 默认站点目录：/usr/share/nginx/html</span><br></pre></td></tr></table></figure>
-
-<h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">        listen       80;</span><br><span class="line">        server_name  zentao.smocer.top;</span><br><span class="line"></span><br><span class="line">        access_log  /var/log/nginx/zentao.access.log;</span><br><span class="line"></span><br><span class="line">        location / &#123;</span><br><span class="line">          try_files /_not_exists_ @backend;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        location @backend &#123;</span><br><span class="line">           proxy_set_header X-Forwarded-For $remote_addr;</span><br><span class="line">           proxy_set_header Host            $http_host;</span><br><span class="line">           proxy_set_header X-Forwarded-Proto $scheme;</span><br><span class="line">           </span><br><span class="line">        proxy_pass http://10.133.0.53:8080;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><blockquote>
-<p>启动</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nginx</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>检查配置</p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">nginx -t</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>热加载</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nginx -s reload</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>查询进程</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ps -ef | grep nginx</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>停服务</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nginx -s stop</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>其他</category>
-      </categories>
-      <tags>
-        <tag>Nginx</tag>
-      </tags>
   </entry>
   <entry>
     <title>MySQL · 案例集锦</title>

@@ -352,6 +352,254 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/29/mysql-config-sql-mode/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/29/mysql-config-sql-mode/" class="post-title-link" itemprop="url">MySQL · 配置参数 · sql_mode</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-29 22:04:51" itemprop="dateCreated datePublished" datetime="2019-10-29T22:04:51+08:00">2019-10-29</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-15 16:29:23" itemprop="dateModified" datetime="2019-11-15T16:29:23+08:00">2019-11-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h2><p><strong><a href="https://dev.mysql.com/doc/refman/5.6/en/sql-mode.html#sql-mode-strict" target="_blank" rel="noopener">sql_mode</a></strong>：它定义了 MySQL 应该支持的 <code>SQL</code> 模式，对数据的校验等。</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Command-Line Format</strong></td>
+<td><code>--sql-mode=name</code></td>
+</tr>
+<tr>
+<td><strong>System Variable</strong></td>
+<td><code>sql_mode</code></td>
+</tr>
+<tr>
+<td><strong>Scope</strong></td>
+<td>Global, Session</td>
+</tr>
+<tr>
+<td><strong>Dynamic</strong></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>Type</strong></td>
+<td>Set</td>
+</tr>
+<tr>
+<td><strong>Default Value</strong> (&gt;= 5.7.8)</td>
+<td><code>ONLY_FULL_GROUP_BY STRICT_TRANS_TABLES NO_ZERO_IN_DATE NO_ZERO_DATE ERROR_FOR_DIVISION_BY_ZERO NO_AUTO_CREATE_USER NO_ENGINE_SUBSTITUTION</code></td>
+</tr>
+<tr>
+<td><strong>Default Value</strong> (5.7.7)</td>
+<td><code>ONLY_FULL_GROUP_BY STRICT_TRANS_TABLES NO_AUTO_CREATE_USER NO_ENGINE_SUBSTITUTION</code></td>
+</tr>
+<tr>
+<td><strong>Default Value</strong> (&gt;= 5.7.5, &lt;= 5.7.6)</td>
+<td><code>ONLY_FULL_GROUP_BY STRICT_TRANS_TABLES NO_ENGINE_SUBSTITUTION</code></td>
+</tr>
+<tr>
+<td><strong>Default Value</strong> (&lt;= 5.7.4)</td>
+<td><code>NO_ENGINE_SUBSTITUTION</code></td>
+</tr>
+<tr>
+<td><strong>Valid Values</strong></td>
+<td>….</td>
+</tr>
+</tbody></table>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select @@global.sql_mode;</span><br><span class="line">+<span class="comment">-------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line">| @@global.sql_mode                                                                                                                         |</span><br><span class="line">+<span class="comment">-------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line">| ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION |</span><br><span class="line">+<span class="comment">-------------------------------------------------------------------------------------------------------------------------------------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><code>ONLY_FULL_GROUP_BY</code>：<code>SELECT</code> 内指定字段必须出现在 <code>ORDER BY</code> 中，否则错误。</li>
+<li><code>STRICT_TRANS_TABLES</code>：为事务存储引擎启用严格的 <code>SQL</code> 模式。</li>
+<li><code>NO_ZERO_IN_DATE</code>：严格模式下，不接受月或日部分为 <code>0</code> 的日期。</li>
+<li><code>NO_ZERO_DATE</code>：严格模式下，认为日期 <code>&#39;0000-00-00&#39;</code> 非法。</li>
+<li><code>ERROR_FOR_DIVISION_BY_ZERO</code>：严格模式下，除 <code>0</code> 错误。</li>
+<li><code>NO_AUTO_CREATE_USER</code>：授权之前必须先创建用户。</li>
+<li><code>NO_ENGINE_SUBSTITUTION</code>：如果需要的存储引擎被禁用或未编译，那么抛出错误。</li>
+<li><code>STRICT_ALL_TABLES</code>：为所有存储引擎启用严格 <code>SQL</code> 模式，无效的数据值报错。</li>
+</ul>
+<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><ul>
+<li><strong>动态设置</strong></li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; set global sql_mode='NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES';</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>静态设置</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">sql_mode = NO_ENGINE_SUBSTITUTION</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>阿里云 RDS 设置</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sql_mode=REAL_AS_FLOAT,PIPES_AS_CONCAT,ANSI_QUOTES,IGNORE_SPACE,NO_UNSIGNED_SUBTRACTION,NO_DIR_</span><br><span class="line">IN_CREATE,POSTGRESQL,ORACLE,MSSQL,DB2,MAXDB,NO_KEY_OPTIONS,NO_TABLE_OPTIONS,NO_FIELD_OPTIONS,MYSQL</span><br><span class="line"><span class="number">323</span>,MYSQL40,ANSI,NO_AUTO_VALUE_ON_ZERO,NO_BACKSLASH_ESCAPES,STRICT_TRANS_TABLES,STRICT_ALL_TABLES,</span><br><span class="line">NO_ZERO_IN_DATE,NO_ZERO_DATE,ALLOW_INVALID_DATES,ERROR_FOR_DIVISION_BY_ZERO,TRADITIONAL,HIGH_NOT</span><br><span class="line">_PRECEDENCE,NO_ENGINE_SUBSTITUTION,PAD_CHAR_TO_FULL_LENGTH</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/29/mysql-config-skip-name-resolve/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2228,219 +2476,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/python-regular/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/24/python-regular/" class="post-title-link" itemprop="url">Python · 正则表达式</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-24 09:31:06" itemprop="dateCreated datePublished" datetime="2019-10-24T09:31:06+08:00">2019-10-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-28 14:02:07" itemprop="dateModified" datetime="2019-10-28T14:02:07+08:00">2019-10-28</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><strong>正则表达式</strong>是一种用来匹配字符串的强有力的武器，它的设计思想是用一种描述性的语言来给字符串定义一个规则，凡是符合规则的字符串，我们就认为它“匹配”了，否则该字符串就是不合法的。</p>
-<p><strong>功能</strong>：</p>
-<ul>
-<li>校验字符串，判断是否匹配</li>
-<li>提取子字符串</li>
-</ul>
-<p><strong>字符</strong></p>
-<p><code>\d</code>：表示可以匹配一个数字</p>
-<p><code>\w</code>：表示可以匹配一个字母或数字</p>
-<p><code>.</code>：表示可以匹配任意字符</p>
-<p><code>*</code>：表示任意个字符（包括0个）</p>
-<p><code>+</code>：表示至少一个字符</p>
-<p><code>?</code>：表示0个或1个字符</p>
-<p><code>{n}</code>：表示n个字符</p>
-<p><code>{n,m}</code>：表示n-m个字符</p>
-<p><code>\s</code>：表示可以匹配一个空格（也包括Tab等空白符），所以<code>\s+</code>表示至少有一个空格</p>
-<p><code>[]</code>：表示更精确地范围匹配</p>
-<p><code>^</code>：表示行的开头，<code>^\d</code>表示必须以数字开头</p>
-<p><code>$</code>：表示行的结束，<code>\d$</code>表示必须以数字结束</p>
-<p><code>A|B</code>：可以匹配A或B，所以<code>(P|p)ython</code>可以匹配<code>&#39;Python&#39;</code>或者<code>&#39;python&#39;</code>。</p>
-<p><code>[0-9a-zA-Z\_]</code>：可以匹配一个数字、字母或者下划线</p>
-<p><code>[0-9a-zA-Z\_]+</code>：可以匹配至少由一个数字、字母或者下划线组成的字符串，如<code>&#39;a100&#39;</code>，<code>&#39;0_Z&#39;</code>，<code>&#39;Py3000&#39;</code>等等</p>
-<p><code>[a-zA-Z\_][0-9a-zA-Z\_]*</code>：可以匹配由字母或下划线开头，后接任意个由一个数字、字母或者下划线组成的字符串，也就是 Python 合法的变量</p>
-<p><code>[a-zA-Z\_][0-9a-zA-Z\_]{0, 19}</code>：更精确地限制了变量的长度是1-20个字符（前面1个字符+后面最多19个字符）</p>
-<p><code>re</code> <strong>模块</strong>：Python 提供 <code>re</code>模块，包含所有正则表达式的功能，建议使用 <code>r</code> 前缀，就不用考虑转义的问题。</p>
-<p><code>match()</code> <strong>方法</strong>：判断是否匹配，如果匹配成功，返回一个<code>Match</code>对象，否则返回<code>None</code>。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">test = <span class="string">'用户输入的字符串'</span></span><br><span class="line"><span class="keyword">if</span> re.match(<span class="string">r'正则表达式'</span>, test):</span><br><span class="line">    print(<span class="string">'ok'</span>)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    print(<span class="string">'failed'</span>)</span><br></pre></td></tr></table></figure>
-
-<p><strong>切分字符串</strong></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>re.split(<span class="string">r'\s+'</span>, <span class="string">'a b   c'</span>)</span><br><span class="line">[<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>]</span><br></pre></td></tr></table></figure>
-
-<p><strong>分组</strong>：可以在<code>Match</code>对象上用<code>group()</code>方法提取出子串来，<code>group(0)</code>永远是原始字符串，<code>group(1)</code>、<code>group(2)</code>……表示第1、2、……个子串。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>m = re.match(<span class="string">r'^(\d&#123;3&#125;)-(\d&#123;3,8&#125;)$'</span>, <span class="string">'010-12345'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>m</span><br><span class="line">&lt;_sre.SRE_Match object; span=(<span class="number">0</span>, <span class="number">9</span>), match=<span class="string">'010-12345'</span>&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>m.group(<span class="number">0</span>)</span><br><span class="line"><span class="string">'010-12345'</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>m.group(<span class="number">1</span>)</span><br><span class="line"><span class="string">'010'</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>m.group(<span class="number">2</span>)</span><br><span class="line"><span class="string">'12345'</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>贪婪匹配</strong>：正则匹配默认是贪婪匹配，也就是匹配尽可能多的字符。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>re.match(<span class="string">r'^(\d+)(0*)$'</span>, <span class="string">'102300'</span>).groups()</span><br><span class="line">(<span class="string">'102300'</span>, <span class="string">''</span>)</span><br><span class="line"></span><br><span class="line">由于\d+采用贪婪匹配，直接把后面的0全部匹配了，结果0*只能匹配空字符串了。必须让\d+采用非贪婪匹配（也就是尽可能少匹配），才能把后面的0匹配出来，加个?就可以让\d+采用非贪婪匹配:</span><br><span class="line"></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>re.match(<span class="string">r'^(\d+?)(0*)$'</span>, <span class="string">'102300'</span>).groups()</span><br><span class="line">(<span class="string">'1023'</span>, <span class="string">'00'</span>)</span><br></pre></td></tr></table></figure>
-
-<p><strong>编译</strong>：当我们在 Python 中使用正则表达式时，<code>re</code>模块内部会干两件事情：</p>
-<p>1）编译正则表达式，如果正则表达式的字符串本身不合法，会报错。</p>
-<p>2）用编译后的正则表达式去匹配字符串。</p>
-<p>如果一个正则表达式要重复使用几千次，出于效率的考虑，我们可以预编译该正则表达式，接下来重复使用时就不需要编译这个步骤了，直接进行匹配。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> re</span><br><span class="line"><span class="comment"># 编译:</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>re_telephone = re.compile(<span class="string">r'^(\d&#123;3&#125;)-(\d&#123;3,8&#125;)$'</span>)</span><br><span class="line"><span class="comment"># 使用：</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>re_telephone.match(<span class="string">'010-12345'</span>).groups()</span><br><span class="line">(<span class="string">'010'</span>, <span class="string">'12345'</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>re_telephone.match(<span class="string">'010-8086'</span>).groups()</span><br><span class="line">(<span class="string">'010'</span>, <span class="string">'8086'</span>)</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2536,7 +2571,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">15</span>
+                      
+                    
+                    <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -2585,9 +2622,7 @@
                     
                       
                     
-                      
-                    
-                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
