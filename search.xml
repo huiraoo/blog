@@ -4,12 +4,19 @@
     <title>Java · 框架 · MyBatis</title>
     <url>/blog/2019/11/25/java-frame-mybatis/</url>
     <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://mybatis.org/mybatis-3/zh/index.html" target="_blank" rel="noopener">MyBatis</a> 是一款优秀的持久层框架，它支持定制化 SQL、存储过程以及高级映射。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以使用简单的 XML 或注解来配置和映射原生类型、接口和 Java 的 POJO（Plain Old Java Objects，普通老式 Java 对象）为数据库中的记录。</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>MyBatis 的基本工作原理是：</p>
+<ul>
+<li>先封装 SQL</li>
+<li>接着调用 JDBC 操作数据库</li>
+<li>最后把数据库返回的表结果封装成 Java 类</li>
+</ul>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-25-103400.png" alt></p>
 <h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>如果使用 <a href="http://maven.apache.org/" target="_blank" rel="noopener">Maven</a> 来构建项目，则需将下面的 dependency 代码置于 <code>pom.xml</code> 文件中：</p>
 <figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.mybatis<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.5.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
 <h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p>使用 MyBatis 实现数据库的增删改查：</p>
 <ul>
-<li>表 user</li>
+<li>表 <code>user</code></li>
 </ul>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">CREATE TABLE `user` (</span><br><span class="line">  `id` int(<span class="number">11</span>) NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `username` varchar(<span class="number">32</span>) NOT NULL COMMENT <span class="string">'用户名称'</span>,</span><br><span class="line">  `birthday` datetime DEFAULT NULL COMMENT <span class="string">'生日'</span>,</span><br><span class="line">  `sex` char(<span class="number">1</span>) NOT NULL COMMENT <span class="string">'性别'</span>,</span><br><span class="line">  `address` varchar(<span class="number">255</span>) DEFAULT NULL COMMENT <span class="string">'地址'</span>,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=<span class="number">5</span> DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci</span><br><span class="line"></span><br><span class="line">mysql&gt; select * from user;</span><br><span class="line">+----+----------+---------------------+-----+--------------------+</span><br><span class="line">| id | username | birthday            | sex | address            |</span><br><span class="line">+----+----------+---------------------+-----+--------------------+</span><br><span class="line">|  <span class="number">1</span> | rao      | <span class="number">1990</span>-<span class="number">08</span>-<span class="number">07</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> | 男  | 陕西省西安市         |</span><br><span class="line">|  <span class="number">2</span> | yu       | <span class="number">1990</span>-<span class="number">01</span>-<span class="number">02</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> | 女  | 山东省菏泽市         |</span><br><span class="line">|  <span class="number">3</span> | rao      | <span class="number">2019</span>-<span class="number">11</span>-<span class="number">24</span> <span class="number">04</span>:<span class="number">54</span>:<span class="number">31</span> | 女  | 山东省青岛市         |</span><br><span class="line">+----+----------+---------------------+-----+--------------------+</span><br></pre></td></tr></table></figure>
 
@@ -7341,11 +7348,11 @@
       </categories>
   </entry>
   <entry>
-    <title>Nginx</title>
+    <title>Nginx 笔记</title>
     <url>/blog/2019/07/16/nginx/</url>
-    <content><![CDATA[<h2 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h2><p><a href="http://nginx.org/" target="_blank" rel="noopener"><strong>Nginx</strong></a>：是一款自由的、开源的、高性能的 HTTP 服务器和反向代理服务器，同时也是一个 IMAP、POP3、SMTP 代理服务器，它可以作为一个 HTTP 服务器进行网站的发布处理，另外也可以作为反向代理进行负载均衡的实现。</p>
-<p><strong>代理</strong>：代理就是一个代表、一个渠道。涉及到两个角色，一个是被代理角色，一个是目标角色，被代理角色通过这个代理访问目标角色完成一些任务的过程称为代理操作过程。如同生活中的专卖店，客人到 adidas 专卖店买了一双鞋，这个专卖店就是代理，被代理角色就是 adidas 厂家，目标角色就是用户。</p>
-<h3 id="正向代理"><a href="#正向代理" class="headerlink" title="正向代理"></a>正向代理</h3><p>在如今的网络环境下，我们如果由于技术需要要去访问国外的某些网站，此时你会发现位于国外的某网站我们通过浏览器是没有办法访问的，此时大家可能都会用一个操作翻墙进行访问，翻墙的方式主要是找到一个可以访问国外网站的代理服务器，我们将请求发送给代理服务器，代理服务器去访问国外的网站，然后将访问到的数据传递给我们，这种代理模式称为正向代理。</p>
+    <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="http://nginx.org/" target="_blank" rel="noopener"><strong>Nginx</strong></a>：是一款自由的、开源的、高性能的 HTTP 服务器和反向代理服务器，同时也是一个 IMAP、POP3、SMTP 代理服务器，它可以作为一个 HTTP 服务器进行网站的发布处理，另外也可以作为反向代理进行负载均衡的实现。</p>
+<p><strong>正向代理</strong></p>
+<p>在如今的网络环境下，我们如果由于技术需要要去访问国外的某些网站，此时你会发现位于国外的某网站我们通过浏览器是没有办法访问的，此时大家可能都会用一个操作翻墙进行访问，翻墙的方式主要是找到一个可以访问国外网站的代理服务器，我们将请求发送给代理服务器，代理服务器去访问国外的网站，然后将访问到的数据传递给我们，这种代理模式称为正向代理。</p>
 <p>正向代理最大的特点是客户端非常明确要访问的服务器地址，服务器只清楚请求来自哪个代理服务器，而不清楚来自哪个具体的客户端，正向代理模式屏蔽或者隐藏了真实客户端信息。</p>
 <p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133811.png" alt></p>
 <p>客户端必须设置正向代理服务器，当然前提是要知道正向代理服务器的 IP 地址，还有代理程序的端口。</p>
@@ -7358,7 +7365,8 @@
 <li>对客户端访问授权，上网进行认证</li>
 <li>代理可以记录用户访问记录（上网行为管理），对外隐藏用户信息</li>
 </ul>
-<h3 id="反向代理"><a href="#反向代理" class="headerlink" title="反向代理"></a>反向代理</h3><p>多个客户端给服务器发送的请求，Nginx 服务器接收到之后，按照一定的规则分发给了后端的业务处理服务器进行处理了。此时，请求的来源也就是客户端是明确的，但是请求具体由哪台服务器处理的并不明确了，Nginx 扮演的就是一个反向代理角色。客户端是无感知代理的存在的，反向代理对外都是透明的，访问者并不知道自己访问的是一个代理。因为客户端不需要任何配置就可以访问。</p>
+<p><strong>反向代理</strong></p>
+<p>多个客户端给服务器发送的请求，Nginx 服务器接收到之后，按照一定的规则分发给了后端的业务处理服务器进行处理了。此时，请求的来源也就是客户端是明确的，但是请求具体由哪台服务器处理的并不明确了，Nginx 扮演的就是一个反向代理角色。客户端是无感知代理的存在的，反向代理对外都是透明的，访问者并不知道自己访问的是一个代理。因为客户端不需要任何配置就可以访问。</p>
 <p>反向代理，”它代理的是服务端，代服务端接收请求”，主要用于服务器集群分布式部署的情况下，反向代理隐藏了服务器的信息。</p>
 <p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133801.png" alt></p>
 <p>反向代理的作用：</p>
@@ -7373,7 +7381,8 @@
 <p>在正向代理中，Proxy 和 Client 同属于一个 LAN（图中方框内），隐藏了客户端信息；</p>
 <p>在反向代理中，Proxy 和 Server 同属于一个LAN（图中方框内），隐藏了服务端信息；</p>
 <p>实际上，Proxy 在两种代理中做的事情都是替服务器代为收发请求和响应，不过从结构上看正好左右互换了一下，所以把后出现的那种代理方式称为反向代理了。</p>
-<h3 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h3><p>这里提到的客户端发送的、Nginx反向代理服务器接收到的请求数量，就是我们说的负载量。请求数量按照一定的规则进行分发到不同的服务器处理的规则，就是一种均衡规则。所以，将服务器接收到的请求按照规则分发的过程，称为负载均衡。</p>
+<p><strong>负载均衡</strong></p>
+<p>这里提到的客户端发送的、Nginx反向代理服务器接收到的请求数量，就是我们说的负载量。请求数量按照一定的规则进行分发到不同的服务器处理的规则，就是一种均衡规则。所以，将服务器接收到的请求按照规则分发的过程，称为负载均衡。</p>
 <p>负载均衡在实际项目操作过程中，有硬件负载均衡和软件负载均衡两种，硬件负载均衡也称为硬负载，如F5负载均衡，相对造价昂贵成本较高，但是数据的稳定性安全性等等有非常好的保障，如中国移动中国联通这样的公司才会选择硬负载进行操作；更多的公司考虑到成本原因，会选择使用软件负载均衡，软件负载均衡是利用现有的技术结合主机硬件实现的一种消息队列分发机制。</p>
 <p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-133716.png" alt></p>
 <h3 id="几种-web-服务器对比"><a href="#几种-web-服务器对比" class="headerlink" title="几种 web 服务器对比"></a>几种 web 服务器对比</h3><table>
@@ -7440,15 +7449,15 @@
 <td>一般</td>
 </tr>
 </tbody></table>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><blockquote>
-<p>yum方式安装</p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">rpm -ivh http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm</span><br><span class="line">yum install -y nginx</span><br></pre></td></tr></table></figure>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ul>
+<li>安装</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">rpm -ivh http://nginx.org/packages/centos/<span class="number">7</span>/noarch/RPMS/nginx-release-centos-<span class="number">7</span>-<span class="number">0</span>.el7.ngx.noarch.rpm</span><br><span class="line">yum install -y nginx</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>安装路径</p>
-</blockquote>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">whereis nginx</span><br><span class="line">nginx: /usr/sbin/nginx /usr/lib64/nginx /etc/nginx /usr/share/nginx /usr/share/man/man8/nginx.8.gz</span><br><span class="line"></span><br><span class="line">(1) Nginx配置路径：/etc/nginx/nginx.conf</span><br><span class="line">(2) PID目录：/var/run/nginx.pid</span><br><span class="line">(3) 错误日志：/var/log/nginx/error.log</span><br><span class="line">(4) 访问日志：/var/log/nginx/access.log</span><br><span class="line">(5) 默认站点目录：/usr/share/nginx/html</span><br></pre></td></tr></table></figure>
+<ul>
+<li>路径</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">$ whereis nginx</span><br><span class="line">nginx: /usr/sbin/nginx /usr/lib64/nginx /etc/nginx /usr/share/nginx /usr/share/man/man8/nginx.<span class="number">8</span>.gz</span><br><span class="line"></span><br><span class="line">- Nginx配置路径：/etc/nginx/nginx.conf</span><br><span class="line">- PID目录：/var/run/nginx.pid</span><br><span class="line">- 错误日志：/var/log/nginx/error.log</span><br><span class="line">- 访问日志：/var/log/nginx/access.log</span><br><span class="line">- 默认站点目录：/usr/share/nginx/html</span><br></pre></td></tr></table></figure>
 
 <h2 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">        listen       80;</span><br><span class="line">        server_name  zentao.smocer.top;</span><br><span class="line"></span><br><span class="line">        access_log  /var/log/nginx/zentao.access.log;</span><br><span class="line"></span><br><span class="line">        location / &#123;</span><br><span class="line">          try_files /_not_exists_ @backend;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        location @backend &#123;</span><br><span class="line">           proxy_set_header X-Forwarded-For $remote_addr;</span><br><span class="line">           proxy_set_header Host            $http_host;</span><br><span class="line">           proxy_set_header X-Forwarded-Proto $scheme;</span><br><span class="line">           </span><br><span class="line">        proxy_pass http://10.133.0.53:8080;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -7458,28 +7467,28 @@
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nginx</span><br></pre></td></tr></table></figure>
 
 <blockquote>
-<p>测试 Nginx 配置</p>
+<p>测试</p>
 </blockquote>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">nginx -t</span><br></pre></td></tr></table></figure>
 
 <blockquote>
-<p>重启</p>
+<p>热部署</p>
 </blockquote>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nginx -s reload</span><br></pre></td></tr></table></figure>
 
 <blockquote>
-<p>查询进程</p>
+<p>查进程</p>
 </blockquote>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ps -ef | grep nginx</span><br></pre></td></tr></table></figure>
 
 <blockquote>
-<p>停止服务</p>
+<p>停服务</p>
 </blockquote>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">nginx -s stop</span><br></pre></td></tr></table></figure>
 
 ]]></content>
       <categories>
-        <category>其他</category>
+        <category>Nginx</category>
       </categories>
       <tags>
         <tag>Nginx</tag>
