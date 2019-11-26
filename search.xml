@@ -1,6 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>知识留存率</title>
+    <url>/blog/2019/11/26/ilearning/</url>
+    <content><![CDATA[<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-26-101100.jpeg" alt></p>
+]]></content>
+      <categories>
+        <category>其他</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>Java · 框架 · Spring</title>
+    <url>/blog/2019/11/25/java-frame-spring/</url>
+    <content><![CDATA[<h2 id="Spring-IOC"><a href="#Spring-IOC" class="headerlink" title="Spring IOC"></a>Spring IOC</h2><p><strong>IOC</strong>：Inversion Of Control，即控制反转，是一种设计思想。在传统的 Java SE 程序设计中，我们直接在对象内部通过 new 的方式来创建对象，是程序主动创建依赖对象；而在 Spring 程序设计中，IOC 是有专门的容器去控制对象。</p>
+<p><strong>控制</strong>：就是对象的创建、初始化、销毁。</p>
+<p><strong>反转</strong>：其实是反转的控制权，前面提到是由 Spring 来控制对象的生命周期，那么对象的控制就完全脱离了我们的控制，控制权交给了 Spring 。</p>
+<ul>
+<li>创建对象：原来是 new 一个，现在是由 Spring 容器创建。</li>
+<li>初始化对象：原来是对象自己通过构造器或者 setter 方法给依赖的对象赋值，现在是由 Spring 容器自动注入。</li>
+<li>销毁对象：原来是直接给对象赋值 或做一些销毁操作，现在是 Spring 容器管理生命周期负责销毁对象。</li>
+</ul>
+<p><strong>总结</strong>：IOC 解决了繁琐的对象生命周期的操作，降低程序间的耦合（依赖关系）。</p>
+<p><strong>DI</strong>：Dependency injection，即依赖注入，是一种实现，而 IOC 是一种设计思想。程序把依赖交给容器，容器帮你管理依赖，这就是依赖注入的核心。</p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-context<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">version</span>&gt;</span>5.1.8.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+  </entry>
+  <entry>
     <title>Nginx 笔记</title>
     <url>/blog/2019/11/25/ilearning-nginx/</url>
     <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="http://nginx.org/" target="_blank" rel="noopener"><strong>Nginx</strong></a>：是一款轻量级的 Web 服务器、反向代理服务器，由于它的内存占用少（一个 worker 进程只占用 10-12M 内存）、启动极快、高并发能力强，在互联网项目中广泛应用。</p>
@@ -198,7 +227,240 @@
   <entry>
     <title>Java · 高级特性</title>
     <url>/blog/2019/11/20/java-object-and-class/</url>
-    <content><![CDATA[]]></content>
+    <content><![CDATA[<h2 id="反射-Reflection"><a href="#反射-Reflection" class="headerlink" title="反射 (Reflection)"></a>反射 (Reflection)</h2><h3 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h3><p><strong>反射机制</strong>：在运行状态中，可以动态访问 Java 对象的属性、方法、构造方法等。</p>
+<p><strong>场景</strong>：很多框架都运用了反射原理，例如 MyBatis 的实体类，Spring 的 AOP 等都有反射的实现。</p>
+<p><strong>相关类：</strong></p>
+<ul>
+<li>java.lang.Class：代表类的实体，在运行的 Java 应用程序中表示类和接口</li>
+<li>java.lang.reflect.Method：代表类的方法</li>
+<li>java.lang.reflect.Field：代表类的成员变量</li>
+<li>java.lang.reflect.Constructor：代表类的构造方法</li>
+</ul>
+<h4 id="Class"><a href="#Class" class="headerlink" title="Class"></a>Class</h4><ul>
+<li><strong>获取类相关方法</strong></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>asSubclass(Class<u> clazz)</u></td>
+<td>把传递的类的对象转换成代表其子类的对象</td>
+</tr>
+<tr>
+<td>Cast</td>
+<td>把对象转换成代表类或是接口的对象</td>
+</tr>
+<tr>
+<td>getClassLoader()</td>
+<td>获得类的加载器</td>
+</tr>
+<tr>
+<td>getClasses()</td>
+<td>返回一个数组，数组中包含该类中所有公共类和接口类的对象</td>
+</tr>
+<tr>
+<td>getDeclaredClasses()</td>
+<td>返回一个数组，数组中包含该类中所有类和接口类的对象</td>
+</tr>
+<tr>
+<td>forName(String className)</td>
+<td>根据类名返回类的对象</td>
+</tr>
+<tr>
+<td>getName()</td>
+<td>获得类的完整路径名字</td>
+</tr>
+<tr>
+<td>newInstance()</td>
+<td>创建类的实例</td>
+</tr>
+<tr>
+<td>getPackage()</td>
+<td>获得类的包</td>
+</tr>
+<tr>
+<td>getSimpleName()</td>
+<td>获得类的名字</td>
+</tr>
+<tr>
+<td>getSuperclass()</td>
+<td>获得当前类继承的父类的名字</td>
+</tr>
+<tr>
+<td>getInterfaces()</td>
+<td>获得当前类实现的类或是接口</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>获取类中属性相关的方法</strong></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>getField(String name)</td>
+<td>获得某个公有的属性对象</td>
+</tr>
+<tr>
+<td>getFields()</td>
+<td>获得所有公有的属性对象</td>
+</tr>
+<tr>
+<td>getDeclaredField(String name)</td>
+<td>获得某个属性对象</td>
+</tr>
+<tr>
+<td>getDeclaredFields()</td>
+<td>获得所有属性对象</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>获取类中构造器相关的方法</strong></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>getConstructor(Class…&lt;?&gt; parameterTypes)</td>
+<td>获得该类中与参数类型匹配的公有构造方法</td>
+</tr>
+<tr>
+<td>getConstructors()</td>
+<td>获得该类的所有公有构造方法</td>
+</tr>
+<tr>
+<td>getDeclaredConstructor(Class…&lt;?&gt; parameterTypes)</td>
+<td>获得该类中与参数类型匹配的构造方法</td>
+</tr>
+<tr>
+<td>getDeclaredConstructors()</td>
+<td>获得该类所有构造方法</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>获得类中方法相关的方法</strong></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>getMethod(String name, Class…&lt;?&gt; parameterTypes)</td>
+<td>获得该类某个公有的方法</td>
+</tr>
+<tr>
+<td>getMethods()</td>
+<td>获得该类所有公有的方法</td>
+</tr>
+<tr>
+<td>getDeclaredMethod(String name, Class…&lt;?&gt; parameterTypes)</td>
+<td>获得该类某个方法</td>
+</tr>
+<tr>
+<td>getDeclaredMethods()</td>
+<td>获得该类所有方法</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>获得类中注解相关的方法</strong></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>getAnnotation(Class<a> annotationClass)</a></td>
+<td>返回该类中与参数类型匹配的公有注解对象</td>
+</tr>
+<tr>
+<td>getAnnotations()</td>
+<td>返回该类所有的公有注解对象</td>
+</tr>
+<tr>
+<td>getDeclaredAnnotation(Class<a> annotationClass)</a></td>
+<td>返回该类中与参数类型匹配的所有注解对象</td>
+</tr>
+<tr>
+<td>getDeclaredAnnotations()</td>
+<td>返回该类所有的注解对象</td>
+</tr>
+</tbody></table>
+<h4 id="Field"><a href="#Field" class="headerlink" title="Field"></a>Field</h4><p><a href="https://developer.android.google.cn/reference/java/lang/reflect/Field" target="_blank" rel="noopener">Field </a>代表类的成员变量（成员变量也称为类的属性）。</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>equals(Object obj)</td>
+<td>属性与obj相等则返回true</td>
+</tr>
+<tr>
+<td>get(Object obj)</td>
+<td>获得obj中对应的属性值</td>
+</tr>
+<tr>
+<td>set(Object obj, Object value)</td>
+<td>设置obj中对应属性值</td>
+</tr>
+</tbody></table>
+<h4 id="Method"><a href="#Method" class="headerlink" title="Method"></a>Method</h4><p><a href="https://developer.android.google.cn/reference/java/lang/reflect/Method" target="_blank" rel="noopener">Method</a> 代表类的方法。</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>invoke(Object obj, Object… args)</td>
+<td>传递object对象及参数调用该对象对应的方法</td>
+</tr>
+</tbody></table>
+<h4 id="Constructor"><a href="#Constructor" class="headerlink" title="Constructor"></a>Constructor</h4><p><a href="https://developer.android.google.cn/reference/java/lang/reflect/Constructor" target="_blank" rel="noopener">Constructor </a>代表类的构造方法。</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>newInstance(Object… initargs)</td>
+<td>根据传递的参数创建类的对象</td>
+</tr>
+</tbody></table>
+<h3 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h3><ul>
+<li>实体类 Book</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Book实体类</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> Rao Hui</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019-11-26 09:39</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Book</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">static</span> String TAG = <span class="string">"BookTag"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> String author;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"Book&#123;"</span> +</span><br><span class="line">                <span class="string">"name='"</span> + name + <span class="string">'\''</span> +</span><br><span class="line">                <span class="string">", author='"</span> + author + <span class="string">'\''</span> +</span><br><span class="line">                <span class="string">'&#125;'</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Book</span><span class="params">()</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Book</span><span class="params">(String name, String author)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">        <span class="keyword">this</span>.author = author;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.name = name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getAuthor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> author;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAuthor</span><span class="params">(String author)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.author = author;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> String <span class="title">declareMethod</span><span class="params">(<span class="keyword">int</span> index)</span></span>&#123;</span><br><span class="line">        String string = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">switch</span> (index)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">0</span>:</span><br><span class="line">                string = <span class="string">"I am declaredMethod 1 !"</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">                string = <span class="string">"I am declaredMethod 2 !"</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">default</span>:</span><br><span class="line">                string = <span class="string">"I am declaredMethod 1 !"</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> string;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>反射类 ReflectBook</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.lang.reflect.Constructor;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Field;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Book实体类反射测试</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> Rao Hui</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019-11-26 09:44</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ReflectBook</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 反射创建对象</span></span><br><span class="line">            reflectNewInstance();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 反射私有构造方法</span></span><br><span class="line">            reflectPrivateConstrcutor();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 反射私有方法</span></span><br><span class="line">            reflectPrivateMethod();</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 反射私有属性</span></span><br><span class="line">            reflectPrivateField();</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 反射创建对象</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">reflectNewInstance</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        Class&lt;?&gt; classBook = Class.forName(<span class="string">"Book"</span>);</span><br><span class="line">        Object objectBook = classBook.newInstance();</span><br><span class="line">        Book book = (Book)objectBook;</span><br><span class="line">        book.setName(<span class="string">"SRE运维解密"</span>);</span><br><span class="line">        book.setAuthor(<span class="string">"Google"</span>);</span><br><span class="line">        System.out.println(book.toString());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 反射私有构造方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">reflectPrivateConstrcutor</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        Class&lt;?&gt; classBook = Class.forName(<span class="string">"Book"</span>);</span><br><span class="line">        Constructor&lt;?&gt; declaredConstructorBook = classBook.getDeclaredConstructor(String.class,String.class);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//取消权限控制检查</span></span><br><span class="line">        declaredConstructorBook.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">        Book book = (Book)declaredConstructorBook.newInstance(<span class="string">"高性能 MySQL"</span>, <span class="string">"hui"</span>);</span><br><span class="line">        System.out.println(book.toString());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 反射私有方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">reflectPrivateMethod</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        Class&lt;?&gt; classBook = Class.forName(<span class="string">"Book"</span>);</span><br><span class="line">        Method method = classBook.getDeclaredMethod(<span class="string">"declareMethod"</span>, <span class="keyword">int</span>.class);</span><br><span class="line">        method.setAccessible(<span class="keyword">true</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 传递object对象及参数调用该对象对应的方法</span></span><br><span class="line">        String string = (String)method.invoke(classBook.newInstance(), <span class="number">0</span>);</span><br><span class="line">        System.out.println(string);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 反射私有属性</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">reflectPrivateField</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        Class&lt;?&gt; classBook = Class.forName(<span class="string">"Book"</span>);</span><br><span class="line">        Object objectBook = classBook.newInstance();</span><br><span class="line">        Field fieldTag = classBook.getDeclaredField(<span class="string">"TAG"</span>);</span><br><span class="line">        fieldTag.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">        String tag = (String) fieldTag.get(objectBook);</span><br><span class="line">        System.out.println(tag);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+]]></content>
       <categories>
         <category>Java</category>
       </categories>
@@ -741,7 +1003,7 @@
       </categories>
   </entry>
   <entry>
-    <title>Java · 搭建开发环境</title>
+    <title>Java · 开发环境</title>
     <url>/blog/2019/11/18/java-ide/</url>
     <content><![CDATA[<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><ul>
 <li><a href="https://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java JDK</a></li>
@@ -754,7 +1016,7 @@
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># sudo vim /etc/profile</span></span><br><span class="line"></span><br><span class="line">JAVA_HOME=<span class="string">"/Library/Java/JavaVirtualMachines/jdk-13.0.1.jdk/Contents/Home"</span></span><br><span class="line">export JAVA_HOME</span><br><span class="line">PATH=<span class="variable">$JAVA_HOME</span>/bin:<span class="variable">$PATH:</span>.</span><br><span class="line">CLASS_PATH=<span class="string">"<span class="variable">$JAVA_HOME</span>/lib"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># source /etc/profile</span></span><br><span class="line"></span><br><span class="line">➜  ~ java -version</span><br><span class="line">java version <span class="string">"13.0.1"</span> <span class="number">2019</span>-<span class="number">10</span>-<span class="number">15</span></span><br><span class="line">Java(TM) SE Runtime Environment (build <span class="number">13.0</span>.<span class="number">1</span>+<span class="number">9</span>)</span><br><span class="line">Java HotSpot(TM) <span class="number">64</span>-Bit Server VM (build <span class="number">13.0</span>.<span class="number">1</span>+<span class="number">9</span>, mixed mode, sharing)</span><br><span class="line"></span><br><span class="line">~ root<span class="comment"># echo $PATH</span></span><br><span class="line">/Library/Java/JavaVirtualMachines/jdk-<span class="number">13.0</span>.<span class="number">1</span>.jdk/Contents/Home/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:.</span><br><span class="line">~ root<span class="comment"># echo $JAVA_HOME</span></span><br><span class="line">/Library/Java/JavaVirtualMachines/jdk-<span class="number">13.0</span>.<span class="number">1</span>.jdk/Contents/Home</span><br><span class="line">~ root<span class="comment"># echo $CLASS_PATH</span></span><br><span class="line">/Library/Java/JavaVirtualMachines/jdk-<span class="number">13.0</span>.<span class="number">1</span>.jdk/Contents/Home/lib</span><br></pre></td></tr></table></figure>
 
 <ul>
-<li>配置 IDE（File -&gt; Project Structure -&gt; SDKs -&gt; JDK home path）</li>
+<li>配置 IDE（<strong>File -&gt; Project Structure -&gt; SDKs -&gt; JDK home path</strong>）</li>
 </ul>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"Hello World!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Hello World!</span><br></pre></td></tr></table></figure>
 

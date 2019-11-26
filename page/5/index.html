@@ -352,6 +352,414 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/mysql-primarykey/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/24/mysql-primarykey/" class="post-title-link" itemprop="url">MySQL · 自增主键</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-24 11:30:44 / 修改时间：21:48:58" itemprop="dateCreated datePublished" datetime="2019-10-24T11:30:44+08:00">2019-10-24</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p><strong>问题：</strong></p>
+<p>有一张表，里面有 <code>id</code> 自增主键，当 <code>insert</code> 了 17 条记录之后，删除了第 15 16 17 条记录，再把 MySQL 重启，再 <code>insert</code> 一条记录，这条记录的 <code>id</code> 是 18 还是 15 ？</p>
+<p><strong>答案：</strong></p>
+<p><strong>MySQL 8.0 之前</strong></p>
+<ul>
+<li>如果是 <code>MyISAM</code> 表，数据库重启后，<code>id</code> 值为 18</li>
+<li>如果是 <code>InnoDB</code> 表，数据库重启后，<code>id</code> 值为 15</li>
+</ul>
+<p><strong>MySQL 8.0 开始</strong></p>
+<ul>
+<li>如果是 <code>MyISAM</code> 表，数据库重启后，<code>id</code> 值为 18</li>
+<li>如果是 <code>InnoDB</code> 表，数据库重启后，<code>id</code> 值为 18</li>
+</ul>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>不同存储引擎自增主键实现机制不同，同一存储引擎不通版本实现机制不同。</p>
+<p><strong>MyISAM</strong>：自增主键的最大 <code>id</code> 记录在数据文件里，重启后不会消失。</p>
+<p><strong>InnoDB</strong></p>
+<ul>
+<li><code>MySQL 5.7 及之前版本</code>，自增主键最大 <code>id</code> 保存在内存里，重启数据库或者是对表进行 <code>optimize</code> 操作，都会导致最大 <code>id</code> 丢失，重启后将 <code>max(id)+1</code> 作为这个表当前的自增值。</li>
+<li><code>MySQL 8.0 版本</code>，自增主键最大 <code>id</code> 记录在了 <code>redo log</code> 中，重启后依靠 <code>redo log</code> 恢复重启之前的值。</li>
+</ul>
+<p><strong>测试</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from employees_innodb;</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">| id | name       | address            | age | gmt_create          | gmt_modified        |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">|  1 | xujinliang | 山东省青岛市       |  32 | 2019-09-24 17:13:00 | 2019-09-24 17:13:00 |</span><br><span class="line">|  2 | maofang    | 山东省青岛市       |  32 | 2019-09-24 17:32:00 | 2019-09-24 17:40:49 |</span><br><span class="line">|  3 | raohui     | 陕西省西安市       |  29 | 2019-09-24 17:39:28 | 2019-09-24 17:39:28 |</span><br><span class="line">|  4 | yangnan    | NULL               |  22 | 2019-09-24 17:39:52 | 2019-09-24 17:39:52 |</span><br><span class="line">|  5 | yuzhiqiang | 山东省青岛市       |  29 | 2019-10-24 10:39:53 | 2019-10-24 10:39:53 |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">5 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除id为5的记录，重启MySQL服务，再次插入id变成5（max(id)+1）</span></span><br><span class="line">mysql&gt; <span class="keyword">select</span> * <span class="keyword">from</span> employees;</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">| id | name       | address            | age | gmt_create          | gmt_modified        |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">|  1 | xujinliang | 山东省青岛市       |  32 | 2019-09-24 17:13:00 | 2019-09-24 17:13:00 |</span><br><span class="line">|  2 | maofang    | 山东省青岛市       |  32 | 2019-09-24 17:32:00 | 2019-09-24 17:40:49 |</span><br><span class="line">|  3 | raohui     | 陕西省西安市       |  29 | 2019-09-24 17:39:28 | 2019-09-24 17:39:28 |</span><br><span class="line">|  4 | yangnan    | NULL               |  22 | 2019-09-24 17:39:52 | 2019-09-24 17:39:52 |</span><br><span class="line">|  5 | liu        | 山东省烟台市       |  22 | 2019-10-24 11:03:14 | 2019-10-24 11:03:14 |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">6 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">select</span> * <span class="keyword">from</span> employees_myisam;</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">| id | name       | address            | age | gmt_create          | gmt_modified        |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">|  1 | xujinliang | 山东省青岛市       |  32 | 2019-09-24 17:13:00 | 2019-09-24 17:13:00 |</span><br><span class="line">|  2 | maofang    | 山东省青岛市       |  32 | 2019-09-24 17:32:00 | 2019-09-24 17:40:49 |</span><br><span class="line">|  3 | raohui     | 陕西省西安市       |  29 | 2019-09-24 17:39:28 | 2019-09-24 17:39:28 |</span><br><span class="line">|  4 | yangnan    | NULL               |  22 | 2019-09-24 17:39:52 | 2019-09-24 17:39:52 |</span><br><span class="line">|  5 | yuzhiqiang | 山东省青岛市       |  29 | 2019-10-24 10:39:53 | 2019-10-24 10:39:53 |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">5 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除id为5的记录，重启MySQL服务，再次插入id变成6</span></span><br><span class="line">mysql&gt; <span class="keyword">select</span> * <span class="keyword">from</span> employees_myisam;</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">| id | name       | address            | age | gmt_create          | gmt_modified        |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">|  1 | xujinliang | 山东省青岛市       |  32 | 2019-09-24 17:13:00 | 2019-09-24 17:13:00 |</span><br><span class="line">|  2 | maofang    | 山东省青岛市       |  32 | 2019-09-24 17:32:00 | 2019-09-24 17:40:49 |</span><br><span class="line">|  3 | raohui     | 陕西省西安市       |  29 | 2019-09-24 17:39:28 | 2019-09-24 17:39:28 |</span><br><span class="line">|  4 | yangnan    | NULL               |  22 | 2019-09-24 17:39:52 | 2019-09-24 17:39:52 |</span><br><span class="line">|  6 | yuzhiqiang | 山东省青岛市       |  29 | 2019-10-24 10:58:32 | 2019-10-24 10:58:32 |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">5 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h2 id="主键的选择"><a href="#主键的选择" class="headerlink" title="主键的选择"></a>主键的选择</h2><p>①  从性能和存储空间方面考量，自增主键往往是更好的选择：</p>
+<ul>
+<li><strong>存储空间少</strong>，自增主键一般用整型做主键，则二级索引叶子节点只要 4 个字节；而如果使用业务字段做主键，比如字符串类型的身份证号，每个二级索引的叶子节点得占用约 20 个字节。</li>
+<li><strong>性能好</strong>，插入数据时，自增主键能保证有序插入，避免了页分裂。</li>
+</ul>
+<p>②  自增 <code>id</code> 是整型字段，推荐使用 <code>unsigned int</code> 类型来定义增长主键，可以存储 42 亿数据。</p>
+<table>
+<thead>
+<tr>
+<th align="left">类型</th>
+<th align="left">大小</th>
+<th align="left">范围（有符号）</th>
+<th align="left">范围（无符号）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">int</td>
+<td align="left">4 byte</td>
+<td align="left">(-2147483648, 2147483647)</td>
+<td align="left">(0, 4294967295)</td>
+</tr>
+<tr>
+<td align="left">bigint</td>
+<td align="left">8 byte</td>
+<td align="left">(-9223372036854775808, 9223372036854775807)</td>
+<td align="left">(0, 18446744073709551615)</td>
+</tr>
+</tbody></table>
+<p>③  自增 <code>id</code> 是增长的，但不一定连续，造成自增 <code>id</code> 不连续的情况可能有：</p>
+<ul>
+<li>唯一键冲突</li>
+<li>事务回滚</li>
+<li><code>insert ... select</code> 语句批量申请自增 <code>id</code></li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/python-socket/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/24/python-socket/" class="post-title-link" itemprop="url">Python · 网络编程</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-24 09:33:20" itemprop="dateCreated datePublished" datetime="2019-10-24T09:33:20+08:00">2019-10-24</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-15 16:42:55" itemprop="dateModified" datetime="2019-11-15T16:42:55+08:00">2019-11-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><p>用 TCP 协议进行 Socket 编程在 Python 中十分简单，对于客户端，要主动连接服务器的 IP 和指定端口，对于服务器，要首先监听指定端口，然后，对每一个新的连接，创建一个线程或进程来处理。通常，服务器程序会无限运行下去。同一个端口，被一个 Socket 绑定了以后，就不能被别的 Socket 绑定了。</p>
+<h4 id="TCP编程"><a href="#TCP编程" class="headerlink" title="TCP编程"></a>TCP编程</h4><p><strong>客户端</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line">s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line"><span class="comment"># 建立连接:</span></span><br><span class="line">s.connect((<span class="string">'127.0.0.1'</span>, <span class="number">9999</span>))</span><br><span class="line"><span class="comment"># 接收欢迎消息:</span></span><br><span class="line">print(s.recv(<span class="number">1024</span>).decode(<span class="string">'utf-8'</span>))</span><br><span class="line"><span class="keyword">for</span> data <span class="keyword">in</span> [<span class="string">b'Michael'</span>, <span class="string">b'Tracy'</span>, <span class="string">b'Sarah'</span>]:</span><br><span class="line">    <span class="comment"># 发送数据:</span></span><br><span class="line">    s.send(data)</span><br><span class="line">    print(s.recv(<span class="number">1024</span>).decode(<span class="string">'utf-8'</span>))</span><br><span class="line">s.send(<span class="string">b'exit'</span>)</span><br><span class="line">s.close()</span><br></pre></td></tr></table></figure>
+
+<p><strong>服务端</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"></span><br><span class="line">s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 监听端口:</span></span><br><span class="line">s.bind((<span class="string">'127.0.0.1'</span>, <span class="number">9999</span>))</span><br><span class="line">s.listen(<span class="number">5</span>)</span><br><span class="line">print(<span class="string">'Waiting for connection...'</span>)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tcplink</span><span class="params">(sock, addr)</span>:</span></span><br><span class="line">    print(<span class="string">'Accept new connection from %s:%s...'</span> % addr)</span><br><span class="line">    sock.send(<span class="string">b'Welcome!'</span>)</span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        data = sock.recv(<span class="number">1024</span>)</span><br><span class="line">        time.sleep(<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> data <span class="keyword">or</span> data.decode(<span class="string">'utf-8'</span>) == <span class="string">'exit'</span>:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        sock.send((<span class="string">'Hello, %s!'</span> % data.decode(<span class="string">'utf-8'</span>)).encode(<span class="string">'utf-8'</span>))</span><br><span class="line">    sock.close()</span><br><span class="line">    print(<span class="string">'Connection from %s:%s closed.'</span> % addr)</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    <span class="comment"># 接受一个新连接:</span></span><br><span class="line">    sock, addr = s.accept()</span><br><span class="line">    <span class="comment"># 创建新线程来处理TCP连接:</span></span><br><span class="line">    t = threading.Thread(target=tcplink, args=(sock, addr))</span><br><span class="line">    t.start()</span><br></pre></td></tr></table></figure>
+
+<p><strong>执行结果</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Waiting <span class="keyword">for</span> connection...</span><br><span class="line">Accept new connection <span class="keyword">from</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">52501.</span>..</span><br><span class="line">Connection <span class="keyword">from</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">52501</span> closed.</span><br><span class="line"></span><br><span class="line">Welcome!</span><br><span class="line">Hello, Michael!</span><br><span class="line">Hello, Tracy!</span><br><span class="line">Hello, Sarah!</span><br></pre></td></tr></table></figure>
+
+<h4 id="UDP编程"><a href="#UDP编程" class="headerlink" title="UDP编程"></a>UDP编程</h4><p>TCP：是建立可靠连接，并且通信双方都可以以流的形式发送数据。</p>
+<p>UDP：是面向无连接的协议，使用 <code>UDP</code> 协议时，不需要建立连接，只需要知道对方的 <code>IP</code> 地址和端口号，就可以直接发数据包。虽然用 <code>UDP</code> 传输数据不可靠，但它的优点是和 <code>TCP</code> 比速度快，对于不要求可靠到达的数据，就可以使用 <code>UDP</code> 协议。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line">s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line"><span class="keyword">for</span> data <span class="keyword">in</span> [<span class="string">b'Michael'</span>, <span class="string">b'Tracy'</span>, <span class="string">b'Sarah'</span>]:</span><br><span class="line">    <span class="comment"># 发送数据:</span></span><br><span class="line">    s.sendto(data, (<span class="string">'127.0.0.1'</span>, <span class="number">9999</span>))</span><br><span class="line">    <span class="comment"># 接收数据:</span></span><br><span class="line">    print(s.recv(<span class="number">1024</span>).decode(<span class="string">'utf-8'</span>))</span><br><span class="line">s.close()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment"># -*- coding:utf-8 -*-</span></span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line">s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line"><span class="comment"># 绑定端口:</span></span><br><span class="line">s.bind((<span class="string">'127.0.0.1'</span>, <span class="number">9999</span>))</span><br><span class="line">print(<span class="string">'Bind UDP on 9999...'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    <span class="comment"># 接收数据:</span></span><br><span class="line">    data, addr = s.recvfrom(<span class="number">1024</span>)</span><br><span class="line">    print(<span class="string">'Received from %s:%s.'</span> % addr)</span><br><span class="line">    s.sendto(<span class="string">b'Hello, %s! '</span> % data, addr)</span><br></pre></td></tr></table></figure>
+
+<p><strong>执行结果</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Bind UDP on <span class="number">9999.</span>..</span><br><span class="line">Received <span class="keyword">from</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">58248.</span></span><br><span class="line">Received <span class="keyword">from</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">58248.</span></span><br><span class="line">Received <span class="keyword">from</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">58248.</span></span><br><span class="line"></span><br><span class="line">Hello, Michael! </span><br><span class="line">Hello, Tracy! </span><br><span class="line">Hello, Sarah!</span><br></pre></td></tr></table></figure>
+
+<p><strong>小结</strong>：</p>
+<p><code>UDP</code> 的使用与 <code>TCP</code> 类似，但是不需要建立连接。此外，服务器绑定 <code>UDP</code> 端口和 <code>TCP</code> 端口互不冲突，也就是说，<code>UDP</code> 的 <code>9999</code> 端口与 <code>TCP</code> 的 <code>9999</code> 端口可以各自绑定。 </p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/python-regular/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2030,414 +2438,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/python-function/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/24/python-function/" class="post-title-link" itemprop="url">Python · 函数</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-24 09:14:04" itemprop="dateCreated datePublished" datetime="2019-10-24T09:14:04+08:00">2019-10-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-25 16:45:19" itemprop="dateModified" datetime="2019-10-25T16:45:19+08:00">2019-10-25</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p><strong>函数</strong>（<code>Functions</code>）：是指可重复使用的程序片段。</p>
-<p><strong>定义函数</strong>：可以通过关键字 <code>def</code> 来定义，关键字 <code>return</code> 来返回一个值，关键字 <code>pass</code> 指示没有内容的语句块。</p>
-<p><strong>调用函数</strong>：可以在任何地方运行代码块，称为调用（<code>Calling</code>）函数。</p>
-<p><strong>示例</strong>：<code>function1.py</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">say_hello</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="comment"># 该块属于这一函数</span></span><br><span class="line">    print(<span class="string">'hello world'</span>)</span><br><span class="line"><span class="comment"># 函数结束</span></span><br><span class="line"></span><br><span class="line">say_hello()  <span class="comment"># 调用函数</span></span><br><span class="line">say_hello()  <span class="comment"># 再次调用函数</span></span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line">$ python function1.py</span><br><span class="line">hello world</span><br><span class="line">hello world</span><br></pre></td></tr></table></figure>
-
-<h2 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h2><p><strong>形参</strong>：在定义函数时给定的名称称作形参（<code>Parameters</code>）。</p>
-<p><strong>实参</strong>：在调用函数时你所提供给函数的值称作实参（<code>Arguments</code>）。</p>
-<p><strong>示例</strong>：<code>function_param.py</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">print_max</span><span class="params">(a, b)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> a &gt; b:</span><br><span class="line">        print(a, <span class="string">'is maximum'</span>)</span><br><span class="line">    <span class="keyword">elif</span> a == b:</span><br><span class="line">        print(a, <span class="string">'is equal to'</span>, b)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        print(b, <span class="string">'is maximum'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 直接传递字面值</span></span><br><span class="line">print_max(<span class="number">3</span>, <span class="number">4</span>)</span><br><span class="line"></span><br><span class="line">x = <span class="number">5</span></span><br><span class="line">y = <span class="number">7</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 以参数的形式传递变量</span></span><br><span class="line">print_max(x, y)</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line">$ python function_param.py</span><br><span class="line"><span class="number">4</span> <span class="keyword">is</span> maximum</span><br><span class="line"><span class="number">7</span> <span class="keyword">is</span> maximum</span><br></pre></td></tr></table></figure>
-
-<p><strong>默认参数</strong>：可以通过在函数定义时附加一个赋值运算符（<code>=</code>）来为参数指定默认参数值。</p>
-<p><strong>示例</strong>：<code>function_default.py</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">say</span><span class="params">(message, times=<span class="number">1</span>)</span>:</span></span><br><span class="line">    print(message * times)</span><br><span class="line"></span><br><span class="line">say(<span class="string">'Hello'</span>)</span><br><span class="line">say(<span class="string">'World'</span>, <span class="number">5</span>)</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line">$ python function_default.py</span><br><span class="line">Hello</span><br><span class="line">WorldWorldWorldWorldWorld</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p><strong>Warning</strong>：只有那些位于参数列表末尾的参数才能被赋予默认参数值，即在函数的参数列表中拥有默认参数值的参数不能位于没有默认参数值的参数之前！</p>
-</blockquote>
-<p><strong>关键字参数</strong>：使用命名（关键字）而非位置来指定函数中的参数，不考虑参数的顺序，函数使用更加容易。</p>
-<p><strong>示例</strong>：<code>function_keyword.py</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">func</span><span class="params">(a, b=<span class="number">5</span>, c=<span class="number">10</span>)</span>:</span></span><br><span class="line">    print(<span class="string">'a is'</span>, a, <span class="string">'and b is'</span>, b, <span class="string">'and c is'</span>, c)</span><br><span class="line"></span><br><span class="line">func(<span class="number">3</span>, <span class="number">7</span>)</span><br><span class="line">func(<span class="number">25</span>, c=<span class="number">24</span>)</span><br><span class="line">func(c=<span class="number">50</span>, a=<span class="number">100</span>)</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line">$ python function_keyword.py</span><br><span class="line">a <span class="keyword">is</span> <span class="number">3</span> <span class="keyword">and</span> b <span class="keyword">is</span> <span class="number">7</span> <span class="keyword">and</span> c <span class="keyword">is</span> <span class="number">10</span></span><br><span class="line">a <span class="keyword">is</span> <span class="number">25</span> <span class="keyword">and</span> b <span class="keyword">is</span> <span class="number">5</span> <span class="keyword">and</span> c <span class="keyword">is</span> <span class="number">24</span></span><br><span class="line">a <span class="keyword">is</span> <span class="number">100</span> <span class="keyword">and</span> b <span class="keyword">is</span> <span class="number">5</span> <span class="keyword">and</span> c <span class="keyword">is</span> <span class="number">50</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>可变参数</strong>：可以通过使用星号 <code>*</code> 来实现在函数里面能够有任意数量的变量，诸如 <code>*param</code> 的星号参数时汇集成元祖，诸如 <code>**param</code> 的双星号参数时汇集成字典。</p>
-<p><strong>示例</strong>：<code>function_varargs.py</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">total</span><span class="params">(a=<span class="number">5</span>, *numbers, **phonebook)</span>:</span></span><br><span class="line">    print(<span class="string">'a'</span>, a)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 遍历元组中的所有项目</span></span><br><span class="line">    <span class="keyword">for</span> single_item <span class="keyword">in</span> numbers:</span><br><span class="line">        print(<span class="string">'single_item'</span>, single_item)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 遍历字典中的所有项目</span></span><br><span class="line">    <span class="keyword">for</span> first_part, second_part <span class="keyword">in</span> phonebook.items():</span><br><span class="line">        print(first_part,second_part)</span><br><span class="line"></span><br><span class="line">print(total(<span class="number">10</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,Jack=<span class="number">1123</span>,John=<span class="number">2231</span>,Inge=<span class="number">1560</span>))</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line">$ python function_varargs.py</span><br><span class="line">a <span class="number">10</span></span><br><span class="line">single_item <span class="number">1</span></span><br><span class="line">single_item <span class="number">2</span></span><br><span class="line">single_item <span class="number">3</span></span><br><span class="line">Inge <span class="number">1560</span></span><br><span class="line">John <span class="number">2231</span></span><br><span class="line">Jack <span class="number">1123</span></span><br><span class="line"><span class="literal">None</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><p><strong>局部变量</strong>：当在一个函数的定义中声明变量时，它们不会以任何方式与身处函数之外但具有相同名称的变量产生关系，也就是说，这些变量名只存在于函数这一局部（<code>Local</code>）。</p>
-<p><strong>示例</strong>：<code>function_local.py</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">x = <span class="number">50</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">func</span><span class="params">(x)</span>:</span></span><br><span class="line">    print(<span class="string">'x is'</span>, x)</span><br><span class="line">    x = <span class="number">2</span></span><br><span class="line">    print(<span class="string">'Changed local x to'</span>, x)</span><br><span class="line"></span><br><span class="line">func(x)</span><br><span class="line">print(<span class="string">'x is still'</span>, x)</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line">$ python function_local.py</span><br><span class="line">x <span class="keyword">is</span> <span class="number">50</span></span><br><span class="line">Changed local x to <span class="number">2</span></span><br><span class="line">x <span class="keyword">is</span> still <span class="number">50</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>全局变量</strong>：可以使用关键字 <code>global</code> 定义于函数之外的变量的值，它的作用域是全局。</p>
-<p><strong>示例</strong>：<code>function_global.py</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">x = <span class="number">50</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">func</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">global</span> x</span><br><span class="line"></span><br><span class="line">    print(<span class="string">'x is'</span>, x)</span><br><span class="line">    x = <span class="number">2</span></span><br><span class="line">    print(<span class="string">'Changed global x to'</span>, x)</span><br><span class="line"></span><br><span class="line">func()</span><br><span class="line">print(<span class="string">'Value of x is'</span>, x)</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line">$ python function_global.py</span><br><span class="line">x <span class="keyword">is</span> <span class="number">50</span></span><br><span class="line">Changed <span class="keyword">global</span> x to <span class="number">2</span></span><br><span class="line">Value of x <span class="keyword">is</span> <span class="number">2</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>公有</strong>：有的函数和变量我们希望给别人使用，正常的函数和变量名是公开的，可以被引用。</p>
-<p><strong>私有</strong>：有的函数和变量我们希望仅仅在模块内部使用，以 <code>__</code> 开头的函数或变量是私有的。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/python-control/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/24/python-control/" class="post-title-link" itemprop="url">Python · 流程控制</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-24 09:10:20" itemprop="dateCreated datePublished" datetime="2019-10-24T09:10:20+08:00">2019-10-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-28 14:04:56" itemprop="dateModified" datetime="2019-10-28T14:04:56+08:00">2019-10-28</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>Python 有三种控制流语句： <code>if</code>、<code>for</code> 、<code>while</code>，两种相关语句：<code>break</code>、<code>continue</code>。</p>
-<ul>
-<li><code>if</code></li>
-<li><code>while</code></li>
-<li><code>for</code></li>
-<li><code>break</code></li>
-<li><code>continue</code></li>
-</ul>
-<h2 id="流程控制"><a href="#流程控制" class="headerlink" title="流程控制"></a>流程控制</h2><h3 id="if"><a href="#if" class="headerlink" title="if"></a>if</h3><p><code>if</code> 语句用以条件检查：如果条件为 <code>true</code>，将运行一块语句，否则运行另一块语句，其中 <code>else</code> 从句是可选的。</p>
-<p><strong>示例</strong>：<code>if.py</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">number = <span class="number">23</span></span><br><span class="line">guess = int(input(<span class="string">'Enter an integer : '</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> guess == number:</span><br><span class="line">    <span class="comment"># 新块从这里开始</span></span><br><span class="line">    print(<span class="string">'Congratulations, you guessed it.'</span>)</span><br><span class="line">    print(<span class="string">'(but you do not win any prizes!)'</span>)</span><br><span class="line">    <span class="comment"># 新块在这里结束</span></span><br><span class="line"><span class="keyword">elif</span> guess &lt; number:</span><br><span class="line">    <span class="comment"># 另一代码块</span></span><br><span class="line">    print(<span class="string">'No, it is a little higher than that'</span>)</span><br><span class="line">    <span class="comment"># 你可以在此做任何你希望在该代码块内进行的事情</span></span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    print(<span class="string">'No, it is a little lower than that'</span>)</span><br><span class="line">    <span class="comment"># 你必须通过猜测一个大于（&gt;）设置数的数字来到达这里。</span></span><br><span class="line"></span><br><span class="line">print(<span class="string">'Done'</span>)</span><br><span class="line"><span class="comment"># 这最后一句语句将在 if 语句执行完毕后执行。</span></span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line">$ python <span class="keyword">if</span>.py</span><br><span class="line">Enter an integer : <span class="number">50</span></span><br><span class="line">No, it <span class="keyword">is</span> a little lower than that</span><br><span class="line">Done</span><br><span class="line"></span><br><span class="line">$ python <span class="keyword">if</span>.py</span><br><span class="line">Enter an integer : <span class="number">22</span></span><br><span class="line">No, it <span class="keyword">is</span> a little higher than that</span><br><span class="line">Done</span><br><span class="line"></span><br><span class="line">$ python <span class="keyword">if</span>.py</span><br><span class="line">Enter an integer : <span class="number">23</span></span><br><span class="line">Congratulations, you guessed it.</span><br><span class="line">(but you do <span class="keyword">not</span> win any prizes!)</span><br><span class="line">Done</span><br></pre></td></tr></table></figure>
-
-<h3 id="while"><a href="#while" class="headerlink" title="while"></a>while</h3><p><code>while</code> 语句能够让你在条件为真的前提下重复执行某块语句，<code>while</code> 语句是循环（Looping）语句的一种。</p>
-<p><strong>示例</strong>：<code>while.py</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">number = <span class="number">23</span></span><br><span class="line">running = <span class="literal">True</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> running:</span><br><span class="line">    guess = int(input(<span class="string">'Enter an integer : '</span>))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> guess == number:</span><br><span class="line">        print(<span class="string">'Congratulations, you guessed it.'</span>)</span><br><span class="line">        <span class="comment"># 这将导致 while 循环中止</span></span><br><span class="line">        running = <span class="literal">False</span></span><br><span class="line">    <span class="keyword">elif</span> guess &lt; number:</span><br><span class="line">        print(<span class="string">'No, it is a little higher than that.'</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        print(<span class="string">'No, it is a little lower than that.'</span>)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    print(<span class="string">'The while loop is over.'</span>)</span><br><span class="line">    <span class="comment"># 在这里你可以做你想做的任何事</span></span><br><span class="line"></span><br><span class="line">print(<span class="string">'Done'</span>)</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line">$ python <span class="keyword">while</span>.py</span><br><span class="line">Enter an integer : <span class="number">50</span></span><br><span class="line">No, it <span class="keyword">is</span> a little lower than that.</span><br><span class="line">Enter an integer : <span class="number">22</span></span><br><span class="line">No, it <span class="keyword">is</span> a little higher than that.</span><br><span class="line">Enter an integer : <span class="number">23</span></span><br><span class="line">Congratulations, you guessed it.</span><br><span class="line">The <span class="keyword">while</span> loop <span class="keyword">is</span> over.</span><br><span class="line">Done</span><br></pre></td></tr></table></figure>
-
-<h3 id="for"><a href="#for" class="headerlink" title="for"></a>for</h3><p><code>for...in</code> 语句是另一种循环语句，其特点是会在一系列对象上进行遍历。</p>
-<p><strong>示例</strong>：<code>for.py</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">5</span>):</span><br><span class="line">    print(i)</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    print(<span class="string">'The for loop is over'</span>)</span><br><span class="line">    </span><br><span class="line">输出：</span><br><span class="line">$ python <span class="keyword">for</span>.py</span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">2</span></span><br><span class="line"><span class="number">3</span></span><br><span class="line"><span class="number">4</span></span><br><span class="line">The <span class="keyword">for</span> loop <span class="keyword">is</span> over</span><br></pre></td></tr></table></figure>
-
-<h3 id="break"><a href="#break" class="headerlink" title="break"></a>break</h3><p><code>break</code> 语句用以中断循环语句，也就是中止循环语句的执行。</p>
-<p><strong>示例</strong>：<code>break.py</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    s = input(<span class="string">'Enter something : '</span>)</span><br><span class="line">    <span class="keyword">if</span> s == <span class="string">'quit'</span>:</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    print(<span class="string">'Length of the string is'</span>, len(s))</span><br><span class="line">print(<span class="string">'Done'</span>)</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line">$ python <span class="keyword">break</span>.py</span><br><span class="line">Enter something : Programming <span class="keyword">is</span> fun</span><br><span class="line">Length of the string <span class="keyword">is</span> <span class="number">18</span></span><br><span class="line">Enter something : When the work <span class="keyword">is</span> done</span><br><span class="line">Length of the string <span class="keyword">is</span> <span class="number">21</span></span><br><span class="line">Enter something : <span class="keyword">if</span> you wanna make your work also fun:</span><br><span class="line">Length of the string <span class="keyword">is</span> <span class="number">37</span></span><br><span class="line">Enter something : use Python!</span><br><span class="line">Length of the string <span class="keyword">is</span> <span class="number">11</span></span><br><span class="line">Enter something : quit</span><br><span class="line">Done</span><br></pre></td></tr></table></figure>
-
-<h3 id="continue"><a href="#continue" class="headerlink" title="continue"></a>continue</h3><p><code>continue</code> 语句用以跳过当前循环块中的剩余语句，并继续该循环的下一次迭代。</p>
-<p><strong>示例</strong>：<code>continue.py</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    s = input(<span class="string">'Enter something : '</span>)</span><br><span class="line">    <span class="keyword">if</span> s == <span class="string">'quit'</span>:</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">if</span> len(s) &lt; <span class="number">3</span>:</span><br><span class="line">        print(<span class="string">'Too small'</span>)</span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">    print(<span class="string">'Input is of sufficient length'</span>)</span><br><span class="line">    <span class="comment"># 自此处起继续进行其它任何处理</span></span><br><span class="line">    </span><br><span class="line">输出：</span><br><span class="line">$ python <span class="keyword">continue</span>.py</span><br><span class="line">Enter something : a</span><br><span class="line">Too small</span><br><span class="line">Enter something : <span class="number">12</span></span><br><span class="line">Too small</span><br><span class="line">Enter something : abc</span><br><span class="line">Input <span class="keyword">is</span> of sufficient length</span><br><span class="line">Enter something : quit</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2486,7 +2486,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">125</span>
+                    <span class="site-state-item-count">127</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
