@@ -352,6 +352,189 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/21/mysql-modify-dbname/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/21/mysql-modify-dbname/" class="post-title-link" itemprop="url">MySQL · 修改数据库名</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-21 14:21:30" itemprop="dateCreated datePublished" datetime="2019-10-21T14:21:30+08:00">2019-10-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-22 21:23:36" itemprop="dateModified" datetime="2019-10-22T21:23:36+08:00">2019-10-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p><strong>需求</strong>：将数据库 <code>hrtrqu</code> 修改 <code>hrtrzq</code></p>
+<p><strong>方案</strong>：MySQL 没有 <code>rename database</code> 命令，只能变相修改表到目标库里的表来实现。</p>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p><strong>1. 导出库数据</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mysqldump  --single-transaction -S /<span class="keyword">data</span>/mysql3308/mysql.sock -usre -p<span class="string">'xx'</span> hrtrqu &gt; hrtrqu.sql</span><br></pre></td></tr></table></figure>
+
+<p><strong>2. 创建新库 hrtrzq</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">DATABASE</span> <span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> hrtrzq <span class="keyword">default</span> <span class="keyword">charset</span> utf8 <span class="keyword">COLLATE</span> utf8_general_ci;</span><br></pre></td></tr></table></figure>
+
+<p><strong>3. 导入数据到新库</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -S /<span class="keyword">data</span>/mysql3308/mysql.sock -usre -p<span class="string">'sre@@p$i'</span> hrtrzq &lt; hrtrqu.sql</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/21/mysql-delete-bigtable/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1994,180 +2177,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/18/pt-summary/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/18/pt-summary/" class="post-title-link" itemprop="url">Percona Toolkit · 信息收集工具 pt-summary</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-18 17:46:35" itemprop="dateCreated datePublished" datetime="2019-10-18T17:46:35+08:00">2019-10-18</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-15 16:42:15" itemprop="dateModified" datetime="2019-11-15T16:42:15+08:00">2019-11-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Percona-Toolkit/" itemprop="url" rel="index"><span itemprop="name">Percona Toolkit</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">$ pt-summary</span><br><span class="line"><span class="comment"># Percona Toolkit System Summary Report ######################</span></span><br><span class="line">        Date | <span class="number">2019</span>-<span class="number">10</span>-<span class="number">18</span> <span class="number">09</span>:<span class="number">41</span>:<span class="number">24</span> UTC (local TZ: CST +<span class="number">0800</span>)</span><br><span class="line">    Hostname | hrmk-Dubbo4</span><br><span class="line">      Uptime | <span class="number">182</span> days, <span class="number">20</span>:<span class="number">56</span>,  <span class="number">1</span> user,  load average: <span class="number">0.66</span>, <span class="number">0.69</span>, <span class="number">0.69</span></span><br><span class="line">      System | Dell Inc.; PowerEdge R730; vNot Specified (Rack Mount Chassis)</span><br><span class="line"> Service Tag | <span class="number">5</span>K6GBD2</span><br><span class="line">    Platform | Linux</span><br><span class="line">     Release | CentOS release <span class="number">6.10</span> (Final)</span><br><span class="line">      Kernel | <span class="number">2.6</span>.<span class="number">32</span>-<span class="number">431</span>.el6.x86_64</span><br><span class="line">Architecture | CPU = <span class="number">64</span>-bit, OS = <span class="number">64</span>-bit</span><br><span class="line">   Threading | NPTL <span class="number">2.12</span></span><br><span class="line">     SELinux | Enforcing</span><br><span class="line"> Virtualized | No virtualization detected</span><br><span class="line"> </span><br><span class="line"><span class="comment"># Processor ##################################################</span></span><br><span class="line">  Processors | physical = <span class="number">2</span>, cores = <span class="number">12</span>, virtual = <span class="number">24</span>, hyperthreading = yes</span><br><span class="line">      Speeds | <span class="number">24</span>x2400.<span class="number">128</span></span><br><span class="line">      Models | <span class="number">24</span>xIntel(R) Xeon(R) CPU E5-<span class="number">2620</span> v3 @ <span class="number">2.40</span>GHz</span><br><span class="line">      Caches | <span class="number">24</span>x15360 KB</span><br><span class="line">      </span><br><span class="line"><span class="comment"># Memory #####################################################</span></span><br><span class="line">       Total | <span class="number">15.6</span>G</span><br><span class="line">        Free | <span class="number">217.5</span>M</span><br><span class="line">        Used | physical = <span class="number">15.4</span>G, swap allocated = <span class="number">7.8</span>G, swap used = <span class="number">96.0</span>k, virtual = <span class="number">15.4</span>G</span><br><span class="line">      Shared | <span class="number">1.2</span>M</span><br><span class="line">     Buffers | <span class="number">221.9</span>M</span><br><span class="line">      Caches | <span class="number">2.2</span>G</span><br><span class="line">       Dirty | <span class="number">344</span> kB</span><br><span class="line">     UsedRSS | <span class="number">12.4</span>G</span><br><span class="line">  Swappiness | <span class="number">60</span></span><br><span class="line"> DirtyPolicy | <span class="number">20</span>, <span class="number">10</span></span><br><span class="line"> DirtyStatus | <span class="number">0</span>, <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Network Devices ############################################</span></span><br><span class="line">  Device    Speed     Duplex</span><br><span class="line">  ========= ========= =========</span><br><span class="line">  em2        <span class="number">1000</span>Mb/s   Full      </span><br><span class="line">  em3        Unknown!   Unknown!  </span><br><span class="line">  em4        <span class="number">1000</span>Mb/s   Full      </span><br><span class="line">  bond0      <span class="number">1000</span>Mb/s   Full      </span><br><span class="line">  virbr0-nic <span class="number">10</span>Mb/s     Full      </span><br><span class="line">  virbr0                          </span><br><span class="line">  em1        <span class="number">1000</span>Mb/s   Full</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2216,7 +2225,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">128</span>
+                    <span class="site-state-item-count">129</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

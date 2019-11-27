@@ -352,6 +352,180 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/16/mysql-practice-recovery/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/11/16/mysql-practice-recovery/" class="post-title-link" itemprop="url">MySQL · 运维实践 · 备份恢复</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-16 08:57:32 / 修改时间：09:11:15" itemprop="dateCreated datePublished" datetime="2019-11-16T08:57:32+08:00">2019-11-16</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><ul>
+<li><strong>项目</strong>：海尔模块商资源平台（HDY）</li>
+<li><strong>数据库</strong>：MySQL 5.5.27</li>
+<li><strong>数据量</strong>：</li>
+</ul>
+<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><ul>
+<li>申请服务器 - 项目经理</li>
+<li>申请特权账号（DBA、DTS 备份）- 项目经理</li>
+<li>搭建数据库 - DBA</li>
+<li>安装恢复软件，并进行相关参数配置 - DTS</li>
+<li>启动恢复</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 数据恢复</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">26</span>K Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">36</span> mysql-bin.<span class="number">000001</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">919</span>K Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">36</span> mysql-bin.<span class="number">000002</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">126</span> Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">38</span> mysql-bin.<span class="number">000003</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">126</span> Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">38</span> mysql-bin.<span class="number">000004</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">126</span> Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">39</span> mysql-bin.<span class="number">000005</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">126</span> Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">45</span> mysql-bin.<span class="number">000006</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">126</span> Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">46</span> mysql-bin.<span class="number">000007</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">1.1</span>G Nov <span class="number">15</span> <span class="number">16</span>:<span class="number">18</span> mysql-bin.<span class="number">000008</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">1.1</span>G Nov <span class="number">15</span> <span class="number">16</span>:<span class="number">21</span> mysql-bin.<span class="number">000009</span></span><br><span class="line">...</span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql <span class="number">1073790463</span> Nov <span class="number">16</span> <span class="number">08</span>:<span class="number">27</span> mysql-bin.<span class="number">000325</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">681747155</span> Nov <span class="number">16</span> <span class="number">08</span>:<span class="number">31</span> mysql-bin.<span class="number">000326</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql       <span class="number">6194</span> Nov <span class="number">16</span> <span class="number">08</span>:<span class="number">27</span> mysql-bin.index</span><br><span class="line"></span><br><span class="line"><span class="comment"># 回滚日志</span></span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/15/think-direction/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2094,183 +2268,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/07/mysql-case-binlog-overflow/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/11/07/mysql-case-binlog-overflow/" class="post-title-link" itemprop="url">MySQL · 案例分析 · 大事务导致 binlog 暴增</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-11-07 16:51:09" itemprop="dateCreated datePublished" datetime="2019-11-07T16:51:09+08:00">2019-11-07</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-15 16:25:54" itemprop="dateModified" datetime="2019-11-15T16:25:54+08:00">2019-11-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">[root@cosmoim-db04 data]<span class="comment"># ll -h</span></span><br><span class="line">total <span class="number">819</span>G</span><br><span class="line">....</span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">214</span> Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">53</span> relay-log.<span class="number">001998</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql <span class="number">1.1</span>G Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">54</span> relay-log.<span class="number">001999</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">29</span>M Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">54</span> relay-log.<span class="number">002000</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">214</span> Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">54</span> relay-log.<span class="number">002001</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql <span class="number">1.1</span>G Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">55</span> relay-log.<span class="number">002002</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">29</span>M Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">55</span> relay-log.<span class="number">002003</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">214</span> Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">55</span> relay-log.<span class="number">002004</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql <span class="number">1.1</span>G Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">55</span> relay-log.<span class="number">002005</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">29</span>M Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">55</span> relay-log.<span class="number">002006</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">214</span> Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">55</span> relay-log.<span class="number">002007</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql <span class="number">1.1</span>G Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">56</span> relay-log.<span class="number">002008</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">29</span>M Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">56</span> relay-log.<span class="number">002009</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">214</span> Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">56</span> relay-log.<span class="number">002010</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql <span class="number">1.1</span>G Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">56</span> relay-log.<span class="number">002011</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">29</span>M Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">56</span> relay-log.<span class="number">002012</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">214</span> Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">56</span> relay-log.<span class="number">002013</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql <span class="number">1.1</span>G Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">57</span> relay-log.<span class="number">002014</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">29</span>M Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">57</span> relay-log.<span class="number">002015</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">214</span> Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">57</span> relay-log.<span class="number">002016</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql <span class="number">1.1</span>G Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">58</span> relay-log.<span class="number">002017</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">29</span>M Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">58</span> relay-log.<span class="number">002018</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">214</span> Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">58</span> relay-log.<span class="number">002019</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql <span class="number">1.1</span>G Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">58</span> relay-log.<span class="number">002020</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">29</span>M Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">58</span> relay-log.<span class="number">002021</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">214</span> Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">58</span> relay-log.<span class="number">002022</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql <span class="number">1.1</span>G Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">59</span> relay-log.<span class="number">002023</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">29</span>M Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">59</span> relay-log.<span class="number">002024</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">214</span> Nov  <span class="number">6</span> <span class="number">21</span>:<span class="number">59</span> relay-log.<span class="number">002025</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql <span class="number">1.1</span>G Nov  <span class="number">6</span> <span class="number">22</span>:<span class="number">00</span> relay-log.<span class="number">002026</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">29</span>M Nov  <span class="number">6</span> <span class="number">22</span>:<span class="number">00</span> relay-log.<span class="number">002027</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">214</span> Nov  <span class="number">6</span> <span class="number">22</span>:<span class="number">00</span> relay-log.<span class="number">002028</span></span><br><span class="line">....</span><br></pre></td></tr></table></figure>
-
-<h2 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h2><p>解析 <code>relaylog</code> 日志，发现执行的是一个 <code>update</code> 大事务</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqlbinlog --base64-output=decode-rows --verbose relay-log.<span class="number">001999</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#191106 21:53:01 server id 13823283  end_log_pos 342 CRC32 0x50ae56cd 	Table_map: `cosmo-aps`.`bns_aps_versiontolineinfo` mapped to number 417</span></span><br><span class="line"><span class="comment"># at 505</span></span><br><span class="line"><span class="comment">#191106 21:53:01 server id 13823283  end_log_pos 8504 CRC32 0xc3c33b83 	Update_rows: table id 417</span></span><br><span class="line"><span class="comment"># at 8667</span></span><br><span class="line"><span class="comment">#191106 21:53:01 server id 13823283  end_log_pos 16666 CRC32 0xc7ccd23c 	Update_rows: table id 417</span></span><br><span class="line"><span class="comment"># at 16829</span></span><br><span class="line"><span class="comment">#191106 21:53:01 server id 13823283  end_log_pos 24828 CRC32 0x870a1ba0 	Update_rows: table id 417</span></span><br><span class="line"><span class="comment"># at 24991</span></span><br><span class="line"><span class="comment">#191106 21:53:01 server id 13823283  end_log_pos 32990 CRC32 0x310a7ba8 	Update_rows: table id 417</span></span><br><span class="line"><span class="comment"># at 33153</span></span><br><span class="line"><span class="comment">#191106 21:53:01 server id 13823283  end_log_pos 41152 CRC32 0x84202102 	Update_rows: table id 417</span></span><br><span class="line"><span class="comment"># at 41315</span></span><br><span class="line"><span class="comment">#191106 21:53:01 server id 13823283  end_log_pos 49314 CRC32 0xaaf45c6e 	Update_rows: table id 417</span></span><br><span class="line"><span class="comment"># at 49477</span></span><br><span class="line"><span class="comment">#191106 21:53:01 server id 13823283  end_log_pos 57476 CRC32 0x3e307bcb 	Update_rows: table id 417</span></span><br><span class="line"><span class="comment"># at 57639</span></span><br><span class="line"><span class="comment">#191106 21:53:01 server id 13823283  end_log_pos 65638 CRC32 0x4832b399 	Update_rows: table id 417</span></span><br><span class="line"><span class="comment"># at 65801</span></span><br><span class="line"><span class="comment">#191106 21:53:01 server id 13823283  end_log_pos 73800 CRC32 0x941f87fe 	Update_rows: table id 417</span></span><br><span class="line"><span class="comment"># at 73963</span></span><br><span class="line"><span class="comment">#191106 21:53:01 server id 13823283  end_log_pos 81962 CRC32 0xbacbfa92 	Update_rows: table id 417</span></span><br><span class="line">......</span><br><span class="line"></span><br><span class="line"><span class="comment">#191106 21:53:01 server id 13823283  end_log_pos 38061530 CRC32 0x15876ee5 	Update_rows: table id 417 flags: STMT_END_F</span></span><br><span class="line"><span class="comment">### UPDATE `cosmo-aps`.`bns_aps_versiontolineinfo`</span></span><br><span class="line"><span class="comment">### WHERE</span></span><br><span class="line"><span class="comment">###   @1='be2080a3-3815-48ee-b73e-2f18cbe3b4a8'</span></span><br><span class="line"><span class="comment">###   @2=NULL</span></span><br><span class="line"><span class="comment">###   @3='9790'</span></span><br><span class="line"><span class="comment">###   @4=''</span></span><br><span class="line"><span class="comment">###   @5='CE0EQ8000'</span></span><br><span class="line"><span class="comment">###   @6='XQG52-Q718(灰)'</span></span><br><span class="line"><span class="comment">###   @7=''</span></span><br><span class="line"><span class="comment">###   @8=NULL</span></span><br><span class="line"><span class="comment">###   @9='N500'</span></span><br><span class="line"><span class="comment">###   @10='30'</span></span><br><span class="line"><span class="comment">###   @11='T6'</span></span><br><span class="line"><span class="comment">###   @12=''</span></span><br><span class="line"><span class="comment">###   @13=1</span></span><br><span class="line"><span class="comment">###   @14=''</span></span><br><span class="line"><span class="comment">###   @15='在产'</span></span><br><span class="line"><span class="comment">###   @16=''</span></span><br><span class="line"><span class="comment">###   @17=''</span></span><br><span class="line"><span class="comment">###   @18=''</span></span><br><span class="line"><span class="comment">###   @19='管理员'</span></span><br><span class="line"><span class="comment">###   @20='2018-08-31 18:03:59'</span></span><br><span class="line"><span class="comment">###   @21='管理员'</span></span><br><span class="line"><span class="comment">###   @22='2019-11-06 21:53:00'</span></span><br><span class="line"><span class="comment">###   @23=0</span></span><br><span class="line"><span class="comment">###   @24=0</span></span><br><span class="line"><span class="comment">###   @25='1'</span></span><br><span class="line"><span class="comment">###   @26='00'</span></span><br><span class="line"><span class="comment">### SET</span></span><br><span class="line"><span class="comment">###   @1='be2080a3-3815-48ee-b73e-2f18cbe3b4a8'</span></span><br><span class="line"><span class="comment">###   @2=NULL</span></span><br><span class="line"><span class="comment">###   @3='9790'</span></span><br><span class="line"><span class="comment">###   @4=''</span></span><br><span class="line"><span class="comment">###   @5='CE0EQ8000'</span></span><br><span class="line"><span class="comment">###   @6='XQG52-Q718(灰)'</span></span><br><span class="line"><span class="comment">###   @7=''</span></span><br><span class="line"><span class="comment">###   @8=NULL</span></span><br><span class="line"><span class="comment">###   @9='N500'</span></span><br><span class="line"><span class="comment">###   @10='30'</span></span><br><span class="line"><span class="comment">###   @11='T6'</span></span><br><span class="line"><span class="comment">###   @12=''</span></span><br><span class="line"><span class="comment">###   @13=1</span></span><br><span class="line"><span class="comment">###   @14=''</span></span><br><span class="line"><span class="comment">###   @15='在产'</span></span><br><span class="line"><span class="comment">###   @16=''</span></span><br><span class="line"><span class="comment">###   @17=''</span></span><br><span class="line"><span class="comment">###   @18=''</span></span><br><span class="line"><span class="comment">###   @19='管理员'</span></span><br><span class="line"><span class="comment">###   @20='2018-08-31 18:03:59'</span></span><br><span class="line"><span class="comment">###   @21='管理员'</span></span><br><span class="line"><span class="comment">###   @22='2019-11-06 21:53:01'</span></span><br><span class="line"><span class="comment">###   @23=0</span></span><br><span class="line"><span class="comment">###   @24=0</span></span><br><span class="line"><span class="comment">###   @25='1'</span></span><br><span class="line"><span class="comment">###   @26='00'</span></span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2319,7 +2316,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">128</span>
+                    <span class="site-state-item-count">129</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
