@@ -352,6 +352,214 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/20/mysql-case-replication/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/20/mysql-case-replication/" class="post-title-link" itemprop="url">MySQL · 案例分析 · 主从复制中断</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-20 09:51:44" itemprop="dateCreated datePublished" datetime="2019-09-20T09:51:44+08:00">2019-09-20</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-15 16:26:02" itemprop="dateModified" datetime="2019-11-15T16:26:02+08:00">2019-11-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="备库找不到主库-binlog-文件"><a href="#备库找不到主库-binlog-文件" class="headerlink" title="备库找不到主库 binlog 文件"></a>备库找不到主库 binlog 文件</h2><h3 id="现象"><a href="#现象" class="headerlink" title="现象"></a>现象</h3><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-20-015800.png" alt="image-20190920095751451"></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">************************* <span class="number">1</span>. row ***************************</span><br><span class="line">               Slave_IO_State: </span><br><span class="line">                  Master_Host: <span class="number">10.135</span>.<span class="number">22.70</span></span><br><span class="line">                  Master_User: repluser</span><br><span class="line">                  Master_Port: <span class="number">3308</span></span><br><span class="line">                Connect_Retry: <span class="number">10</span></span><br><span class="line">              Master_Log_File: mysql-bin.<span class="number">001935</span></span><br><span class="line">          Read_Master_Log_Pos: <span class="number">6587</span></span><br><span class="line">               Relay_Log_File: relay-log.<span class="number">001487</span></span><br><span class="line">                Relay_Log_Pos: <span class="number">4</span></span><br><span class="line">        Relay_Master_Log_File: mysql-bin.<span class="number">001935</span></span><br><span class="line">             Slave_IO_Running: No</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">                           .....</span><br><span class="line">        Seconds_Behind_Master: NULL</span><br><span class="line">Master_SSL_Verify_Server_Cert: No</span><br><span class="line">                Last_IO_Errno: <span class="number">1236</span></span><br><span class="line">                Last_IO_Error: Got fatal error <span class="number">1236</span> from master when reading <span class="keyword">data</span> from binary log: <span class="string">'Could not find first log file name in binary log index file'</span></span><br><span class="line">               Last_SQL_Errno: <span class="number">0</span></span><br><span class="line">               Last_SQL_Error:</span><br></pre></td></tr></table></figure>
+
+<h3 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h3><p>该错误发生在从库 <code>io</code> 进程从主库拉取日志时，发现主库的 <code>mysql_bin.index</code> 文件中第一个文件不存在，出现此类报错可能有两个原因：</p>
+<ul>
+<li><code>Slave</code> 由于某种原因停了好长一段是时间，当你重启 <code>Slave</code> 复制的时候，在主库上找不到相应的 <code>binlog</code> 。</li>
+<li>由于某些设置主库上的 <code>binlog</code> 被删除了，导致从库获取不到对应的 <code>binlog</code>。</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@hop02 mzjh]<span class="comment"># ll | grep mysql-bin</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073742013</span> Sep <span class="number">12</span> <span class="number">14</span>:<span class="number">55</span> mysql-bin.<span class="number">001948</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073742073</span> Sep <span class="number">13</span> <span class="number">11</span>:<span class="number">53</span> mysql-bin.<span class="number">001949</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073742120</span> Sep <span class="number">14</span> <span class="number">08</span>:<span class="number">39</span> mysql-bin.<span class="number">001950</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073859355</span> Sep <span class="number">15</span> <span class="number">06</span>:<span class="number">21</span> mysql-bin.<span class="number">001951</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1074054892</span> Sep <span class="number">16</span> <span class="number">06</span>:<span class="number">18</span> mysql-bin.<span class="number">001952</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1075243641</span> Sep <span class="number">17</span> <span class="number">06</span>:<span class="number">18</span> mysql-bin.<span class="number">001953</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1074801420</span> Sep <span class="number">18</span> <span class="number">06</span>:<span class="number">16</span> mysql-bin.<span class="number">001954</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1075257243</span> Sep <span class="number">19</span> <span class="number">06</span>:<span class="number">16</span> mysql-bin.<span class="number">001955</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql   <span class="number">619405162</span> Sep <span class="number">19</span> <span class="number">13</span>:<span class="number">32</span> mysql-bin.<span class="number">001956</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1072898197</span> Sep <span class="number">20</span> <span class="number">09</span>:<span class="number">44</span> mysql-bin.<span class="number">001957</span></span><br><span class="line">-rw-r-----. <span class="number">1</span> mysql mysql         <span class="number">190</span> Sep <span class="number">19</span> <span class="number">13</span>:<span class="number">32</span> mysql-bin.index</span><br></pre></td></tr></table></figure>
+
+<h3 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h3><p>为了避免数据丢失，需要重新搭建 <code>Slave</code></p>
+<blockquote>
+<p><strong>Tips</strong>：不要使用 <code>rm -rf</code> 命令删除 <code>binlog</code> 日志文件</p>
+</blockquote>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; PURGE MASTER LOGS TO <span class="string">'mysql-bin.001950′</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="主库空间问题，日志被截断"><a href="#主库空间问题，日志被截断" class="headerlink" title="主库空间问题，日志被截断"></a>主库空间问题，日志被截断</h2><h3 id="现象-1"><a href="#现象-1" class="headerlink" title="现象"></a>现象</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** <span class="number">1</span>. row ***************************</span><br><span class="line">               Slave_IO_State: </span><br><span class="line">                  Master_Host: <span class="number">10.138</span>.<span class="number">22.10</span></span><br><span class="line">                  Master_User: repluser</span><br><span class="line">                  Master_Port: <span class="number">3306</span></span><br><span class="line">                Connect_Retry: <span class="number">60</span></span><br><span class="line">              Master_Log_File: mysql-bin.<span class="number">006130</span></span><br><span class="line">          Read_Master_Log_Pos: <span class="number">733347710</span></span><br><span class="line">               Relay_Log_File: dzspdb2-relay-bin.<span class="number">014727</span></span><br><span class="line">                Relay_Log_Pos: <span class="number">253</span></span><br><span class="line">        Relay_Master_Log_File: mysql-bin.<span class="number">006130</span></span><br><span class="line">             Slave_IO_Running: No</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">              Replicate_Do_DB: </span><br><span class="line">                           .....</span><br><span class="line">        Seconds_Behind_Master: NULL</span><br><span class="line">Master_SSL_Verify_Server_Cert: No</span><br><span class="line">                Last_IO_Errno: <span class="number">1236</span></span><br><span class="line">                Last_IO_Error: Got fatal error <span class="number">1236</span> from master when reading <span class="keyword">data</span> from binary log: <span class="string">'binlog truncated in the middle of event; consider out of disk space on master; the first event '</span>mysql-bin.<span class="number">006130</span><span class="string">' at 733347710, the last event read from '</span>./mysql-bin.<span class="number">006130</span><span class="string">' at 733347710, the last byte read from '</span>./mysql-bin.<span class="number">006130</span><span class="string">' at 733347840.'</span></span><br><span class="line">               Last_SQL_Errno: <span class="number">0</span></span><br><span class="line">               Last_SQL_Error:</span><br></pre></td></tr></table></figure>
+
+<h3 id="原因-1"><a href="#原因-1" class="headerlink" title="原因"></a>原因</h3><p>该错误和主库的空间和 <code>sync_binlog</code> 配置有关，当主库 <code>sync_binlog = N</code> 不等于 1 且磁盘空间满时，MySQL 每写 N 次 <code>binlog</code>，系统才会同步到磁盘，但是由于存储日志的磁盘空间满而导致 MySQL 没有将日志完全写入磁盘，<code>binlog event</code> 被截断，从库读取该 <code>binlog</code> 时就会报错 <code>binlog truncated in the middle of event</code>。</p>
+<h3 id="解决-1"><a href="#解决-1" class="headerlink" title="解决"></a>解决</h3><p> 在从库重新指向到主库下一个可用的 <code>binlog</code> 并且从初始化的位置开始：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">stop slave;</span><br><span class="line">change master to master_log_file = <span class="string">'mysql-bin.006131'</span>, master_log_pos = <span class="number">4</span>;</span><br><span class="line">start slave;</span><br></pre></td></tr></table></figure>
+
+<h2 id="主从数据不一致"><a href="#主从数据不一致" class="headerlink" title="主从数据不一致"></a>主从数据不一致</h2><h3 id="现象-2"><a href="#现象-2" class="headerlink" title="现象"></a>现象</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** <span class="number">1</span>. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting <span class="keyword">for</span> master to send event</span><br><span class="line">                  Master_Host: <span class="number">10.138</span>.<span class="number">232.83</span></span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: <span class="number">3306</span></span><br><span class="line">                Connect_Retry: <span class="number">10</span></span><br><span class="line">              Master_Log_File: mysql-bin.<span class="number">001283</span></span><br><span class="line">          Read_Master_Log_Pos: <span class="number">397428472</span></span><br><span class="line">               Relay_Log_File: relay-log.<span class="number">000010</span></span><br><span class="line">                Relay_Log_Pos: <span class="number">661219485</span></span><br><span class="line">        Relay_Master_Log_File: mysql-bin.<span class="number">000528</span></span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: No</span><br><span class="line">                           .....</span><br><span class="line">                   Last_Error: Could not execute Update_rows event on table cosmo-aps.bns_aps_versiontolineinfo; Error writing file <span class="string">'/data/mysql/tmp/MLpTCcJu'</span> (Errcode: <span class="number">28</span> - No space left on device), Error_code: <span class="number">3</span>; Error writing file <span class="string">'mysql-bin'</span> (errno: <span class="number">28</span> - No space left on device), Error_code: <span class="number">1026</span>; handler error HA_ERR_RBR_LOGGING_FAILED; the event<span class="string">'s master log mysql-bin.000528, end_log_pos 674303230</span></span><br><span class="line"><span class="string">                           .....</span></span><br><span class="line"><span class="string">        Seconds_Behind_Master: NULL</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="原因-2"><a href="#原因-2" class="headerlink" title="原因"></a>原因</h3><ul>
+<li><code>Master</code> 和 <code>Slave</code> 数据不一致导致</li>
+<li><code>Slave</code> 服务器重启，事务回滚造成</li>
+</ul>
+<h3 id="解决-2"><a href="#解决-2" class="headerlink" title="解决"></a>解决</h3><ul>
+<li>手动跳过</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; stop slave ;</span><br><span class="line">mysql&gt; set global sql_slave_skip_counter=<span class="number">1</span>;</span><br><span class="line">mysql&gt; start slave ;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><a href="https://huiraoo.github.io/blog/2019/10/19/pt-slave-restart/">pt-slave-restart</a></li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/04/mysql-disaster/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2372,186 +2580,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/25/mysql-best-practices/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/25/mysql-best-practices/" class="post-title-link" itemprop="url">MySQL · 最佳实践</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-25 11:32:54" itemprop="dateCreated datePublished" datetime="2019-07-25T11:32:54+08:00">2019-07-25</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-15 16:25:15" itemprop="dateModified" datetime="2019-11-15T16:25:15+08:00">2019-11-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a>最佳实践</h2><ul>
-<li><a href="https://huiraoo.github.io/blog/2019/10/17/mysql-archiver/">MySQL · 数据归档</a></li>
-<li><a href="https://huiraoo.github.io/blog/2019/10/21/mysql-delete-bigtable/">MySQL · 快速删除大表</a></li>
-<li><a href="https://huiraoo.github.io/blog/2019/10/21/mysql-modify-dbname/">MySQL · 修改数据库名</a></li>
-<li><a href="https://huiraoo.github.io/blog/2019/10/19/pt-online-schema-change/">MySQL · 在线修改索引</a></li>
-<li><a href="https://huiraoo.github.io/blog/2019/10/21/mysql-rollback/">MySQL · 使用 binlog2sql 工具快速回滚误操作</a></li>
-<li><a href="https://huiraoo.github.io/blog/2019/10/22/mysql-migration/">MySQL · 使用 XtraBackup 迁移数据库</a></li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2600,7 +2628,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">131</span>
+                    <span class="site-state-item-count">132</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

@@ -352,6 +352,325 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/15/mysql-cases/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/15/mysql-cases/" class="post-title-link" itemprop="url">MySQL · 案例集锦</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-15 09:42:42" itemprop="dateCreated datePublished" datetime="2019-07-15T09:42:42+08:00">2019-07-15</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-20 17:00:35" itemprop="dateModified" datetime="2019-11-20T17:00:35+08:00">2019-11-20</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="系列"><a href="#系列" class="headerlink" title="系列"></a>系列</h2><ul>
+<li>MySQL · 案例分析 · 主从复制中断</li>
+<li>MySQL · 案例分析 · 磁盘空间不足</li>
+<li>MySQL · 案例分析 · information_schema.tables 与 count(*) 查询数不一致</li>
+</ul>
+<h2 id="数据库连接失败"><a href="#数据库连接失败" class="headerlink" title="数据库连接失败"></a>数据库连接失败</h2><h3 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h3><p>项目经理火急火燎的反馈，说数据库连接不上了，请求排查问题原因。</p>
+<h3 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h3><ul>
+<li><p>测试 <code>Navicate</code> 是否能够连上数据库 ？</p>
+</li>
+<li><p>登录服务器，查看 <code>mysqld</code> 进程是否存在，如果进程不存在，可能是服务器断电导致进程未自启动。</p>
+</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ ssh -p <span class="number">2222</span> <span class="number">01510886</span>@<span class="number">10.138</span>.<span class="number">16.192</span></span><br><span class="line"></span><br><span class="line">$ ps -ef | grep mysqld</span><br><span class="line">root      <span class="number">64511</span>  <span class="number">64440</span>  <span class="number">0</span> <span class="number">10</span>:<span class="number">27</span> pts/<span class="number">2</span>    <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> grep --color=auto mysqld</span><br><span class="line">root      <span class="number">79355</span>      <span class="number">1</span>  <span class="number">0</span> Aug31 ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> /bin/sh /usr/local/mysql/bin/mysqld_safe --datadir=/<span class="keyword">data</span>/mysql --pid-file=/<span class="keyword">data</span>/mysql/mysql.pid</span><br><span class="line">mysql     <span class="number">79981</span>  <span class="number">79355</span> <span class="number">99</span> Aug31 ?        <span class="number">2</span>-<span class="number">01</span>:<span class="number">38</span>:<span class="number">14</span> /usr/local/mysql/bin/mysqld --basedir=/usr/local/mysql --datadir=/<span class="keyword">data</span>/mysql --plugin-dir=/usr/local/mysql/lib/plugin --user=mysql --log-error=/<span class="keyword">data</span>/mysql/error.log --pid-file=/<span class="keyword">data</span>/mysql/mysql.pid --socket=/<span class="keyword">data</span>/mysql/mysql.sock --port=<span class="number">3306</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>登录 <code>mysql</code>，查看线程状态，查看是否有锁占用，或者线程大量阻塞情况。</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -S /<span class="keyword">data</span>/mysql/mysql.sock -usre -p<span class="string">'sre@@p$i'</span></span><br><span class="line">mysql&gt; show processlist;</span><br></pre></td></tr></table></figure>
+
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><ul>
+<li>如果是第一种原因，启动 <code>mysql</code> 进程</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ cd /etc/init.d</span><br><span class="line">$ ./mysqld stop/start</span><br><span class="line"></span><br><span class="line">$ cd /usr/local/mysql/support-files</span><br><span class="line">$ ./mysql.server stop/start</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>如果是第二种原因，删除正在执行的锁表线程</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 杀掉ID为1的线程, 关闭连接</span><br><span class="line">kill id; </span><br><span class="line"></span><br><span class="line"># 查询出时间大于10的线程, 复制查询结果，批量执行</span><br><span class="line">select concat(&apos;kill &apos;, id, &apos;;&apos;) from information_schema.processlist where time &gt; 10;</span><br></pre></td></tr></table></figure>
+
+<h2 id="备份失败"><a href="#备份失败" class="headerlink" title="备份失败"></a>备份失败</h2><h3 id="现象描述"><a href="#现象描述" class="headerlink" title="现象描述"></a>现象描述</h3><p>据备份供应商反映，昨天晚上 22:00 <code>XX系统</code>，从库备份失败，使用的备份工具是 <code>mysqldump</code>，请求协助定位备份失败原因。</p>
+<h3 id="原因分析-1"><a href="#原因分析-1" class="headerlink" title="原因分析"></a>原因分析</h3><p>（1）检查从库两个线程 <code>Slave_IO_Running</code> 和 <code>Slave_SQL_Running</code> 均是 <strong>Yes</strong>，说明主从复制链路正常，但是 <code>Seconds_Behind_Master</code> 不断增大，且主从数据延迟有不断扩大的趋势。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.133.0.51</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-binlog.000232</span><br><span class="line">          Read_Master_Log_Pos: 3108253</span><br><span class="line">               Relay_Log_File: relay-log.000004</span><br><span class="line">                Relay_Log_Pos: 169851605</span><br><span class="line">        Relay_Master_Log_File: mysql-binlog.000229</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">              Replicate_Do_DB: </span><br><span class="line">          Replicate_Ignore_DB: </span><br><span class="line">           Replicate_Do_Table: </span><br><span class="line">       Replicate_Ignore_Table: </span><br><span class="line">      Replicate_Wild_Do_Table: </span><br><span class="line">  Replicate_Wild_Ignore_Table: </span><br><span class="line">                   Last_Errno: 0</span><br><span class="line">                   Last_Error: </span><br><span class="line">                 Skip_Counter: 0</span><br><span class="line">          Exec_Master_Log_Pos: 169851386</span><br><span class="line">              Relay_Log_Space: 3270427001</span><br><span class="line">              Until_Condition: None</span><br><span class="line">               Until_Log_File: </span><br><span class="line">                Until_Log_Pos: 0</span><br><span class="line">           Master_SSL_Allowed: No</span><br><span class="line">           Master_SSL_CA_File: </span><br><span class="line">           Master_SSL_CA_Path: </span><br><span class="line">              Master_SSL_Cert: </span><br><span class="line">            Master_SSL_Cipher: </span><br><span class="line">               Master_SSL_Key: </span><br><span class="line">        Seconds_Behind_Master: 42302</span><br><span class="line">Master_SSL_Verify_Server_Cert: No</span><br><span class="line">              ....</span><br><span class="line">       </span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p>（2）检查当前数据库线程状态，未发现有明显异常。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show processlist;</span><br><span class="line">+-------+-------------+-------------------+--------------------+---------+--------+----------------------------------+--------------------------------+</span><br><span class="line">| Id    | User        | Host              | db                 | Command | Time   | State                            | Info                           |</span><br><span class="line">+-------+-------------+-------------------+--------------------+---------+--------+----------------------------------+--------------------------------+</span><br><span class="line">|     1 | system user |                   | NULL               | Connect | 172777 | Waiting for master to send event | NULL                           |</span><br><span class="line">|     2 | system user |                   | NULL               | Connect | 678456 | Reading event from the relay log | NULL                           |</span><br><span class="line">|  4345 | cvbak       | localhost         | NULL               | Query   | 130546 | Waiting for table flush          | FLUSH /*!40101 LOCAL */ TABLES |</span><br><span class="line">| 17662 | root        | localhost         | NULL               | Query   |      0 | starting                         | show processlist               |</span><br><span class="line">| 17671 | hdm         | 10.133.0.52:37170 | information_schema | Sleep   |      1 |                                  | NULL                           |</span><br><span class="line">+-------+-------------+-------------------+--------------------+---------+--------+----------------------------------+--------------------------------+</span><br></pre></td></tr></table></figure>
+
+<p>（3）检查当前正在使用的表：<code>show open tables where In_use=1;</code> 发现有一张表一直处于 <code>In_use</code> 状态。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show open tables where In_use=1;</span><br><span class="line">+<span class="comment">----------+---------------------------+--------+-------------+</span></span><br><span class="line">| Database | Table                     | In_use | Name_locked |</span><br><span class="line">+<span class="comment">----------+---------------------------+--------+-------------+</span></span><br><span class="line">| tdmetl   | odsepg_zrfc_zco_zzfymx_sw |      1 |           0 |</span><br><span class="line">+<span class="comment">----------+---------------------------+--------+-------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<p>（4）根据 <code>Relay_Log_Pos</code> 解析 <code>relay-log.000004</code>，查看当时正在执行的操作是 <code>Delete_rows</code>，操作的表是 <code>tdmetl</code>.<code>odsepg_zrfc_zco_zzfymx_sw</code>。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># mysqlbinlog -vv --base64-output=decode-rows relay-log.000004 --start-position=169851605 | more</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># at 169851605</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169851451 CRC32 0x6683bf99 	Anonymous_GTID	last_committed=1831	sequence_number=1832	rbr_</span></span><br><span class="line"><span class="string">only=yes</span></span><br><span class="line"><span class="string">/*!50718</span> <span class="string">SET</span> <span class="string">TRANSACTION</span> <span class="string">ISOLATION</span> <span class="string">LEVEL</span> <span class="string">READ</span> <span class="string">COMMITTED*//*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@SESSION.GTID_NEXT=</span> <span class="string">'ANONYMOUS'</span><span class="string">/*!*/;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># at 169851670</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169851525 CRC32 0x9d910e5d 	Query	thread_id=1254417	exec_time=0	error_code=0</span></span><br><span class="line"><span class="string">SET</span> <span class="string">TIMESTAMP=1563393778/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.pseudo_thread_id=1254417/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.foreign_key_checks=1,</span> <span class="string">@@session.sql_auto_is_null=0,</span> <span class="string">@@session.unique_checks=1,</span> <span class="string">@@session.autocommit=1/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.sql_mode=1436549128/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.auto_increment_increment=1,</span> <span class="string">@@session.auto_increment_offset=1/*!*/;</span></span><br><span class="line"><span class="string">/*!\C</span> <span class="string">utf8</span> <span class="string">*//*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.character_set_client=33,@@session.collation_connection=33,@@session.collation_server=33/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.lc_time_names=0/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.collation_database=DEFAULT/*!*/;</span></span><br><span class="line"><span class="string">BEGIN</span></span><br><span class="line"><span class="string">/*!*/;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># at 169851744</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169851626 CRC32 0x6b8bbd2d 	Table_map: `tdmetl`.`odsepg_zrfc_zco_zzfymx_sw` mapped to number 170</span></span><br><span class="line"><span class="number">018</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># at 169851845</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169859832 CRC32 0x338e105a 	Delete_rows: table id 170018</span></span><br></pre></td></tr></table></figure>
+
+<p>（5）检查表结构，发现该表数据量很大且无主键。由此基本确定其问题根本原因：<strong>对无主键的表进行删除或者更新，导致从库夯住</strong>。该表数据量：77961221条。</p>
+<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g6873jkiw5j30yf0gigpp.jpg" alt="image-20190822092437992"></p>
+<h3 id="解决方法-1"><a href="#解决方法-1" class="headerlink" title="解决方法"></a>解决方法</h3><p>（1）表添加自增主键。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">'xxxx'</span> <span class="keyword">ADD</span> <span class="keyword">id</span> <span class="built_in">int</span> <span class="keyword">UNSIGNED</span> primary <span class="keyword">key</span> AUTO_INCREMENT;</span><br></pre></td></tr></table></figure>
+
+<p>（2）大表删除使用 <code>truncate</code> 命令。</p>
+<h3 id="建议"><a href="#建议" class="headerlink" title="建议"></a>建议</h3><ul>
+<li>避免无 <code>where</code> 条件的 <code>delete</code> 或 <code>update</code> 操作大表，如果需要全表删除，使用 <code>truncate</code> 操作。</li>
+<li>在 <code>binlog row</code> 模式下表结构最好能有主键。</li>
+</ul>
+<h2 id="主从复制中断"><a href="#主从复制中断" class="headerlink" title="主从复制中断"></a>主从复制中断</h2><h3 id="问题现象-1"><a href="#问题现象-1" class="headerlink" title="问题现象"></a>问题现象</h3><p>监控系统，检测到<code>xx项目</code>主从复制中断，并发送了告警</p>
+<h3 id="原因分析-2"><a href="#原因分析-2" class="headerlink" title="原因分析"></a>原因分析</h3><p>1）登录所报告警数据库，查看复制状态</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">ssh haieradmin@10.138.8.216</span><br><span class="line">ssh root@10.159.37.148</span><br><span class="line">ssh haieradmin@10.159.44.168</span><br><span class="line"></span><br><span class="line">MariaDB [(none)]&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.133.8.96</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-bin.002660</span><br><span class="line">          Read_Master_Log_Pos: 343075905</span><br><span class="line">               Relay_Log_File: relay-log-bin.003429</span><br><span class="line">                Relay_Log_Pos: 555</span><br><span class="line">        Relay_Master_Log_File: mysql-bin.001741</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: No</span><br></pre></td></tr></table></figure>
+
+<p>经检查 <code>Slave_SQL_Running</code> 为 <strong>No</strong>，原因一般都很明显，记录在 <code>Last_Error</code>，根据报错原因选择合适地解决方法，最常用的解决办法是跳过这一条正在执行的 SQL。</p>
+<h3 id="解决方法-2"><a href="#解决方法-2" class="headerlink" title="解决方法"></a>解决方法</h3><p>（1）登陆 <code>10.133.0.53</code></p>
+<p>（2）执行下面操作</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">pt-slave-restart -h 'x.x.x.x' -u'xx' -p'xx' -P 3306</span><br><span class="line"></span><br><span class="line"><span class="comment">#一般是事务回滚造成的</span></span><br><span class="line"><span class="keyword">stop</span> <span class="keyword">slave</span>;</span><br><span class="line"><span class="keyword">set</span> <span class="keyword">GLOBAL</span> SQL_SLAVE_SKIP_COUNTER=<span class="number">1</span>;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">slave</span>;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">************************* 1. row ***************************</span><br><span class="line">               Slave_IO_State: </span><br><span class="line">                  Master_Host: 10.135.22.70</span><br><span class="line">                  Master_User: repluser</span><br><span class="line">                  Master_Port: 3308</span><br><span class="line">                Connect_Retry: 10</span><br><span class="line">              Master_Log_File: mysql-bin.001935</span><br><span class="line">          Read_Master_Log_Pos: 6587</span><br><span class="line">               Relay_Log_File: relay-log.001487</span><br><span class="line">                Relay_Log_Pos: 4</span><br><span class="line">        Relay_Master_Log_File: mysql-bin.001935</span><br><span class="line">             Slave_IO_Running: No</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">              Replicate_Do_DB: </span><br><span class="line">          Replicate_Ignore_DB: </span><br><span class="line">           Replicate_Do_Table: </span><br><span class="line">       Replicate_Ignore_Table: </span><br><span class="line">      Replicate_Wild_Do_Table: </span><br><span class="line">  Replicate_Wild_Ignore_Table: test.%</span><br><span class="line">                   Last_Errno: 0</span><br><span class="line">                   Last_Error: </span><br><span class="line">                 Skip_Counter: 0</span><br><span class="line">          Exec_Master_Log_Pos: 6587</span><br><span class="line">              Relay_Log_Space: 107</span><br><span class="line">              Until_Condition: None</span><br><span class="line">               Until_Log_File: </span><br><span class="line">                Until_Log_Pos: 0</span><br><span class="line">           Master_SSL_Allowed: No</span><br><span class="line">           Master_SSL_CA_File: </span><br><span class="line">           Master_SSL_CA_Path: </span><br><span class="line">              Master_SSL_Cert: </span><br><span class="line">            Master_SSL_Cipher: </span><br><span class="line">               Master_SSL_Key: </span><br><span class="line">        Seconds_Behind_Master: NULL</span><br><span class="line">Master_SSL_Verify_Server_Cert: No</span><br><span class="line">                Last_IO_Errno: 1236</span><br><span class="line">                Last_IO_Error: Got fatal error 1236 from master when reading data from binary log: 'Could not find first log file name in binary log index file'</span><br><span class="line">               Last_SQL_Errno: 0</span><br><span class="line">               Last_SQL_Error: </span><br><span class="line">  Replicate_Ignore_Server_Ids: </span><br><span class="line">             Master_Server_Id: 1</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Slave_IO_Running: No</span><br><span class="line">Slave_SQL_Running: Yes</span><br><span class="line">Last_IO_Error: Got fatal error 1236 from master when reading data from binary log: 'Could not find first log file name in binary log index file'</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@hop02 mzjh]<span class="comment"># ll | grep mysql-bin</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073742013</span> Sep <span class="number">12</span> <span class="number">14</span>:<span class="number">55</span> mysql-bin.<span class="number">001948</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073742073</span> Sep <span class="number">13</span> <span class="number">11</span>:<span class="number">53</span> mysql-bin.<span class="number">001949</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073742120</span> Sep <span class="number">14</span> <span class="number">08</span>:<span class="number">39</span> mysql-bin.<span class="number">001950</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073859355</span> Sep <span class="number">15</span> <span class="number">06</span>:<span class="number">21</span> mysql-bin.<span class="number">001951</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1074054892</span> Sep <span class="number">16</span> <span class="number">06</span>:<span class="number">18</span> mysql-bin.<span class="number">001952</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1075243641</span> Sep <span class="number">17</span> <span class="number">06</span>:<span class="number">18</span> mysql-bin.<span class="number">001953</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1074801420</span> Sep <span class="number">18</span> <span class="number">06</span>:<span class="number">16</span> mysql-bin.<span class="number">001954</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1075257243</span> Sep <span class="number">19</span> <span class="number">06</span>:<span class="number">16</span> mysql-bin.<span class="number">001955</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql   <span class="number">619405162</span> Sep <span class="number">19</span> <span class="number">13</span>:<span class="number">32</span> mysql-bin.<span class="number">001956</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1072898197</span> Sep <span class="number">20</span> <span class="number">09</span>:<span class="number">44</span> mysql-bin.<span class="number">001957</span></span><br><span class="line">-rw-r-----. <span class="number">1</span> mysql mysql         <span class="number">190</span> Sep <span class="number">19</span> <span class="number">13</span>:<span class="number">32</span> mysql-bin.index</span><br></pre></td></tr></table></figure>
+
+<p>从库在主库找不到 binlog 文件</p>
+<p><strong>原因</strong></p>
+<p>该错误发生在从库的io进程从主库拉取日志时，发现主库的mysql_bin.index文件中第一个文件不存在。出现此类报错可能是由于你的slave 由于某种原因停止了好长一段是时间，当你重启slave 复制的时候，在主库上找不到相应的binlog ,会报此类错误。或者是由于某些设置主库上的binlog被删除了，导致从库获取不到对应的binglog file。</p>
+<h2 id="主从复制延迟"><a href="#主从复制延迟" class="headerlink" title="主从复制延迟"></a>主从复制延迟</h2><h3 id="风险"><a href="#风险" class="headerlink" title="风险"></a>风险</h3><ul>
+<li>备库复制夯住，会导致备份失败（flush tables with read lock 900s 超时）</li>
+<li>以 Slave 为基准进行的备份，数据不是最新的有延迟</li>
+<li>异常情况下，主从 HA 无法切换，HA 需要检查数据的一致性，延迟时主备不一致</li>
+</ul>
+<h3 id="场景-amp-解决方法"><a href="#场景-amp-解决方法" class="headerlink" title="场景 &amp; 解决方法"></a>场景 &amp; 解决方法</h3><ul>
+<li>无主键、无索引或索引区分度不高</li>
+</ul>
+<p><strong>现象</strong>：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">show slave status， 显示position一直没有变</span><br><span class="line">show open tables where In_use=<span class="number">1</span>， 显示某个表一直是in_use为 <span class="number">1</span></span><br><span class="line">show create table，查看表结构可以看到无主键，或者无任何索引，或者索引区分度很差</span><br></pre></td></tr></table></figure>
+
+<p><strong>解决方法</strong>：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 找到表区分度比较高的几个字段, 可以使用这个方法判断：</span></span><br><span class="line">select count(*) from xx;</span><br><span class="line">select count(*) from (select distinct xx from xxx) t;</span><br><span class="line">如果<span class="number">2</span>个查询count(*)的结果差不多，说明可以对这些字段加索引</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备库 stop slave;</span></span><br><span class="line">可能会执行比较久，因为需要回滚事务。</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备库</span></span><br><span class="line">set sql_log_bin=<span class="number">0</span>;</span><br><span class="line">alter table xx add key xx(xx);</span><br><span class="line">alter table <span class="string">'xxxx'</span> add id int(<span class="number">10</span>) unsigned primary key AUTO_INCREMENT;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备库 start slave</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>主库上有大事务，导致从库延时</li>
+</ul>
+<p><strong>现象</strong>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">解析binlog文件，发现一直打印的是Write_rows</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>解决方法</strong>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">事前防范：与开发沟通，增加缓存，异步写入数据库,减少业务直接对db的大事务写入</span></span><br><span class="line"><span class="string">事中补救：调整数据库中io相关的参数比如innodb_flush_log_at_trx_commit和sync_binlog，或者打开并行复制功能</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>库写入频繁，从库压力跟不上导致延时</li>
+</ul>
+<p><strong>现象</strong>：</p>
+<p>此类原因的主要现象是数据库的 <code>IUD</code> 操作非常多，<code>slave</code> 由于 <code>sql_thread</code> 单线程的原因追不上主库。</p>
+<p><strong>解决方法</strong>：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">a.</span> <span class="string">升级从库的硬件配置，比如</span> <span class="string">ssd,fio</span></span><br><span class="line"><span class="string">b.</span> <span class="string">使用@丁奇的预热工具</span> <span class="bullet">-relay</span> <span class="string">fetch</span></span><br><span class="line"><span class="string">在备库sql线程执行更新之前，预先将相应的数据加载到内存中,并不能提高sql_thread线程执行sql的能力，</span> <span class="string">也不能加快io_thread线程读取日志的速度。</span></span><br><span class="line"><span class="string">c.</span> <span class="string">使用多线程复制</span> <span class="string">阿里MySQL团队实现的方案</span> <span class="bullet">--</span> <span class="string">基于行的并行复制。</span></span><br><span class="line"><span class="string">该方案允许对同一张表进行修改的两个事务并行执行，只要这两个事务修改了表中的不同的行。</span></span><br><span class="line"><span class="string">这个方案可以达到事务间更高的并发度，但是局限是必须使用Row格式的binlog。</span></span><br><span class="line"><span class="string">因为只有使用Row格式的binlog才可以知道一个事务所修改的行的范围，而使用Statement格式的binlog只能知道修改的表对象。</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>大量 <code>myisam</code> 表，在备份时导致 <code>slave</code> 延时</li>
+</ul>
+<p><strong>现象</strong>：</p>
+<p>由于 <code>xtrabackup</code> 工具备份到最后会执行 <code>flash tables with read lock</code>，对数据库进行锁表以便进行一致性备份，然后对于 <code>myisam</code> 锁表，会阻碍 <code>salve_sql_thread</code> 运行进而导致夯住。</p>
+<p><strong>解决方法</strong>：</p>
+<p>修改表结构为 <code>InnoDB</code> 存储引擎的表</p>
+<h2 id="表碎片"><a href="#表碎片" class="headerlink" title="表碎片"></a>表碎片</h2><p>表碎片是 <code>MySQL</code> 运维过程中比较常见的问题，碎片的存在十分影响数据库的性能。</p>
+<h3 id="判断方法"><a href="#判断方法" class="headerlink" title="判断方法"></a>判断方法</h3><p>MySQL 的碎片是否产生，通过查看</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show table status from table_name\G;</span><br></pre></td></tr></table></figure>
+
+<p>这个命令中 <code>Data_free</code> 字段，如果该字段不为 0，则产生了数据碎片。</p>
+<h3 id="产生原因"><a href="#产生原因" class="headerlink" title="产生原因"></a>产生原因</h3><p><strong>1. 经常进行 delete 操作</strong></p>
+<p>经常进行 <code>delete</code> 操作，产生空白空间，如果进行新的插入操作，MySQL 将尝试利用这些留空的区域，但仍然无法将其彻底占用，久而久之就产生了碎片；</p>
+<p><strong>2. update 更新</strong></p>
+<p><code>update</code> 更新可变长度的字段(例如：<code>varchar</code> 类型)，将长的字符串更新成短的。之前存储的内容长，后来存储是短的，即使后来插入新数据，那么有一些空白区域还是没能有效利用的。</p>
+<h3 id="产生影响"><a href="#产生影响" class="headerlink" title="产生影响"></a>产生影响</h3><ol>
+<li><p>由于碎片空间是不连续的，导致这些空间不能充分被利用；</p>
+</li>
+<li><p>由于碎片的存在，导致数据库的磁盘 <code>I/O</code> 操作变成离散随机读写，加重了磁盘 <code>I/O</code> 的负担。</p>
+</li>
+</ol>
+<h3 id="清理办法"><a href="#清理办法" class="headerlink" title="清理办法"></a>清理办法</h3><ul>
+<li><p>MyISAM：<code>optimize table</code> 表名；（OPTIMIZE 可以整理数据文件，并重排索引）</p>
+</li>
+<li><p>InnoDB：</p>
+<p>（1）重建表存储引擎：<code>ALTER TABLE tablename ENGINE = InnoDB;</code></p>
+<p>（2）进行一次数据的导入导出</p>
+</li>
+</ul>
+<p><strong>碎片清理的性能对比：</strong></p>
+<p>引用我之前一个生产库的数据，对比一下清理前后的 SQL 执行速度差异：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">select</span> <span class="string">count(*)</span> <span class="string">from</span> <span class="string">test.twitter_11;</span></span><br><span class="line"><span class="string">修改前：1</span> <span class="string">row</span> <span class="string">in</span> <span class="string">set</span> <span class="string">(7.37</span> <span class="string">sec)</span></span><br><span class="line"><span class="string">修改后：1</span> <span class="string">row</span> <span class="string">in</span> <span class="string">set</span> <span class="string">(1.28</span> <span class="string">sec)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>通过对比，可以看到碎片清理前后，节省了很多空间，SQL执行效率更快。所以，<strong>在日常运维工作中，应该对表碎片进行定期清理，保证数据库有稳定的性能。</strong></p>
+<h2 id="触发器创建失败"><a href="#触发器创建失败" class="headerlink" title="触发器创建失败"></a>触发器创建失败</h2><h3 id="问题现象-2"><a href="#问题现象-2" class="headerlink" title="问题现象"></a>问题现象</h3><p>创建触发器，报错提示”1419”</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">ERROR</span> <span class="number">1419</span> <span class="string">(HY000):</span> <span class="string">You</span> <span class="string">do</span> <span class="string">not</span> <span class="string">have</span> <span class="string">the</span> <span class="string">SUPER</span> <span class="string">privilege</span> <span class="string">and</span></span><br><span class="line"><span class="string">binary</span> <span class="string">logging</span> <span class="string">is</span> <span class="string">enabled</span> <span class="string">(you</span> <span class="string">*might*</span> <span class="string">want</span> <span class="string">to</span> <span class="string">use</span> <span class="string">the</span> <span class="string">less</span> <span class="string">safe</span> <span class="string">log_bin_trust_routine_creators</span> <span class="string">variable)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="原因分析-3"><a href="#原因分析-3" class="headerlink" title="原因分析"></a>原因分析</h3><p>有些操作要禁止掉对 SUPER 权限的要求，要处理可以设置 <code>log_bin_trust_routine_creators</code> 全局系统变量为 <code>1</code>，默认地，这个变量值为 <code>0</code>。</p>
+<h3 id="解决方法-3"><a href="#解决方法-3" class="headerlink" title="解决方法"></a>解决方法</h3><p>直接在数据库进行修改，也可以在启动服务器之时用 <code>--log-bin-trust-routine-creators</code> 选项来设置允许这个变量。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SET GLOBAL log_bin_trust_routine_creators = 1;</span><br></pre></td></tr></table></figure>
+
+<h2 id="删除线程"><a href="#删除线程" class="headerlink" title="删除线程"></a>删除线程</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span>!/bin/sh</span><br><span class="line">while :</span><br><span class="line">do</span><br><span class="line">  n=`mysqladmin processlist -h 127.0.0.1 -uroot -pHaier@123|grep -i sleep |wc -l`</span><br><span class="line">  date=`date +%Y%m%d\[%H:%M:%S]`</span><br><span class="line">  echo $n</span><br><span class="line"></span><br><span class="line">  if [ "$n" -gt 10 ]</span><br><span class="line">  then</span><br><span class="line">  for i in `mysqladmin processlist -h 127.0.0.1 -uroot -pHaier@123|grep -i Query |awk '&#123;print $2&#125;'`</span><br><span class="line">  do</span><br><span class="line">     mysqladmin -h 127.0.0.1 -uroot -pHaier@123 kill $i</span><br><span class="line">  done</span><br><span class="line">  echo "sleep is too many I killed it " &gt;&gt; /data/sleep.log</span><br><span class="line">  echo "$date : $n" &gt;&gt; /data/sleep.log</span><br><span class="line">  fi</span><br><span class="line">  sleep 1</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/12/mysql-cookbook/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2682,288 +3001,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/06/12/mysql-pmm/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/06/12/mysql-pmm/" class="post-title-link" itemprop="url">MySQL · 监控告警 · PMM</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-06-12 15:06:22" itemprop="dateCreated datePublished" datetime="2019-06-12T15:06:22+08:00">2019-06-12</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-15 16:57:28" itemprop="dateModified" datetime="2019-11-15T16:57:28+08:00">2019-11-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>Percona Monitoring and Management (PMM)</strong>：是一款 <code>Percona</code> 发布的用于管理和监控 <code>Linux</code>、<code>MySQL</code>、<code>MongoDB</code>、<code>PostgreSQL</code>、<code>ProxySQL</code>  的开源平台，通过 <code>PMM</code> 客户端收集到的监控数据，通过第三方软件 <code>Grafana</code> 展示出来。</p>
-<blockquote>
-<p><strong>PMM功能</strong></p>
-</blockquote>
-<ul>
-<li>支持对主机的硬盘、网络、CPU、内存的监控。</li>
-<li>支持对 <code>MyISAM</code>、<code>InnoDB</code>、<code>TokuDB</code> 和 <code>PXC/Glarera</code> 的监控。</li>
-<li>支持 <code>Query Analytics</code> 的功能，可以检视执行了哪些 <code>SQL</code> 指令，并对执行性能较差的 <code>SQL</code> 进行优化。</li>
-<li>支持了 <code>MySQL</code> 复制拓扑图结构构造。</li>
-</ul>
-<blockquote>
-<p>官网 <a href="http://pmmdemo.percona.com" target="_blank" rel="noopener"><strong>Demo</strong></a> </p>
-</blockquote>
-<h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-070801.jpg" alt="PMM架构"></p>
-<h3 id="PMM-Client"><a href="#PMM-Client" class="headerlink" title="PMM Client"></a>PMM Client</h3><ul>
-<li><p><strong>pmm-mysql-queries-0</strong>：是一个管理 <code>qan</code> 代理的服务，它从 <code>MySQL</code> 收集性能数据，然后通过 <code>QAN API</code> 发送到 <code>PMM Server</code>。</p>
-</li>
-<li><p><strong>pmm-mongodb-queries-0</strong>：是一个管理 <code>qan</code> 代理的服务，它从 <code>mongodb</code> 收集性能数据，然后通过 <code>QAN API</code> 发送到 <code>PMM Server</code>。</p>
-</li>
-<li><p><a href="https://github.com/percona/pmm-admin" target="_blank" rel="noopener"><strong>pmm-admin</strong></a>：用于管理 <code>PMM Client</code> 的命令行工具，例如：添加、删除要监视的数据库实例。</p>
-</li>
-<li><p><a href="https://github.com/prometheus/node_exporter" target="_blank" rel="noopener"><strong>node_exporter</strong></a>：采集主机监控指标。</p>
-</li>
-<li><p><a href="https://github.com/prometheus/mysqld_exporter" target="_blank" rel="noopener"><strong>mysqld_exporter</strong></a>：采集 <code>MySQL</code> 监控指标。</p>
-</li>
-<li><p><a href="https://github.com/percona/mongodb_exporter" target="_blank" rel="noopener"><strong>mongodb_exporter</strong></a>：采集 <code>MongoDB</code> 监控指标。</p>
-</li>
-<li><p><a href="https://github.com/percona/proxysql_exporter" target="_blank" rel="noopener"><strong>proxysql_exporter</strong></a>：采集 <code>ProxySQL</code> 监控指标。</p>
-</li>
-</ul>
-<h3 id="PMM-Server"><a href="#PMM-Server" class="headerlink" title="PMM Server"></a>PMM Server</h3><p><strong>Query Analytics（QAN）</strong>：主要用来搜集指令并作性能分析。</p>
-<ul>
-<li><strong>QAN API</strong>：作为后端储存和读取 <code>Query</code> 资料用。</li>
-<li><strong>QAN APP</strong>：提供图形化分析界面。</li>
-</ul>
-<p><strong>Metrics Monitor（MM）</strong>：主要提供 <code>MySQL</code> 和 <code>MongoDB</code> 历史监控信息。组件说明如下：</p>
-<ul>
-<li><a href="https://prometheus.io/" target="_blank" rel="noopener"><strong>Prometheus</strong></a>：一个开源的服务监控系统和时间序列数据库，它连接到 <code>PMM Client</code> 上的 <code>exporter</code> 聚集的监控数据。</li>
-<li><a href="https://www.consul.io/" target="_blank" rel="noopener"><strong>Consul</strong></a>：提供 <code>API</code> 让 <code>PMM Client</code> 可以远端替 <code>Prometheus</code> 新增、移除 <code>Hosts</code>，同时它也储存了监控的<code>metadata</code>。</li>
-<li><a href="http://grafana.org/" target="_blank" rel="noopener"><strong>Grafana</strong></a>： 这是一个第三方 <code>Dashboard</code> 和图形构建器，用于可视化 <code>Prometheus</code> 中聚合的数据，以 <code>Web</code> 方式呈现。</li>
-<li><a href="https://github.com/percona/grafana-dashboards" target="_blank" rel="noopener"><strong>Percona Dashboards</strong></a>：是由 <code>Percona</code> 开发的一组用于 <code>Grafana</code> 的仪表板。上述的 <code>Web</code> 页面都能从 <code>PMM Landing Page</code>直接连接。</li>
-</ul>
-<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><h3 id="PMM-Server-1"><a href="#PMM-Server-1" class="headerlink" title="PMM Server"></a>PMM Server</h3><p>（1）<strong>安装 docker</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ yum -y install docker</span><br><span class="line"></span><br><span class="line"><span class="comment"># 卸载 docker</span></span><br><span class="line">$ yum remove docker</span><br></pre></td></tr></table></figure>
-
-<p>（2）<strong>运行 docker</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl start docker</span><br><span class="line">$ systemctl enable docker</span><br><span class="line">$ systemctl stop docker</span><br></pre></td></tr></table></figure>
-
-<p>（3）<strong>下载容器镜像</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ docker pull percona/pmm-server:latest</span><br></pre></td></tr></table></figure>
-
-<p>（4）<strong>创建数据卷容器</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ docker create \</span><br><span class="line">-v /opt/prometheus/<span class="keyword">data</span> \</span><br><span class="line">-v /opt/consul-data \</span><br><span class="line">-v /var/lib/mysql \</span><br><span class="line">-v /var/lib/grafana \</span><br><span class="line">--name pmm-data \</span><br><span class="line">percona/pmm-server:latest /bin/true</span><br></pre></td></tr></table></figure>
-
-<p>（5）<strong>运行 PMM Server</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ docker run -d \</span><br><span class="line">-p <span class="number">8090</span>:<span class="number">80</span> \</span><br><span class="line">--volumes-from pmm-data \</span><br><span class="line">--name pmm-server \</span><br><span class="line">--restart always \</span><br><span class="line">percona/pmm-server:latest</span><br></pre></td></tr></table></figure>
-
-<p>（6）<strong>验证</strong>，通过 <a href="http://pmm.ilearning.fun" target="_blank" rel="noopener"><strong>登录</strong></a> 查看是否正常显示，也可以通过如下方式：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ curl http://<span class="number">10.133</span>.<span class="number">0.53</span>/ping</span><br><span class="line">&#123;<span class="string">'version'</span>: <span class="string">'1.8.0'</span>&#125;</span><br></pre></td></tr></table></figure>
-
-<p>其他命令：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ docker exec -it <span class="string">'xx'</span> /bin/bash</span><br><span class="line">$ docker ps -a</span><br><span class="line">$ docker stop pmm-server &amp;&amp; docker rm pmm-server (停止 pmm-server)</span><br></pre></td></tr></table></figure>
-
-<h3 id="PMM-Client-1"><a href="#PMM-Client-1" class="headerlink" title="PMM Client"></a>PMM Client</h3><p>1）确保 <code>PMM Server</code> 主机可访问</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ping <span class="number">10.133</span>.<span class="number">0.52</span></span><br></pre></td></tr></table></figure>
-
-<p>2）安装 <code>Client</code> 包</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ yum install -y https://repo.percona.com/yum/percona-release-latest.noarch.rpm</span><br><span class="line">$ yum install -y pmm-client</span><br><span class="line"></span><br><span class="line">$ scp pmm-client-<span class="number">1.17</span>.<span class="number">1</span>-<span class="number">1</span>.el7.x86_64.rpm haieradmin@<span class="number">10.133</span>.<span class="number">0.52</span>:/tmp</span><br><span class="line">$ wget http://<span class="number">10.190</span>.<span class="number">179.84</span>:<span class="number">8085</span>/pmm-client-<span class="number">1.17</span>.<span class="number">1</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br><span class="line">$ rpm -ivh pmm-client-<span class="number">1.17</span>.<span class="number">1</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br><span class="line"></span><br><span class="line"><span class="comment"># 卸载 pmm-client</span></span><br><span class="line">$ yum remove pmm-client</span><br></pre></td></tr></table></figure>
-
-<p>3）连接 <code>PMM Client</code> 到 <code>PMM Server</code></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ pmm-admin config --server <span class="number">10.133</span>.<span class="number">0.52</span></span><br><span class="line">OK, PMM server is alive.</span><br><span class="line">PMM Server      | <span class="number">10.133</span>.<span class="number">0.52</span> </span><br><span class="line">Client Name     | cmp15</span><br><span class="line">Client Address  | <span class="number">10.138</span>.<span class="number">228.236</span></span><br><span class="line"></span><br><span class="line">$ pmm-admin config --server <span class="number">10.133</span>.<span class="number">0.52</span>:<span class="number">8080</span> （适用于非<span class="number">80</span>端口）</span><br></pre></td></tr></table></figure>
-
-<h2 id="监控"><a href="#监控" class="headerlink" title="监控"></a>监控</h2><h3 id="主机"><a href="#主机" class="headerlink" title="主机"></a>主机</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加监控</span></span><br><span class="line">$ pmm-admin add linux:metrics</span><br><span class="line"></span><br><span class="line"><span class="comment"># 取消监控</span></span><br><span class="line">$ pmm-admin remove linux:metrics</span><br></pre></td></tr></table></figure>
-
-<h3 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加监控</span></span><br><span class="line">$ pmm-admin add mysql --socket /<span class="keyword">data</span>/mysql3306/mysql.sock --user root --password Haier@<span class="number">123</span></span><br><span class="line">$ pmm-admin list</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">$ wget http://<span class="number">10.190</span>.<span class="number">179.84</span>:<span class="number">8085</span>/pmm-client-<span class="number">1.17</span>.<span class="number">1</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br><span class="line">$ rpm -ivh pmm-client-<span class="number">1.17</span>.<span class="number">1</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br><span class="line"></span><br><span class="line">$ pmm-admin config --server <span class="number">10.133</span>.<span class="number">0.52</span>:<span class="number">8080</span></span><br><span class="line">OK, PMM server is alive.</span><br><span class="line">PMM Server      | <span class="number">10.133</span>.<span class="number">0.52</span>:<span class="number">8080</span> </span><br><span class="line">Client Name     | GPCMS-DB-P</span><br><span class="line">Client Address  | <span class="number">10.133</span>.<span class="number">7.19</span></span><br><span class="line"></span><br><span class="line">$ pmm-admin add linux:metrics</span><br><span class="line">OK, now monitoring this system.</span><br><span class="line"></span><br><span class="line">$ pmm-admin add mysql --user hdm --password Hdm@<span class="number">123</span>!</span><br><span class="line">[linux:metrics] OK, already monitoring this system.</span><br><span class="line">[mysql:metrics] OK, now monitoring MySQL metrics using DSN hdm:***@unix(/<span class="keyword">data</span>/mysql3306/mysql.sock)</span><br><span class="line">[mysql:queries] OK, now monitoring MySQL queries from slowlog using DSN hdm:***@unix(/<span class="keyword">data</span>/mysql3306/mysql.sock)</span><br><span class="line"></span><br><span class="line">$ pmm-admin check-network</span><br><span class="line">PMM Network Status</span><br><span class="line"></span><br><span class="line">Server Address | <span class="number">10.133</span>.<span class="number">0.52</span>:<span class="number">8080</span></span><br><span class="line">Client Address | <span class="number">10.133</span>.<span class="number">7.19</span> </span><br><span class="line"></span><br><span class="line">* System Time</span><br><span class="line">NTP Server (<span class="number">0</span>.pool.ntp.org)         | <span class="number">2019</span>-<span class="number">07</span>-<span class="number">26</span> <span class="number">10</span>:<span class="number">18</span>:<span class="number">20</span> +<span class="number">0000</span> UTC</span><br><span class="line">PMM Server                          | <span class="number">2019</span>-<span class="number">07</span>-<span class="number">26</span> <span class="number">10</span>:<span class="number">18</span>:<span class="number">20</span> +<span class="number">0000</span> GMT</span><br><span class="line">PMM Client                          | <span class="number">2019</span>-<span class="number">07</span>-<span class="number">26</span> <span class="number">18</span>:<span class="number">18</span>:<span class="number">20</span> +<span class="number">0800</span> CST</span><br><span class="line">PMM Server Time Drift               | OK</span><br><span class="line">PMM Client Time Drift               | OK</span><br><span class="line">PMM Client to PMM Server Time Drift | OK</span><br><span class="line"></span><br><span class="line">* Connection: Client --&gt; Server</span><br><span class="line">-------------------- -------      </span><br><span class="line">SERVER SERVICE       STATUS       </span><br><span class="line">-------------------- -------      </span><br><span class="line">Consul API           OK</span><br><span class="line">Prometheus API       OK</span><br><span class="line">Query Analytics API  OK</span><br><span class="line"></span><br><span class="line">Connection duration | <span class="number">702.217</span>µs</span><br><span class="line">Request duration    | <span class="number">4.66389</span>ms</span><br><span class="line">Full round trip     | <span class="number">5.366107</span>ms</span><br><span class="line"></span><br><span class="line">* Connection: Client &lt;-- Server</span><br><span class="line">-------------- ----------- ------------------ ------- ---------- ---------</span><br><span class="line">SERVICE TYPE   NAME        REMOTE ENDPOINT    STATUS  HTTPS/TLS  PASSWORD </span><br><span class="line">-------------- ----------- ------------------ ------- ---------- ---------</span><br><span class="line">linux:metrics  GPCMS-DB-P  <span class="number">10.133</span>.<span class="number">7.19</span>:<span class="number">42000</span>  OK      YES        -        </span><br><span class="line">mysql:metrics  GPCMS-DB-P  <span class="number">10.133</span>.<span class="number">7.19</span>:<span class="number">42002</span>  OK      YES        -</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开启防火墙端口</span></span><br><span class="line">firewall-cmd --zone=public --add-port=<span class="number">42000</span>/tcp --permanent</span><br><span class="line">firewall-cmd --zone=public --add-port=<span class="number">42002</span>/tcp --permanent</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 更改存储类型为MySQL</span></span><br><span class="line">docker exec -i -t pmm-server /bin/bash</span><br><span class="line">vi /etc/grafana/grafana.ini</span><br><span class="line"></span><br><span class="line">查/sqlite改为MYSQL存储</span><br><span class="line">type=mysql</span><br><span class="line">host=<span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">3306</span></span><br><span class="line">name=grafana</span><br><span class="line">user=root</span><br><span class="line">password =</span><br></pre></td></tr></table></figure>
-
-<p>在容器进入 mysql 客户端,创建数据库 grafana</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ create database grafana;</span><br><span class="line">$ docker restart pmm-server</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">$ pmm-admin --help</span><br><span class="line">Usage:</span><br><span class="line">pmm-admin [flags]</span><br><span class="line">pmm-admin [command]</span><br><span class="line">Available Commands:</span><br><span class="line">config         Configure PMM Client. <span class="comment"># 配置PMM客户端</span></span><br><span class="line">add            Add service to monitoring. <span class="comment"># 增加监控</span></span><br><span class="line">remove         Remove service from monitoring. <span class="comment"># 删除监控服务</span></span><br><span class="line">list           List monitoring services <span class="keyword">for</span> this system. <span class="comment"># 列出监控服务</span></span><br><span class="line">info           Display PMM Client information (works offline). <span class="comment"># 打印PMM客户端信息</span></span><br><span class="line">check-network  Check network connectivity between client and server. <span class="comment"># 检查网络</span></span><br><span class="line">ping           Check <span class="keyword">if</span> PMM server is alive. </span><br><span class="line">start          Start monitoring service. <span class="comment"># 开启服务</span></span><br><span class="line">stop           Stop monitoring service. <span class="comment"># 停止服务</span></span><br><span class="line">restart        Restart monitoring service. <span class="comment"># 重启服务</span></span><br><span class="line">show-passwords Show PMM Client password information (works offline). <span class="comment"># 显示客户端密码</span></span><br><span class="line">purge          Purge metrics <span class="keyword">data</span> on PMM server. <span class="comment"># 删除PMM server端监控信息</span></span><br><span class="line">repair         Repair installation. <span class="comment"># 重新安装</span></span><br><span class="line">uninstall      Removes all monitoring services with the best effort. <span class="comment"># 删除所有服务</span></span><br><span class="line">help           Help about any command</span><br><span class="line">Flags:</span><br><span class="line">-c, --config-file string   PMM config file (default <span class="string">"/usr/local/percona/pmm-client/pmm.yml"</span>)</span><br><span class="line">-h, --help                 help <span class="keyword">for</span> pmm-admin</span><br><span class="line">    --verbose              verbose output</span><br><span class="line">-v, --version              show version</span><br><span class="line">Use <span class="string">"pmm-admin [command] --help"</span> <span class="keyword">for</span> more information about a command.</span><br></pre></td></tr></table></figure>
-
-<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p><strong>安装 pmm-client</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ scp /usr/local/src/pmm-client-<span class="number">1.17</span>.<span class="number">1</span>-<span class="number">1</span>.el7.x86_64.rpm haieradmin@x.x.x.x:/tmp</span><br><span class="line">$ rpm -ivh pmm-client-<span class="number">1.17</span>.<span class="number">1</span>-<span class="number">1</span>.el7.x86_64.rpm</span><br></pre></td></tr></table></figure>
-
-<p><strong>监控主机</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将client_name修改为服务器ip</span></span><br><span class="line">$ vi /usr/local/percona/pmm-client/pmm.yml</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启pmm-client</span></span><br><span class="line">$ pmm-admin restart --all</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加监控</span></span><br><span class="line">$ pmm-admin add linux:metrics</span><br></pre></td></tr></table></figure>
-
-<p><strong>监控MySQL</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ pmm-admin add mysql --user hdm --password Hdm@<span class="number">123</span>! x.x.x.x:port</span><br><span class="line">$ pmm-admin list</span><br></pre></td></tr></table></figure>
-
-<p><strong>配置告警</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 进入docker</span></span><br><span class="line">$ docker exec -it pmm-server /bin/bash</span><br><span class="line"></span><br><span class="line"><span class="comment"># 编缉 grafana.ini</span></span><br><span class="line">vim /etc/grafana/grafana.ini</span><br><span class="line"></span><br><span class="line">[smtp]</span><br><span class="line">enabled = true</span><br><span class="line">host = [smtp.healthmall.cn](http://smtp.healthmall.cn/):<span class="number">25</span></span><br><span class="line">user = liuqian@healthmall.cn</span><br><span class="line">password = <span class="number">123456</span></span><br><span class="line">from_address = liuqian@healthmall.cn</span><br><span class="line">from_name = Grafana</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启pmm-server容器</span></span><br><span class="line">$ docker restart pmm-server</span><br><span class="line"></span><br><span class="line"><span class="comment"># 钉钉报警配置</span></span><br><span class="line">http://docs.grafana.org/alerting/notifications/</span><br></pre></td></tr></table></figure>
-
-<p><strong>升级</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ docker pull percona/pmm-server:latest</span><br><span class="line">$ docker stop pmm-server &amp;&amp; docker rm pmm-server</span><br><span class="line">$ docker run -d -p <span class="number">80</span>:<span class="number">80</span> -p <span class="number">9090</span>:<span class="number">9090</span> --volumes-from pmm-data --name pmm-server -e SERVER_USER=pmm -e SERVER_PASSWORD=ngiISI0Q4g9gfqWz89folKJSi --restart always --init percona/pmm-server:latest</span><br></pre></td></tr></table></figure>
-
-<h2 id="FA-amp-Q"><a href="#FA-amp-Q" class="headerlink" title="FA&amp;Q"></a>FA&amp;Q</h2><p>（1）<code>docker</code> 默认目录 <code>/var/lib/docker</code> 修改为 <code>/data/dockerfile</code></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ docker info</span><br><span class="line">Kernel Version: <span class="number">3.10</span>.<span class="number">0</span>-<span class="number">693</span>.el7.x86_64</span><br><span class="line">Operating System: CentOS Linux <span class="number">7</span> (Core)</span><br><span class="line">OSType: linux</span><br><span class="line">Architecture: x86_64</span><br><span class="line">Number of Docker Hooks: <span class="number">3</span></span><br><span class="line">CPUs: <span class="number">6</span></span><br><span class="line">Total Memory: <span class="number">15.66</span> GiB</span><br><span class="line">Name: console</span><br><span class="line">ID: <span class="number">7</span>MYD:NQPC:<span class="number">4</span>TNL:IT3W:<span class="number">6</span>KZS:TY6L:CORW:L432:UE3M:<span class="number">4</span>LBJ:OFUU:HSMB</span><br><span class="line">Docker Root Dir: /var/lib/docker</span><br><span class="line">Debug Mode (client): false</span><br><span class="line">Debug Mode (server): false</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 停止docker服务</span></span><br><span class="line">$ systemctl stop docker</span><br><span class="line"></span><br><span class="line"><span class="comment"># 将docker文件迁移到指定目录</span></span><br><span class="line">$ mkdir /<span class="keyword">data</span>/dockerfile</span><br><span class="line">$ mv /var/lib/docker/* /<span class="keyword">data</span>/dockerfile</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除原目录</span></span><br><span class="line">$ rm -rf /var/lib/docker</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建软连接</span></span><br><span class="line">$ ln -s/<span class="keyword">data</span>/dockerfile/ /var/lib/docker</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动docker服务</span></span><br><span class="line">$ systemctl start docker</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ docker info</span><br><span class="line">Kernel Version: <span class="number">3.10</span>.<span class="number">0</span>-<span class="number">693</span>.el7.x86_64</span><br><span class="line">Operating System: CentOS Linux <span class="number">7</span> (Core)</span><br><span class="line">OSType: linux</span><br><span class="line">Architecture: x86_64</span><br><span class="line">Number of Docker Hooks: <span class="number">3</span></span><br><span class="line">CPUs: <span class="number">6</span></span><br><span class="line">Total Memory: <span class="number">15.66</span> GiB</span><br><span class="line">Name: console</span><br><span class="line">ID: <span class="number">7</span>MYD:NQPC:<span class="number">4</span>TNL:IT3W:<span class="number">6</span>KZS:TY6L:CORW:L432:UE3M:<span class="number">4</span>LBJ:OFUU:HSMB</span><br><span class="line">Docker Root Dir: /<span class="keyword">data</span>/dockerfile</span><br><span class="line">Debug Mode (client): false</span><br><span class="line">Debug Mode (server): false</span><br></pre></td></tr></table></figure>
-
-<p>（2）<code>PMM</code> 修改主机名作为唯一标识，修改为 <code>ip</code>、<code>port</code></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">[root@ptdsmapp03 pmm-client]<span class="comment"># pmm-admin check-network</span></span><br><span class="line">PMM Network Status</span><br><span class="line"></span><br><span class="line">Server Address | <span class="number">10.133</span>.<span class="number">0.53</span>:<span class="number">8090</span></span><br><span class="line">Client Address | <span class="number">10.133</span>.<span class="number">0.51</span> </span><br><span class="line"></span><br><span class="line">*** System Time**</span><br><span class="line">NTP Server (<span class="number">0</span>.pool.ntp.org)         | <span class="number">2019</span>-<span class="number">09</span>-<span class="number">02</span> <span class="number">08</span>:<span class="number">59</span>:<span class="number">28</span> +<span class="number">0000</span> UTC</span><br><span class="line">PMM Server                          | <span class="number">2019</span>-<span class="number">09</span>-<span class="number">02</span> <span class="number">08</span>:<span class="number">59</span>:<span class="number">28</span> +<span class="number">0000</span> GMT</span><br><span class="line">PMM Client                          | <span class="number">2019</span>-<span class="number">09</span>-<span class="number">02</span> <span class="number">16</span>:<span class="number">59</span>:<span class="number">28</span> +<span class="number">0800</span> CST</span><br><span class="line">PMM Server Time Drift               | **OK**</span><br><span class="line">PMM Client Time Drift               | **OK**</span><br><span class="line">PMM Client to PMM Server Time Drift | **OK**</span><br><span class="line"></span><br><span class="line">*** Connection: Client --&gt; Server**</span><br><span class="line">-------------------- -------      </span><br><span class="line">SERVER SERVICE       STATUS       </span><br><span class="line">-------------------- -------      </span><br><span class="line">Consul API           **OK**</span><br><span class="line">Prometheus API       **OK**</span><br><span class="line">Query Analytics API  **OK**</span><br><span class="line"></span><br><span class="line">Connection duration | <span class="number">433.939</span>µs</span><br><span class="line">Request duration    | <span class="number">3.335106</span>ms</span><br><span class="line">Full round trip     | <span class="number">3.769045</span>ms</span><br><span class="line"></span><br><span class="line">*** Connection: Client &lt;-- Server**</span><br><span class="line">-------------- ----------------- ------------------ ------- ---------- ---------</span><br><span class="line">SERVICE TYPE   NAME              REMOTE ENDPOINT    STATUS  HTTPS/TLS  PASSWORD </span><br><span class="line">-------------- ----------------- ------------------ ------- ---------- ---------</span><br><span class="line">linux:metrics  <span class="number">10.133</span>.<span class="number">0.51</span>       <span class="number">10.133</span>.<span class="number">0.51</span>:<span class="number">42000</span>  **OK**      **YES**        -        </span><br><span class="line">mysql:metrics  <span class="number">10.133</span>.<span class="number">0.51</span>:<span class="number">3306</span>  <span class="number">10.133</span>.<span class="number">0.51</span>:<span class="number">42002</span>  **OK**      **YES**        -</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3012,7 +3049,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">131</span>
+                    <span class="site-state-item-count">132</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
