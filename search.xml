@@ -3822,14 +3822,58 @@
 ]]></content>
   </entry>
   <entry>
-    <title>MySQL · 迁移数据库</title>
+    <title>MySQL · 数据库迁移</title>
     <url>/blog/2019/10/22/mysql-migration/</url>
-    <content><![CDATA[<h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><table>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p><strong>源数据库</strong>：MySQL 5.5.20 </p>
+<ul>
+<li>主库：10.159.39.38</li>
+<li>从库：10.159.39.38</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>schema</th>
+<th>data_size</th>
+<th>index_size</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>haier</td>
+<td>46.41GB</td>
+<td>45.84GB</td>
+</tr>
+<tr>
+<td>mysql</td>
+<td>…</td>
+<td>…</td>
+</tr>
+<tr>
+<td>razro</td>
+<td>0.00GB</td>
+<td>0.00GB</td>
+</tr>
+<tr>
+<td>piwik</td>
+<td>0.00GB</td>
+<td>0.00GB</td>
+</tr>
+<tr>
+<td>matomo</td>
+<td>0.00GB</td>
+<td>0.00GB</td>
+</tr>
+</tbody></table>
+<p><strong>目的数据库</strong>：MySQL 5.6.36</p>
+<ul>
+<li>主库：10.199.96.188</li>
+<li>从库：10.199.96.189</li>
+</ul>
+<h2 id="方案对比"><a href="#方案对比" class="headerlink" title="方案对比"></a>方案对比</h2><table>
 <thead>
 <tr>
 <th>特性</th>
-<th>xtrabackup</th>
-<th>mysqldump</th>
+<th>xtrabackup (开源第三方)</th>
+<th>mysqldump (自带)</th>
 <th>mysqldumper</th>
 </tr>
 </thead>
@@ -3876,7 +3920,7 @@
 <td>逻辑备份</td>
 </tr>
 </tbody></table>
-<h2 id="实践案例"><a href="#实践案例" class="headerlink" title="实践案例"></a>实践案例</h2><p><strong>需求背景</strong>：xx 项目，将生产环境数据库迁移至测试环境，迁移数据量约 <code>185GB</code></p>
+<h2 id="参考案例"><a href="#参考案例" class="headerlink" title="参考案例"></a>参考案例</h2><p><strong>需求背景</strong>：xx 项目，将生产环境数据库迁移至测试环境，迁移数据量约 <code>185GB</code></p>
 <p><strong>环境信息</strong>：</p>
 <ul>
 <li>生产库：<code>10.138.22.218:3100</code>，<code>MySQL 5.6.27</code> </li>
