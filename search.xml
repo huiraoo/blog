@@ -55,7 +55,93 @@
 <li>application.yml</li>
 </ul>
 <p>Yaml：以数据为中心，比 json、xml 更适合做配置文件</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line"><span class="attr">  port:</span> <span class="number">8081</span></span><br></pre></td></tr></table></figure>]]></content>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line"><span class="attr">  port:</span> <span class="number">8081</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.rao.springboot.demo.domain;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.context.properties.ConfigurationProperties;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Date;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> Rao Hui</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019-11-29 11:12</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@ConfigurationProperties</span>(prefix = <span class="string">"person"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line">    <span class="keyword">private</span> Boolean boss;</span><br><span class="line">    <span class="keyword">private</span> Date birth;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Map&lt;String,Object&gt; maps;</span><br><span class="line">    <span class="keyword">private</span> List&lt;String&gt; lists;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Dog dog;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>@<strong>Data</strong>：<a href="https://projectlombok.org/" target="_blank" rel="noopener">Lombok</a> 提供，加了 @Data 注解的类，编译后会自动给我们加上下列方法：</p>
+<ul>
+<li>所有属性的 get() 和 set()</li>
+<li>toString()</li>
+<li>hashCode()</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.18.10<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>@<strong>Component</strong>：把普通 POJO 实例化到 Spring 容器中，相当于配置文件中的 <code>&lt;bean id=&quot;&quot; class=&quot;&quot;/&gt;</code></p>
+<p>@<strong>ConfigurationProperties</strong>(prefix = “person”)：默认从全局配置文件获取值，此注解将类属性和配置文件中相关配置进行绑定，一一映射。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.rao.springboot.demo.domain;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> Rao Hui</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019-11-29 11:12</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Dog</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line">    <span class="keyword">private</span> String colour;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>application.yml</strong></p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">person:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">rao</span></span><br><span class="line"><span class="attr">  age:</span> <span class="number">29</span></span><br><span class="line"><span class="attr">  boss:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">  birth:</span> <span class="number">2019</span><span class="string">/01/01</span></span><br><span class="line"><span class="attr">  maps:</span> <span class="string">&#123;height:</span> <span class="number">173</span><span class="string">cm,weight:</span> <span class="number">62</span><span class="string">kg&#125;</span></span><br><span class="line"><span class="attr">  lists:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">lisi</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">zhangsan</span></span><br><span class="line"><span class="attr">  dog:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">小狗</span></span><br><span class="line"><span class="attr">    age:</span> <span class="number">12</span></span><br><span class="line"><span class="attr">    colour:</span> <span class="string">blue</span></span><br></pre></td></tr></table></figure>
+
+<p>@Value 与 @ConfigurationProperties 对比：</p>
+<ul>
+<li>只是在某个业务逻辑中需要获取一下配置文件中的某项值，使用 @Value</li>
+<li>专门编写 JavaBean 来和配置文件映射，使用 @ConfigurationProperties</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>@ConfigurationProperties</th>
+<th>@Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>功能</td>
+<td>批量注入配置文件中的属性</td>
+<td>一个个指定</td>
+</tr>
+<tr>
+<td>松散绑定</td>
+<td>支持</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>SePL</td>
+<td>不支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>JSR303 数据校验</td>
+<td>支持</td>
+<td>不支持</td>
+</tr>
+<tr>
+<td>复杂类型封装</td>
+<td>支持</td>
+<td>不支持</td>
+</tr>
+</tbody></table>
+<p><strong>测试类</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> com.rao.springboot.demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.rao.springboot.demo.domain.Person;</span><br><span class="line"><span class="keyword">import</span> org.junit.jupiter.api.Test;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.test.context.SpringBootTest;</span><br><span class="line"></span><br><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RunApplicationTests</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">   <span class="meta">@Autowired</span></span><br><span class="line">   Person person;</span><br><span class="line"></span><br><span class="line">   <span class="meta">@Test</span></span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">contextLoads</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      System.out.println(person.toString());</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">Person(name=rao, age=<span class="number">29</span>, boss=false, birth=Tue Jan <span class="number">01</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> CST <span class="number">2019</span>, maps=&#123;height=<span class="number">173</span>cm, weight=<span class="number">62</span>kg&#125;, lists=[lisi, zhangsan], dog=Dog(name=小狗, age=<span class="number">12</span>, colour=blue))</span><br></pre></td></tr></table></figure>
+
+<p>@<strong>Autowired</strong>：</p>
+<p>@<strong>PropertySource</strong>(value = “classpath:person.properties”)：可以加载指定位置的配置文件。</p>
+<p>@<strong>ImportResource</strong>：导入 Spring 的配置文件，让配置文件里面的内容生效。</p>
+<p>Spring Boot 推荐给容器中添加组件的方式：使用 @Configuration @Bean 的配置类替代配置文件给容器添加组件，容器中默认组件名就是方法名。</p>
+<p>配置文件占位符：${}</p>
+<h3 id="Profile"><a href="#Profile" class="headerlink" title="Profile"></a>Profile</h3><p><strong>目的</strong>：Spring 针对不同环境提供不同配置功能的支持，可以通过激活、指定参数等方式快速切换环境。</p>
+<ul>
+<li><p><strong>多 profile 文件形式</strong>：application-{profile}.properties/yml</p>
+</li>
+<li><p><strong>yml 支持多文档块方式</strong>：—</p>
+</li>
+<li><p><strong>激活指定 profile</strong>：配置文件 spring.profiles.active=dev，或者命令行 –spring.profiles.active=dev，或者虚拟机参数指定。</p>
+</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">person:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">rao</span></span><br><span class="line"><span class="attr">  age:</span> <span class="number">29</span></span><br><span class="line"><span class="attr">  boss:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">  birth:</span> <span class="number">2019</span><span class="string">/01/01</span></span><br><span class="line"><span class="attr">  maps:</span> <span class="string">&#123;height:</span> <span class="number">173</span><span class="string">cm,weight:</span> <span class="number">62</span><span class="string">kg&#125;</span></span><br><span class="line"><span class="attr">  lists:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">lisi</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">zhangsan</span></span><br><span class="line"><span class="attr">  dog:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">小狗</span></span><br><span class="line"><span class="attr">    age:</span> <span class="number">12</span></span><br><span class="line"><span class="attr">    colour:</span> <span class="string">blue</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  profiles:</span></span><br><span class="line"><span class="attr">    active:</span> <span class="string">prod</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  profiles:</span> <span class="string">dev</span></span><br><span class="line"><span class="attr">person:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">hui</span></span><br><span class="line"><span class="attr">  age:</span> <span class="number">29</span></span><br><span class="line"><span class="attr">  boss:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">  birth:</span> <span class="number">2019</span><span class="string">/01/01</span></span><br><span class="line"><span class="attr">  maps:</span> <span class="string">&#123;height:</span> <span class="number">173</span><span class="string">cm,weight:</span> <span class="number">62</span><span class="string">kg&#125;</span></span><br><span class="line"><span class="attr">  lists:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">lisi</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">zhangsan</span></span><br><span class="line"><span class="attr">  dog:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">小狗</span></span><br><span class="line"><span class="attr">    age:</span> <span class="number">12</span></span><br><span class="line"><span class="attr">    colour:</span> <span class="string">blue</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  profiles:</span> <span class="string">prod</span></span><br><span class="line"><span class="attr">person:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">yu</span></span><br><span class="line"><span class="attr">  age:</span> <span class="number">29</span></span><br><span class="line"><span class="attr">  boss:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">  birth:</span> <span class="number">2019</span><span class="string">/01/01</span></span><br><span class="line"><span class="attr">  maps:</span> <span class="string">&#123;height:</span> <span class="number">173</span><span class="string">cm,weight:</span> <span class="number">62</span><span class="string">kg&#125;</span></span><br><span class="line"><span class="attr">  lists:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">lisi</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">zhangsan</span></span><br><span class="line"><span class="attr">  dog:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">小狗</span></span><br><span class="line"><span class="attr">    age:</span> <span class="number">12</span></span><br><span class="line"><span class="attr">    colour:</span> <span class="string">blue</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>配置文件加载位置</strong>：优先级由高到低，优先级高会覆盖优先级低的配置，全部加载互补配置。</p>
+<ul>
+<li>-file:./config/</li>
+<li>-file:./</li>
+<li>-classpath:/config/</li>
+<li>-classpath:/</li>
+</ul>
+]]></content>
       <categories>
         <category>Java</category>
       </categories>
@@ -341,7 +427,7 @@
       </categories>
   </entry>
   <entry>
-    <title>Java · 项目学习 · yshop</title>
+    <title>Java · 项目解析 · yshop</title>
     <url>/blog/2019/11/26/java-project-yshop/</url>
     <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://gitee.com/guchengwuyue/yshopmall" target="_blank" rel="noopener"><strong>yshop</strong></a> 基于当前流行技术组合的前后端分离商城系统， 包含商城、拼团、砍价、 秒杀、优惠券、积分、分销等功能，适合企业或个人二次开发。</p>
 <ul>
@@ -3736,29 +3822,88 @@
 ]]></content>
   </entry>
   <entry>
-    <title>MySQL · 使用 XtraBackup 迁移数据库</title>
+    <title>MySQL · 迁移数据库</title>
     <url>/blog/2019/10/22/mysql-migration/</url>
-    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p><strong>需求</strong>：xx 项目，将生产环境数据库迁移至测试环境，迁移数据量约 <code>185GB</code></p>
-<p><strong>环境</strong>：</p>
+    <content><![CDATA[<h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><table>
+<thead>
+<tr>
+<th>特性</th>
+<th>xtrabackup</th>
+<th>mysqldump</th>
+<th>mysqldumper</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>性能</td>
+<td>最佳</td>
+<td>最差</td>
+<td>次之</td>
+</tr>
+<tr>
+<td>数据量</td>
+<td>最大</td>
+<td>次之</td>
+<td>最少</td>
+</tr>
+<tr>
+<td>远程备份</td>
+<td>不支持</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>数据一致性</td>
+<td>支持</td>
+<td>支持</td>
+<td>支持</td>
+</tr>
+<tr>
+<td>工具便捷性</td>
+<td>次之</td>
+<td>较好</td>
+<td>较好</td>
+</tr>
+<tr>
+<td>版本兼容性</td>
+<td>较差</td>
+<td>较好</td>
+<td>较好</td>
+</tr>
+<tr>
+<td>备份类型</td>
+<td>物理备份</td>
+<td>逻辑备份</td>
+<td>逻辑备份</td>
+</tr>
+</tbody></table>
+<h2 id="实践案例"><a href="#实践案例" class="headerlink" title="实践案例"></a>实践案例</h2><p><strong>需求背景</strong>：xx 项目，将生产环境数据库迁移至测试环境，迁移数据量约 <code>185GB</code></p>
+<p><strong>环境信息</strong>：</p>
 <ul>
-<li>生产库：<code>10.138.22.218:3100</code>，<code>MySQL 5.6.27</code> 版本</li>
-<li>测试库：<code>10.138.22.192:3306</code>，<code>MySQL 5.6.27</code> 版本</li>
+<li>生产库：<code>10.138.22.218:3100</code>，<code>MySQL 5.6.27</code> </li>
+<li>测试库：<code>10.138.22.192:3306</code>，<code>MySQL 5.6.27</code> </li>
 </ul>
 <blockquote>
 <p><strong>Tips</strong>：数据库版本一致，且配置文件 <code>my.cnf</code> 一致，才能使用 <code>XtraBackup</code></p>
 </blockquote>
-<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p><strong>准备条件</strong>：</p>
+<p><strong>准备条件</strong>：</p>
 <ul>
-<li>生产库和测试库服务器都已<a href="https://huiraoo.github.io/blog/2019/06/18/mysql-xtrabackup/">安装 XtraBackup</a></li>
+<li>生产库和测试库服务器都已 <a href="https://huiraoo.github.io/blog/2019/06/18/mysql-xtrabackup/">安装 XtraBackup</a></li>
 <li>已配置互信</li>
 </ul>
-<p><strong>1. 备份主库（约耗时 30min）</strong></p>
+<p><strong>操作步骤</strong>：</p>
+<ul>
+<li>备份主库（约耗时 <strong>30min</strong>）</li>
+</ul>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">$ innobackupex --defaults-file=/etc/my.cnf --user=root --password=<span class="string">'xx'</span> --no-timestamp /<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
 
-<p><strong>2. 传输备份数据到测试服务器 （约耗时 30min）</strong></p>
+<ul>
+<li>传输备份数据到测试服务器 （约耗时 <strong>30min</strong>，速度取决于服务器 IO 性能）</li>
+</ul>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">$ scp -r /<span class="keyword">data</span>/backup/* root@<span class="number">10.138</span>.<span class="number">22.192</span>:/<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
 
-<p><strong>3. 恢复全备数据（约耗时 60min）</strong></p>
+<ul>
+<li>恢复全备数据（约耗时 <strong>60min</strong>）</li>
+</ul>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">$ mysqladmin -S /<span class="keyword">data</span>/mysql/mysql.sock -uroot -p<span class="string">'xx'</span> shutdown</span><br><span class="line">$ innobackupex --defaults-file=/etc/my.cnf --apply-log /<span class="keyword">data</span>/backup</span><br><span class="line">$ mv mysql mysql_bak</span><br><span class="line">$ mkdir mysql</span><br><span class="line">$ innobackupex --defaults-file=/etc/my.cnf --copy-back /<span class="keyword">data</span>/backup</span><br><span class="line">$ chown -R mysql:mysql mysql</span><br><span class="line">$ /usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql &gt;/dev/null &amp;</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>MySQL</category>
