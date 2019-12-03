@@ -352,6 +352,215 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/29/mysql-config-skip-name-resolve/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/29/mysql-config-skip-name-resolve/" class="post-title-link" itemprop="url">MySQL · 配置参数 · skip_name_resolve</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-29 10:14:32 / 修改时间：22:45:37" itemprop="dateCreated datePublished" datetime="2019-10-29T10:14:32+08:00">2019-10-29</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h2><p><a href="https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_skip_name_resolve" target="_blank" rel="noopener"><strong>skip_name_resolve</strong></a>：检查客户端连接时是否解析主机名。</p>
+<ul>
+<li><strong>OFF</strong>：默认状态，仅在第一次建立连接时缓存 <code>IP</code> 和 <code>Host Name</code> 的映射关系，同一主机的后续连接将直接查看 <code>Host Cache</code>，而不用再次进行 <code>DNS</code> 解析。</li>
+<li><strong>ON</strong>：禁止 <code>DNS</code> 解析，启用后 MySQL 授权表中就不能使用主机名了，只能使用 <code>IP</code>。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Command-Line Format</strong></td>
+<td><code>--skip-name-resolve=#</code></td>
+</tr>
+<tr>
+<td><strong>System Variable</strong></td>
+<td><code>skip_name_resolve</code></td>
+</tr>
+<tr>
+<td><strong>Scope</strong></td>
+<td>Global</td>
+</tr>
+<tr>
+<td><strong>Dynamic</strong></td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Type</strong></td>
+<td>Boolean</td>
+</tr>
+<tr>
+<td><strong>Default Value</strong></td>
+<td><code>OFF</code></td>
+</tr>
+</tbody></table>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; show variables like <span class="string">'skip_name_resolve'</span>;</span><br><span class="line">+-------------------+-------+</span><br><span class="line">| Variable_name     | Value |</span><br><span class="line">+-------------------+-------+</span><br><span class="line">| skip_name_resolve | OFF   |</span><br><span class="line">+-------------------+-------+</span><br><span class="line"></span><br><span class="line">MariaDB [mysql]&gt; select user,host,password from user;</span><br><span class="line">+-------------+---------------+-------------------------------------------+</span><br><span class="line">| user        | host          | password                                  |</span><br><span class="line">+-------------+---------------+-------------------------------------------+</span><br><span class="line">| root        | localhost     | *C655557AE3BD4264288BB5C1ED8126A364A6F7ED |</span><br><span class="line">| root        | hlht\_db3     | *C655557AE3BD4264288BB5C1ED8126A364A6F7ED |</span><br><span class="line">| root        | <span class="number">127.0</span>.<span class="number">0.1</span>     | *C655557AE3BD4264288BB5C1ED8126A364A6F7ED |</span><br><span class="line">| root        | ::<span class="number">1</span>           | *C655557AE3BD4264288BB5C1ED8126A364A6F7ED |</span><br><span class="line">| read_only   | %             | *<span class="number">47646</span>ED664BFD993442F175266B6F4367E8CA123 |</span><br><span class="line">| retl        | %             | *<span class="number">44</span>AB89E92CDF5A148EC5A8BCE2BBEF1E51AAC48D |</span><br><span class="line">| sre         | %             | *<span class="number">66</span>CC8D8F94978869E17ABDA6FD2E1A5D817E619E |</span><br><span class="line">| hdm         | %             | *<span class="number">14533888</span>C6CA3952B3957903FF7E69469C7E3A2B |</span><br><span class="line">+-------------+---------------+-------------------------------------------+</span><br></pre></td></tr></table></figure>
+
+<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><ul>
+<li><strong>配置文件 <code>my.cnf</code></strong> </li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">skip-name-resolve</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>日志警告</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># skip_name_resolve = OFF</span></span><br><span class="line">[Warning] IP address <span class="string">'10.163.25.68'</span> could not be resolved: Name or service not known</span><br><span class="line"></span><br><span class="line"><span class="comment"># skip_name_resolve = ON</span></span><br><span class="line">[Warning] <span class="string">'user'</span> entry <span class="string">'mysql.session@localhost'</span> ignored <span class="keyword">in</span> --skip-name-resolve mode</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/25/linux-disk/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2232,217 +2441,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/python-threads/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/24/python-threads/" class="post-title-link" itemprop="url">Python · 进程与线程</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-24 09:30:41" itemprop="dateCreated datePublished" datetime="2019-10-24T09:30:41+08:00">2019-10-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-28 14:01:09" itemprop="dateModified" datetime="2019-10-28T14:01:09+08:00">2019-10-28</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><p><strong>目的</strong>：多核 <code>CPU</code> 时代，为了充分利用资源，依赖多任务并发编程技术<strong>提升程序性能</strong>和<strong>改善用户体验</strong>。</p>
-<p><strong>多任务并发编程方式</strong>：</p>
-<ul>
-<li>多进程</li>
-<li>多线程</li>
-<li>多进程 + 多线程</li>
-</ul>
-<p><strong>进程</strong>：操作系统中执行的一个程序，一个任务就是一个进程。</p>
-<p><strong>线程</strong>：线程是最小的执行单元，一个线程相当于进程的子任务。</p>
-<p><strong>进程间通信方式</strong>：管道、信号、套接字、共享内存区等。</p>
-<h2 id="多进程"><a href="#多进程" class="headerlink" title="多进程"></a>多进程</h2><ul>
-<li><strong><code>os</code> 模块</strong>：使用 <code>fork()</code> 调用实现多进程。</li>
-<li><strong><code>multiprocessing</code> 模块</strong>：实现跨平台多进程。</li>
-<li><strong><code>Process</code> 对象</strong>：实现多进程。</li>
-<li><strong><code>Pool</code> 对象</strong>：可以用进程池的方式批量创建子进程，<code>Pool</code> 的默认大小是 <code>CPU</code> 的核数。</li>
-<li><strong><code>Queue</code> 对象</strong>：通过队列实现进程间通信。</li>
-<li><strong><code>Pipes</code> 对象</strong>：通过管道实现进程间通信。</li>
-<li><strong><code>start</code> 方法</strong>：表示启动进程。</li>
-<li><strong><code>join</code> 方法</strong>：表示等待进程执行结束。</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> random <span class="keyword">import</span> randint</span><br><span class="line"><span class="keyword">from</span> time <span class="keyword">import</span> time, sleep</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">download_task</span><span class="params">(filename)</span>:</span></span><br><span class="line">    print(<span class="string">'开始下载%s...'</span> % filename)</span><br><span class="line">    time_to_download = randint(<span class="number">5</span>, <span class="number">10</span>)</span><br><span class="line">    sleep(time_to_download)</span><br><span class="line">    print(<span class="string">'%s下载完成! 耗费了%d秒'</span> % (filename, time_to_download))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    start = time()</span><br><span class="line">    download_task(<span class="string">'Python从入门到进坑.pdf'</span>)</span><br><span class="line">    download_task(<span class="string">'Peking Hot.avi'</span>)</span><br><span class="line">    end = time()</span><br><span class="line">    print(<span class="string">'总共耗费了%.2f秒.'</span> % (end - start))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">运行结果：</span><br><span class="line">开始下载 Python从入门到进坑.pdf...</span><br><span class="line">Python从入门到住院.pdf下载完成! 耗费了<span class="number">6</span>秒</span><br><span class="line">开始下载 Peking Hot.avi...</span><br><span class="line">Peking Hot.avi下载完成! 耗费了<span class="number">7</span>秒</span><br><span class="line">总共耗费了<span class="number">13.01</span>秒.</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Process</span><br><span class="line"><span class="keyword">from</span> os <span class="keyword">import</span> getpid</span><br><span class="line"><span class="keyword">from</span> random <span class="keyword">import</span> randint</span><br><span class="line"><span class="keyword">from</span> time <span class="keyword">import</span> time, sleep</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">download_task</span><span class="params">(filename)</span>:</span></span><br><span class="line">    print(<span class="string">'启动下载进程，进程号[%d].'</span> % getpid())</span><br><span class="line">    print(<span class="string">'开始下载%s...'</span> % filename)</span><br><span class="line">    time_to_download = randint(<span class="number">5</span>, <span class="number">10</span>)</span><br><span class="line">    sleep(time_to_download)</span><br><span class="line">    print(<span class="string">'%s下载完成! 耗费了%d秒'</span> % (filename, time_to_download))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    start = time()</span><br><span class="line">    p1 = Process(target=download_task, args=(<span class="string">'Python从入门到住院.pdf'</span>, ))</span><br><span class="line">    p1.start()</span><br><span class="line">    p2 = Process(target=download_task, args=(<span class="string">'Peking Hot.avi'</span>, ))</span><br><span class="line">    p2.start()</span><br><span class="line">    p1.join()</span><br><span class="line">    p2.join()</span><br><span class="line">    end = time()</span><br><span class="line">    print(<span class="string">'总共耗费了%.2f秒.'</span> % (end - start))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">运行结果：</span><br><span class="line">启动下载进程，进程号[<span class="number">1530</span>].</span><br><span class="line">开始下载 Python从入门到住院.pdf...</span><br><span class="line">启动下载进程，进程号[<span class="number">1531</span>].</span><br><span class="line">开始下载 Peking Hot.avi...</span><br><span class="line">Peking Hot.avi下载完成! 耗费了<span class="number">7</span>秒</span><br><span class="line">Python从入门到住院.pdf下载完成! 耗费了<span class="number">10</span>秒</span><br><span class="line">总共耗费了<span class="number">10.01</span>秒.</span><br></pre></td></tr></table></figure>
-
-<h2 id="多线程"><a href="#多线程" class="headerlink" title="多线程"></a>多线程</h2><ul>
-<li><strong><code>thread</code> 模块</strong>：实现多线程</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">print(<span class="string">'Process (%s) start...'</span> % os.getpid())</span><br><span class="line"><span class="comment"># Only works on Unix/Linux/Mac</span></span><br><span class="line">pid = os.fork()</span><br><span class="line"><span class="keyword">if</span> pid == <span class="number">0</span>:</span><br><span class="line">    print(<span class="string">'I am child process (%s) and my parent is %s.'</span> % (os.getpid(), os.getppid()))</span><br><span class="line"><span class="keyword">else</span>:</span><br><span class="line">    print(<span class="string">'I (%s) just created a child process (%s).'</span> % (os.getpid(), pid))</span><br><span class="line">    </span><br><span class="line">Process (<span class="number">876</span>) start...</span><br><span class="line">I (<span class="number">876</span>) just created a child process (<span class="number">877</span>).</span><br><span class="line">I am child process (<span class="number">877</span>) <span class="keyword">and</span> my parent <span class="keyword">is</span> <span class="number">876.</span></span><br></pre></td></tr></table></figure>
-
-<p>Python 的 <code>multiprocessing</code>模块就是跨平台版本的多进程模块。<code>multiprocessing</code>模块提供了一个<code>Process</code>类来代表一个进程对象，下面的例子演示了启动一个子进程并等待其结束。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Process</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="comment"># 子进程要执行的代码</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">run_proc</span><span class="params">(name)</span>:</span></span><br><span class="line">    print(<span class="string">'Run child process %s (%s)...'</span> % (name, os.getpid()))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">'__main__'</span>:</span><br><span class="line">    print(<span class="string">'Parent process %s.'</span> % os.getpid())</span><br><span class="line">    p = Process(target=run_proc, args=(<span class="string">'test'</span>,))</span><br><span class="line">    print(<span class="string">'Child process will start.'</span>)</span><br><span class="line">    p.start()</span><br><span class="line">    p.join()</span><br><span class="line">    print(<span class="string">'Child process end.'</span>)</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">执行结果如下：</span><br><span class="line">Parent process <span class="number">928.</span></span><br><span class="line">Child process will start.</span><br><span class="line">Run child process test (<span class="number">929</span>)...</span><br><span class="line">Child process end.</span><br></pre></td></tr></table></figure>
-
-<p>创建子进程时，只需要传入一个执行函数和函数的参数，创建一个<code>Process</code>实例，用<code>start()</code>方法启动，这样创建进程比<code>fork()</code>还要简单。<code>join()</code>方法可以等待子进程结束后再继续往下运行，通常用于进程间的同步。</p>
-<p><strong>Pool</strong>：如果要启动大量的子进程，可以用进程池的方式批量创建子进程，<code>Pool</code>的默认大小是 CPU 的核数。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Pool</span><br><span class="line"><span class="keyword">import</span> os, time, random</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">long_time_task</span><span class="params">(name)</span>:</span></span><br><span class="line">    print(<span class="string">'Run task %s (%s)...'</span> % (name, os.getpid()))</span><br><span class="line">    start = time.time()</span><br><span class="line">    time.sleep(random.random() * <span class="number">3</span>)</span><br><span class="line">    end = time.time()</span><br><span class="line">    print(<span class="string">'Task %s runs %0.2f seconds.'</span> % (name, (end - start)))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">'__main__'</span>:</span><br><span class="line">    print(<span class="string">'Parent process %s.'</span> % os.getpid())</span><br><span class="line">    p = Pool(<span class="number">4</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">5</span>):</span><br><span class="line">        p.apply_async(long_time_task, args=(i,))</span><br><span class="line">    print(<span class="string">'Waiting for all subprocesses done...'</span>)</span><br><span class="line">    p.close()</span><br><span class="line">    p.join()</span><br><span class="line">    print(<span class="string">'All subprocesses done.'</span>)</span><br><span class="line">    </span><br><span class="line">执行结果如下：</span><br><span class="line">Parent process <span class="number">669.</span></span><br><span class="line">Waiting <span class="keyword">for</span> all subprocesses done...</span><br><span class="line">Run task <span class="number">0</span> (<span class="number">671</span>)...</span><br><span class="line">Run task <span class="number">1</span> (<span class="number">672</span>)...</span><br><span class="line">Run task <span class="number">2</span> (<span class="number">673</span>)...</span><br><span class="line">Run task <span class="number">3</span> (<span class="number">674</span>)...</span><br><span class="line">Task <span class="number">2</span> runs <span class="number">0.14</span> seconds.</span><br><span class="line">Run task <span class="number">4</span> (<span class="number">673</span>)...</span><br><span class="line">Task <span class="number">1</span> runs <span class="number">0.27</span> seconds.</span><br><span class="line">Task <span class="number">3</span> runs <span class="number">0.86</span> seconds.</span><br><span class="line">Task <span class="number">0</span> runs <span class="number">1.41</span> seconds.</span><br><span class="line">Task <span class="number">4</span> runs <span class="number">1.91</span> seconds.</span><br><span class="line">All subprocesses done.</span><br></pre></td></tr></table></figure>
-
-<p><strong>进程间通信</strong>：<code>Process</code>之间肯定是需要通信的，操作系统提供了很多机制来实现进程间的通信。<code>Python</code> 的<code>multiprocessing</code> 模块包装了底层的机制，提供了<code>Queue</code>、<code>Pipes</code>等多种方式来交换数据。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> multiprocessing <span class="keyword">import</span> Process, Queue</span><br><span class="line"><span class="keyword">import</span> os, time, random</span><br><span class="line"></span><br><span class="line"><span class="comment"># 写数据进程执行的代码:</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">write</span><span class="params">(q)</span>:</span></span><br><span class="line">    print(<span class="string">'Process to write: %s'</span> % os.getpid())</span><br><span class="line">    <span class="keyword">for</span> value <span class="keyword">in</span> [<span class="string">'A'</span>, <span class="string">'B'</span>, <span class="string">'C'</span>]:</span><br><span class="line">        print(<span class="string">'Put %s to queue...'</span> % value)</span><br><span class="line">        q.put(value)</span><br><span class="line">        time.sleep(random.random())</span><br><span class="line"></span><br><span class="line"><span class="comment"># 读数据进程执行的代码:</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">read</span><span class="params">(q)</span>:</span></span><br><span class="line">    print(<span class="string">'Process to read: %s'</span> % os.getpid())</span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        value = q.get(<span class="literal">True</span>)</span><br><span class="line">        print(<span class="string">'Get %s from queue.'</span> % value)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__==<span class="string">'__main__'</span>:</span><br><span class="line">    <span class="comment"># 父进程创建Queue，并传给各个子进程：</span></span><br><span class="line">    q = Queue()</span><br><span class="line">    pw = Process(target=write, args=(q,))</span><br><span class="line">    pr = Process(target=read, args=(q,))</span><br><span class="line">    <span class="comment"># 启动子进程pw，写入:</span></span><br><span class="line">    pw.start()</span><br><span class="line">    <span class="comment"># 启动子进程pr，读取:</span></span><br><span class="line">    pr.start()</span><br><span class="line">    <span class="comment"># 等待pw结束:</span></span><br><span class="line">    pw.join()</span><br><span class="line">    <span class="comment"># pr进程里是死循环，无法等待其结束，只能强行终止:</span></span><br><span class="line">    pr.terminate()</span><br><span class="line">    </span><br><span class="line">执行结果如下：</span><br><span class="line">Process to write: <span class="number">50563</span></span><br><span class="line">Put A to queue...</span><br><span class="line">Process to read: <span class="number">50564</span></span><br><span class="line">Get A <span class="keyword">from</span> queue.</span><br><span class="line">Put B to queue...</span><br><span class="line">Get B <span class="keyword">from</span> queue.</span><br><span class="line">Put C to queue...</span><br><span class="line">Get C <span class="keyword">from</span> queue.</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2491,7 +2489,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">133</span>
+                    <span class="site-state-item-count">134</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
