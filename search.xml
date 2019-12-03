@@ -3865,35 +3865,25 @@
 <table>
 <thead>
 <tr>
-<th>schema</th>
-<th>data_size</th>
-<th>index_size</th>
+<th></th>
+<th>源库信息 (10.159.39.38:3306)</th>
+<th>目标库信息 (10.199.96.188:3306)</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>haier</td>
-<td>46.41GB</td>
-<td>45.84GB</td>
+<td><strong>版本</strong></td>
+<td>MySQL 5.5.20</td>
+<td></td>
 </tr>
 <tr>
-<td>mysql</td>
+<td><strong>数据量</strong></td>
+<td>137.50 GB</td>
 <td>…</td>
-<td>…</td>
 </tr>
 <tr>
-<td>razro</td>
-<td>0.00GB</td>
-<td>0.00GB</td>
-</tr>
-<tr>
-<td>piwik</td>
-<td>0.00GB</td>
-<td>0.00GB</td>
-</tr>
-<tr>
-<td>matomo</td>
-<td>0.00GB</td>
-<td>0.00GB</td>
+<td><strong>操作系统</strong></td>
+<td>CentOS release 6.5 (Final)</td>
+<td>CentOS release 6.10 (Final)</td>
 </tr>
 </tbody></table>
 <p><strong>目的数据库</strong>：MySQL 5.6.36</p>
@@ -8339,7 +8329,7 @@
 
 <h3 id="设置用户-1"><a href="#设置用户-1" class="headerlink" title="设置用户"></a>设置用户</h3><figure class="highlight"><table><tr><td class="code"><pre><span class="line">mysql</span><br><span class="line">mysql&gt; update mysql.user set password=password('xx') where user='root';</span><br><span class="line">mysql&gt; delete from mysql.user where user!='root' or host!='localhost';</span><br><span class="line">mysql&gt; flush privileges;</span><br><span class="line">mysql&gt; select user,host,password from mysql.user;</span><br></pre></td></tr></table></figure>
 
-<h2 id="主备模式"><a href="#主备模式" class="headerlink" title="主备模式"></a>主备模式</h2><h3 id="新搭建主备"><a href="#新搭建主备" class="headerlink" title="新搭建主备"></a>新搭建主备</h3><h4 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h4><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">GRANT</span> <span class="keyword">REPLICATION</span> <span class="keyword">SLAVE</span>, <span class="keyword">REPLICATION</span> <span class="keyword">CLIENT</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'repl'</span>@<span class="string">'x.x.x.%'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="string">'xx'</span>;</span><br></pre></td></tr></table></figure>
+<h2 id="配置主从"><a href="#配置主从" class="headerlink" title="配置主从"></a>配置主从</h2><h4 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h4><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">GRANT</span> <span class="keyword">REPLICATION</span> <span class="keyword">SLAVE</span>, <span class="keyword">REPLICATION</span> <span class="keyword">CLIENT</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'repl'</span>@<span class="string">'x.x.x.%'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="string">'xx'</span>;</span><br></pre></td></tr></table></figure>
 
 <h4 id="修改配置"><a href="#修改配置" class="headerlink" title="修改配置"></a>修改配置</h4><ul>
 <li>主库 <code>my.cnf</code> 文件</li>
@@ -8362,7 +8352,7 @@
 </ul>
 <figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 主库查看日志和位置</span></span><br><span class="line">mysql&gt; show master status;</span><br><span class="line">+<span class="comment">------------------+----------+--------------+------------------+-------------------+</span></span><br><span class="line">| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |</span><br><span class="line">+<span class="comment">------------------+----------+--------------+------------------+-------------------+</span></span><br><span class="line">| mysql-bin.000002 |     3778 |              |                  |                   |</span><br><span class="line">+<span class="comment">------------------+----------+--------------+------------------+-------------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 从库开启复制</span></span><br><span class="line"><span class="keyword">CHANGE</span> <span class="keyword">MASTER</span> <span class="keyword">TO</span></span><br><span class="line">MASTER_HOST=<span class="string">'x.x.x.x'</span>,</span><br><span class="line">MASTER_USER=<span class="string">'repl'</span>,</span><br><span class="line">MASTER_PASSWORD=<span class="string">'xx'</span>,</span><br><span class="line">MASTER_PORT=<span class="number">3306</span>,</span><br><span class="line">MASTER_LOG_FILE=<span class="string">'mysql-bin.000002'</span>,</span><br><span class="line">MASTER_LOG_POS=<span class="number">3778</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 验证</span></span><br><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.138.98.179</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-bin.000002</span><br><span class="line">          Read_Master_Log_Pos: 3778</span><br><span class="line">               Relay_Log_File: relay-log.000002</span><br><span class="line">                Relay_Log_Pos: 1621</span><br><span class="line">        Relay_Master_Log_File: mysql-bin.000002</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">            ...</span><br></pre></td></tr></table></figure>
 
-<h3 id="单主新增备"><a href="#单主新增备" class="headerlink" title="单主新增备"></a>单主新增备</h3><ul>
+<h3 id="单主新增从"><a href="#单主新增从" class="headerlink" title="单主新增从"></a>单主新增从</h3><ul>
 <li>主从库服务器，<a href="https://huiraoo.github.io/blog/2019/06/18/mysql-xtrabackup/"><strong>安装 XtraBackup</strong></a></li>
 </ul>
 <ul>
