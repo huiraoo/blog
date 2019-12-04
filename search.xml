@@ -3,7 +3,15 @@
   <entry>
     <title>MySQL · 亿级表数据清理</title>
     <url>/blog/2019/12/04/mysql-batch-delete/</url>
-    <content><![CDATA[]]></content>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line">| table_name              | table_rows | data_size | index_size |</span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line">| t_hr_13plan_res_history |  <span class="number">296397209</span> | <span class="number">110.43</span>GB  | <span class="number">3.72</span>GB     |</span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line">| table_name              | table_rows | data_size | index_size |</span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line">| t_hr_13plan_res_history |  <span class="number">269082432</span> | <span class="number">102.44</span>GB  | <span class="number">3.45</span>GB     |</span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br></pre></td></tr></table></figure>
+
+<h2 id="清理"><a href="#清理" class="headerlink" title="清理"></a>清理</h2><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">pt-archiver --source u=sre,p=<span class="string">'sre@@p$i'</span>,S=/tmp/mysql-dzsp.sock,P=<span class="number">3306</span>,D=dzspzy,t=t_hr_13plan_res_history --no-check-charset --progress <span class="number">10000</span> --where <span class="string">"ID &lt; 251061689"</span> --limit <span class="number">10000</span> --txn-size <span class="number">1000</span> --bulk-delete --purge --statistics</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 方法一</span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> t_hr_13plan_res_history <span class="keyword">engine</span> = <span class="keyword">innodb</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 方法二</span></span><br><span class="line"><span class="keyword">optimize</span> <span class="keyword">table</span> t_hr_13plan_res_history</span><br><span class="line"></span><br><span class="line"><span class="comment"># 方法三</span></span><br><span class="line">pt-<span class="keyword">online</span>-<span class="keyword">schema</span>-<span class="keyword">change</span> <span class="comment">--alter="ENGINE=innodb" D=dzspzy,t=t_hr_13plan_res_history --execute</span></span><br></pre></td></tr></table></figure>
+
+]]></content>
       <categories>
         <category>MySQL</category>
       </categories>

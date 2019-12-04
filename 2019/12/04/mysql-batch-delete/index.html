@@ -96,17 +96,17 @@
 
 
 
-  <meta name="description" content="最好的成长是分享">
+  <meta name="description" content="背景12345+-------------------------+------------+-----------+------------+| table_name              | table_rows | data_size | index_size |+-------------------------+------------+-----------+-----------">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL · 亿级表数据清理">
 <meta property="og:url" content="https://huiraoo.github.io/blog/2019/12/04/mysql-batch-delete/index.html">
 <meta property="og:site_name" content="Rao&#39;s Blog">
-<meta property="og:description" content="最好的成长是分享">
+<meta property="og:description" content="背景12345+-------------------------+------------+-----------+------------+| table_name              | table_rows | data_size | index_size |+-------------------------+------------+-----------+-----------">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-12-04T08:51:34.896Z">
+<meta property="og:updated_time" content="2019-12-04T13:28:14.546Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL · 亿级表数据清理">
-<meta name="twitter:description" content="最好的成长是分享">
+<meta name="twitter:description" content="背景12345+-------------------------+------------+-----------+------------+| table_name              | table_rows | data_size | index_size |+-------------------------+------------+-----------+-----------">
 
 
 
@@ -395,7 +395,7 @@
                 
               
 
-              <time title="创建时间：2019-12-04 15:42:17 / 修改时间：16:51:34" itemprop="dateCreated datePublished" datetime="2019-12-04T15:42:17+08:00">2019-12-04</time>
+              <time title="创建时间：2019-12-04 15:42:17 / 修改时间：21:28:14" itemprop="dateCreated datePublished" datetime="2019-12-04T15:42:17+08:00">2019-12-04</time>
             
 
             
@@ -459,7 +459,15 @@
       
 
       
-        
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line">| table_name              | table_rows | data_size | index_size |</span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line">| t_hr_13plan_res_history |  <span class="number">296397209</span> | <span class="number">110.43</span>GB  | <span class="number">3.72</span>GB     |</span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line">| table_name              | table_rows | data_size | index_size |</span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line">| t_hr_13plan_res_history |  <span class="number">269082432</span> | <span class="number">102.44</span>GB  | <span class="number">3.45</span>GB     |</span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br></pre></td></tr></table></figure>
+
+<h2 id="清理"><a href="#清理" class="headerlink" title="清理"></a>清理</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-archiver --source u=sre,p=<span class="string">'sre@@p$i'</span>,S=/tmp/mysql-dzsp.sock,P=<span class="number">3306</span>,D=dzspzy,t=t_hr_13plan_res_history --no-check-charset --progress <span class="number">10000</span> --where <span class="string">"ID &lt; 251061689"</span> --limit <span class="number">10000</span> --txn-size <span class="number">1000</span> --bulk-delete --purge --statistics</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 方法一</span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> t_hr_13plan_res_history <span class="keyword">engine</span> = <span class="keyword">innodb</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 方法二</span></span><br><span class="line"><span class="keyword">optimize</span> <span class="keyword">table</span> t_hr_13plan_res_history</span><br><span class="line"></span><br><span class="line"><span class="comment"># 方法三</span></span><br><span class="line">pt-<span class="keyword">online</span>-<span class="keyword">schema</span>-<span class="keyword">change</span> <span class="comment">--alter="ENGINE=innodb" D=dzspzy,t=t_hr_13plan_res_history --execute</span></span><br></pre></td></tr></table></figure>
+
+
       
     </div>
 
@@ -541,8 +549,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <div class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -708,6 +725,23 @@
         </div>
       </div>
 
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#清理"><span class="nav-number">2.</span> <span class="nav-text">清理</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
       
 
       
