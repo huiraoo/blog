@@ -352,6 +352,395 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/31/mysql-procedure/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/31/mysql-procedure/" class="post-title-link" itemprop="url">MySQL · 存储过程</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-31 09:30:18" itemprop="dateCreated datePublished" datetime="2019-10-31T09:30:18+08:00">2019-10-31</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-12-06 10:21:52" itemprop="dateModified" datetime="2019-12-06T10:21:52+08:00">2019-12-06</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://dev.mysql.com/doc/refman/5.7/en/stored-routines.html" target="_blank" rel="noopener">存储过程</a>处理的是一组 SQL 语句，且没有返回值。</p>
+<p><strong>优点</strong></p>
+<ul>
+<li>简单：把单条 SQL 封装起来，简化复杂的操作。</li>
+<li>安全</li>
+<li>高性能</li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li>移植困难，不同数据库的语法差别很大</li>
+<li>不易扩展，把过多业务逻辑写在存储过程不好维护，不利于分层管理，容易混乱</li>
+</ul>
+<p><strong>权限</strong>：<a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_create-routine" target="_blank" rel="noopener">CREATE ROUTINE</a> 、<a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_alter-routine" target="_blank" rel="noopener">ALTER ROUTINE</a> 、<a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_execute" target="_blank" rel="noopener">EXECUTE</a></p>
+<p><strong>语法</strong>：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建</span></span><br><span class="line"><span class="keyword">CREATE</span></span><br><span class="line">    [DEFINER = <span class="keyword">user</span>]</span><br><span class="line">    <span class="keyword">PROCEDURE</span> sp_name ([proc_parameter[,...]])</span><br><span class="line">    [characteristic ...] routine_body</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span></span><br><span class="line">    [DEFINER = <span class="keyword">user</span>]</span><br><span class="line">    <span class="keyword">FUNCTION</span> sp_name ([func_parameter[,...]])</span><br><span class="line">    <span class="keyword">RETURNS</span> <span class="keyword">type</span></span><br><span class="line">    [characteristic ...] routine_body</span><br><span class="line"></span><br><span class="line">proc_parameter:</span><br><span class="line">    [ <span class="keyword">IN</span> | <span class="keyword">OUT</span> | INOUT ] param_name <span class="keyword">type</span></span><br><span class="line"></span><br><span class="line">func_parameter:</span><br><span class="line">    param_name <span class="keyword">type</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span>:</span><br><span class="line">    <span class="keyword">Any</span> valid MySQL <span class="keyword">data</span> <span class="keyword">type</span></span><br><span class="line"></span><br><span class="line">characteristic:</span><br><span class="line">    <span class="keyword">COMMENT</span> <span class="string">'string'</span></span><br><span class="line">  | <span class="keyword">LANGUAGE</span> <span class="keyword">SQL</span></span><br><span class="line">  | [<span class="keyword">NOT</span>] <span class="keyword">DETERMINISTIC</span></span><br><span class="line">  | &#123; CONTAINS <span class="keyword">SQL</span> | <span class="keyword">NO</span> <span class="keyword">SQL</span> | <span class="keyword">READS</span> <span class="keyword">SQL</span> <span class="keyword">DATA</span> | MODIFIES <span class="keyword">SQL</span> <span class="keyword">DATA</span> &#125;</span><br><span class="line">  | <span class="keyword">SQL</span> <span class="keyword">SECURITY</span> &#123; DEFINER | INVOKER &#125;</span><br><span class="line"></span><br><span class="line">routine_body:</span><br><span class="line">    Valid <span class="keyword">SQL</span> routine <span class="keyword">statement</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">PROCEDURE</span> proc_name [characteristic ...]</span><br><span class="line"></span><br><span class="line">characteristic:</span><br><span class="line">    <span class="keyword">COMMENT</span> <span class="string">'string'</span></span><br><span class="line">  | <span class="keyword">LANGUAGE</span> <span class="keyword">SQL</span></span><br><span class="line">  | &#123; CONTAINS <span class="keyword">SQL</span> | <span class="keyword">NO</span> <span class="keyword">SQL</span> | <span class="keyword">READS</span> <span class="keyword">SQL</span> <span class="keyword">DATA</span> | MODIFIES <span class="keyword">SQL</span> <span class="keyword">DATA</span> &#125;</span><br><span class="line">  | <span class="keyword">SQL</span> <span class="keyword">SECURITY</span> &#123; DEFINER | INVOKER &#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment"># 删除</span></span><br><span class="line"><span class="keyword">DROP</span> &#123;<span class="keyword">PROCEDURE</span> | <span class="keyword">FUNCTION</span>&#125; [<span class="keyword">IF</span> <span class="keyword">EXISTS</span>] sp_name</span><br><span class="line"></span><br><span class="line"><span class="comment"># 调用</span></span><br><span class="line"><span class="keyword">CALL</span> sp_name([parameter[,...]])</span><br><span class="line"><span class="keyword">CALL</span> sp_name[()]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">procedure</span> <span class="keyword">status</span>;</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">create</span> <span class="keyword">procedure</span> proc_name;</span><br></pre></td></tr></table></figure>
+
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; delimiter //</span><br><span class="line"></span><br><span class="line">mysql&gt; CREATE PROCEDURE simpleproc (OUT <span class="keyword">param</span>1 INT)</span><br><span class="line">    -&gt; <span class="keyword">BEGIN</span></span><br><span class="line">    -&gt;   SELECT COUNT(*) INTO <span class="keyword">param</span>1 FROM t;</span><br><span class="line">    -&gt; <span class="keyword">END</span>//</span><br><span class="line">Query OK, <span class="number">0</span> rows affected (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; delimiter ;</span><br><span class="line"></span><br><span class="line">mysql&gt; CALL simpleproc(@a);</span><br><span class="line">Query OK, <span class="number">0</span> rows affected (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; SELECT @a;</span><br><span class="line">+------+</span><br><span class="line">| @a   |</span><br><span class="line">+------+</span><br><span class="line">| <span class="number">3</span>    |</span><br><span class="line">+------+</span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/30/mysql-view/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/30/mysql-view/" class="post-title-link" itemprop="url">MySQL · 视图</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-30 16:37:35" itemprop="dateCreated datePublished" datetime="2019-10-30T16:37:35+08:00">2019-10-30</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-18 14:27:59" itemprop="dateModified" datetime="2019-11-18T14:27:59+08:00">2019-11-18</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>视图</strong>是虚拟的表，与包含数据的表不一样，视图只包含使用时动态检索数据的查询 <code>SQL</code>。一般情况下，应该将视图用于检索（<code>SELETE</code>），而不用于更新（<code>INSRTE</code>、<code>UPDATE</code>、<code>DELETE</code>）。</p>
+<p><strong>优点</strong></p>
+<ul>
+<li>简化，隐藏复杂的 <code>SQL</code> ，简化复杂 <code>SQL</code> 的数据处理，还可以重新格式化数据</li>
+<li>安全，保护数据，可以给用户授予表的特定部分的访问权限而不是整个表的访问权限</li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li>性能相对较差</li>
+</ul>
+<blockquote>
+<p>性能问题：因为视图不包含数据，所以每次使用视图时，都必须处理查询执行时所需的任何一个检索。如果你用多个联结和过滤创建了复杂的视图或者嵌套了视图，就会发现性能下降得很厉害，主要原因是<strong>不能建立索引</strong>。</p>
+</blockquote>
+<h2 id="权限"><a href="#权限" class="headerlink" title="权限"></a>权限</h2><ul>
+<li><code>CREATE VIEW</code>：创建视图</li>
+<li><code>SHOW VIEW</code>：查看视图</li>
+</ul>
+<h2 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h2><h3 id="创建视图"><a href="#创建视图" class="headerlink" title="创建视图"></a>创建视图</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> [ALGORITHM = &#123;<span class="keyword">MERGE</span> | TEMPTABLE | UNDEFINED&#125;]</span><br><span class="line"><span class="keyword">VIEW</span> [database_name].[view_name] </span><br><span class="line"><span class="keyword">AS</span> [<span class="keyword">SELECT</span> <span class="keyword">statement</span>]</span><br></pre></td></tr></table></figure>
+
+<p>MySQL 有三种视图策略, 分别是 <code>MERGE</code>， <code>TEMPTABLE</code>， <code>UNDEFINED</code></p>
+<ul>
+<li><code>MERGE</code>，先将输入的查询语句和视图的声明语句进行合并，然后执行合并后的语句并返回。</li>
+<li><code>TEMPTABLE</code>，先基于视图的声明创建一张 <code>temporary table</code>，当输入查询语句时会直接查询这张 <code>temporary table</code>，<code>TEMPTABLE</code> 的效率要比 <code>MERGE</code> 低。</li>
+<li><code>UNDEFINED</code>，如果创建视图的时候不指定策略，默认使用此策略。<code>UNDEFINED</code> 会自动选择使用上述两种策略中的一个，优先选择 <code>MERGE</code> 策略，无法使用则转为 <code>TEMPTABLE</code> 策略。</li>
+</ul>
+<h3 id="显示视图"><a href="#显示视图" class="headerlink" title="显示视图"></a>显示视图</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查询单个视图</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">create</span> <span class="keyword">view</span> view_name;</span><br><span class="line"></span><br><span class="line">mysql&gt; show create view cosmo_zzwk_2048.yangjisaomiao_view\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">                View: yangjisaomiao_view</span><br><span class="line">         <span class="keyword">Create</span> <span class="keyword">View</span>: <span class="keyword">CREATE</span> ALGORITHM=UNDEFINED DEFINER=<span class="string">`wms`</span>@<span class="string">`%`</span> <span class="keyword">SQL</span> <span class="keyword">SECURITY</span> DEFINER <span class="keyword">VIEW</span> <span class="string">`cosmo_zzwk_2048`</span>.<span class="string">`yangjisaomiao_view`</span> <span class="keyword">AS</span> <span class="keyword">select</span> <span class="keyword">distinct</span> <span class="string">`a`</span>.<span class="string">`ORDER_NO`</span> <span class="keyword">AS</span> <span class="string">`order_id`</span>,<span class="string">`a`</span>.<span class="string">`OUT_CODE`</span> <span class="keyword">AS</span> <span class="string">`sm_id`</span>,<span class="string">`a`</span>.<span class="string">`BARCODE`</span> <span class="keyword">AS</span> <span class="string">`sern`</span>,<span class="string">`a`</span>.<span class="string">`SCAN_TIME`</span> <span class="keyword">AS</span> <span class="string">`scandate`</span>,<span class="string">`a`</span>.<span class="string">`SCANED_BY`</span> <span class="keyword">AS</span> <span class="string">`scanuser`</span>,<span class="string">'10.138.228.165'</span> <span class="keyword">AS</span> <span class="string">`database_ip`</span>,<span class="string">'90J0'</span> <span class="keyword">AS</span> <span class="string">`SAP_Plant`</span>,<span class="string">'黄岛智慧厨电'</span> <span class="keyword">AS</span> <span class="string">`sap_description`</span> <span class="keyword">from</span> <span class="string">`cosmo_zzwk_2048`</span>.<span class="string">`ods_pro_yj_sn`</span> <span class="string">`a`</span> <span class="keyword">where</span> (<span class="string">`a`</span>.<span class="string">`SCAN_TIME`</span> &gt;= (<span class="keyword">curdate</span>() - <span class="built_in">interval</span> <span class="number">30</span> <span class="keyword">day</span>))</span><br><span class="line">character_set_client: utf8</span><br><span class="line">collation_connection: utf8_general_ci</span><br><span class="line"><span class="number">1</span> <span class="keyword">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询所有视图</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> information_schema.views;</span><br></pre></td></tr></table></figure>
+
+<h3 id="删除视图"><a href="#删除视图" class="headerlink" title="删除视图"></a>删除视图</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">drop</span> <span class="keyword">view</span> view_name;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/30/mysql-tuning-wms/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2113,405 +2502,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/mysql-config-max-connections/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/24/mysql-config-max-connections/" class="post-title-link" itemprop="url">MySQL · 配置参数 · max_connections</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-24 22:22:02" itemprop="dateCreated datePublished" datetime="2019-10-24T22:22:02+08:00">2019-10-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-25 09:59:03" itemprop="dateModified" datetime="2019-10-25T09:59:03+08:00">2019-10-25</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h2><ul>
-<li><strong><a href="https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_max_connections" target="_blank" rel="noopener">max_connections</a></strong>：MySQL 实例最大连接数。</li>
-<li><strong>Max_used_connections</strong>：是指从本次 MySQL 服务启动到现在，同一时刻并行连接数的最大值，不是指当前的连接情况，而是一个比较值。</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>Property</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Command-Line Format</strong></td>
-<td><code>--max-connections=#</code></td>
-</tr>
-<tr>
-<td><strong>System Variable</strong></td>
-<td><code>max_connections</code></td>
-</tr>
-<tr>
-<td><strong>Scope</strong></td>
-<td>Global</td>
-</tr>
-<tr>
-<td><strong>Dynamic</strong></td>
-<td>Yes</td>
-</tr>
-<tr>
-<td><strong>Type</strong></td>
-<td>Integer</td>
-</tr>
-<tr>
-<td><strong>Default Value</strong></td>
-<td><code>151</code></td>
-</tr>
-<tr>
-<td><strong>Minimum Value</strong></td>
-<td><code>1</code></td>
-</tr>
-<tr>
-<td><strong>Maximum Value</strong></td>
-<td><code>100000</code></td>
-</tr>
-</tbody></table>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like <span class="string">"max_connections"</span>;</span><br><span class="line">+-----------------+-------+</span><br><span class="line">| Variable_name   | Value |</span><br><span class="line">+-----------------+-------+</span><br><span class="line">| max_connections | <span class="number">1000</span>  |</span><br><span class="line">+-----------------+-------+</span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; show status like <span class="string">"max_used%"</span>;</span><br><span class="line">+----------------------+-------+</span><br><span class="line">| Variable_name        | Value |</span><br><span class="line">+----------------------+-------+</span><br><span class="line">| Max_used_connections | <span class="number">391</span>   |</span><br><span class="line">+----------------------+-------+</span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-
-<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><p><strong>推荐</strong>：如果设置太高硬件吃不消，太低又不能充分利用硬件，一般要求两者比值超过 <code>10%</code>。</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Max_used_connections / max_connections * <span class="number">100</span>%  &gt; <span class="number">10</span>%</span><br></pre></td></tr></table></figure>
-
-<p><strong>方法</strong>：<code>/etc/my.cnf</code> 添加参数 <code>max_connections = 1000</code>，这个值的大小取决于服务器的配置。</p>
-<h2 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h2><p>如果你看到数据库报 <code>&quot;Too many connections&quot;</code> 错误，是因为当前连接数超过 <code>max_connections</code> 设置的值，常见的原因是应用程序没有正确的关闭数据库连接，应用程序使用连接池有助于解决这一问题。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/mysql-tuning-join/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/24/mysql-tuning-join/" class="post-title-link" itemprop="url">MySQL · 调优案例 · JOIN</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-24 14:58:54" itemprop="dateCreated datePublished" datetime="2019-10-24T14:58:54+08:00">2019-10-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-15 16:49:50" itemprop="dateModified" datetime="2019-11-15T16:49:50+08:00">2019-11-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="JOIN"><a href="#JOIN" class="headerlink" title="JOIN"></a>JOIN</h2><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-13-175000.jpg" alt></p>
-<h3 id="INNER-JOIN（内连接）"><a href="#INNER-JOIN（内连接）" class="headerlink" title="INNER JOIN（内连接）"></a>INNER JOIN（内连接）</h3><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-13-175100.gif" alt></p>
-<h3 id="LEFT-JOIN（左连接）"><a href="#LEFT-JOIN（左连接）" class="headerlink" title="LEFT JOIN（左连接）"></a>LEFT JOIN（左连接）</h3><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-13-175200.gif" alt></p>
-<h3 id="RIGHT-JOIN（右连接）"><a href="#RIGHT-JOIN（右连接）" class="headerlink" title="RIGHT JOIN（右连接）"></a>RIGHT JOIN（右连接）</h3><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-13-175300.gif" alt></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2560,7 +2550,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">137</span>
+                    <span class="site-state-item-count">139</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
