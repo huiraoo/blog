@@ -352,6 +352,192 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/12/06/mysql-select-all/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/12/06/mysql-select-all/" class="post-title-link" itemprop="url">MySQL · "select *" 对性能的影响</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-12-06 13:52:54 / 修改时间：14:56:23" itemprop="dateCreated datePublished" datetime="2019-12-06T13:52:54+08:00">2019-12-06</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>编程规范中，经常会看到一条，<strong>不建议使用 <code>select *</code> 语句</strong>，然而实际开发中又屡禁不止，有两个问题：</p>
+<ul>
+<li>为什么 <code>select *</code> 影响 SQL 性能？</li>
+<li>有多大的影响？</li>
+</ul>
+<h2 id="为什么-select-是低效语句？"><a href="#为什么-select-是低效语句？" class="headerlink" title="为什么 select * 是低效语句？"></a>为什么 select * 是低效语句？</h2><p>主要体现在三个方面：</p>
+<ul>
+<li><code>select *</code> 会让优化器无法使用覆盖索引优化。</li>
+<li>网络开销，这种开销非常明显。</li>
+<li>额外的 IO / CPU 开销，因为多取了不必要的列。</li>
+</ul>
+<h2 id="有多大的影响？"><a href="#有多大的影响？" class="headerlink" title="有多大的影响？"></a>有多大的影响？</h2><ul>
+<li>测试表信息</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; desc salaries;</span><br><span class="line">+<span class="comment">-----------+---------+------+-----+---------+-------+</span></span><br><span class="line">| Field     | Type    | Null | Key | Default | Extra |</span><br><span class="line">+<span class="comment">-----------+---------+------+-----+---------+-------+</span></span><br><span class="line">| emp_no    | int(11) | NO   | PRI | NULL    |       |</span><br><span class="line">| salary    | int(11) | NO   |     | NULL    |       |</span><br><span class="line">| from_date | date    | NO   | PRI | NULL    |       |</span><br><span class="line">| to_date   | date    | NO   |     | NULL    |       |</span><br><span class="line">+<span class="comment">-----------+---------+------+-----+---------+-------+</span></span><br><span class="line"></span><br><span class="line">mysql&gt; select count(*) from salaries;</span><br><span class="line">+<span class="comment">----------+</span></span><br><span class="line">| count(*) |</span><br><span class="line">+<span class="comment">----------+</span></span><br><span class="line">|  2844047 |</span><br><span class="line">+<span class="comment">----------+</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>执行速度对比：查询返回字段越多，耗时越多。</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from salaries;</span><br><span class="line"><span class="number">2844047</span> rows <span class="keyword">in</span> set (<span class="number">1.01</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select emp_no from salaries;</span><br><span class="line"><span class="number">2844047</span> rows <span class="keyword">in</span> set (<span class="number">0.56</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select salary,to_date from salaries;</span><br><span class="line"><span class="number">2844047</span> rows <span class="keyword">in</span> set (<span class="number">0.67</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select emp_no,salary,to_date from salaries;</span><br><span class="line"><span class="number">2844047</span> rows <span class="keyword">in</span> set (<span class="number">0.86</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select emp_no,salary,from_date,to_date from salaries;</span><br><span class="line"><span class="number">2844047</span> rows <span class="keyword">in</span> set (<span class="number">1.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>覆盖索引：是可以不用读 data，直接使用 index 里面的值就返回结果。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; desc employees;</span><br><span class="line">+<span class="comment">------------+---------------+------+-----+---------+-------+</span></span><br><span class="line">| Field      | Type          | Null | Key | Default | Extra |</span><br><span class="line">+<span class="comment">------------+---------------+------+-----+---------+-------+</span></span><br><span class="line">| emp_no     | int(11)       | NO   | PRI | NULL    |       |</span><br><span class="line">| birth_date | date          | NO   |     | NULL    |       |</span><br><span class="line">| first_name | varchar(14)   | NO   |     | NULL    |       |</span><br><span class="line">| last_name  | varchar(16)   | NO   |     | NULL    |       |</span><br><span class="line">| gender     | enum('M','F') | NO   |     | NULL    |       |</span><br><span class="line">| hire_date  | date          | NO   |     | NULL    |       |</span><br><span class="line">+<span class="comment">------------+---------------+------+-----+---------+-------+</span></span><br><span class="line"></span><br><span class="line">mysql&gt; explain select last_name from employees;</span><br><span class="line">+<span class="comment">----+-------------+-----------+------------+------+---------------+------+---------+------+--------+----------+-------+</span></span><br><span class="line">| id | select_type | table     | partitions | type | possible_keys | key  | key_len | ref  | rows   | filtered | Extra |</span><br><span class="line">+<span class="comment">----+-------------+-----------+------------+------+---------------+------+---------+------+--------+----------+-------+</span></span><br><span class="line">|  1 | SIMPLE      | employees | NULL       | ALL  | NULL          | NULL | NULL    | NULL | 298980 |   100.00 | NULL  |</span><br><span class="line">+<span class="comment">----+-------------+-----------+------------+------+---------------+------+---------+------+--------+----------+-------+</span></span><br><span class="line"></span><br><span class="line">mysql&gt; explain select emp_no from employees;</span><br><span class="line">+<span class="comment">----+-------------+-----------+------------+-------+---------------+---------+---------+------+--------+----------+-------------+</span></span><br><span class="line">| id | select_type | table     | partitions | type  | possible_keys | key     | key_len | ref  | rows   | filtered | Extra       |</span><br><span class="line">+<span class="comment">----+-------------+-----------+------------+-------+---------------+---------+---------+------+--------+----------+-------------+</span></span><br><span class="line">|  1 | SIMPLE      | employees | NULL       | index | NULL          | PRIMARY | 4       | NULL | 298980 |   100.00 | Using index |</span><br><span class="line">+<span class="comment">----+-------------+-----------+------------+-------+---------------+---------+---------+------+--------+----------+-------------+</span></span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/12/04/mysql-batch-delete/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -414,7 +600,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-12-05 10:30:36" itemprop="dateModified" datetime="2019-12-05T10:30:36+08:00">2019-12-05</time>
+                <time title="修改时间：2019-12-06 09:20:51" itemprop="dateModified" datetime="2019-12-06T09:20:51+08:00">2019-12-06</time>
               
             
           </span>
@@ -470,7 +656,10 @@
           
             <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">select table_name,table_rows,CONCAT(</span><br><span class="line">TRUNCATE(SUM(data_length)/<span class="number">1024</span>/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'GB'</span>) AS data_size, CONCAT(</span><br><span class="line">TRUNCATE(SUM(index_length)/<span class="number">1024</span>/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'GB'</span>) AS index_size from information_schema.tables where TABLE_SCHEMA = <span class="string">'dzspzy'</span> and table_name=<span class="string">'t_hr_13plan_res_history'</span>;</span><br><span class="line"></span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line">| table_name              | table_rows | data_size | index_size |</span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line">| t_hr_13plan_res_history |  <span class="number">296397209</span> | <span class="number">110.43</span>GB  | <span class="number">3.72</span>GB     |</span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line"></span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line">| table_name              | table_rows | data_size | index_size |</span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line">| t_hr_13plan_res_history |  <span class="number">269082432</span> | <span class="number">102.44</span>GB  | <span class="number">3.45</span>GB     |</span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line"></span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line">| table_name              | table_rows | data_size | index_size |</span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line">| t_hr_13plan_res_history |  <span class="number">213501502</span> | <span class="number">78.35</span>GB   | <span class="number">2.64</span>GB     |</span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br></pre></td></tr></table></figure>
 
-<h2 id="清理"><a href="#清理" class="headerlink" title="清理"></a>清理</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-archiver --source u=sre,p=<span class="string">'sre@@p$i'</span>,S=/tmp/mysql-dzsp.sock,P=<span class="number">3306</span>,D=dzspzy,t=t_hr_13plan_res_history --no-check-charset --progress <span class="number">10000</span> --where <span class="string">"ID &lt; 251061689"</span> --limit <span class="number">10000</span> --txn-size <span class="number">1000</span> --bulk-delete --purge --statistics</span><br></pre></td></tr></table></figure>
+<h2 id="清理"><a href="#清理" class="headerlink" title="清理"></a>清理</h2><ul>
+<li>批量删除</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-archiver --source u=sre,p=<span class="string">'xx'</span>,S=/tmp/mysql-dzsp.sock,P=<span class="number">3306</span>,D=dzspzy,t=t_hr_13plan_res_history --no-check-charset --progress <span class="number">10000</span> --where <span class="string">"ID &lt; 251061689"</span> --limit <span class="number">10000</span> --txn-size <span class="number">1000</span> --bulk-delete --purge --statistics</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">table</span> <span class="keyword">status</span> <span class="keyword">like</span> <span class="string">'t_hr_13plan_res_history'</span>\G</span><br><span class="line">*************************** <span class="number">1.</span> <span class="keyword">row</span> ***************************</span><br><span class="line">           <span class="keyword">Name</span>: t_hr_13plan_res_history</span><br><span class="line">         <span class="keyword">Engine</span>: <span class="keyword">InnoDB</span></span><br><span class="line">        <span class="keyword">Version</span>: <span class="number">10</span></span><br><span class="line">     Row_format: <span class="keyword">Compact</span></span><br><span class="line">           <span class="keyword">Rows</span>: <span class="number">205639249</span></span><br><span class="line"> Avg_row_length: <span class="number">410</span></span><br><span class="line">    Data_length: <span class="number">84329660416</span></span><br><span class="line">Max_data_length: <span class="number">0</span></span><br><span class="line">   Index_length: <span class="number">2843754496</span></span><br><span class="line">      Data_free: <span class="number">35414605824</span></span><br><span class="line"> Auto_increment: <span class="number">590343627</span></span><br><span class="line">    Create_time: <span class="number">2019</span><span class="number">-03</span><span class="number">-27</span> <span class="number">13</span>:<span class="number">18</span>:<span class="number">10</span></span><br><span class="line">    Update_time: <span class="literal">NULL</span></span><br><span class="line">     Check_time: <span class="literal">NULL</span></span><br><span class="line">      <span class="keyword">Collation</span>: utf8_general_ci</span><br><span class="line">       <span class="keyword">Checksum</span>: <span class="literal">NULL</span></span><br><span class="line"> Create_options: </span><br><span class="line">        <span class="keyword">Comment</span>:</span><br></pre></td></tr></table></figure>
 
@@ -555,7 +744,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/blog/2019/12/04/linux-glibc/" class="post-title-link" itemprop="url">Linux · glibc 升级</a>
+                <a href="/blog/2019/12/04/linux-glibc/" class="post-title-link" itemprop="url">Linux · 升级 glibc</a>
               
             
           </h1>
@@ -580,12 +769,24 @@
                 
               
 
-              <time title="创建时间：2019-12-04 09:23:18 / 修改时间：14:52:18" itemprop="dateCreated datePublished" datetime="2019-12-04T09:23:18+08:00">2019-12-04</time>
+              <time title="创建时间：2019-12-04 09:23:18" itemprop="dateCreated datePublished" datetime="2019-12-04T09:23:18+08:00">2019-12-04</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-12-06 09:22:34" itemprop="dateModified" datetime="2019-12-06T09:22:34+08:00">2019-12-06</time>
               
             
           </span>
@@ -642,7 +843,7 @@
             <h2 id="报错信息"><a href="#报错信息" class="headerlink" title="报错信息"></a>报错信息</h2><p>安装软件经常会遇到如下报错：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/lib64/libc.so.<span class="number">6</span>: version `GLIBC_2.<span class="number">14</span><span class="string">' not found</span></span><br></pre></td></tr></table></figure>
 
-<p>出现这种报错的原因是，使用高级的命令安装了软件，但是本机还是使用的是低级的依赖库，因此会出现报错。</p>
+<p>出现这种报错的原因是，使用高版本的命令安装了软件，但是本机还是使用的是低版本的依赖库：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$ strings /lib64/libc.so.<span class="number">6</span> | grep GLIBC</span><br><span class="line">GLIBC_2.<span class="number">2.5</span></span><br><span class="line">GLIBC_2.<span class="number">2.6</span></span><br><span class="line">GLIBC_2.<span class="number">3</span></span><br><span class="line">GLIBC_2.<span class="number">3.2</span></span><br><span class="line">GLIBC_2.<span class="number">3.3</span></span><br><span class="line">GLIBC_2.<span class="number">3.4</span></span><br><span class="line">GLIBC_2.<span class="number">4</span></span><br><span class="line">GLIBC_2.<span class="number">5</span></span><br><span class="line">GLIBC_2.<span class="number">6</span></span><br><span class="line">GLIBC_2.<span class="number">7</span></span><br><span class="line">GLIBC_2.<span class="number">8</span></span><br><span class="line">GLIBC_2.<span class="number">9</span></span><br><span class="line">GLIBC_2.<span class="number">10</span></span><br><span class="line">GLIBC_2.<span class="number">11</span></span><br><span class="line">GLIBC_2.<span class="number">12</span></span><br><span class="line">GLIBC_PRIVATE</span><br></pre></td></tr></table></figure>
 
 <h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><ul>
@@ -651,7 +852,7 @@
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">wget https://ftp.gnu.org/gnu/glibc/glibc-<span class="number">2.15</span>.tar.gz</span><br><span class="line">tar -zxvf glibc-<span class="number">2.15</span>.tar.gz</span><br><span class="line">cd glibc-<span class="number">2.15</span></span><br><span class="line">mkdir build</span><br><span class="line">cd build</span><br><span class="line">../configure --prefix=/usr --disable-profile --enable-add-ons --with-headers=/usr/include --with-binutils=/usr/bin</span><br><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
 
 <ul>
-<li>验证是否升级成功</li>
+<li>验证是否成功</li>
 </ul>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ strings /lib64/libc.so.<span class="number">6</span> | grep GLIBC</span><br><span class="line">GLIBC_2.<span class="number">2.5</span></span><br><span class="line">GLIBC_2.<span class="number">2.6</span></span><br><span class="line">GLIBC_2.<span class="number">3</span></span><br><span class="line">GLIBC_2.<span class="number">3.2</span></span><br><span class="line">GLIBC_2.<span class="number">3.3</span></span><br><span class="line">GLIBC_2.<span class="number">3.4</span></span><br><span class="line">GLIBC_2.<span class="number">4</span></span><br><span class="line">GLIBC_2.<span class="number">5</span></span><br><span class="line">GLIBC_2.<span class="number">6</span></span><br><span class="line">GLIBC_2.<span class="number">7</span></span><br><span class="line">GLIBC_2.<span class="number">8</span></span><br><span class="line">GLIBC_2.<span class="number">9</span></span><br><span class="line">GLIBC_2.<span class="number">10</span></span><br><span class="line">GLIBC_2.<span class="number">11</span></span><br><span class="line">GLIBC_2.<span class="number">12</span></span><br><span class="line">GLIBC_2.<span class="number">13</span></span><br><span class="line">GLIBC_2.<span class="number">14</span></span><br><span class="line">GLIBC_2.<span class="number">15</span></span><br><span class="line">GLIBC_PRIVATE</span><br></pre></td></tr></table></figure>
 
@@ -2332,167 +2533,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/26/ilearning/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/11/26/ilearning/" class="post-title-link" itemprop="url">知识留存率</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-11-26 10:12:51 / 修改时间：10:15:01" itemprop="dateCreated datePublished" datetime="2019-11-26T10:12:51+08:00">2019-11-26</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/其他/" itemprop="url" rel="index"><span itemprop="name">其他</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-26-101100.jpeg" alt></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2541,7 +2581,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">136</span>
+                    <span class="site-state-item-count">137</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

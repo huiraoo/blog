@@ -352,6 +352,253 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/23/mysql-principle/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/23/mysql-principle/" class="post-title-link" itemprop="url">MySQL · 基本原理</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-23 13:41:42" itemprop="dateCreated datePublished" datetime="2019-07-23T13:41:42+08:00">2019-07-23</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-10-15 22:45:36" itemprop="dateModified" datetime="2019-10-15T22:45:36+08:00">2019-10-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="体系架构"><a href="#体系架构" class="headerlink" title="体系架构"></a>体系架构</h2><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134135.png" alt></p>
+<p><img src="http://ww4.sinaimg.cn/large/006tNc79ly1g5te8biz9hj30ne0fj404.jpg" alt="img"></p>
+<h2 id="数据存储"><a href="#数据存储" class="headerlink" title="数据存储"></a>数据存储</h2><h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p><code>InnoDB</code> 存储引擎可将所有数据存放于 <code>ibdata*</code> 的共享表空间，也可将每张表存放于独立的 <code>.ibd</code> 文件的独立表空间。共享表空间以及独立表空间都是针对数据的存储方式而言的。</p>
+<p><strong>共享表空间:</strong>  某一个数据库的所有的表数据，索引文件全部放在一个文件中，默认这个共享表空间的文件路径在 <code>data</code> 目录下， 默认的文件名为 <code>ibdata1</code>，初始化为 <code>10M</code>。</p>
+<p><strong>独立表空间:</strong>  每一个表都将会生成以独立的文件方式来进行存储，每一个表都有一个 <code>.frm</code> 表描述文件，还有一个 <code>.ibd</code> 文件。 其中这个文件包括了单独一个表的数据内容以及索引内容，默认情况下它的存储位置也是在表的位置之中。</p>
+<h3 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h3><p><strong>共享表空间</strong></p>
+<p><strong>优点：</strong>可以将表空间分成多个文件存放到各个磁盘上（表空间文件大小不受表大小的限制，如一个表可以分布在不同的文件上），数据和文件放在一起方便管理。</p>
+<p><strong>缺点</strong>：所有的数据和索引存放到一个文件中，虽然可以把一个大文件分成多个小文件，但是多个表及索引在表空间中混合存储，这样对于一个表做了大量删除操作后表空间中将会有大量的空隙，特别是对于统计分析这类应用最不适合用共享表空间。</p>
+<p><strong>独立表空间</strong>：在配置文件（<code>my.cnf</code>）中设置 <code>innodb_file_per_table</code></p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>每个表都有自已独立的表空间。</li>
+<li>每个表的数据和索引都会存在自已的表空间中。</li>
+<li>可以实现单表在不同的数据库中移动。</li>
+<li>空间可以回收（除 drop table 操作处，表空不能自已回收）。</li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li>单表增加过大，如超过100G。</li>
+<li>相比较之下，使用独占表空间的效率以及性能会更高一点。</li>
+</ul>
+<h3 id="参数详解"><a href="#参数详解" class="headerlink" title="参数详解"></a>参数详解</h3><table>
+<thead>
+<tr>
+<th>Command-Line Format</th>
+<th><code>--innodb_file_per_table</code></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>System Variable</td>
+<td>Name</td>
+<td><code>innodb_file_per_table</code></td>
+</tr>
+<tr>
+<td>Variable Scope</td>
+<td>Global</td>
+<td></td>
+</tr>
+<tr>
+<td>Dynamic Variable</td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Permitted Values (&lt;= 5.6.5)</strong></td>
+<td>Type</td>
+<td><code>boolean</code></td>
+</tr>
+<tr>
+<td>Default</td>
+<td><code>OFF</code></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Permitted Values (&gt;= 5.6.6)</strong></td>
+<td>Type</td>
+<td><code>boolean</code></td>
+</tr>
+<tr>
+<td>Default</td>
+<td><code>ON</code></td>
+<td></td>
+</tr>
+</tbody></table>
+<p>修改 InnoDB 数据存储方式：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; set global innodb_file_per_table =ON;  </span><br><span class="line">mysql&gt; show variables like '%per_table%';  </span><br><span class="line">+<span class="comment">-----------------------+-------+  </span></span><br><span class="line">| Variable_name         | Value |  </span><br><span class="line">+<span class="comment">-----------------------+-------+  </span></span><br><span class="line">| innodb_file_per_table | ON    |  </span><br><span class="line">+<span class="comment">-----------------------+-------+</span></span><br></pre></td></tr></table></figure>
+
+<p>想要将共享表空间转化为独立表空间有两种方法：    </p>
+<ol>
+<li><p>先逻辑备份，然后修改配置文件 <code>my.cnf</code> 中的参数 <code>innodb_file_per_table</code> 参数为 <code>1</code>，重启服务后将逻辑备份导入即可。    </p>
+</li>
+<li><p>修改配置文件 <code>my.cnf</code> 中的参数 <code>innodb_file_per_table</code> 参数为 <code>1</code>，重启服务后将需要修改的所有 <code>innodb</code> 表都执行一遍：<code>alter table table_name engine=innodb;</code> 使用第二种方式修改后，原来库中的表中的数据会继续存放于 <code>ibdata1</code> 中，新建的表才会使用独立表空间。</p>
+</li>
+</ol>
+<h3 id="操作实战"><a href="#操作实战" class="headerlink" title="操作实战"></a>操作实战</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 导出所有数据</span></span><br><span class="line">mysqldump -u &lt;user&gt; -p &lt;password&gt; --all-databases --master-data=<span class="number">2</span> --single-transaction &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除所有数据库 </span></span><br><span class="line">drop database database_N</span><br><span class="line"></span><br><span class="line"><span class="comment"># 停止MySQL服务</span></span><br><span class="line">service mysql stop  / service mariadb stop</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除文件 ibdata1, ib_logfile0, ib_logfile1</span></span><br><span class="line">rm -rf xxx</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改MySQL配置文件/etc/my.cnf，增加或修改如下：</span></span><br><span class="line">[mysqld]</span><br><span class="line">innodb_file_per_table=<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启MySQL服务</span></span><br><span class="line">service mysql start</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导入备份数据</span></span><br><span class="line">mysql -u &lt;user&gt; -p &lt;password&gt; &lt; backup.sql</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/22/db-design/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1289,7 +1536,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-12-03 18:20:58" itemprop="dateModified" datetime="2019-12-03T18:20:58+08:00">2019-12-03</time>
+                <time title="修改时间：2019-12-06 10:36:47" itemprop="dateModified" datetime="2019-12-06T10:36:47+08:00">2019-12-06</time>
               
             
           </span>
@@ -1343,78 +1590,81 @@
       
         
           
-            <h2 id="MySQL-5-7"><a href="#MySQL-5-7" class="headerlink" title="MySQL 5.7"></a>MySQL 5.7</h2><h3 id="创建-mysql-用户"><a href="#创建-mysql-用户" class="headerlink" title="创建 mysql 用户"></a>创建 <code>mysql</code> 用户</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">groupadd mysql</span><br><span class="line">useradd -g mysql mysql -s /sbin/nologin</span><br></pre></td></tr></table></figure>
-
-<h3 id="下载二进制包"><a href="#下载二进制包" class="headerlink" title="下载二进制包"></a>下载二进制包</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget http://devops-files.oss-cn-qingdao.aliyuncs.com/mysql-<span class="number">5.7</span>.<span class="number">23</span>-linux-glibc2.<span class="number">12</span>-x86_64.tar.gz</span><br><span class="line">tar -zxvf mysql-<span class="number">5.7</span>.<span class="number">23</span>-linux-glibc2.<span class="number">12</span>-x86_64.tar.gz -C /usr/local/</span><br><span class="line">ln -s /usr/local/mysql-<span class="number">5.7</span>.<span class="number">23</span>-linux-glibc2.<span class="number">12</span>-x86_64 /usr/local/mysql</span><br></pre></td></tr></table></figure>
-
-<h3 id="配置文件-my-cnf"><a href="#配置文件-my-cnf" class="headerlink" title="配置文件 my.cnf"></a>配置文件 <code>my.cnf</code></h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[client]</span></span><br><span class="line"><span class="string">port</span>                      <span class="string">=</span> <span class="number">3306</span></span><br><span class="line"><span class="string">socket</span>                    <span class="string">=</span> <span class="string">/data/mysql/mysql.sock</span></span><br><span class="line"></span><br><span class="line"><span class="string">[mysqld]</span></span><br><span class="line"><span class="string">port</span>                      <span class="string">=</span> <span class="number">3306</span></span><br><span class="line"><span class="string">socket</span>                    <span class="string">=</span> <span class="string">/data/mysql/mysql.sock</span></span><br><span class="line"><span class="string">pid_file</span>                  <span class="string">=</span> <span class="string">/data/mysql/mysql.pid</span></span><br><span class="line"><span class="string">basedir</span>                   <span class="string">=</span> <span class="string">/usr/local/mysql</span></span><br><span class="line"><span class="string">datadir</span>                   <span class="string">=</span> <span class="string">/data/mysql</span></span><br><span class="line"><span class="string">character_set_server</span>      <span class="string">=</span> <span class="string">utf8</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># LOG</span></span><br><span class="line"><span class="string">slow_query_log</span>            <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">long_query_time</span>           <span class="string">=</span> <span class="number">3</span></span><br><span class="line"><span class="string">log_error</span>                 <span class="string">=</span> <span class="string">/data/mysql/error.log</span></span><br><span class="line"><span class="string">slow_query_log_file</span>       <span class="string">=</span> <span class="string">/data/mysql/slow.log</span></span><br><span class="line"><span class="string">log_queries_not_using_indexes</span>  <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">sync_binlog</span>                    <span class="string">=</span> <span class="number">0</span></span><br><span class="line"><span class="string">innodb_flush_log_at_trx_commit</span> <span class="string">=</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># INNODB</span></span><br><span class="line"><span class="string">innodb_buffer_pool_size</span>   <span class="string">=</span> <span class="number">10240</span><span class="string">M</span></span><br><span class="line"><span class="string">innodb_buffer_pool_instances</span> <span class="string">=</span> <span class="number">4</span></span><br><span class="line"><span class="string">innodb_data_home_dir</span>      <span class="string">=</span> <span class="string">/data/mysql</span></span><br><span class="line"><span class="string">innodb_log_file_size</span>      <span class="string">=</span> <span class="number">1</span><span class="string">G</span></span><br><span class="line"><span class="string">innodb_data_file_path</span>     <span class="string">=</span> <span class="attr">ibdata1:1G:autoextend</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># OTHER</span></span><br><span class="line"><span class="string">max_connections</span>           <span class="string">=</span> <span class="number">3000</span></span><br><span class="line"><span class="string">back_log</span>                  <span class="string">=</span> <span class="number">1024</span></span><br><span class="line"><span class="string">interactive_timeout</span>       <span class="string">=</span> <span class="number">600</span></span><br><span class="line"><span class="string">wait_timeout</span>              <span class="string">=</span> <span class="number">600</span></span><br><span class="line"><span class="string">lower_case_table_names</span>    <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">log_timestamps</span>            <span class="string">=</span> <span class="string">SYSTEM</span></span><br><span class="line"><span class="string">max_allowed_packet</span>        <span class="string">=</span> <span class="number">32</span><span class="string">M</span></span><br><span class="line"><span class="string">sort_buffer_size</span>          <span class="string">=</span> <span class="number">4</span><span class="string">M</span></span><br><span class="line"><span class="string">join_buffer_size</span>          <span class="string">=</span> <span class="number">4</span><span class="string">M</span></span><br><span class="line"><span class="string">tmp_table_size</span>            <span class="string">=</span> <span class="number">32</span><span class="string">M</span></span><br><span class="line"><span class="string">explicit_defaults_for_timestamp</span> <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">skip-ssl</span></span><br><span class="line"><span class="string">skip-name-resolve</span></span><br><span class="line"><span class="string">sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># REPLICATION</span></span><br><span class="line"><span class="string">server-id</span>                 <span class="string">=</span> <span class="number">3306100</span></span><br><span class="line"><span class="string">log-bin</span>                   <span class="string">=</span> <span class="string">/data/mysql/mysql-bin</span></span><br><span class="line"><span class="string">max_binlog_size</span>           <span class="string">=</span> <span class="number">1</span><span class="string">G</span></span><br><span class="line"><span class="string">binlog-format</span>             <span class="string">=</span> <span class="string">row</span></span><br><span class="line"><span class="string">expire_logs_days</span>          <span class="string">=</span> <span class="number">7</span></span><br><span class="line"></span><br><span class="line"><span class="string">[mysqldump]</span></span><br><span class="line"><span class="string">quick</span></span><br><span class="line"><span class="string">max_allowed_packet</span>        <span class="string">=</span> <span class="number">32</span><span class="string">M</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="创建数据目录"><a href="#创建数据目录" class="headerlink" title="创建数据目录"></a>创建数据目录</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /<span class="keyword">data</span>/mysql</span><br><span class="line">chown -R mysql:mysql /usr/local/mysql</span><br><span class="line">chown -R mysql:mysql /<span class="keyword">data</span>/mysql</span><br></pre></td></tr></table></figure>
-
-<h3 id="初始化-amp-启动"><a href="#初始化-amp-启动" class="headerlink" title="初始化 &amp; 启动"></a>初始化 &amp; 启动</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/mysql/bin/mysqld --defaults-file=/etc/my.cnf --user=mysql --initialize</span><br><span class="line">/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql <span class="number">2</span>&gt;&amp;<span class="number">1</span>&gt; /dev/null &amp;</span><br></pre></td></tr></table></figure>
-
-<h3 id="开启-3306-端口"><a href="#开启-3306-端口" class="headerlink" title="开启 3306 端口"></a>开启 3306 端口</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-port=<span class="number">3306</span>/tcp --permanent</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
-
-<h3 id="设置开机自启动"><a href="#设置开机自启动" class="headerlink" title="设置开机自启动"></a>设置开机自启动</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/mysql/bin</span><br><span class="line">cp mysql mysqladmin mysqlbinlog mysqld mysqld_safe mysqldump /usr/bin/</span><br><span class="line"></span><br><span class="line">vi /usr/local/mysql/support-files/mysql.server <span class="comment"># mysqld_pid_file_path=/data/mysql/mysql.pid</span></span><br><span class="line">cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld</span><br><span class="line">chmod +x /etc/init.d/mysqld</span><br><span class="line">chkconfig --add mysqld</span><br><span class="line">chkconfig mysqld on</span><br><span class="line">chkconfig --list</span><br></pre></td></tr></table></figure>
-
-<h3 id="设置用户"><a href="#设置用户" class="headerlink" title="设置用户"></a>设置用户</h3><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">$ cat /data/mysql/error.log | grep password</span><br><span class="line"></span><br><span class="line"><span class="comment"># root账号</span></span><br><span class="line">mysql&gt; SET PASSWORD = 'xx';</span><br><span class="line">mysql&gt; ALTER USER 'root'@'localhost' PASSWORD EXPIRE NEVER;</span><br><span class="line"></span><br><span class="line"><span class="comment"># sre账号</span></span><br><span class="line">mysql&gt; CREATE USER 'sre'@'%' IDENTIFIED BY 'xx';</span><br><span class="line">mysql&gt; GRANT all privileges on *.* to 'sre'@'%' WITH GRANT OPTION;</span><br><span class="line"></span><br><span class="line"><span class="comment"># hdm账号</span></span><br><span class="line">mysql&gt; CREATE USER 'hdm'@'%' IDENTIFIED BY 'xx';</span><br><span class="line">mysql&gt; GRANT SELECT, SHOW DATABASES, PROCESS, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO 'hdm'@'%';</span><br><span class="line"></span><br><span class="line">mysql&gt; flush privileges;</span><br><span class="line">mysql&gt; select user,host,authentication_string from mysql.user;</span><br></pre></td></tr></table></figure>
-
-<h2 id="MySQL-5-6"><a href="#MySQL-5-6" class="headerlink" title="MySQL 5.6"></a>MySQL 5.6</h2><h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/mysql/scripts/mysql_install_db --basedir=/usr/local/mysql --defaults-file=/etc/my.cnf --user=mysql</span><br></pre></td></tr></table></figure>
-
-<h3 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ /usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql <span class="number">2</span>&gt;&amp;<span class="number">1</span> &gt; /dev/null &amp;</span><br></pre></td></tr></table></figure>
-
-<h3 id="设置用户-1"><a href="#设置用户-1" class="headerlink" title="设置用户"></a>设置用户</h3><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mysql</span><br><span class="line">mysql&gt; update mysql.user set password=password('xx') where user='root';</span><br><span class="line">mysql&gt; delete from mysql.user where user!='root' or host!='localhost';</span><br><span class="line">mysql&gt; flush privileges;</span><br><span class="line">mysql&gt; select user,host,password from mysql.user;</span><br></pre></td></tr></table></figure>
-
-<h2 id="配置主从"><a href="#配置主从" class="headerlink" title="配置主从"></a>配置主从</h2><h4 id="创建用户"><a href="#创建用户" class="headerlink" title="创建用户"></a>创建用户</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GRANT</span> <span class="keyword">REPLICATION</span> <span class="keyword">SLAVE</span>, <span class="keyword">REPLICATION</span> <span class="keyword">CLIENT</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'repl'</span>@<span class="string">'x.x.x.%'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="string">'xx'</span>;</span><br></pre></td></tr></table></figure>
-
-<h4 id="修改配置"><a href="#修改配置" class="headerlink" title="修改配置"></a>修改配置</h4><ul>
-<li>主库 <code>my.cnf</code> 文件</li>
+            <h2 id="MySQL-5-7"><a href="#MySQL-5-7" class="headerlink" title="MySQL 5.7"></a>MySQL 5.7</h2><ul>
+<li>创建用户</li>
 </ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">server_id</span>         <span class="string">=</span> <span class="number">3306100</span></span><br><span class="line"><span class="string">log_bin</span>           <span class="string">=</span> <span class="string">mysql-bin</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">groupadd mysql</span><br><span class="line">useradd -g mysql mysql -s /sbin/nologin</span><br></pre></td></tr></table></figure>
 
 <ul>
-<li>备库 <code>my.cnf</code> 文件</li>
+<li>下载二进制包</li>
 </ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">server_id</span>         <span class="string">=</span> <span class="number">3306101</span></span><br><span class="line"><span class="string">log_bin</span>           <span class="string">=</span> <span class="string">mysql-bin</span></span><br><span class="line"><span class="string">relay_log</span>         <span class="string">=</span> <span class="string">relay-log</span></span><br><span class="line"><span class="string">read_only</span>         <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">log_slave_updates</span> <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">innodb_flush_log_at_trx_commit</span> <span class="string">=</span> <span class="number">2</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wget http://devops-files.oss-cn-qingdao.aliyuncs.com/mysql-<span class="number">5.7</span>.<span class="number">23</span>-linux-glibc2.<span class="number">12</span>-x86_64.tar.gz</span><br><span class="line">tar -zxvf mysql-<span class="number">5.7</span>.<span class="number">23</span>-linux-glibc2.<span class="number">12</span>-x86_64.tar.gz -C /usr/local/</span><br><span class="line">ln -s /usr/local/mysql-<span class="number">5.7</span>.<span class="number">23</span>-linux-glibc2.<span class="number">12</span>-x86_64 /usr/local/mysql</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p><strong>Tips</strong>：修改配置，需要重启 <code>mysqld</code> 服务生效</p>
-</blockquote>
+<ul>
+<li>配置文件 <code>my.cnf</code></li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[client]</span></span><br><span class="line"><span class="string">port</span>                      <span class="string">=</span> <span class="number">3306</span></span><br><span class="line"><span class="string">socket</span>                    <span class="string">=</span> <span class="string">/data/mysql/mysql.sock</span></span><br><span class="line"></span><br><span class="line"><span class="string">[mysqld]</span></span><br><span class="line"><span class="string">port</span>                      <span class="string">=</span> <span class="number">3306</span></span><br><span class="line"><span class="string">socket</span>                    <span class="string">=</span> <span class="string">/data/mysql/mysql.sock</span></span><br><span class="line"><span class="string">pid_file</span>                  <span class="string">=</span> <span class="string">/data/mysql/mysql.pid</span></span><br><span class="line"><span class="string">basedir</span>                   <span class="string">=</span> <span class="string">/usr/local/mysql</span></span><br><span class="line"><span class="string">datadir</span>                   <span class="string">=</span> <span class="string">/data/mysql</span></span><br><span class="line"><span class="string">character_set_server</span>      <span class="string">=</span> <span class="string">utf8</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># LOG</span></span><br><span class="line"><span class="string">slow_query_log</span>            <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">long_query_time</span>           <span class="string">=</span> <span class="number">3</span></span><br><span class="line"><span class="string">log_error</span>                 <span class="string">=</span> <span class="string">/data/mysql/error.log</span></span><br><span class="line"><span class="string">slow_query_log_file</span>       <span class="string">=</span> <span class="string">/data/mysql/slow.log</span></span><br><span class="line"><span class="string">log_queries_not_using_indexes</span>  <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">sync_binlog</span>                    <span class="string">=</span> <span class="number">0</span></span><br><span class="line"><span class="string">innodb_flush_log_at_trx_commit</span> <span class="string">=</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># INNODB</span></span><br><span class="line"><span class="string">innodb_buffer_pool_size</span>   <span class="string">=</span> <span class="number">10240</span><span class="string">M</span></span><br><span class="line"><span class="string">innodb_buffer_pool_instances</span> <span class="string">=</span> <span class="number">4</span></span><br><span class="line"><span class="string">innodb_data_home_dir</span>      <span class="string">=</span> <span class="string">/data/mysql</span></span><br><span class="line"><span class="string">innodb_log_file_size</span>      <span class="string">=</span> <span class="number">1</span><span class="string">G</span></span><br><span class="line"><span class="string">innodb_data_file_path</span>     <span class="string">=</span> <span class="attr">ibdata1:1G:autoextend</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># OTHER</span></span><br><span class="line"><span class="string">max_connections</span>           <span class="string">=</span> <span class="number">3000</span></span><br><span class="line"><span class="string">back_log</span>                  <span class="string">=</span> <span class="number">1024</span></span><br><span class="line"><span class="string">interactive_timeout</span>       <span class="string">=</span> <span class="number">600</span></span><br><span class="line"><span class="string">wait_timeout</span>              <span class="string">=</span> <span class="number">600</span></span><br><span class="line"><span class="string">lower_case_table_names</span>    <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">log_timestamps</span>            <span class="string">=</span> <span class="string">SYSTEM</span></span><br><span class="line"><span class="string">max_allowed_packet</span>        <span class="string">=</span> <span class="number">32</span><span class="string">M</span></span><br><span class="line"><span class="string">sort_buffer_size</span>          <span class="string">=</span> <span class="number">4</span><span class="string">M</span></span><br><span class="line"><span class="string">join_buffer_size</span>          <span class="string">=</span> <span class="number">4</span><span class="string">M</span></span><br><span class="line"><span class="string">tmp_table_size</span>            <span class="string">=</span> <span class="number">32</span><span class="string">M</span></span><br><span class="line"><span class="string">explicit_defaults_for_timestamp</span> <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">skip-ssl</span></span><br><span class="line"><span class="string">skip-name-resolve</span></span><br><span class="line"><span class="string">sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># REPLICATION</span></span><br><span class="line"><span class="string">server-id</span>                 <span class="string">=</span> <span class="number">3306100</span></span><br><span class="line"><span class="string">log-bin</span>                   <span class="string">=</span> <span class="string">/data/mysql/mysql-bin</span></span><br><span class="line"><span class="string">max_binlog_size</span>           <span class="string">=</span> <span class="number">1</span><span class="string">G</span></span><br><span class="line"><span class="string">binlog-format</span>             <span class="string">=</span> <span class="string">row</span></span><br><span class="line"><span class="string">expire_logs_days</span>          <span class="string">=</span> <span class="number">7</span></span><br><span class="line"></span><br><span class="line"><span class="string">[mysqldump]</span></span><br><span class="line"><span class="string">quick</span></span><br><span class="line"><span class="string">max_allowed_packet</span>        <span class="string">=</span> <span class="number">32</span><span class="string">M</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>创建数据目录</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /<span class="keyword">data</span>/mysql</span><br><span class="line">chown -R mysql:mysql /usr/local/mysql</span><br><span class="line">chown -R mysql:mysql /<span class="keyword">data</span>/mysql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>初始化 &amp; 启动</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/mysql/bin/mysqld --defaults-file=/etc/my.cnf --user=mysql --initialize</span><br><span class="line">/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql <span class="number">2</span>&gt;&amp;<span class="number">1</span>&gt; /dev/null &amp;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>开启 3306 端口</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-port=<span class="number">3306</span>/tcp --permanent</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>设置开机自启动</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">cd /usr/local/mysql/bin</span><br><span class="line">cp mysql mysqladmin mysqlbinlog mysqld mysqld_safe mysqldump /usr/bin/</span><br><span class="line"></span><br><span class="line">vi /usr/local/mysql/support-files/mysql.server <span class="comment"># mysqld_pid_file_path=/data/mysql/mysql.pid</span></span><br><span class="line">cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld</span><br><span class="line">chmod +x /etc/init.d/mysqld</span><br><span class="line">chkconfig --add mysqld</span><br><span class="line">chkconfig mysqld on</span><br><span class="line">chkconfig --list</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>设置用户</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">$ cat /data/mysql/error.log | grep password</span><br><span class="line"></span><br><span class="line"><span class="comment"># root</span></span><br><span class="line">mysql&gt; SET PASSWORD = 'xx';</span><br><span class="line">mysql&gt; ALTER USER 'root'@'localhost' PASSWORD EXPIRE NEVER;</span><br><span class="line"></span><br><span class="line"><span class="comment"># sre</span></span><br><span class="line">mysql&gt; CREATE USER 'sre'@'%' IDENTIFIED BY 'xx';</span><br><span class="line">mysql&gt; GRANT all privileges on *.* to 'sre'@'%' WITH GRANT OPTION;</span><br><span class="line"></span><br><span class="line"><span class="comment"># hdm</span></span><br><span class="line">mysql&gt; CREATE USER 'hdm'@'%' IDENTIFIED BY 'xx';</span><br><span class="line">mysql&gt; GRANT SELECT, SHOW DATABASES, PROCESS, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO 'hdm'@'%';</span><br><span class="line"></span><br><span class="line">mysql&gt; flush privileges;</span><br><span class="line">mysql&gt; select user,host,authentication_string from mysql.user;</span><br></pre></td></tr></table></figure>
+
+<h2 id="MySQL-5-6"><a href="#MySQL-5-6" class="headerlink" title="MySQL 5.6"></a>MySQL 5.6</h2><ul>
+<li>初始化</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/mysql/scripts/mysql_install_db --basedir=/usr/local/mysql --defaults-file=/etc/my.cnf --user=mysql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>启动</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ /usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql <span class="number">2</span>&gt;&amp;<span class="number">1</span> &gt; /dev/null &amp;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>设置用户</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mysql</span><br><span class="line">mysql&gt; update mysql.user set password=password('xx') where user='root';</span><br><span class="line">mysql&gt; delete from mysql.user where user!='root' or host!='localhost';</span><br><span class="line">mysql&gt; flush privileges;</span><br><span class="line">mysql&gt; select user,host,password from mysql.user;</span><br></pre></td></tr></table></figure>
+
+<h2 id="配置主从"><a href="#配置主从" class="headerlink" title="配置主从"></a>配置主从</h2><ul>
+<li>创建用户</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">GRANT</span> <span class="keyword">REPLICATION</span> <span class="keyword">SLAVE</span>, <span class="keyword">REPLICATION</span> <span class="keyword">CLIENT</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'repl'</span>@<span class="string">'x.x.x.%'</span> <span class="keyword">IDENTIFIED</span> <span class="keyword">BY</span> <span class="string">'xx'</span>;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>修改从库 <code>my.cnf</code> 文件</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">server_id</span>         <span class="string">=</span> <span class="number">3306101</span></span><br><span class="line"><span class="string">log_bin</span>           <span class="string">=</span> <span class="string">mysql-bin</span></span><br><span class="line"><span class="string">relay_log</span>         <span class="string">=</span> <span class="string">relay-log</span></span><br><span class="line"><span class="string">read_only</span>         <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">log_slave_updates</span> <span class="string">=</span> <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>迁移主库数据至从库</li>
 </ul>
 <ul>
-<li>启动复制</li>
+<li>设置复制</li>
 </ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 主库查看日志和位置</span></span><br><span class="line">mysql&gt; show master status;</span><br><span class="line">+<span class="comment">------------------+----------+--------------+------------------+-------------------+</span></span><br><span class="line">| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |</span><br><span class="line">+<span class="comment">------------------+----------+--------------+------------------+-------------------+</span></span><br><span class="line">| mysql-bin.000002 |     3778 |              |                  |                   |</span><br><span class="line">+<span class="comment">------------------+----------+--------------+------------------+-------------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 从库开启复制</span></span><br><span class="line"><span class="keyword">CHANGE</span> <span class="keyword">MASTER</span> <span class="keyword">TO</span></span><br><span class="line">MASTER_HOST=<span class="string">'x.x.x.x'</span>,</span><br><span class="line">MASTER_USER=<span class="string">'repl'</span>,</span><br><span class="line">MASTER_PASSWORD=<span class="string">'xx'</span>,</span><br><span class="line">MASTER_PORT=<span class="number">3306</span>,</span><br><span class="line">MASTER_LOG_FILE=<span class="string">'mysql-bin.000002'</span>,</span><br><span class="line">MASTER_LOG_POS=<span class="number">3778</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 验证</span></span><br><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.138.98.179</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-bin.000002</span><br><span class="line">          Read_Master_Log_Pos: 3778</span><br><span class="line">               Relay_Log_File: relay-log.000002</span><br><span class="line">                Relay_Log_Pos: 1621</span><br><span class="line">        Relay_Master_Log_File: mysql-bin.000002</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">            ...</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 主库查看日志和位置</span></span><br><span class="line">mysql&gt; show master status;</span><br><span class="line">+<span class="comment">------------------+----------+--------------+------------------+-------------------+</span></span><br><span class="line">| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |</span><br><span class="line">+<span class="comment">------------------+----------+--------------+------------------+-------------------+</span></span><br><span class="line">| mysql-bin.000002 |     3778 |              |                  |                   |</span><br><span class="line">+<span class="comment">------------------+----------+--------------+------------------+-------------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 从库配置复制</span></span><br><span class="line"><span class="keyword">CHANGE</span> <span class="keyword">MASTER</span> <span class="keyword">TO</span></span><br><span class="line">MASTER_HOST=<span class="string">'x.x.x.x'</span>,</span><br><span class="line">MASTER_USER=<span class="string">'repl'</span>,</span><br><span class="line">MASTER_PASSWORD=<span class="string">'xx'</span>,</span><br><span class="line">MASTER_PORT=<span class="number">3306</span>,</span><br><span class="line">MASTER_LOG_FILE=<span class="string">'mysql-bin.000002'</span>,</span><br><span class="line">MASTER_LOG_POS=<span class="number">3778</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 验证</span></span><br><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.138.98.179</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-bin.000002</span><br><span class="line">          Read_Master_Log_Pos: 3778</span><br><span class="line">               Relay_Log_File: relay-log.000002</span><br><span class="line">                Relay_Log_Pos: 1621</span><br><span class="line">        Relay_Master_Log_File: mysql-bin.000002</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">            ...</span><br></pre></td></tr></table></figure>
 
-<h3 id="单主新增从"><a href="#单主新增从" class="headerlink" title="单主新增从"></a>单主新增从</h3><ul>
-<li>主从库服务器，<a href="https://huiraoo.github.io/blog/2019/06/18/mysql-xtrabackup/"><strong>安装 XtraBackup</strong></a></li>
-</ul>
+<h2 id="启停"><a href="#启停" class="headerlink" title="启停"></a>启停</h2><p><strong>停止</strong></p>
 <ul>
-<li><p><a href="https://huiraoo.github.io/blog/2019/07/08/linux-ssh/"><strong>配置主从互信</strong></a></p>
-</li>
-<li><p>备份主库</p>
-</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ innobackupex --defaults-file=/etc/my.cnf --user=<span class="string">'xx'</span> --password=<span class="string">'xx'</span> --no-timestamp /<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>传输到从库</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ scp -r /<span class="keyword">data</span>/backup/* root@x.x.x.x:/<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>恢复数据到从库</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ mysqladmin -uroot -p<span class="string">'xx'</span> shutdown</span><br><span class="line">$ innobackupex --apply-log /<span class="keyword">data</span>/backup</span><br><span class="line">$ mv mysql mysql_bak</span><br><span class="line">$ mkdir mysql</span><br><span class="line">$ innobackupex --copy-back /<span class="keyword">data</span>/backup</span><br><span class="line">$ chown -R mysql:mysql mysql</span><br><span class="line">$ /usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql &gt;/dev/null &amp;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>建立复制关系</li>
-</ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ cat xtrabackup_binlog_info</span><br><span class="line">mysql-binlog.000297	900834433</span><br><span class="line"></span><br><span class="line"><span class="keyword">CHANGE</span> <span class="keyword">MASTER</span> <span class="keyword">TO</span> </span><br><span class="line">MASTER_HOST=<span class="string">'x.x.x.x'</span>,</span><br><span class="line">MASTER_USER=<span class="string">'repl'</span>,</span><br><span class="line">MASTER_PASSWORD=<span class="string">'xx'</span>,</span><br><span class="line">MASTER_PORT=<span class="number">3306</span>,</span><br><span class="line">MASTER_LOG_FILE=<span class="string">'mysql-binlog.000297'</span>, </span><br><span class="line">MASTER_LOG_POS=<span class="number">900834433</span>,</span><br><span class="line">MASTER_CONNECT_RETRY=<span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">start</span> <span class="keyword">slave</span>;</span><br></pre></td></tr></table></figure>
-
-<h2 id="启停"><a href="#启停" class="headerlink" title="启停"></a>启停</h2><h3 id="停止"><a href="#停止" class="headerlink" title="停止"></a>停止</h3><ul>
 <li>使用 <code>init.d</code>，<code>mysqld</code> 脚本来自于 <code>/usr/local/mysql/support-files/mysql.server</code></li>
 </ul>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ /etc/init.d/mysqld stop</span><br></pre></td></tr></table></figure>
@@ -1429,7 +1679,8 @@
 </ul>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl stop mysqld</span><br><span class="line">$ service mysqld stop</span><br></pre></td></tr></table></figure>
 
-<h3 id="启动-1"><a href="#启动-1" class="headerlink" title="启动"></a>启动</h3><ul>
+<p><strong>启动</strong></p>
+<ul>
 <li>使用 <code>init.d</code></li>
 </ul>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ /etc/init.d/mysqld start</span><br></pre></td></tr></table></figure>
@@ -1444,7 +1695,8 @@
 </ul>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl start mysqld</span><br><span class="line">$ service mysqld start</span><br></pre></td></tr></table></figure>
 
-<h3 id="工具命令"><a href="#工具命令" class="headerlink" title="工具命令"></a>工具命令</h3><ul>
+<p><strong>工具命令</strong></p>
+<ul>
 <li><p><strong>mysql</strong>：<code>MySQL</code> 客户端访问管理工具。</p>
 </li>
 <li><p><strong>mysqld</strong>：这个可执行文件就代表着 <code>MySQL</code> 服务器程序，运行这个可执行文件就可以直接启动一个服务器进程。</p>
@@ -1458,7 +1710,7 @@
 <li><p><strong>mysql.server</strong>：也是一个启动脚本，主要作用就是为了方便启动和关闭 <code>mysqld</code> 服务，只能使用默认的 <code>/etc/my.cnf</code> 配置文件，<code>mysql.server</code> 调用 <code>mysqld_safe</code>，然后 <code>mysql_safe</code> 调用了 <code>mysqld</code>。</p>
 </li>
 </ul>
-<h3 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h3><p><strong>现象</strong>：使用 <code>mysqld_safe</code> 启动失败，启动错误日志未记录 <code>error.log</code>，报错如下：</p>
+<h2 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h2><p><strong>现象</strong>：使用 <code>mysqld_safe</code> 启动失败，启动错误日志未记录 <code>error.log</code>，报错如下：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Starting MySQL. ERROR! The server quit without updating PID file (/usr/local/mysql/data/COSMOPlat-WMS-App01.pid)</span><br></pre></td></tr></table></figure>
 
 <p><strong>原因</strong>：经检查发现，数据库安装时是以 <code>haieradmin</code> 用户启动，默认使用 <code>mysql</code> 用户启动，启动失败。</p>
@@ -2301,7 +2553,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-11-15 16:49:28" itemprop="dateModified" datetime="2019-11-15T16:49:28+08:00">2019-11-15</time>
+                <time title="修改时间：2019-12-06 13:51:38" itemprop="dateModified" datetime="2019-12-06T13:51:38+08:00">2019-12-06</time>
               
             
           </span>
@@ -2356,9 +2608,9 @@
         
           
             <h2 id="SQL-优化"><a href="#SQL-优化" class="headerlink" title="SQL 优化"></a>SQL 优化</h2><ul>
-<li><p>定位低效率的SQL语句 - 慢查询日志。</p>
+<li><p>慢日志，定位低效率 SQL</p>
 </li>
-<li><p>通过<code>explain</code>了解SQL的执行计划。</p>
+<li><p>通过 <code>explain</code> 查看 SQL 执行计划</p>
 <ul>
 <li><p><code>select_type</code>：查询类型（SIMPLE - 简单查询、PRIMARY - 主查询、UNION - 并集、SUBQUERY - 子查询）。</p>
 </li>
@@ -2378,7 +2630,7 @@
 </li>
 </ul>
 </li>
-<li><p>通过 <code>show profiles</code> 和 <code>show profile for query</code> 分析SQL。</p>
+<li><p>通过 <code>show profiles</code> 和 <code>show profile for query</code> 分析 SQL。</p>
 </li>
 <li><p>优化 CRUD 操作</p>
 <ul>
@@ -2571,10 +2823,7 @@
 <p>Tips: 在 show table status 结果中看到的 Rows 用于表示表的当前行数。对于 MyISAM 表这是一个精确值，但对InnoDB 这是个估算值。</p>
 <h2 id="SQL调优"><a href="#SQL调优" class="headerlink" title="SQL调优"></a>SQL调优</h2><p>INSERT 性能：MySQL 用单条 INSERT 语句处理多个插入比使用多条 INSERT 语句快。</p>
 <p>从表中删除所有行，不要使用 DELETE ，建议使用 TRUNCATE TABLE 语句。TRUNCATE 实际是删除原来的表并重新创建一个表，而不是逐行删除表中的数据。</p>
-<h2 id="索引调优"><a href="#索引调优" class="headerlink" title="索引调优"></a>索引调优</h2><p><strong>测试环境</strong></p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> <span class="string">`t1`</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`t1`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">10</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  <span class="string">`other_column`</span> <span class="built_in">varchar</span>(<span class="number">30</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span>,</span><br><span class="line">  <span class="string">`other_column2`</span> <span class="built_in">varchar</span>(<span class="number">30</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span>,</span><br><span class="line">  <span class="string">`other_column3`</span> <span class="built_in">varchar</span>(<span class="number">30</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>),</span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`idx`</span> (<span class="string">`other_column`</span>),</span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`u_idx`</span> (<span class="string">`other_column2`</span>,<span class="string">`other_column3`</span>),</span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`u_idx2`</span> (<span class="string">`other_column`</span>,<span class="string">`other_column2`</span>,<span class="string">`other_column3`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=MyISAM AUTO_INCREMENT=<span class="number">7</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8;</span><br><span class="line"></span><br><span class="line"><span class="comment">------</span></span><br><span class="line"><span class="comment">-- Records of t1</span></span><br><span class="line"><span class="comment">------</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t1`</span> <span class="keyword">VALUES</span> (<span class="string">'1'</span>, <span class="string">'A'</span>, <span class="string">'D'</span>, <span class="string">'L'</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t1`</span> <span class="keyword">VALUES</span> (<span class="string">'2'</span>, <span class="string">'B'</span>, <span class="string">'E'</span>, <span class="string">'M'</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t1`</span> <span class="keyword">VALUES</span> (<span class="string">'3'</span>, <span class="string">'C'</span>, <span class="string">''</span>, <span class="string">'N'</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t1`</span> <span class="keyword">VALUES</span> (<span class="string">'4'</span>, <span class="string">''</span>, <span class="string">'F'</span>, <span class="string">''</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t1`</span> <span class="keyword">VALUES</span> (<span class="string">'5'</span>, <span class="string">'F'</span>, <span class="string">'G'</span>, <span class="string">'O'</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t1`</span> <span class="keyword">VALUES</span> (<span class="string">'6'</span>, <span class="string">'A'</span>, <span class="string">'H'</span>, <span class="string">'P'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">------</span></span><br><span class="line"><span class="comment">-- Table structure for t2</span></span><br><span class="line"><span class="comment">------</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> <span class="string">`t2`</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`t2`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">10</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  <span class="string">`other_column`</span> <span class="built_in">varchar</span>(<span class="number">30</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>),</span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`idx`</span> (<span class="string">`other_column`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=MyISAM AUTO_INCREMENT=<span class="number">6</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8;</span><br><span class="line"></span><br><span class="line"><span class="comment">------</span></span><br><span class="line"><span class="comment">-- Records of t2</span></span><br><span class="line"><span class="comment">------</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t2`</span> <span class="keyword">VALUES</span> (<span class="string">'1'</span>, <span class="string">'C'</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t2`</span> <span class="keyword">VALUES</span> (<span class="string">'2'</span>, <span class="string">'D'</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t2`</span> <span class="keyword">VALUES</span> (<span class="string">'3'</span>, <span class="string">'E'</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t2`</span> <span class="keyword">VALUES</span> (<span class="string">'4'</span>, <span class="string">''</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t2`</span> <span class="keyword">VALUES</span> (<span class="string">'5'</span>, <span class="string">'G'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">------</span></span><br><span class="line"><span class="comment">-- Table structure for t3</span></span><br><span class="line"><span class="comment">------</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> <span class="string">`t3`</span>;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`t3`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">10</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">  <span class="string">`other_column`</span> <span class="built_in">varchar</span>(<span class="number">30</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=MyISAM AUTO_INCREMENT=<span class="number">6</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8;</span><br><span class="line"></span><br><span class="line"><span class="comment">------</span></span><br><span class="line"><span class="comment">-- Records of t3</span></span><br><span class="line"><span class="comment">------</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t3`</span> <span class="keyword">VALUES</span> (<span class="string">'1'</span>, <span class="string">'F'</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t3`</span> <span class="keyword">VALUES</span> (<span class="string">'2'</span>, <span class="string">'G'</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t3`</span> <span class="keyword">VALUES</span> (<span class="string">'3'</span>, <span class="string">'H'</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t3`</span> <span class="keyword">VALUES</span> (<span class="string">'4'</span>, <span class="string">''</span>);</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`t3`</span> <span class="keyword">VALUES</span> (<span class="string">'5'</span>, <span class="string">'I'</span>);</span><br></pre></td></tr></table></figure>
-
-
+<h2 id="索引调优"><a href="#索引调优" class="headerlink" title="索引调优"></a>索引调优</h2>
           
         
       
@@ -2858,288 +3107,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/08/linux-ssh/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/08/linux-ssh/" class="post-title-link" itemprop="url">SSH</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-08 17:55:43" itemprop="dateCreated datePublished" datetime="2019-07-08T17:55:43+08:00">2019-07-08</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-12-03 13:35:28" itemprop="dateModified" datetime="2019-12-03T13:35:28+08:00">2019-12-03</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="SSH-协议"><a href="#SSH-协议" class="headerlink" title="SSH 协议"></a>SSH 协议</h2><h3 id="SSH"><a href="#SSH" class="headerlink" title="SSH"></a>SSH</h3><p><a href="https://www.ssh.com/" target="_blank" rel="noopener"><strong>SSH</strong></a>（Secure Shell Protocol，安全外壳协议），是建立在应用层和传输层基础上的 <strong>一种加密的网络安全传输协议</strong>。</p>
-<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g679gryzmvj30i609ftc4.jpg" alt="img"></p>
-<h3 id="OpenSSH"><a href="#OpenSSH" class="headerlink" title="OpenSSH"></a>OpenSSH</h3><p><a href="http://www.openssh.com/" target="_blank" rel="noopener"><strong>OpenSSH</strong></a>：是基于 <a href="https://baike.baidu.com/item/SSH" target="_blank" rel="noopener">SSH</a> 协议实现使用最广泛的 <strong>免费开源软件</strong>。</p>
-<p><strong>优点</strong>：</p>
-<ul>
-<li>安全可靠</li>
-<li>便捷</li>
-</ul>
-<p><strong><a href="http://www.openssh.com/" target="_blank" rel="noopener">OpenSSH</a> 套件工具</strong>：</p>
-<p><strong>ssh</strong>：远程登录</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">语法：ssh</span> <span class="string">[-l</span> <span class="string">login_name]</span> <span class="string">[-p</span> <span class="string">port]</span> <span class="string">[user@host]</span></span><br><span class="line"></span><br><span class="line"><span class="string">示例：</span></span><br><span class="line"><span class="string">ssh</span> <span class="number">192.168</span><span class="number">.0</span><span class="number">.11</span>                       <span class="comment"># 不指定用户，默认使用当前宿主用户的用户名登录</span></span><br><span class="line"><span class="string">ssh</span> <span class="string">root@192.168.0.11</span>                  <span class="comment"># 指定用户登录</span></span><br><span class="line"><span class="string">ssh</span> <span class="string">root@192.168.0.11</span> <span class="bullet">-p</span> <span class="number">2222</span>          <span class="comment"># 指定端口，默认端口22</span></span><br><span class="line"><span class="string">ssh</span> <span class="string">root@192.168.0.11</span> <span class="string">"ls /usr/local"</span>  <span class="comment"># 远程登录后执行某命令</span></span><br><span class="line"></span><br><span class="line"><span class="string">备注：配置文件/etc/ssh/sshd_config，修改ssh登录端口和禁止root登录，可以防止被端口扫描</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>sshd</strong>：服务端进程服务</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">服务端修改文件配置：vim</span> <span class="string">/etc/ssh/sshd_config</span> </span><br><span class="line"><span class="string">配置完成之后要重启服务：systemctl</span> <span class="string">restart</span> <span class="string">sshd.service</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>scp</strong>：Secure Copy，远程安全拷贝文件和目录（加密）</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">语法：scp</span> <span class="string">[-P</span> <span class="string">port]</span> <span class="string">[file|folder]</span> <span class="string">[user@host]:[remote_folder]</span></span><br><span class="line"></span><br><span class="line"><span class="string">示例：</span></span><br><span class="line"><span class="string">scp</span> <span class="string">mysql.sh</span> <span class="string">user@host:/tmp</span>      <span class="comment"># 本地文件拷贝到远程目录</span></span><br><span class="line"><span class="string">scp</span> <span class="bullet">-r</span> <span class="string">mysqldata</span> <span class="string">user@host:/tmp</span>  <span class="comment"># 本地目录拷贝到远程目录</span></span><br><span class="line"><span class="string">scp</span> <span class="string">root@host:/tmp</span> <span class="string">file</span>          <span class="comment"># 文件下载</span></span><br><span class="line"><span class="string">scp</span> <span class="bullet">-P</span> <span class="number">10022</span> <span class="string">/usr/local/src/mysql-5.7.23-el7-x86_64.tar.gz</span> <span class="string">root@10.200.62.4:/tmp</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>sftp</strong>：Secure File Transfer Protocol，安全文件传输命令行工具，使用方式和 <code>ftp</code> 类似，但它使用 <code>SSH</code> 作为底层传输协议，安全性比 <code>ftp</code> 好很多。</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">语法：sftp</span> <span class="bullet">-oPort=&lt;port&gt;</span> <span class="string">&lt;user&gt;@&lt;host&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="string">常用命令：</span></span><br><span class="line"><span class="string">help/?：打印帮助信息。</span></span><br><span class="line"><span class="string">pwd：查看远程服务器当前目录</span></span><br><span class="line"><span class="string">cd</span> <span class="string">&lt;dir&gt;：将远程服务器的当前目录更改为&lt;dir&gt;</span></span><br><span class="line"><span class="string">ls：显示远程服务器上当前目录的文件名</span></span><br><span class="line"><span class="string">ls</span> <span class="bullet">-l：显示远程服务器上当前目录的文件详细列表</span></span><br><span class="line"><span class="string">get</span> <span class="string">&lt;file&gt;：下载指定文件</span> <span class="string">&lt;file&gt;</span></span><br><span class="line"><span class="string">put</span> <span class="string">&lt;file&gt;：上传指定文件&lt;file&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="string">示例：</span></span><br><span class="line"><span class="string">[iteblog@www.iteblog.com</span> <span class="string">~]$</span> <span class="string">sftp</span> <span class="bullet">-oPort=22</span> <span class="string">iteblog@sftp.iteblog.com</span></span><br><span class="line"><span class="string">Connecting</span> <span class="string">to</span> <span class="string">sftp.iteblog.com...</span></span><br><span class="line"><span class="string">iteblog@sftp.iteblog.com's</span> <span class="attr">password:</span> </span><br><span class="line"><span class="string">sftp&gt;</span> <span class="string">ls</span> <span class="string">/</span></span><br><span class="line"><span class="string">/iteblog.txt</span>  </span><br><span class="line"><span class="string">sftp&gt;</span> <span class="string">ls</span> <span class="bullet">-l</span> <span class="string">/iteblog.txt</span></span><br><span class="line"><span class="bullet">-</span><span class="string">rw-r--r--</span>    <span class="number">2</span> <span class="number">50049</span>    <span class="number">50049</span>        <span class="number">4096</span> <span class="string">Jun</span> <span class="number">21</span> <span class="number">03</span><span class="string">:23</span> <span class="string">/iteblog.txt</span></span><br><span class="line"><span class="string">sftp&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>也可以使用 <code>FileZilla</code> 连接 <code>SFTP</code> 服务器：主机 IP 地址、用户名、密码、端口，端口默认为 <code>22</code>。</p>
-<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g6797j8u3kj30ng0l9400.jpg" alt="img"></p>
-<p><strong>ssh-keygen</strong>：生成密钥的工具</p>
-<ul>
-<li><code>-t</code>：指定生成密钥类型（<code>rsa</code>、<code>dsa</code> 等）</li>
-<li><code>-P</code>：指定 密语，用于确保私钥的安全</li>
-<li><code>-f</code>：指定存放密钥的文件（公钥文件默认和私钥同目录下，不同的是存放公钥的文件名需要加上后缀 .pub）</li>
-<li><code>-C</code> 用来添加注释</li>
-</ul>
-<p><code>~/.ssh</code> 目录下有四个文件：</p>
-<ul>
-<li><code>id_rsa</code>：私钥文件</li>
-<li><code>id_rsa.pub</code>：公钥文件</li>
-<li><code>authorized_keys</code>：保存已授权的客户端公钥</li>
-<li><code>known_hosts</code>：保存已认证的远程主机 ID</li>
-</ul>
-<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g67aallbz9j30ip0d4gm2.jpg" alt="img"></p>
-<blockquote>
-<p>需要注意的是：一台主机可能既是 Client，也是 Server。所以会同时拥有 authorized_keys 和 known_hosts。</p>
-</blockquote>
-<h2 id="SSH-工作原理"><a href="#SSH-工作原理" class="headerlink" title="SSH 工作原理"></a>SSH 工作原理</h2><h3 id="对称加密与非对称加密"><a href="#对称加密与非对称加密" class="headerlink" title="对称加密与非对称加密"></a>对称加密与非对称加密</h3><h4 id="对称加密"><a href="#对称加密" class="headerlink" title="对称加密"></a>对称加密</h4><p><strong>含义</strong>：加密与解密使用同一套秘钥。</p>
-<p><strong>问题</strong>：考虑到数量庞大的 Client 端，很难保证密钥不被泄露，如何安全的保存密钥 ？</p>
-<p><img src="http://ww3.sinaimg.cn/large/006y8mN6ly1g679ssfaapj30l805agls.jpg" alt="img"></p>
-<p><img src="http://ww1.sinaimg.cn/large/006y8mN6ly1g679t6uz1wj30l805bdfr.jpg" alt="img"></p>
-<h4 id="非对称加密"><a href="#非对称加密" class="headerlink" title="非对称加密"></a>非对称加密</h4><p><strong>含义</strong>：加密与解决密码不同，存在两个密钥，<strong>“公钥”</strong> 和 <strong>“私钥”</strong>。</p>
-<blockquote>
-<p>两个密钥的特性：公钥加密后的密文，只能通过对应的私钥进行解密，而通过公钥推理出私钥的可能性微乎其微。</p>
-</blockquote>
-<p><img src="http://ww4.sinaimg.cn/large/006y8mN6ly1g679yam73pj30ft0f2t9b.jpg" alt="img"></p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">远程</span> <span class="string">Server</span> <span class="string">收到</span> <span class="string">Client</span> <span class="string">端用户</span> <span class="string">TopGun</span> <span class="string">的登录请求，Server</span> <span class="string">把自己的公钥发给用户。</span></span><br><span class="line"><span class="string">Client</span> <span class="string">使用这个公钥，将密码进行加密。</span></span><br><span class="line"><span class="string">Client</span> <span class="string">将加密的密码发送给</span> <span class="string">Server端。</span></span><br><span class="line"><span class="string">远程</span> <span class="string">Server</span> <span class="string">用自己的私钥，解密登录密码，然后验证其合法性。</span></span><br><span class="line"><span class="string">若验证结果，给</span> <span class="string">Client</span> <span class="string">相应的响应。</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="图解公钥与私钥"><a href="#图解公钥与私钥" class="headerlink" title="图解公钥与私钥"></a>图解公钥与私钥</h3><p><strong>公钥</strong>：可以通过网络传输，别人可以随意截获的密钥。</p>
-<p><strong>私钥</strong>：不能通过网络进行传输，也防止别人截获的密钥。</p>
-<p><strong>交互过程</strong>：</p>
-<p>（1）鲍勃有两把钥匙，一把是公钥，另一把是私钥。</p>
-<p><img src="http://ww3.sinaimg.cn/large/006y8mN6ly1g67d4qd12bj30fa08n0ss.jpg" alt="PubKey1"></p>
-<p>（2）鲍勃把公钥送给他的朋友们 – 帕蒂、道格、苏珊每人一把</p>
-<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g67d7hmtayj30go07pq35.jpg" alt="PubKey2"></p>
-<p>（3）苏珊要给鲍勃写一封保密的信，她写完后用鲍勃的公钥加密，就可以达到保密的效果。</p>
-<p><img src="http://ww1.sinaimg.cn/large/006y8mN6ly1g67d7j9fh9j30go06vglp.jpg" alt="PubKey3"></p>
-<p>（4）鲍勃收信后，用私钥解密，就看到了信件内容。这里要强调的是，只要鲍勃的私钥不泄露，这封信就是安全的，即使落在别人手里，也无法解密。</p>
-<p><img src="http://ww4.sinaimg.cn/large/006y8mN6ly1g67d8c1zbkj30go07o0su.jpg" alt="PubKey4"></p>
-<p>（5）鲍勃给苏珊回信，决定采用”数字签名”。他写完后先用 <code>Hash</code> 函数，生成信件的摘要（digest）。 </p>
-<p><img src="http://ww4.sinaimg.cn/large/006y8mN6ly1g67d8o5r1gj30fa083q32.jpg" alt="PubKey5"></p>
-<p>（6）然后，鲍勃使用私钥，对这个摘要加密，生成”数字签名”（signature）。</p>
-<p><img src="http://ww3.sinaimg.cn/large/006y8mN6ly1g67d8zicuyj30fa06t3yd.jpg" alt="PubKey6"></p>
-<p>（7）鲍勃将这个签名，附在信件下面，一起发给苏珊。</p>
-<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g67d9eeclrj30fa08g0sv.jpg" alt="PubKey7"></p>
-<p>（8）苏珊收信后，取下数字签名，用鲍勃的公钥解密，得到信件的摘要。由此证明，这封信确实是鲍勃发出的。</p>
-<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g67daaqp9rj30fa04qt8k.jpg" alt="PubKey8"> </p>
-<p>（9）苏珊再对信件本身使用 <code>Hash</code> 函数，将得到的结果，与上一步得到的摘要进行对比。如果两者一致，就证明这封信未被修改过。 </p>
-<p><img src="http://ww1.sinaimg.cn/large/006y8mN6ly1g67datch4wj30fa088aa9.jpg" alt="PubKey9"></p>
-<p>（10）复杂的情况出现了，道格想欺骗苏珊，他偷偷使用了苏珊的电脑，用自己的公钥换走了鲍勃的公钥。此时，苏珊实际拥有的是道格的公钥，但是还以为这是鲍勃的公钥。因此，道格就可以冒充鲍勃，用自己的私钥做成”数字签名”，写信给苏珊，让苏珊用假的鲍勃公钥进行解密。</p>
-<p><img src="http://ww1.sinaimg.cn/large/006y8mN6ly1g67dbdl39tj30fa07kaa4.jpg" alt="PubKey10"></p>
-<p>（11）后来，苏珊感觉不对劲，发现自己无法确定公钥是否真的属于鲍勃。她想到了一个办法，要求鲍勃去找”证书中心”（Certificate Authority，简称 CA），为公钥做认证。证书中心用自己的私钥，对鲍勃的公钥和一些相关信息一起加密，生成”数字证书”（Digital Certificate）。</p>
-<p><img src="http://ww1.sinaimg.cn/large/006y8mN6ly1g67dbuly0kj30i20bvt8u.jpg" alt="PubKey11"></p>
-<p>（12）鲍勃拿到数字证书以后，就可以放心了。以后再给苏珊写信，只要在签名的同时，再附上数字证书就行了。 </p>
-<p><img src="http://ww4.sinaimg.cn/large/006y8mN6ly1g67dcfjhntj30f90bywex.jpg" alt="PubKey12"></p>
-<p>（13）苏珊收信后，用 CA 的公钥解开数字证书，就可以拿到鲍勃真实的公钥了，然后就能证明”数字签名”是否真的是鲍勃签的。 </p>
-<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g67dcphc58j30fa09wdfv.jpg" alt="PubKey13"></p>
-<h3 id="两种安全验证方式"><a href="#两种安全验证方式" class="headerlink" title="两种安全验证方式"></a>两种安全验证方式</h3><h4 id="基于口令的安全验证（用户名-密码）"><a href="#基于口令的安全验证（用户名-密码）" class="headerlink" title="基于口令的安全验证（用户名/密码）"></a>基于口令的安全验证（用户名/密码）</h4><ul>
-<li>客户端发送登录请求 <code>ssh user@host</code>；</li>
-<li>服务器接受请求，将服务器的公钥 <code>id_rsa.pub</code> 发送给客户端；</li>
-<li>客户端输入密码，密码使用 <code>id_rsa.pub</code> 加密后发送给服务器（敏感信息安全传输）；</li>
-<li>服务器接受加密后的密码，使用服务器私钥 <code>id_rsa</code> 解密，匹配认证密码是否合法（如果合法！登录成功）；</li>
-<li>客户端生成会话数据加密 <code>sess_key</code>，使用 <code>id_rsa.pub</code> 加密后传输给服务器（会话密钥）；</li>
-<li>服务器获取到后使用 <code>id_rsa</code> 解密，得到 <code>sess_key</code>；</li>
-<li>客户端和服务器通过 <code>sess_key</code> 进行会话数据安全传输。</li>
-</ul>
-<h4 id="基于密钥的安全验证"><a href="#基于密钥的安全验证" class="headerlink" title="基于密钥的安全验证"></a>基于密钥的安全验证</h4><p>简单地说，就是客户端自己生成公钥私钥（通常采用 <code>ssh-keygen</code> 程序生成），然后将公钥以某种方式（通常是手动添加）保存到服务器 <code>~/.ssh/authorized_keys</code> 文件中，以后服务器都会接受客户端传过来的经过会话密钥加密过的公钥，然后解密得到公钥之后和本地 <code>authorized_keys</code> 配置的公钥是否相等，如果是则允许登陆。</p>
-<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><ul>
-<li><code>SSH</code> 是安全的加密协议，用于远程连接 <code>Linux</code> 服务器；</li>
-<li><code>SSH</code> 的默认端口是 <code>22</code>，安全协议版本是 <code>SSH2</code>；</li>
-<li><code>SSH</code> 服务器端主要包含2个服务功能 <code>SSH</code> 连接和 <code>SFTP</code> 服务器；</li>
-<li><code>SSH</code> 客户端包含 <code>ssh</code> 连接命令和远程拷贝 <code>scp</code> 命令等。</li>
-</ul>
-<h3 id="服务器初始化"><a href="#服务器初始化" class="headerlink" title="服务器初始化"></a>服务器初始化</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># /bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ $(id -u) != <span class="string">"0"</span> ]; then</span><br><span class="line">errorLog <span class="string">"错误：请用root账户运行此脚本"</span></span><br><span class="line"><span class="keyword">exit</span> <span class="number">1</span></span><br><span class="line">fi</span><br><span class="line">echo <span class="string">"提升权限..."</span></span><br><span class="line"><span class="keyword">if</span> [[ ! `cat /etc/sudoers | grep -v grep | grep haieradmin` ]] ; then</span><br><span class="line">    echo <span class="string">"需要提升权限。。。"</span></span><br><span class="line">    sed -i <span class="string">'/## Allow root to run any commands anywhere / a\haieradmin ALL=(ALL) NOPASSWD:ALL'</span> /etc/sudoers</span><br><span class="line">    <span class="keyword">if</span> [[ ! `cat /etc/sudoers | grep -v grep | grep haieradmin` ]] ; then</span><br><span class="line">        echo <span class="string">"权限提升失败..."</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        echo <span class="string">"权限提升成功..."</span></span><br><span class="line">    fi</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    echo <span class="string">"haieradmin已经是sudoers"</span></span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">echo <span class="string">"开启22端口访问..."</span></span><br><span class="line">firewall-cmd --permanent --zone=public --add-port=<span class="number">22</span>/tcp</span><br><span class="line">firewall-cmd --reload</span><br><span class="line"></span><br><span class="line">echo <span class="string">"删除hosts.deny..."</span></span><br><span class="line">sed -i <span class="string">'s/sshd:all/ /g'</span> /etc/hosts.deny</span><br><span class="line"></span><br><span class="line">echo <span class="string">"追加hosts.allow..."</span></span><br><span class="line"><span class="keyword">if</span> [[ `cat /etc/hosts.allow | grep -v <span class="number">10.138</span>.*.*` ]]; then</span><br><span class="line">    echo <span class="string">"追加10.138.*.*"</span></span><br><span class="line">    echo <span class="string">"sshd:10.138.*.*"</span> &gt;&gt; /etc/hosts.allow</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
-
-<h3 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h3><p><strong>问题</strong>：CentOS 7.3 配置 SSH 免密码登录后仍要输入密码的解决方法？</p>
-<p><strong>原因分析</strong>：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> tail /var/log/secure -n 20</span><br><span class="line">Authentication refused: bad ownership or modes for directory /home/haieradmin</span><br></pre></td></tr></table></figure>
-
-<p>sshd 为了安全，对属主的目录和文件权限有所要求，如果权限不对，则ssh的免密码登陆不生效。</p>
-<ul>
-<li>.ssh 目录权限为 700</li>
-<li>rsa_id.pub 及 authorized_keys 权限一般为 644</li>
-<li>rsa_id 权限必须为 600</li>
-</ul>
-<p><strong>解决方法</strong>：检测目录权限，把不符合要求的按要求设置权限即可。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3188,7 +3155,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">136</span>
+                    <span class="site-state-item-count">137</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
