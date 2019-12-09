@@ -6797,11 +6797,11 @@
   <entry>
     <title>MySQL · 主从复制中断</title>
     <url>/blog/2019/09/20/mysql-case-replication/</url>
-    <content><![CDATA[<h2 id="Slave-IO-Running-No"><a href="#Slave-IO-Running-No" class="headerlink" title="Slave_IO_Running: No"></a>Slave_IO_Running: No</h2><h3 id="1236：找不到日志文件"><a href="#1236：找不到日志文件" class="headerlink" title="1236：找不到日志文件"></a>1236：找不到日志文件</h3><ul>
+    <content><![CDATA[<h2 id="Slave-IO-Running-No"><a href="#Slave-IO-Running-No" class="headerlink" title="Slave_IO_Running: No"></a>Slave_IO_Running: No</h2><h3 id="找不到初始日志"><a href="#找不到初始日志" class="headerlink" title="找不到初始日志"></a>找不到初始日志</h3><ul>
 <li><strong>报错信息</strong></li>
 </ul>
 <p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-20-015800.png" alt="image-20190920095751451"></p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"> Slave_IO_Running: No</span><br><span class="line">Slave_SQL_Running: Yes</span><br><span class="line">    Last_IO_Errno: <span class="number">1236</span></span><br><span class="line">    Last_IO_Error: Got fatal error <span class="number">1236</span> from master when reading <span class="keyword">data</span> from binary log: <span class="string">'Could not find first log file name in binary log index file'</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">Slave_IO_Running: No</span><br><span class="line">Slave_SQL_Running: Yes</span><br><span class="line">Last_IO_Errno: <span class="number">1236</span></span><br><span class="line">Last_IO_Error: Got fatal error <span class="number">1236</span> from master when reading <span class="keyword">data</span> from binary log: <span class="string">'Could not find first log file name in binary log index file'</span></span><br></pre></td></tr></table></figure>
 
 <ul>
 <li><strong>原因分析</strong></li>
@@ -6815,26 +6815,25 @@
 <li><strong>解决方法</strong></li>
 </ul>
 <p>为了避免数据丢失，需要重新搭建 <code>Slave</code></p>
-<h3 id="1236：磁盘空间不足，日志被截断"><a href="#1236：磁盘空间不足，日志被截断" class="headerlink" title="1236：磁盘空间不足，日志被截断"></a>1236：磁盘空间不足，日志被截断</h3><ul>
+<h3 id="磁盘空间不足，日志被截断"><a href="#磁盘空间不足，日志被截断" class="headerlink" title="磁盘空间不足，日志被截断"></a>磁盘空间不足，日志被截断</h3><ul>
 <li><strong>报错信息</strong></li>
 </ul>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"> Slave_IO_Running: No</span><br><span class="line">Slave_SQL_Running: Yes</span><br><span class="line">    Last_IO_Errno: <span class="number">1236</span></span><br><span class="line">    Last_IO_Error: Got fatal error <span class="number">1236</span> from master when reading <span class="keyword">data</span> from binary log: <span class="string">'binlog truncated in the middle of event; consider out of disk space on master; the first event '</span>mysql-bin.<span class="number">006130</span><span class="string">' at 733347710, the last event read from '</span>./mysql-bin.<span class="number">006130</span><span class="string">' at 733347710, the last byte read from '</span>./mysql-bin.<span class="number">006130</span><span class="string">' at 733347840.'</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">Slave_IO_Running: No</span><br><span class="line">Slave_SQL_Running: Yes</span><br><span class="line">Last_IO_Errno: <span class="number">1236</span></span><br><span class="line">Last_IO_Error: Got fatal error <span class="number">1236</span> from master when reading <span class="keyword">data</span> from binary log: <span class="string">'binlog truncated in the middle of event; consider out of disk space on master; the first event '</span>mysql-bin.<span class="number">006130</span><span class="string">' at 733347710, the last event read from '</span>./mysql-bin.<span class="number">006130</span><span class="string">' at 733347710, the last byte read from '</span>./mysql-bin.<span class="number">006130</span><span class="string">' at 733347840.'</span></span><br></pre></td></tr></table></figure>
 
 <ul>
 <li><strong>原因分析</strong></li>
 </ul>
 <p>该错误和主库的空间和 <code>sync_binlog</code> 配置有关，当主库 <code>sync_binlog = N</code> 不等于 1 且磁盘空间满时，MySQL 每写 N 次 <code>binlog</code>，系统才会同步到磁盘，但是由于存储日志的磁盘空间满而导致 MySQL 没有将日志完全写入磁盘，<code>binlog event</code> 被截断，从库读取该 <code>binlog</code> 时就会报错 <code>binlog truncated in the middle of event</code>。</p>
 <ul>
-<li><p><strong>解决方法</strong></p>
-<p>在从库重新指向到主库下一个可用的 <code>binlog</code> 并且从初始化的位置开始：</p>
-</li>
+<li><strong>解决方法</strong></li>
 </ul>
+<p>在从库重新指向到主库下一个可用的 <code>binlog</code> 并且从初始化的位置开始：</p>
 <figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">stop</span> <span class="keyword">slave</span>;</span><br><span class="line"><span class="keyword">change</span> <span class="keyword">master</span> <span class="keyword">to</span> master_log_file = <span class="string">'mysql-bin.006131'</span>, master_log_pos = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">slave</span>;</span><br></pre></td></tr></table></figure>
 
 <h2 id="Slave-SQL-Running-No"><a href="#Slave-SQL-Running-No" class="headerlink" title="Slave_SQL_Running: No"></a>Slave_SQL_Running: No</h2><h3 id="1026：HA-ERR-RBR-LOGGING-FAILED"><a href="#1026：HA-ERR-RBR-LOGGING-FAILED" class="headerlink" title="1026：HA_ERR_RBR_LOGGING_FAILED"></a>1026：HA_ERR_RBR_LOGGING_FAILED</h3><ul>
 <li><strong>报错信息</strong></li>
 </ul>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"> Slave_IO_Running: Yes</span><br><span class="line">Slave_SQL_Running: No</span><br><span class="line">       Error_code: <span class="number">1026</span></span><br><span class="line">       Last_Error: Could not execute Update_rows event on table cosmo-aps.bns_aps_versiontolineinfo; Error writing file <span class="string">'/data/mysql/tmp/MLpTCcJu'</span> (Errcode: <span class="number">28</span> - No space left on device), Error_code: <span class="number">3</span>; Error writing file <span class="string">'mysql-bin'</span> (errno: <span class="number">28</span> - No space left on device), Error_code: <span class="number">1026</span>; handler error HA_ERR_RBR_LOGGING_FAILED; the event<span class="string">'s master log mysql-bin.000528, end_log_pos 674303230</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">Slave_IO_Running: Yes</span><br><span class="line">Slave_SQL_Running: No</span><br><span class="line">Error_code: <span class="number">1026</span></span><br><span class="line">Last_Error: Could not execute Update_rows event on table cosmo-aps.bns_aps_versiontolineinfo; Error writing file <span class="string">'/data/mysql/tmp/MLpTCcJu'</span> (Errcode: <span class="number">28</span> - No space left on device), Error_code: <span class="number">3</span>; Error writing file <span class="string">'mysql-bin'</span> (errno: <span class="number">28</span> - No space left on device), Error_code: <span class="number">1026</span>; handler error HA_ERR_RBR_LOGGING_FAILED; the event<span class="string">'s master log mysql-bin.000528, end_log_pos 674303230</span></span><br></pre></td></tr></table></figure>
 
 <ul>
 <li><p><strong>原因分析</strong></p>
@@ -6852,8 +6851,6 @@
 <ul>
 <li><a href="https://huiraoo.github.io/blog/2019/10/19/pt-slave-restart/">pt-slave-restart</a></li>
 </ul>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">stop</span> <span class="keyword">slave</span> ;</span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> sql_slave_skip_counter=<span class="number">1</span>;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">slave</span> ;</span><br></pre></td></tr></table></figure>
-
 </li>
 </ul>
 <h3 id="1205：HA-ERR-LOCK-WAIT-TIMEOUT"><a href="#1205：HA-ERR-LOCK-WAIT-TIMEOUT" class="headerlink" title="1205：HA_ERR_LOCK_WAIT_TIMEOUT"></a>1205：HA_ERR_LOCK_WAIT_TIMEOUT</h3><p><strong>报错信息：</strong></p>
@@ -6862,7 +6859,7 @@
 <h3 id="1032：HA-ERR-END-OF-FILE"><a href="#1032：HA-ERR-END-OF-FILE" class="headerlink" title="1032：HA_ERR_END_OF_FILE"></a>1032：HA_ERR_END_OF_FILE</h3><ul>
 <li><strong>报错信息</strong></li>
 </ul>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"> Slave_IO_Running: Yes</span><br><span class="line">Slave_SQL_Running: No</span><br><span class="line">       Last_Errno: <span class="number">1032</span></span><br><span class="line">       Last_Error: Could not execute Update_rows event on table haier.haier_yonghuzhongxin_shebei; Can<span class="string">'t find record in '</span>haier_yonghuzhongxin_shebei<span class="string">', Error_code: 1032; handler error HA_ERR_END_OF_FILE; the event'</span>s master log mysql-bin.<span class="number">000030</span>, end_log_pos <span class="number">130643848</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">Slave_IO_Running: Yes</span><br><span class="line">Slave_SQL_Running: No</span><br><span class="line">Last_Errno: <span class="number">1032</span></span><br><span class="line">Last_Error: Could not execute Update_rows event on table haier.haier_yonghuzhongxin_shebei; Can<span class="string">'t find record in '</span>haier_yonghuzhongxin_shebei<span class="string">', Error_code: 1032; handler error HA_ERR_END_OF_FILE; the event'</span>s master log mysql-bin.<span class="number">000030</span>, end_log_pos <span class="number">130643848</span></span><br></pre></td></tr></table></figure>
 
 <ul>
 <li><strong>原因分析</strong></li>
