@@ -352,6 +352,235 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/12/10/mysql-replication-delay/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/12/10/mysql-replication-delay/" class="post-title-link" itemprop="url">MySQL · 主从复制延迟</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-12-10 15:58:05 / 修改时间：16:42:06" itemprop="dateCreated datePublished" datetime="2019-12-10T15:58:05+08:00">2019-12-10</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="判断"><a href="#判断" class="headerlink" title="判断"></a>判断</h2><p>Seconds_Behind_Master 值不为 0，单位是 s。</p>
+<h2 id="风险"><a href="#风险" class="headerlink" title="风险"></a>风险</h2><ul>
+<li>从库复制夯住，会导致备份失败（flush tables with read lock 900s 超时）</li>
+<li>以从库为基准进行的备份，数据不是最新的有延迟</li>
+<li>异常情况下，主从 HA 无法切换，HA 需要检查数据的一致性，延迟时主备不一致</li>
+</ul>
+<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>最根本原因是主库是多线程读写，从库读取主库的 binlog 的线程只有一个，常见的场景如下：</p>
+<ul>
+<li>无主键、无索引或索引区分度不高</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">slave</span> <span class="keyword">status</span>;</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">open</span> <span class="keyword">tables</span> <span class="keyword">where</span> In_use=<span class="number">1</span>;</span><br><span class="line">desc table;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>主库上有大事务，导致从库延时</li>
+<li>主库写入频繁，从库压力跟不上导致延时</li>
+<li>大量 myisam 表，在备份时导致 slave 延迟</li>
+</ul>
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><ul>
+<li>为夯住的表添加主键或者索引</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 找到表区分度比较高的几个字段</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> xx;</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> (<span class="keyword">select</span> <span class="keyword">distinct</span> xx <span class="keyword">from</span> xxx) t;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加主键</span></span><br><span class="line"><span class="keyword">stop</span> <span class="keyword">slave</span>;</span><br><span class="line"><span class="keyword">set</span> sql_log_bin=<span class="number">0</span>;</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> xx <span class="keyword">add</span> <span class="keyword">key</span> xx(xx);</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> <span class="string">'xxxx'</span> <span class="keyword">add</span> <span class="keyword">id</span> <span class="built_in">int</span>(<span class="number">10</span>) <span class="keyword">unsigned</span> primary <span class="keyword">key</span> AUTO_INCREMENT;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">slave</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>调整数据库中 IO 相关参数</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select @@innodb_flush_log_at_trx_commit;</span><br><span class="line">+<span class="comment">----------------------------------+</span></span><br><span class="line">| @@innodb_flush_log_at_trx_commit |</span><br><span class="line">+<span class="comment">----------------------------------+</span></span><br><span class="line">|                                0 |</span><br><span class="line">+<span class="comment">----------------------------------+</span></span><br><span class="line"></span><br><span class="line">mysql&gt; select @@sync_binlog;</span><br><span class="line">+<span class="comment">---------------+</span></span><br><span class="line">| @@sync_binlog |</span><br><span class="line">+<span class="comment">---------------+</span></span><br><span class="line">|             0 |</span><br><span class="line">+<span class="comment">---------------+</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>修改表存储引擎为 InnoDB</li>
+</ul>
+<h2 id="案例-1"><a href="#案例-1" class="headerlink" title="案例 1"></a>案例 1</h2><p><strong>现象</strong>：从库两个线程 <code>Slave_IO_Running</code> 和 <code>Slave_SQL_Running</code> 均是 <strong>Yes</strong>，主从复制链路正常，但是 <code>Seconds_Behind_Master</code> 不断增大，且主从数据延迟有不断扩大的趋势。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.133.0.51</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-binlog.000232</span><br><span class="line">          Read_Master_Log_Pos: 3108253</span><br><span class="line">               Relay_Log_File: relay-log.000004</span><br><span class="line">                Relay_Log_Pos: 169851605</span><br><span class="line">        Relay_Master_Log_File: mysql-binlog.000229</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">              ....</span><br><span class="line">        Seconds_Behind_Master: 42302</span><br><span class="line">Master_SSL_Verify_Server_Cert: No</span><br><span class="line">              ....</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查当前数据库线程状态，未发现有明显异常</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show processlist;</span><br><span class="line">+-------+-------------+-------------------+--------------------+---------+--------+----------------------------------+--------------------------------+</span><br><span class="line">| Id    | User        | Host              | db                 | Command | Time   | State                            | Info                           |</span><br><span class="line">+-------+-------------+-------------------+--------------------+---------+--------+----------------------------------+--------------------------------+</span><br><span class="line">|     1 | system user |                   | NULL               | Connect | 172777 | Waiting for master to send event | NULL                           |</span><br><span class="line">|     2 | system user |                   | NULL               | Connect | 678456 | Reading event from the relay log | NULL                           |</span><br><span class="line">|  4345 | cvbak       | localhost         | NULL               | Query   | 130546 | Waiting for table flush          | FLUSH /*!40101 LOCAL */ TABLES |</span><br><span class="line">| 17662 | root        | localhost         | NULL               | Query   |      0 | starting                         | show processlist               |</span><br><span class="line">| 17671 | hdm         | 10.133.0.52:37170 | information_schema | Sleep   |      1 |                                  | NULL                           |</span><br><span class="line">+-------+-------------+-------------------+--------------------+---------+--------+----------------------------------+--------------------------------+</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查当前正在使用的表：<code>show open tables where In_use=1;</code> 发现有一张表一直处于 <code>In_use</code> 状态。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show open tables where In_use=1;</span><br><span class="line">+<span class="comment">----------+---------------------------+--------+-------------+</span></span><br><span class="line">| Database | Table                     | In_use | Name_locked |</span><br><span class="line">+<span class="comment">----------+---------------------------+--------+-------------+</span></span><br><span class="line">| tdmetl   | odsepg_zrfc_zco_zzfymx_sw |      1 |           0 |</span><br><span class="line">+<span class="comment">----------+---------------------------+--------+-------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>根据 <code>Relay_Log_Pos</code> 解析 <code>relay-log.000004</code>，查看当时正在执行的操作是 <code>Delete_rows</code>，操作的表是 <code>tdmetl</code>.<code>odsepg_zrfc_zco_zzfymx_sw</code>。</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqlbinlog -vv --base64-output=decode-rows relay-log.<span class="number">000004</span> --start-position=<span class="number">169851605</span> | more</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># at 169851605</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169851451 CRC32 0x6683bf99 	Anonymous_GTID	last_committed=1831	sequence_number=1832	rbr_</span></span><br><span class="line"><span class="string">only=yes</span></span><br><span class="line"><span class="string">/*!50718</span> <span class="string">SET</span> <span class="string">TRANSACTION</span> <span class="string">ISOLATION</span> <span class="string">LEVEL</span> <span class="string">READ</span> <span class="string">COMMITTED*//*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@SESSION.GTID_NEXT=</span> <span class="string">'ANONYMOUS'</span><span class="string">/*!*/;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># at 169851670</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169851525 CRC32 0x9d910e5d 	Query	thread_id=1254417	exec_time=0	error_code=0</span></span><br><span class="line"><span class="string">SET</span> <span class="string">TIMESTAMP=1563393778/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.pseudo_thread_id=1254417/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.foreign_key_checks=1,</span> <span class="string">@@session.sql_auto_is_null=0,</span> <span class="string">@@session.unique_checks=1,</span> <span class="string">@@session.autocommit=1/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.sql_mode=1436549128/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.auto_increment_increment=1,</span> <span class="string">@@session.auto_increment_offset=1/*!*/;</span></span><br><span class="line"><span class="string">/*!\C</span> <span class="string">utf8</span> <span class="string">*//*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.character_set_client=33,@@session.collation_connection=33,@@session.collation_server=33/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.lc_time_names=0/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.collation_database=DEFAULT/*!*/;</span></span><br><span class="line"><span class="string">BEGIN</span></span><br><span class="line"><span class="string">/*!*/;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># at 169851744</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169851626 CRC32 0x6b8bbd2d 	Table_map: `tdmetl`.`odsepg_zrfc_zco_zzfymx_sw` mapped to number 170</span></span><br><span class="line"><span class="number">018</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># at 169851845</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169859832 CRC32 0x338e105a 	Delete_rows: table id 170018</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查表结构，发现该表数据量很大且无主键。由此基本确定其问题根本原因：<strong>对无主键的表进行删除或者更新，导致从库夯住</strong>。该表数据量：77961221条。</li>
+</ul>
+<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g6873jkiw5j30yf0gigpp.jpg" alt="image-20190822092437992"></p>
+<p><strong>解决方法</strong></p>
+<ul>
+<li>表添加自增主键。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">'xxxx'</span> <span class="keyword">ADD</span> <span class="keyword">id</span> <span class="built_in">int</span> <span class="keyword">UNSIGNED</span> primary <span class="keyword">key</span> AUTO_INCREMENT;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>大表删除使用 <code>truncate</code> 命令。</li>
+</ul>
+<h2 id="案例-2"><a href="#案例-2" class="headerlink" title="案例 2"></a>案例 2</h2><p><strong>原因分析</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.133.7.5</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 10</span><br><span class="line">              Master_Log_File: mysql-bin.000279</span><br><span class="line">          Read_Master_Log_Pos: 663610631</span><br><span class="line">               Relay_Log_File: mysqld-relay-bin.000007</span><br><span class="line">                Relay_Log_Pos: 139799382</span><br><span class="line">        Relay_Master_Log_File: mysql-bin.000273</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">                            ....</span><br><span class="line">        Seconds_Behind_Master: 475123</span><br><span class="line">        </span><br><span class="line">mysql&gt; show open tables where In_use=1; </span><br><span class="line">+<span class="comment">----------+-------------------+--------+-------------+</span></span><br><span class="line">| Database | Table             | In_use | Name_locked |</span><br><span class="line">+<span class="comment">----------+-------------------+--------+-------------+</span></span><br><span class="line">| hce      | dim_r_cei_general |      1 |           0 |</span><br><span class="line">+<span class="comment">----------+-------------------+--------+-------------+</span></span><br><span class="line"></span><br><span class="line">mysql&gt; desc dim_r_cei_general;</span><br><span class="line">+<span class="comment">---------------------+------------------+------+-----+-------------------+----------------+</span></span><br><span class="line">| Field               | Type             | Null | Key | Default           | Extra          |</span><br><span class="line">+<span class="comment">---------------------+------------------+------+-----+-------------------+----------------+</span></span><br><span class="line">| MATERIAL_CODE       | varchar(30)      | YES  |     | NULL              |                |</span><br><span class="line">| MATERIAL_DESCRITION | varchar(383)     | YES  |     | NULL              |                |</span><br><span class="line">| PA_DATE_ACTUAL      | varchar(30)      | YES  |     | NULL              |                |</span><br><span class="line">| HR_INDEX            | varchar(30)      | YES  |     | NULL              |                |</span><br><span class="line">| SALE_CHAR           | varchar(100)     | YES  |     | NULL              |                |</span><br><span class="line">| CREATE_DATE         | datetime         | YES  |     | CURRENT_TIMESTAMP |                |</span><br><span class="line">| id                  | int(10) unsigned | NO   | PRI | NULL              | auto_increment |</span><br><span class="line">+<span class="comment">---------------------+------------------+------+-----+-------------------+----------------+</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>解决方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &apos;sync_binlog&apos;;</span><br><span class="line">+---------------+-------+</span><br><span class="line">| Variable_name | Value |</span><br><span class="line">+---------------+-------+</span><br><span class="line">| sync_binlog   | 0     |</span><br><span class="line">+---------------+-------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; show variables like &apos;innodb_flush_log_at_trx_commit&apos;;</span><br><span class="line">+--------------------------------+-------+</span><br><span class="line">| Variable_name                  | Value |</span><br><span class="line">+--------------------------------+-------+</span><br><span class="line">| innodb_flush_log_at_trx_commit | 0     |</span><br><span class="line">+--------------------------------+-------+</span><br><span class="line"></span><br><span class="line">mysql&gt; select count(*) from dim_r_cei_general;</span><br><span class="line">+----------+</span><br><span class="line">| count(*) |</span><br><span class="line">+----------+</span><br><span class="line">|  1933121 |</span><br><span class="line">+----------+</span><br><span class="line"></span><br><span class="line">mysql&gt; select count(*) from (select distinct MATERIAL_CODE from dim_r_cei_general) t;</span><br><span class="line">+----------+</span><br><span class="line">| count(*) |</span><br><span class="line">+----------+</span><br><span class="line">|  1933111 |</span><br><span class="line">+----------+</span><br><span class="line"></span><br><span class="line">mysql&gt; stop slave;</span><br><span class="line">mysql&gt; set sql_log_bin=0;</span><br><span class="line">mysql&gt; alter table dim_r_cei_general add key index_MATERIAL_CODE(MATERIAL_CODE);</span><br><span class="line">mysql&gt; start slave;</span><br><span class="line"></span><br><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.133.7.5</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 10</span><br><span class="line">              Master_Log_File: mysql-bin.000279</span><br><span class="line">          Read_Master_Log_Pos: 663999593</span><br><span class="line">               Relay_Log_File: mysqld-relay-bin.000010</span><br><span class="line">                Relay_Log_Pos: 336125628</span><br><span class="line">        Relay_Master_Log_File: mysql-bin.000274</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">                            ....</span><br><span class="line">        Seconds_Behind_Master: 462357</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/12/10/mysql-datatype/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -397,7 +626,7 @@
                 
               
 
-              <time title="创建时间：2019-12-10 10:47:04 / 修改时间：14:43:39" itemprop="dateCreated datePublished" datetime="2019-12-10T10:47:04+08:00">2019-12-10</time>
+              <time title="创建时间：2019-12-10 10:47:04 / 修改时间：14:53:10" itemprop="dateCreated datePublished" datetime="2019-12-10T10:47:04+08:00">2019-12-10</time>
             
 
             
@@ -641,6 +870,7 @@
 <li>IP: char(15)</li>
 <li>Email：char(32)</li>
 <li>性别：enum(‘男’,’女’)</li>
+<li>布尔值：tinyint(1)</li>
 </ul>
 
           
@@ -2149,191 +2379,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/12/03/linux-trust/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/12/03/linux-trust/" class="post-title-link" itemprop="url">Linux · 配置互信</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-12-03 09:54:29 / 修改时间：13:34:59" itemprop="dateCreated datePublished" datetime="2019-12-03T09:54:29+08:00">2019-12-03</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>客户端自己生成公钥私钥，然后将客户端公钥保存到服务器 <code>~/.ssh/authorized_keys</code> 文件中，以后服务器都会接受客户端传过来的会话经过密钥加密过的公钥，然后解密得到公钥之后和本地 <code>authorized_keys</code> 配置的公钥是否相等，如果是则允许登陆。</p>
-<p><img src="http://ww3.sinaimg.cn/large/006y8mN6ly1g67a12hm04j30rs0jcjtl.jpg" alt="img"></p>
-<h2 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h2><ul>
-<li>获取客户端公钥</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ cat ~/.ssh/id_rsa.pub</span><br><span class="line">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCl2+HlmepzqPUlJv+ESCtaYKD2pyUXlEEmmEaw5yTLv09FqD38NzaZZAmnptzOArTO/VzYX5TtNHQPpR0HApid2xMYDrF4C2BpdudobjfiJf4Mx/nzqRPbjTMNzWZJgct9iRl3lR5E9iiwiVxzOJErsaq8Dt4VoUtqVd2t5kocd5g3lvZ4b9/<span class="number">7</span>ogVgLWfudtiiahx9XP3mMn7AdxnnonvSCYI/MVGIvrZAk+<span class="number">1</span>Ss/<span class="number">0</span>UBhgsCqGiUfaqjXfoZoJcOVCSccwl83ZXIqmLtxch46+A0YGWl/dVQSusHTJoMqmJjPm8FfyX8Cn8FaduMA4A8+RzRuox2psgjX/<span class="number">7</span>Q/qg1QCF root@p-cosmo-hce</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>如果不存在，通过 <code>ssh-keygen</code> 生成密钥对</p>
-</blockquote>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-keygen</span><br><span class="line">Generating public/private rsa key pair.</span><br><span class="line">Enter file <span class="keyword">in</span> which to save the key (/root/.ssh/id_rsa): </span><br><span class="line">/root/.ssh/id_rsa already exists.</span><br><span class="line">Overwrite (y/n)? y</span><br><span class="line">Enter passphrase (empty <span class="keyword">for</span> no passphrase): </span><br><span class="line">Enter same passphrase again: </span><br><span class="line">Your identification has been saved <span class="keyword">in</span> /root/.ssh/id_rsa.</span><br><span class="line">Your public key has been saved <span class="keyword">in</span> /root/.ssh/id_rsa.pub.</span><br><span class="line">The key fingerprint is:</span><br><span class="line">SHA256:<span class="number">4</span>qHMkrfb8bchDuoYV1DjGFy3JYzegeCidBa5yRvmBAU root@CSB-service-<span class="number">2</span></span><br><span class="line">The key<span class="string">'s randomart image is:</span></span><br><span class="line"><span class="string">+---[RSA 2048]----+</span></span><br><span class="line"><span class="string">| Eo++o++o .      |</span></span><br><span class="line"><span class="string">| . oo=ooo+       |</span></span><br><span class="line"><span class="string">| .+o*.....       |</span></span><br><span class="line"><span class="string">|..oO .. .        |</span></span><br><span class="line"><span class="string">|. + o + S        |</span></span><br><span class="line"><span class="string">|   * + o         |</span></span><br><span class="line"><span class="string">|  + * + . .      |</span></span><br><span class="line"><span class="string">|   * + = ...     |</span></span><br><span class="line"><span class="string">|  ..=.. o...     |</span></span><br><span class="line"><span class="string">+----[SHA256]-----+</span></span><br><span class="line"><span class="string">You have mail in /var/spool/mail/root</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>将公钥保存到服务端</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">vi ~/.ssh/authorized_keys</span><br><span class="line">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCl2+HlmepzqPUlJv+ESCtaYKD2pyUXlEEmmEaw5yTLv09FqD38NzaZZAmnptzOArTO/VzYX5TtNHQPpR0HApid2xMYDrF4C2BpdudobjfiJf4Mx/nzqRPbjTMNzWZJgct9iRl3lR5E9iiwiVxzOJErsaq8Dt4VoUtqVd2t5kocd5g3lvZ4b9/<span class="number">7</span>ogVgLWfudtiiahx9XP3mMn7AdxnnonvSCYI/MVGIvrZAk+<span class="number">1</span>Ss/<span class="number">0</span>UBhgsCqGiUfaqjXfoZoJcOVCSccwl83ZXIqmLtxch46+A0YGWl/dVQSusHTJoMqmJjPm8FfyX8Cn8FaduMA4A8+RzRuox2psgjX/<span class="number">7</span>Q/qg1QCF root@p-cosmo-hce</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>测试是否可以登录</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ssh root@<span class="number">10.138</span>.<span class="number">225.12</span></span><br><span class="line">The authenticity of host <span class="string">'10.138.225.12 (10.138.225.12)'</span> can<span class="string">'t be established.</span></span><br><span class="line"><span class="string">ECDSA key fingerprint is SHA256:CL0QyyLYaWQDl+Gkf4NjI1Q4p9M05XM02avppepLn9k.</span></span><br><span class="line"><span class="string">ECDSA key fingerprint is MD5:55:3a:a1:2c:21:7f:24:3c:65:df:d4:41:5c:e5:7e:b2.</span></span><br><span class="line"><span class="string">Are you sure you want to continue connecting (yes/no)? yes</span></span><br><span class="line"><span class="string">Warning: Permanently added '</span><span class="number">10.138</span>.<span class="number">225.12</span><span class="string">' (ECDSA) to the list of known hosts.</span></span><br><span class="line"><span class="string">Last login: Tue Dec  3 10:12:34 2019 from 10.138.16.192</span></span><br></pre></td></tr></table></figure>
-
-<p>如果出现报错信息 <code>ssh_exchange_identification: read: Connection reset by peer</code>，服务端执行：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo <span class="string">"sshd:10.x.*.*"</span> &gt;&gt; /etc/hosts.allow</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2382,7 +2427,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">142</span>
+                    <span class="site-state-item-count">143</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

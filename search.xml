@@ -1,6 +1,83 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>MySQL · 主从复制延迟</title>
+    <url>/blog/2019/12/10/mysql-replication-delay/</url>
+    <content><![CDATA[<h2 id="判断"><a href="#判断" class="headerlink" title="判断"></a>判断</h2><p>Seconds_Behind_Master 值不为 0，单位是 s。</p>
+<h2 id="风险"><a href="#风险" class="headerlink" title="风险"></a>风险</h2><ul>
+<li>从库复制夯住，会导致备份失败（flush tables with read lock 900s 超时）</li>
+<li>以从库为基准进行的备份，数据不是最新的有延迟</li>
+<li>异常情况下，主从 HA 无法切换，HA 需要检查数据的一致性，延迟时主备不一致</li>
+</ul>
+<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>最根本原因是主库是多线程读写，从库读取主库的 binlog 的线程只有一个，常见的场景如下：</p>
+<ul>
+<li>无主键、无索引或索引区分度不高</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">slave</span> <span class="keyword">status</span>;</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">open</span> <span class="keyword">tables</span> <span class="keyword">where</span> In_use=<span class="number">1</span>;</span><br><span class="line">desc table;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>主库上有大事务，导致从库延时</li>
+<li>主库写入频繁，从库压力跟不上导致延时</li>
+<li>大量 myisam 表，在备份时导致 slave 延迟</li>
+</ul>
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><ul>
+<li>为夯住的表添加主键或者索引</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 找到表区分度比较高的几个字段</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> xx;</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> (<span class="keyword">select</span> <span class="keyword">distinct</span> xx <span class="keyword">from</span> xxx) t;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加主键</span></span><br><span class="line"><span class="keyword">stop</span> <span class="keyword">slave</span>;</span><br><span class="line"><span class="keyword">set</span> sql_log_bin=<span class="number">0</span>;</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> xx <span class="keyword">add</span> <span class="keyword">key</span> xx(xx);</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> <span class="string">'xxxx'</span> <span class="keyword">add</span> <span class="keyword">id</span> <span class="built_in">int</span>(<span class="number">10</span>) <span class="keyword">unsigned</span> primary <span class="keyword">key</span> AUTO_INCREMENT;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">slave</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>调整数据库中 IO 相关参数</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; select @@innodb_flush_log_at_trx_commit;</span><br><span class="line">+<span class="comment">----------------------------------+</span></span><br><span class="line">| @@innodb_flush_log_at_trx_commit |</span><br><span class="line">+<span class="comment">----------------------------------+</span></span><br><span class="line">|                                0 |</span><br><span class="line">+<span class="comment">----------------------------------+</span></span><br><span class="line"></span><br><span class="line">mysql&gt; select @@sync_binlog;</span><br><span class="line">+<span class="comment">---------------+</span></span><br><span class="line">| @@sync_binlog |</span><br><span class="line">+<span class="comment">---------------+</span></span><br><span class="line">|             0 |</span><br><span class="line">+<span class="comment">---------------+</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>修改表存储引擎为 InnoDB</li>
+</ul>
+<h2 id="案例-1"><a href="#案例-1" class="headerlink" title="案例 1"></a>案例 1</h2><p><strong>现象</strong>：从库两个线程 <code>Slave_IO_Running</code> 和 <code>Slave_SQL_Running</code> 均是 <strong>Yes</strong>，主从复制链路正常，但是 <code>Seconds_Behind_Master</code> 不断增大，且主从数据延迟有不断扩大的趋势。</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.133.0.51</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-binlog.000232</span><br><span class="line">          Read_Master_Log_Pos: 3108253</span><br><span class="line">               Relay_Log_File: relay-log.000004</span><br><span class="line">                Relay_Log_Pos: 169851605</span><br><span class="line">        Relay_Master_Log_File: mysql-binlog.000229</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">              ....</span><br><span class="line">        Seconds_Behind_Master: 42302</span><br><span class="line">Master_SSL_Verify_Server_Cert: No</span><br><span class="line">              ....</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查当前数据库线程状态，未发现有明显异常</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show processlist;</span><br><span class="line">+-------+-------------+-------------------+--------------------+---------+--------+----------------------------------+--------------------------------+</span><br><span class="line">| Id    | User        | Host              | db                 | Command | Time   | State                            | Info                           |</span><br><span class="line">+-------+-------------+-------------------+--------------------+---------+--------+----------------------------------+--------------------------------+</span><br><span class="line">|     1 | system user |                   | NULL               | Connect | 172777 | Waiting for master to send event | NULL                           |</span><br><span class="line">|     2 | system user |                   | NULL               | Connect | 678456 | Reading event from the relay log | NULL                           |</span><br><span class="line">|  4345 | cvbak       | localhost         | NULL               | Query   | 130546 | Waiting for table flush          | FLUSH /*!40101 LOCAL */ TABLES |</span><br><span class="line">| 17662 | root        | localhost         | NULL               | Query   |      0 | starting                         | show processlist               |</span><br><span class="line">| 17671 | hdm         | 10.133.0.52:37170 | information_schema | Sleep   |      1 |                                  | NULL                           |</span><br><span class="line">+-------+-------------+-------------------+--------------------+---------+--------+----------------------------------+--------------------------------+</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查当前正在使用的表：<code>show open tables where In_use=1;</code> 发现有一张表一直处于 <code>In_use</code> 状态。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; show open tables where In_use=1;</span><br><span class="line">+<span class="comment">----------+---------------------------+--------+-------------+</span></span><br><span class="line">| Database | Table                     | In_use | Name_locked |</span><br><span class="line">+<span class="comment">----------+---------------------------+--------+-------------+</span></span><br><span class="line">| tdmetl   | odsepg_zrfc_zco_zzfymx_sw |      1 |           0 |</span><br><span class="line">+<span class="comment">----------+---------------------------+--------+-------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>根据 <code>Relay_Log_Pos</code> 解析 <code>relay-log.000004</code>，查看当时正在执行的操作是 <code>Delete_rows</code>，操作的表是 <code>tdmetl</code>.<code>odsepg_zrfc_zco_zzfymx_sw</code>。</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">mysqlbinlog -vv --base64-output=decode-rows relay-log.<span class="number">000004</span> --start-position=<span class="number">169851605</span> | more</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># at 169851605</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169851451 CRC32 0x6683bf99 	Anonymous_GTID	last_committed=1831	sequence_number=1832	rbr_</span></span><br><span class="line"><span class="string">only=yes</span></span><br><span class="line"><span class="string">/*!50718</span> <span class="string">SET</span> <span class="string">TRANSACTION</span> <span class="string">ISOLATION</span> <span class="string">LEVEL</span> <span class="string">READ</span> <span class="string">COMMITTED*//*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@SESSION.GTID_NEXT=</span> <span class="string">'ANONYMOUS'</span><span class="string">/*!*/;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># at 169851670</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169851525 CRC32 0x9d910e5d 	Query	thread_id=1254417	exec_time=0	error_code=0</span></span><br><span class="line"><span class="string">SET</span> <span class="string">TIMESTAMP=1563393778/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.pseudo_thread_id=1254417/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.foreign_key_checks=1,</span> <span class="string">@@session.sql_auto_is_null=0,</span> <span class="string">@@session.unique_checks=1,</span> <span class="string">@@session.autocommit=1/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.sql_mode=1436549128/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.auto_increment_increment=1,</span> <span class="string">@@session.auto_increment_offset=1/*!*/;</span></span><br><span class="line"><span class="string">/*!\C</span> <span class="string">utf8</span> <span class="string">*//*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.character_set_client=33,@@session.collation_connection=33,@@session.collation_server=33/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.lc_time_names=0/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.collation_database=DEFAULT/*!*/;</span></span><br><span class="line"><span class="string">BEGIN</span></span><br><span class="line"><span class="string">/*!*/;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># at 169851744</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169851626 CRC32 0x6b8bbd2d 	Table_map: `tdmetl`.`odsepg_zrfc_zco_zzfymx_sw` mapped to number 170</span></span><br><span class="line"><span class="number">018</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># at 169851845</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169859832 CRC32 0x338e105a 	Delete_rows: table id 170018</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查表结构，发现该表数据量很大且无主键。由此基本确定其问题根本原因：<strong>对无主键的表进行删除或者更新，导致从库夯住</strong>。该表数据量：77961221条。</li>
+</ul>
+<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g6873jkiw5j30yf0gigpp.jpg" alt="image-20190822092437992"></p>
+<p><strong>解决方法</strong></p>
+<ul>
+<li>表添加自增主键。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">'xxxx'</span> <span class="keyword">ADD</span> <span class="keyword">id</span> <span class="built_in">int</span> <span class="keyword">UNSIGNED</span> primary <span class="keyword">key</span> AUTO_INCREMENT;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>大表删除使用 <code>truncate</code> 命令。</li>
+</ul>
+<h2 id="案例-2"><a href="#案例-2" class="headerlink" title="案例 2"></a>案例 2</h2><p><strong>原因分析</strong></p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.133.7.5</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 10</span><br><span class="line">              Master_Log_File: mysql-bin.000279</span><br><span class="line">          Read_Master_Log_Pos: 663610631</span><br><span class="line">               Relay_Log_File: mysqld-relay-bin.000007</span><br><span class="line">                Relay_Log_Pos: 139799382</span><br><span class="line">        Relay_Master_Log_File: mysql-bin.000273</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">                            ....</span><br><span class="line">        Seconds_Behind_Master: 475123</span><br><span class="line">        </span><br><span class="line">mysql&gt; show open tables where In_use=1; </span><br><span class="line">+<span class="comment">----------+-------------------+--------+-------------+</span></span><br><span class="line">| Database | Table             | In_use | Name_locked |</span><br><span class="line">+<span class="comment">----------+-------------------+--------+-------------+</span></span><br><span class="line">| hce      | dim_r_cei_general |      1 |           0 |</span><br><span class="line">+<span class="comment">----------+-------------------+--------+-------------+</span></span><br><span class="line"></span><br><span class="line">mysql&gt; desc dim_r_cei_general;</span><br><span class="line">+<span class="comment">---------------------+------------------+------+-----+-------------------+----------------+</span></span><br><span class="line">| Field               | Type             | Null | Key | Default           | Extra          |</span><br><span class="line">+<span class="comment">---------------------+------------------+------+-----+-------------------+----------------+</span></span><br><span class="line">| MATERIAL_CODE       | varchar(30)      | YES  |     | NULL              |                |</span><br><span class="line">| MATERIAL_DESCRITION | varchar(383)     | YES  |     | NULL              |                |</span><br><span class="line">| PA_DATE_ACTUAL      | varchar(30)      | YES  |     | NULL              |                |</span><br><span class="line">| HR_INDEX            | varchar(30)      | YES  |     | NULL              |                |</span><br><span class="line">| SALE_CHAR           | varchar(100)     | YES  |     | NULL              |                |</span><br><span class="line">| CREATE_DATE         | datetime         | YES  |     | CURRENT_TIMESTAMP |                |</span><br><span class="line">| id                  | int(10) unsigned | NO   | PRI | NULL              | auto_increment |</span><br><span class="line">+<span class="comment">---------------------+------------------+------+-----+-------------------+----------------+</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>解决方法</strong></p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">mysql&gt; show variables like &apos;sync_binlog&apos;;</span><br><span class="line">+---------------+-------+</span><br><span class="line">| Variable_name | Value |</span><br><span class="line">+---------------+-------+</span><br><span class="line">| sync_binlog   | 0     |</span><br><span class="line">+---------------+-------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; show variables like &apos;innodb_flush_log_at_trx_commit&apos;;</span><br><span class="line">+--------------------------------+-------+</span><br><span class="line">| Variable_name                  | Value |</span><br><span class="line">+--------------------------------+-------+</span><br><span class="line">| innodb_flush_log_at_trx_commit | 0     |</span><br><span class="line">+--------------------------------+-------+</span><br><span class="line"></span><br><span class="line">mysql&gt; select count(*) from dim_r_cei_general;</span><br><span class="line">+----------+</span><br><span class="line">| count(*) |</span><br><span class="line">+----------+</span><br><span class="line">|  1933121 |</span><br><span class="line">+----------+</span><br><span class="line"></span><br><span class="line">mysql&gt; select count(*) from (select distinct MATERIAL_CODE from dim_r_cei_general) t;</span><br><span class="line">+----------+</span><br><span class="line">| count(*) |</span><br><span class="line">+----------+</span><br><span class="line">|  1933111 |</span><br><span class="line">+----------+</span><br><span class="line"></span><br><span class="line">mysql&gt; stop slave;</span><br><span class="line">mysql&gt; set sql_log_bin=0;</span><br><span class="line">mysql&gt; alter table dim_r_cei_general add key index_MATERIAL_CODE(MATERIAL_CODE);</span><br><span class="line">mysql&gt; start slave;</span><br><span class="line"></span><br><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.133.7.5</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 10</span><br><span class="line">              Master_Log_File: mysql-bin.000279</span><br><span class="line">          Read_Master_Log_Pos: 663999593</span><br><span class="line">               Relay_Log_File: mysqld-relay-bin.000010</span><br><span class="line">                Relay_Log_Pos: 336125628</span><br><span class="line">        Relay_Master_Log_File: mysql-bin.000274</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">                            ....</span><br><span class="line">        Seconds_Behind_Master: 462357</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>MySQL</category>
+      </categories>
+  </entry>
+  <entry>
     <title>MySQL · 数据类型</title>
     <url>/blog/2019/12/10/mysql-datatype/</url>
     <content><![CDATA[<h2 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h2><h3 id="数值类型"><a href="#数值类型" class="headerlink" title="数值类型"></a>数值类型</h3><table>
@@ -188,6 +265,7 @@
 <li>IP: char(15)</li>
 <li>Email：char(32)</li>
 <li>性别：enum(‘男’,’女’)</li>
+<li>布尔值：tinyint(1)</li>
 </ul>
 ]]></content>
       <categories>
@@ -6876,8 +6954,6 @@
 <td align="left">5 bytes</td>
 </tr>
 </tbody></table>
-<p><strong>性能对比</strong></p>
-<p>char &gt; varchar</p>
 <p><strong>选择</strong></p>
 <p>选择最小的数据范围，因为这样可以大大减少磁盘空间及磁盘 I/O 读写开销，<strong>减少内存占用，减少CPU占用率</strong></p>
 ]]></content>
@@ -6942,7 +7018,7 @@
 <ul>
 <li>如果在时间上要超过 <code>Linux</code> 时间的，或者服务器时区不一样的就建议选择 <code>datetime</code>。</li>
 <li>如果是想要使用自动插入时间或者自动更新时间功能，可以使用 <code>timestamp</code>。</li>
-<li>存储年使用 <code>year</code>，存储日期使用 <code>date</code>，存储时间使用 <code>datetime</code>。</li>
+<li>存储年使用 <code>year</code>，存储日期使用 <code>date</code>。</li>
 </ul>
 ]]></content>
       <categories>
@@ -7131,6 +7207,8 @@
 </ul>
 <figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">stop</span> <span class="keyword">slave</span>;</span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> sql_slave_skip_counter=<span class="number">1</span>;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">slave</span>;</span><br></pre></td></tr></table></figure>
 
+<h3 id="1032：HA-ERR-KEY-NOT-FOUND"><a href="#1032：HA-ERR-KEY-NOT-FOUND" class="headerlink" title="1032：HA_ERR_KEY_NOT_FOUND"></a>1032：HA_ERR_KEY_NOT_FOUND</h3><p>Last_SQL_Errno: 1032</p>
+<p>Last_SQL_Error: Could not execute Delete_rows event on table hce.dim_r_cei_general; Can’t find record in ‘dim_r_cei_general’, Error_code: 1032; handler error HA_ERR_KEY_NOT_FOUND; the event’s master log mysql-bin.000273, end_log_pos 139807561</p>
 ]]></content>
       <categories>
         <category>MySQL</category>
@@ -8948,44 +9026,6 @@
 <p>从库在主库找不到 binlog 文件</p>
 <p><strong>原因</strong></p>
 <p>该错误发生在从库的io进程从主库拉取日志时，发现主库的mysql_bin.index文件中第一个文件不存在。出现此类报错可能是由于你的slave 由于某种原因停止了好长一段是时间，当你重启slave 复制的时候，在主库上找不到相应的binlog ,会报此类错误。或者是由于某些设置主库上的binlog被删除了，导致从库获取不到对应的binglog file。</p>
-<h2 id="主从复制延迟"><a href="#主从复制延迟" class="headerlink" title="主从复制延迟"></a>主从复制延迟</h2><h3 id="风险"><a href="#风险" class="headerlink" title="风险"></a>风险</h3><ul>
-<li>备库复制夯住，会导致备份失败（flush tables with read lock 900s 超时）</li>
-<li>以 Slave 为基准进行的备份，数据不是最新的有延迟</li>
-<li>异常情况下，主从 HA 无法切换，HA 需要检查数据的一致性，延迟时主备不一致</li>
-</ul>
-<h3 id="场景-amp-解决方法"><a href="#场景-amp-解决方法" class="headerlink" title="场景 &amp; 解决方法"></a>场景 &amp; 解决方法</h3><ul>
-<li>无主键、无索引或索引区分度不高</li>
-</ul>
-<p><strong>现象</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">show slave status， 显示position一直没有变</span><br><span class="line">show open tables where In_use=<span class="number">1</span>， 显示某个表一直是in_use为 <span class="number">1</span></span><br><span class="line">show create table，查看表结构可以看到无主键，或者无任何索引，或者索引区分度很差</span><br></pre></td></tr></table></figure>
-
-<p><strong>解决方法</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 找到表区分度比较高的几个字段, 可以使用这个方法判断：</span></span><br><span class="line">select count(*) from xx;</span><br><span class="line">select count(*) from (select distinct xx from xxx) t;</span><br><span class="line">如果<span class="number">2</span>个查询count(*)的结果差不多，说明可以对这些字段加索引</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备库 stop slave;</span></span><br><span class="line">可能会执行比较久，因为需要回滚事务。</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备库</span></span><br><span class="line">set sql_log_bin=<span class="number">0</span>;</span><br><span class="line">alter table xx add key xx(xx);</span><br><span class="line">alter table <span class="string">'xxxx'</span> add id int(<span class="number">10</span>) unsigned primary key AUTO_INCREMENT;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备库 start slave</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>主库上有大事务，导致从库延时</li>
-</ul>
-<p><strong>现象</strong>：</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">解析binlog文件，发现一直打印的是Write_rows</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>解决方法</strong>：</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">事前防范：与开发沟通，增加缓存，异步写入数据库,减少业务直接对db的大事务写入</span></span><br><span class="line"><span class="string">事中补救：调整数据库中io相关的参数比如innodb_flush_log_at_trx_commit和sync_binlog，或者打开并行复制功能</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>库写入频繁，从库压力跟不上导致延时</li>
-</ul>
-<p><strong>现象</strong>：</p>
-<p>此类原因的主要现象是数据库的 <code>IUD</code> 操作非常多，<code>slave</code> 由于 <code>sql_thread</code> 单线程的原因追不上主库。</p>
-<p><strong>解决方法</strong>：</p>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">a.</span> <span class="string">升级从库的硬件配置，比如</span> <span class="string">ssd,fio</span></span><br><span class="line"><span class="string">b.</span> <span class="string">使用@丁奇的预热工具</span> <span class="bullet">-relay</span> <span class="string">fetch</span></span><br><span class="line"><span class="string">在备库sql线程执行更新之前，预先将相应的数据加载到内存中,并不能提高sql_thread线程执行sql的能力，</span> <span class="string">也不能加快io_thread线程读取日志的速度。</span></span><br><span class="line"><span class="string">c.</span> <span class="string">使用多线程复制</span> <span class="string">阿里MySQL团队实现的方案</span> <span class="bullet">--</span> <span class="string">基于行的并行复制。</span></span><br><span class="line"><span class="string">该方案允许对同一张表进行修改的两个事务并行执行，只要这两个事务修改了表中的不同的行。</span></span><br><span class="line"><span class="string">这个方案可以达到事务间更高的并发度，但是局限是必须使用Row格式的binlog。</span></span><br><span class="line"><span class="string">因为只有使用Row格式的binlog才可以知道一个事务所修改的行的范围，而使用Statement格式的binlog只能知道修改的表对象。</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>大量 <code>myisam</code> 表，在备份时导致 <code>slave</code> 延时</li>
-</ul>
-<p><strong>现象</strong>：</p>
-<p>由于 <code>xtrabackup</code> 工具备份到最后会执行 <code>flash tables with read lock</code>，对数据库进行锁表以便进行一致性备份，然后对于 <code>myisam</code> 锁表，会阻碍 <code>salve_sql_thread</code> 运行进而导致夯住。</p>
-<p><strong>解决方法</strong>：</p>
-<p>修改表结构为 <code>InnoDB</code> 存储引擎的表</p>
 <h2 id="表碎片"><a href="#表碎片" class="headerlink" title="表碎片"></a>表碎片</h2><p>表碎片是 <code>MySQL</code> 运维过程中比较常见的问题，碎片的存在十分影响数据库的性能。</p>
 <h3 id="判断方法"><a href="#判断方法" class="headerlink" title="判断方法"></a>判断方法</h3><p>MySQL 的碎片是否产生，通过查看</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">show table status from table_name\G;</span><br></pre></td></tr></table></figure>
@@ -9020,8 +9060,6 @@
 <h3 id="原因分析-3"><a href="#原因分析-3" class="headerlink" title="原因分析"></a>原因分析</h3><p>有些操作要禁止掉对 SUPER 权限的要求，要处理可以设置 <code>log_bin_trust_routine_creators</code> 全局系统变量为 <code>1</code>，默认地，这个变量值为 <code>0</code>。</p>
 <h3 id="解决方法-3"><a href="#解决方法-3" class="headerlink" title="解决方法"></a>解决方法</h3><p>直接在数据库进行修改，也可以在启动服务器之时用 <code>--log-bin-trust-routine-creators</code> 选项来设置允许这个变量。</p>
 <figure class="highlight"><table><tr><td class="code"><pre><span class="line">mysql&gt; SET GLOBAL log_bin_trust_routine_creators = 1;</span><br></pre></td></tr></table></figure>
-
-<h2 id="删除线程"><a href="#删除线程" class="headerlink" title="删除线程"></a>删除线程</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta">#</span>!/bin/sh</span><br><span class="line">while :</span><br><span class="line">do</span><br><span class="line">  n=`mysqladmin processlist -h 127.0.0.1 -uroot -pHaier@123|grep -i sleep |wc -l`</span><br><span class="line">  date=`date +%Y%m%d\[%H:%M:%S]`</span><br><span class="line">  echo $n</span><br><span class="line"></span><br><span class="line">  if [ "$n" -gt 10 ]</span><br><span class="line">  then</span><br><span class="line">  for i in `mysqladmin processlist -h 127.0.0.1 -uroot -pHaier@123|grep -i Query |awk '&#123;print $2&#125;'`</span><br><span class="line">  do</span><br><span class="line">     mysqladmin -h 127.0.0.1 -uroot -pHaier@123 kill $i</span><br><span class="line">  done</span><br><span class="line">  echo "sleep is too many I killed it " &gt;&gt; /data/sleep.log</span><br><span class="line">  echo "$date : $n" &gt;&gt; /data/sleep.log</span><br><span class="line">  fi</span><br><span class="line">  sleep 1</span><br><span class="line">done</span><br></pre></td></tr></table></figure>
 
 ]]></content>
       <categories>

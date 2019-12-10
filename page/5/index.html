@@ -352,6 +352,205 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/05/mysql-case-writing-to-net/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/11/05/mysql-case-writing-to-net/" class="post-title-link" itemprop="url">MySQL · 案例分析 · 大量连接状态 Writing to net</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-05 14:49:50" itemprop="dateCreated datePublished" datetime="2019-11-05T14:49:50+08:00">2019-11-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-15 16:26:35" itemprop="dateModified" datetime="2019-11-15T16:26:35+08:00">2019-11-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><p><strong>HDM 告警</strong></p>
+<blockquote>
+<p>您的自建DB实例</p>
+<p><a href="mailto:dbvipcenter@10.159.36.193" target="_blank" rel="noopener">dbvipcenter@10.159.36.193</a>:3307 ( 别名: HMCENTER_M, 集群: 互联互通 )</p>
+<p>MySQL活跃会话数达到131</p>
+</blockquote>
+<p><code>Show processlist</code> 检查实时会话状态，发现出现大量的 <code>&quot;Writing to net&quot;</code></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">| <span class="number">41106</span> | canal  | <span class="number">10.138</span>.<span class="number">225.187</span>:<span class="number">36737</span> | NULL | Binlog Dump | <span class="number">14240</span> | Writing to net              | NULL |    <span class="number">0.000</span> |</span><br><span class="line">| <span class="number">41146</span> | canal  | <span class="number">10.138</span>.<span class="number">225.187</span>:<span class="number">44157</span> | NULL | Binlog Dump | <span class="number">14163</span> | Writing to net              | NULL |    <span class="number">0.000</span> |</span><br><span class="line">| <span class="number">41453</span> | canal  | <span class="number">10.138</span>.<span class="number">225.187</span>:<span class="number">43588</span> | NULL | Binlog Dump | <span class="number">13536</span> | Writing to net              | NULL |    <span class="number">0.000</span> |</span><br><span class="line">| <span class="number">41570</span> | canal  | <span class="number">10.138</span>.<span class="number">225.187</span>:<span class="number">35880</span> | NULL | Binlog Dump | <span class="number">13345</span> | Writing to net              | NULL |    <span class="number">0.000</span> |</span><br><span class="line">| <span class="number">41608</span> | canal  | <span class="number">10.138</span>.<span class="number">225.187</span>:<span class="number">39624</span> | NULL | Binlog Dump | <span class="number">13300</span> | Writing to net              | NULL |    <span class="number">0.000</span> |</span><br><span class="line">| <span class="number">41615</span> | canal  | <span class="number">10.138</span>.<span class="number">225.187</span>:<span class="number">39629</span> | NULL | Binlog Dump | <span class="number">13281</span> | Writing to net              | NULL |    <span class="number">0.000</span> |</span><br><span class="line">| <span class="number">41618</span> | canal  | <span class="number">10.138</span>.<span class="number">225.187</span>:<span class="number">39632</span> | NULL | Binlog Dump | <span class="number">13281</span> | Writing to net              | NULL |    <span class="number">0.000</span> |</span><br><span class="line">| <span class="number">41650</span> | canal  | <span class="number">10.138</span>.<span class="number">225.187</span>:<span class="number">43390</span> | NULL | Binlog Dump | <span class="number">13227</span> | Writing to net              | NULL |    <span class="number">0.000</span> |</span><br><span class="line">| <span class="number">41854</span> | canal  | <span class="number">10.138</span>.<span class="number">225.187</span>:<span class="number">47054</span> | NULL | Binlog Dump | <span class="number">12859</span> | Writing to net              | NULL |    <span class="number">0.000</span> |</span><br><span class="line">| <span class="number">41883</span> | canal  | <span class="number">10.138</span>.<span class="number">225.187</span>:<span class="number">50815</span> | NULL | Binlog Dump | <span class="number">12814</span> | Writing to net              | NULL |    <span class="number">0.000</span> |</span><br><span class="line">| <span class="number">42305</span> | canal  | <span class="number">10.138</span>.<span class="number">225.187</span>:<span class="number">42869</span> | NULL | Binlog Dump | <span class="number">12040</span> | Writing to net              | NULL |    <span class="number">0.000</span> |</span><br><span class="line">| <span class="number">42420</span> | canal  | <span class="number">10.138</span>.<span class="number">225.187</span>:<span class="number">35098</span> | NULL | Binlog Dump | <span class="number">11862</span> | Writing to net              | NULL |    <span class="number">0.000</span> |</span><br><span class="line">| <span class="number">42446</span> | canal  | <span class="number">10.138</span>.<span class="number">225.187</span>:<span class="number">38964</span> | NULL | Binlog Dump | <span class="number">11818</span> | Writing to net              | NULL |    <span class="number">0.000</span> |</span><br></pre></td></tr></table></figure>
+
+<h2 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h2><p>Writing to net：The server is writing a packet to the network.</p>
+<p>SQL 语句查询流程：</p>
+<ul>
+<li>扫描一行写到 <code>net_buffer</code>，这里 <code>net_buffer</code> 是按照 <a href="https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_net_buffer_length" target="_blank" rel="noopener">net_buffer_length</a> 初始化，但可以动态增长到 <a href="https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_max_allowed_packet" target="_blank" rel="noopener">max_allowed_packet</a> 配置值</li>
+<li>继续获取满足条件的行，直到写满 <code>net_buffer</code>，然后调用网络接口发送出去</li>
+<li>客户端接收网络包完成，清空 <code>net_buffer</code></li>
+<li>重复上面 1 到 3 的步骤</li>
+<li>如果发送未完成，表示 <code>socket send buffer</code> 写满，这时会进入等待状态，显示 <code>Writing to net</code>，直到 <code>socket send buffer</code> 重新可写，再继续发送</li>
+</ul>
+<p>由于 MySQL 是边扫描边发送数据的，当客户端接收慢时，就会阻塞整个查询进程，导致执行变慢。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; show variables like 'net_buffer_length';</span><br><span class="line">+<span class="comment">-------------------+-------+</span></span><br><span class="line">| Variable_name     | Value |</span><br><span class="line">+<span class="comment">-------------------+-------+</span></span><br><span class="line">| net_buffer_length | 16384 |</span><br><span class="line">+<span class="comment">-------------------+-------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">MariaDB [(<span class="keyword">none</span>)]&gt; <span class="keyword">select</span> @@max_allowed_packet/<span class="number">1024</span>/<span class="number">1024</span>;</span><br><span class="line">+<span class="comment">--------------------------------+</span></span><br><span class="line">| @@max_allowed_packet/1024/1024 |</span><br><span class="line">+<span class="comment">--------------------------------+</span></span><br><span class="line">| 20.00000000                    |</span><br><span class="line">+<span class="comment">--------------------------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.08</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><ul>
+<li>调整 <a href="https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_max_allowed_packet" target="_blank" rel="noopener">max_allowed_packet</a> 参数</li>
+<li>排查客户端异常情况</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">MariaDB [(none)]&gt; set global max_allowed_packet=67108864;</span><br><span class="line">Query OK, 0 rows affected (0.00 sec)</span><br><span class="line"></span><br><span class="line">MariaDB [(none)]&gt; show global variables like "max_allowed_packet";</span><br><span class="line">+<span class="comment">--------------------+----------+</span></span><br><span class="line">| Variable_name      | Value    |</span><br><span class="line">+<span class="comment">--------------------+----------+</span></span><br><span class="line">| max_allowed_packet | 67108864 |</span><br><span class="line">+<span class="comment">--------------------+----------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/04/aliyun-hdr/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2494,203 +2693,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/25/linux-disk/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/25/linux-disk/" class="post-title-link" itemprop="url">Linux 磁盘相关知识</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-25 22:17:51" itemprop="dateCreated datePublished" datetime="2019-10-25T22:17:51+08:00">2019-10-25</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-15 16:22:37" itemprop="dateModified" datetime="2019-11-15T16:22:37+08:00">2019-11-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="磁盘类型"><a href="#磁盘类型" class="headerlink" title="磁盘类型"></a>磁盘类型</h2><p><strong>按照材质分类</strong>：</p>
-<ul>
-<li><strong>HDD（Hard Disk Driver）</strong>：传统硬盘，即机械硬盘</li>
-<li><strong>SSD（Solid State Disk）</strong>：固态硬盘，是一种主要以闪存作为永久性存储器的计算机存储设备。</li>
-</ul>
-<p><strong>按照硬盘接口分类</strong>：硬盘接口是指硬盘与主板之间的连接方式</p>
-<ul>
-<li><strong>SATA</strong>：串形高技术配置接口</li>
-<li><strong>SAS</strong>：串形小型计算机系统接口</li>
-<li><strong>SAS</strong> 接口的硬盘比 <strong>SATA</strong> 接口的硬盘传输速度要快很多，并且性能也高很多</li>
-</ul>
-<p><strong>磁盘类型</strong>：使用 <code>lsblk</code> 命令进行判断</p>
-<ul>
-<li><code>-d</code> ，表示显示设备名称</li>
-<li><code>-o</code> ，表示仅显示特定的列</li>
-<li><code>ROTA</code> 是 <code>1</code> 的表示可以旋转，磁盘类型是 <code>HDD</code>。</li>
-<li><code>ROTA</code> 是 <code>0</code> 的表示不可以旋转，就有可能是 <code>SSD</code>。</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ lsblk -d -o name,rota</span><br><span class="line">NAME ROTA</span><br><span class="line">fd0     <span class="number">1</span></span><br><span class="line">sda     <span class="number">1</span></span><br><span class="line">sdb     <span class="number">1</span></span><br><span class="line">sr0     <span class="number">1</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="磁盘性能"><a href="#磁盘性能" class="headerlink" title="磁盘性能"></a>磁盘性能</h2><p><strong>硬盘性能指标</strong>：IOPS (Input / Output Per Second) 即每秒的输入输出量（读写次数），是衡量磁盘性能的主要指标之一。</p>
-<p>使用 <code>dd</code> 测试硬盘吞吐量：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ dd <span class="keyword">if</span>=/dev/zero of=/dev/sda bs=<span class="number">4</span>k count=<span class="number">3000</span> oflag=direct</span><br><span class="line">记录了<span class="number">3000</span>+<span class="number">0</span> 的读入</span><br><span class="line">记录了<span class="number">3000</span>+<span class="number">0</span> 的写出</span><br><span class="line"><span class="number">12288000</span>字节(<span class="number">12</span> MB)已复制，<span class="number">0.0791091</span> 秒，<span class="number">155</span> MB/秒</span><br></pre></td></tr></table></figure>
-
-<p><strong>总结</strong>：<code>SSD</code> 的随机 <code>IO</code> 读写能力是 <code>SATA</code> 和 <code>SAS</code> 机械硬盘的一千多倍，顺序读写能力基本和 <code>SSD</code> 保持同样的数量级。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2739,7 +2741,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">142</span>
+                    <span class="site-state-item-count">143</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
