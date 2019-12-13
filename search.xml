@@ -5,13 +5,342 @@
     <url>/blog/2019/12/10/mysql-tool-mysqldump/</url>
     <content><![CDATA[<h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h2><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">Usage: mysqldump [OPTIONS] database [tables] &gt; [backupfile.sql]</span><br><span class="line">       mysqldump [OPTIONS] --databases [OPTIONS] DB1 [DB2 DB3...] &gt; [backupfile.sql]</span><br><span class="line">       mysqldump [OPTIONS] --all-databases [OPTIONS] &gt; [backupfile.sql]</span><br></pre></td></tr></table></figure>
 
-<h2 id="备份"><a href="#备份" class="headerlink" title="备份"></a>备份</h2><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 备份所有库</span></span><br><span class="line">mysqldump -u&lt;user&gt; -p&lt;password&gt; --all-databases &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份指定库</span></span><br><span class="line">mysqldump -u&lt;user&gt; -p&lt;password&gt; --databases school hospital &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份指定表</span></span><br><span class="line">mysqldump -u&lt;user&gt; -p&lt;password&gt; school table_name &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导出表结构，无数据</span></span><br><span class="line">mysqldump -u&lt;user&gt; -p&lt;password&gt; --all--database --no-data &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 常用备份语句</span></span><br><span class="line">nohup mysqldump --socket=mysql.sock --user=user --password=pass --single-transaction --flush-logs --master-data=<span class="number">2</span> --all-databases --extended-insert --routines &gt; dump.sql <span class="number">2</span>&gt; dump.err &amp;</span><br><span class="line"></span><br><span class="line"><span class="comment">## --socket: sock文件</span></span><br><span class="line"><span class="comment">## --user: 用户名</span></span><br><span class="line"><span class="comment">## --password: 密码</span></span><br><span class="line"><span class="comment">## --single-transaction: 备份期间不加锁</span></span><br><span class="line"><span class="comment">## --flush-logs: 开始导出之前刷新日志</span></span><br><span class="line"><span class="comment">## --master-data: 该选项将 binlog 的位置和文件名追加到输出文件中</span></span><br><span class="line"><span class="comment">## --all-databases: 备份所有库</span></span><br><span class="line"><span class="comment">## --extended-insert: 使用具有多个VALUES列的INSERT语法，这样使导出文件更小，并加速导入的速度</span></span><br><span class="line"><span class="comment">## --routines: 导出存储过程以及自定义函数</span></span><br><span class="line"><span class="comment">## --events: 导出事件</span></span><br><span class="line"><span class="comment">## --triggers: 导出触发器，该选项默认启用</span></span><br><span class="line"><span class="comment">## 默认导出视图</span></span><br></pre></td></tr></table></figure>
+<h2 id="备份"><a href="#备份" class="headerlink" title="备份"></a>备份</h2><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 备份所有库</span></span><br><span class="line">mysqldump -u&lt;user&gt; -p&lt;password&gt; --all-databases &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份指定库</span></span><br><span class="line">mysqldump -u&lt;user&gt; -p&lt;password&gt; --databases school hospital &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份指定表</span></span><br><span class="line">mysqldump -u&lt;user&gt; -p&lt;password&gt; school table_name &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导出表结构，无数据</span></span><br><span class="line">mysqldump -u&lt;user&gt; -p&lt;password&gt; --all--database --no-data &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份存储过程</span></span><br><span class="line">mysqldump --user=sre --password=<span class="string">'xx'</span> --single-transaction --master-data=<span class="number">2</span> -n -d -t -R user &gt; dump.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 常用备份语句</span></span><br><span class="line">nohup mysqldump --socket=mysql.sock --user=user --password=pass --single-transaction --flush-logs --master-data=<span class="number">2</span> --all-databases --extended-insert --routines &gt; dump.sql <span class="number">2</span>&gt; dump.err &amp;</span><br><span class="line"></span><br><span class="line"><span class="comment">## --socket: sock文件</span></span><br><span class="line"><span class="comment">## --user: 用户名</span></span><br><span class="line"><span class="comment">## --password: 密码</span></span><br><span class="line"><span class="comment">## --single-transaction: 备份期间不加锁</span></span><br><span class="line"><span class="comment">## --flush-logs: 开始导出之前刷新日志</span></span><br><span class="line"><span class="comment">## --master-data: 该选项将 binlog 的位置和文件名追加到输出文件中</span></span><br><span class="line"><span class="comment">## --all-databases: 备份所有库</span></span><br><span class="line"><span class="comment">## --extended-insert: 使用具有多个VALUES列的INSERT语法，这样使导出文件更小，并加速导入的速度</span></span><br><span class="line"><span class="comment">## --routines: 导出存储过程以及自定义函数</span></span><br><span class="line"><span class="comment">## --events: 导出事件</span></span><br><span class="line"><span class="comment">## --triggers: 导出触发器，该选项默认启用</span></span><br><span class="line"><span class="comment">## 默认导出视图</span></span><br></pre></td></tr></table></figure>
 
+<p><strong>Table：<a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html" target="_blank" rel="noopener">mysqldump</a> Options</strong></p>
+<table>
+<thead>
+<tr>
+<th>Option Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_add-drop-database" target="_blank" rel="noopener">–add-drop-database</a></td>
+<td>Add DROP DATABASE statement before each CREATE DATABASE statement</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_add-drop-table" target="_blank" rel="noopener">–add-drop-table</a></td>
+<td>Add DROP TABLE statement before each CREATE TABLE statement</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_add-drop-trigger" target="_blank" rel="noopener">–add-drop-trigger</a></td>
+<td>Add DROP TRIGGER statement before each CREATE TRIGGER statement</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_add-locks" target="_blank" rel="noopener">–add-locks</a></td>
+<td>Surround each table dump with LOCK TABLES and UNLOCK TABLES statements</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_all-databases" target="_blank" rel="noopener">–all-databases</a></td>
+<td>Dump all tables in all databases</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_allow-keywords" target="_blank" rel="noopener">–allow-keywords</a></td>
+<td>Allow creation of column names that are keywords</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_apply-slave-statements" target="_blank" rel="noopener">–apply-slave-statements</a></td>
+<td>Include STOP SLAVE prior to CHANGE MASTER statement and START SLAVE at end of output</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_bind-address" target="_blank" rel="noopener">–bind-address</a></td>
+<td>Use specified network interface to connect to MySQL Server</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_comments" target="_blank" rel="noopener">–comments</a></td>
+<td>Add comments to dump file</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_compact" target="_blank" rel="noopener">–compact</a></td>
+<td>Produce more compact output</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_compatible" target="_blank" rel="noopener">–compatible</a></td>
+<td>Produce output that is more compatible with other database systems or with older MySQL servers</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_complete-insert" target="_blank" rel="noopener">–complete-insert</a></td>
+<td>Use complete INSERT statements that include column names</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_compress" target="_blank" rel="noopener">–compress</a></td>
+<td>Compress all information sent between client and server</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_create-options" target="_blank" rel="noopener">–create-options</a></td>
+<td>Include all MySQL-specific table options in CREATE TABLE statements</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_databases" target="_blank" rel="noopener">–databases</a></td>
+<td>Interpret all name arguments as database names</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_debug" target="_blank" rel="noopener">–debug</a></td>
+<td>Write debugging log</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_debug-check" target="_blank" rel="noopener">–debug-check</a></td>
+<td>Print debugging information when program exits</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_debug-info" target="_blank" rel="noopener">–debug-info</a></td>
+<td>Print debugging information, memory, and CPU statistics when program exits</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_default-auth" target="_blank" rel="noopener">–default-auth</a></td>
+<td>Authentication plugin to use</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_default-character-set" target="_blank" rel="noopener">–default-character-set</a></td>
+<td>Specify default character set</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_defaults-extra-file" target="_blank" rel="noopener">–defaults-extra-file</a></td>
+<td>Read named option file in addition to usual option files</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_defaults-file" target="_blank" rel="noopener">–defaults-file</a></td>
+<td>Read only named option file</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_delete-master-logs" target="_blank" rel="noopener">–delete-master-logs</a></td>
+<td>On a master replication server, delete the binary logs after performing the dump operation</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_disable-keys" target="_blank" rel="noopener">–disable-keys</a></td>
+<td>For each table, surround INSERT statements with statements to disable and enable keys</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_dump-date" target="_blank" rel="noopener">–dump-date</a></td>
+<td>Include dump date as “Dump completed on” comment if –comments is given</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_dump-slave" target="_blank" rel="noopener">–dump-slave</a></td>
+<td>Include CHANGE MASTER statement that lists binary log coordinates of slave’s master</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_events" target="_blank" rel="noopener">–events</a></td>
+<td>Dump events from dumped databases</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_extended-insert" target="_blank" rel="noopener">–extended-insert</a></td>
+<td>Use multiple-row INSERT syntax</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_flush-logs" target="_blank" rel="noopener">–flush-logs</a></td>
+<td>Flush MySQL server log files before starting dump</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_flush-privileges" target="_blank" rel="noopener">–flush-privileges</a></td>
+<td>Emit a FLUSH PRIVILEGES statement after dumping mysql database</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_force" target="_blank" rel="noopener">–force</a></td>
+<td>Continue even if an SQL error occurs during a table dump</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_help" target="_blank" rel="noopener">–help</a></td>
+<td>Display help message and exit</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_host" target="_blank" rel="noopener">–host</a></td>
+<td>Host on which MySQL server is located</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_ignore-error" target="_blank" rel="noopener">–ignore-error</a></td>
+<td>Ignore specified errors</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_ignore-table" target="_blank" rel="noopener">–ignore-table</a></td>
+<td>Do not dump given table</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_include-master-host-port" target="_blank" rel="noopener">–include-master-host-port</a></td>
+<td>Include MASTER_HOST/MASTER_PORT options in CHANGE MASTER statement produced with –dump-slave</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_insert-ignore" target="_blank" rel="noopener">–insert-ignore</a></td>
+<td>Write INSERT IGNORE rather than INSERT statements</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_lock-all-tables" target="_blank" rel="noopener">–lock-all-tables</a></td>
+<td>Lock all tables across all databases</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_lock-tables" target="_blank" rel="noopener">–lock-tables</a></td>
+<td>Lock all tables before dumping them</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_log-error" target="_blank" rel="noopener">–log-error</a></td>
+<td>Append warnings and errors to named file</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_login-path" target="_blank" rel="noopener">–login-path</a></td>
+<td>Read login path options from .mylogin.cnf</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_master-data" target="_blank" rel="noopener">–master-data</a></td>
+<td>Write the binary log file name and position to the output</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_max-allowed-packet" target="_blank" rel="noopener">–max-allowed-packet</a></td>
+<td>Maximum packet length to send to or receive from server</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_net-buffer-length" target="_blank" rel="noopener">–net-buffer-length</a></td>
+<td>Buffer size for TCP/IP and socket communication</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_no-autocommit" target="_blank" rel="noopener">–no-autocommit</a></td>
+<td>Enclose the INSERT statements for each dumped table within SET autocommit = 0 and COMMIT statements</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_no-create-db" target="_blank" rel="noopener">–no-create-db</a></td>
+<td>Do not write CREATE DATABASE statements</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_no-create-info" target="_blank" rel="noopener">–no-create-info</a></td>
+<td>Do not write CREATE TABLE statements that re-create each dumped table</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_no-data" target="_blank" rel="noopener">–no-data</a></td>
+<td>Do not dump table contents</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_no-defaults" target="_blank" rel="noopener">–no-defaults</a></td>
+<td>Read no option files</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_opt" target="_blank" rel="noopener">–opt</a></td>
+<td>Shorthand for –add-drop-table –add-locks –create-options –disable-keys –extended-insert –lock-tables –quick –set-charset.</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_order-by-primary" target="_blank" rel="noopener">–order-by-primary</a></td>
+<td>Dump each table’s rows sorted by its primary key, or by its first unique index</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_password" target="_blank" rel="noopener">–password</a></td>
+<td>Password to use when connecting to server</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_pipe" target="_blank" rel="noopener">–pipe</a></td>
+<td>Connect to server using named pipe (Windows only)</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_port" target="_blank" rel="noopener">–port</a></td>
+<td>TCP/IP port number for connection</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_print-defaults" target="_blank" rel="noopener">–print-defaults</a></td>
+<td>Print default options</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_quick" target="_blank" rel="noopener">–quick</a></td>
+<td>Retrieve rows for a table from the server a row at a time</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_replace" target="_blank" rel="noopener">–replace</a></td>
+<td>Write REPLACE statements rather than INSERT statements</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_result-file" target="_blank" rel="noopener">–result-file</a></td>
+<td>Direct output to a given file</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_routines" target="_blank" rel="noopener">–routines</a></td>
+<td>Dump stored routines (procedures and functions) from dumped databases</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_set-charset" target="_blank" rel="noopener">–set-charset</a></td>
+<td>Add SET NAMES default_character_set to output</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_set-gtid-purged" target="_blank" rel="noopener">–set-gtid-purged</a></td>
+<td>Whether to add SET @@GLOBAL.GTID_PURGED to output</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_single-transaction" target="_blank" rel="noopener">–single-transaction</a></td>
+<td>Issue a BEGIN SQL statement before dumping data from server</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_add-drop-table" target="_blank" rel="noopener">–skip-add-drop-table</a></td>
+<td>Do not add a DROP TABLE statement before each CREATE TABLE statement</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_add-locks" target="_blank" rel="noopener">–skip-add-locks</a></td>
+<td>Do not add locks</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_skip-comments" target="_blank" rel="noopener">–skip-comments</a></td>
+<td>Do not add comments to dump file</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_compact" target="_blank" rel="noopener">–skip-compact</a></td>
+<td>Do not produce more compact output</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_disable-keys" target="_blank" rel="noopener">–skip-disable-keys</a></td>
+<td>Do not disable keys</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_extended-insert" target="_blank" rel="noopener">–skip-extended-insert</a></td>
+<td>Turn off extended-insert</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_skip-opt" target="_blank" rel="noopener">–skip-opt</a></td>
+<td>Turn off options set by –opt</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_quick" target="_blank" rel="noopener">–skip-quick</a></td>
+<td>Do not retrieve rows for a table from the server a row at a time</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_set-charset" target="_blank" rel="noopener">–skip-set-charset</a></td>
+<td>Do not write SET NAMES statement</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_triggers" target="_blank" rel="noopener">–skip-triggers</a></td>
+<td>Do not dump triggers</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_socket" target="_blank" rel="noopener">–socket</a></td>
+<td>Unix socket file or Windows named pipe to use</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_tables" target="_blank" rel="noopener">–tables</a></td>
+<td>Override –databases or -B option</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_triggers" target="_blank" rel="noopener">–triggers</a></td>
+<td>Dump triggers for each dumped table</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_user" target="_blank" rel="noopener">–user</a></td>
+<td>MySQL user name to use when connecting to server</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_verbose" target="_blank" rel="noopener">–verbose</a></td>
+<td>Verbose mode</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_version" target="_blank" rel="noopener">–version</a></td>
+<td>Display version information and exit</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_where" target="_blank" rel="noopener">–where</a></td>
+<td>Dump only rows selected by given WHERE condition</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html#option_mysqldump_xml" target="_blank" rel="noopener">–xml</a></td>
+<td>Produce XML output</td>
+</tr>
+</tbody></table>
 <h2 id="恢复"><a href="#恢复" class="headerlink" title="恢复"></a>恢复</h2><ul>
 <li>登录情况下：source  备份文件</li>
-<li>不登录情况下：mysqldump -u<user> -p<password> 库名 &lt; /data/mysql/xx.sql</password></user></li>
+<li>不登录情况下：mysql -u<user> -p<password> 库名 &lt; xx.sql</password></user></li>
 </ul>
-]]></content>
+<h2 id="案例"><a href="#案例" class="headerlink" title="案例"></a>案例</h2><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 全局只读锁</span></span><br><span class="line">flush tables with read lock;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份</span></span><br><span class="line">mysqldump -uroot -pHaier@<span class="number">123</span> --all-databases --triggers --routines --events --single-transaction --master-data=<span class="number">2</span> &gt; all_databases.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 传输</span></span><br><span class="line">scp master.sql root@x.x.x.x:/tmp</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导入</span></span><br><span class="line">mysql -uroot -p<span class="string">'xx'</span> &lt; all_databases.sql</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>MySQL</category>
       </categories>
@@ -658,6 +987,11 @@
 <li>-classpath:/config/</li>
 <li>-classpath:/</li>
 </ul>
+<h2 id="Spring-Boot-日志"><a href="#Spring-Boot-日志" class="headerlink" title="Spring Boot 日志"></a>Spring Boot 日志</h2><p>Spring Boot：<strong>slf4j</strong>  +  log4j/log4j2/<strong>logback</strong></p>
+<p><img src="http://www.slf4j.org/images/concrete-bindings.png" alt></p>
+<p>每一个日志的实现都有自己的配置文件，使用 slf4j 之后，配置文件还是做成日志实现框架自己本身的配置文件。</p>
+<p>Spring Boot 能自动适配所有的日志，而且底层使用 <strong>slf4j + logback</strong> 的方式记录日志，引入其他框架的时候，只需要把这个框架依赖的日志框架排除掉。</p>
+<h2 id="Spring-Boot-与-Web-开发"><a href="#Spring-Boot-与-Web-开发" class="headerlink" title="Spring Boot 与 Web 开发"></a>Spring Boot 与 Web 开发</h2><p>模板引擎  thymeleaf</p>
 ]]></content>
       <categories>
         <category>Java</category>
@@ -3011,7 +3345,7 @@
 </ul>
 <p><strong>权限</strong>：<a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_create-routine" target="_blank" rel="noopener">CREATE ROUTINE</a> 、<a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_alter-routine" target="_blank" rel="noopener">ALTER ROUTINE</a> 、<a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_execute" target="_blank" rel="noopener">EXECUTE</a></p>
 <p><strong>语法</strong>：</p>
-<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 创建</span></span><br><span class="line"><span class="keyword">CREATE</span></span><br><span class="line">    [DEFINER = <span class="keyword">user</span>]</span><br><span class="line">    <span class="keyword">PROCEDURE</span> sp_name ([proc_parameter[,...]])</span><br><span class="line">    [characteristic ...] routine_body</span><br><span class="line"></span><br><span class="line"><span class="keyword">CREATE</span></span><br><span class="line">    [DEFINER = <span class="keyword">user</span>]</span><br><span class="line">    <span class="keyword">FUNCTION</span> sp_name ([func_parameter[,...]])</span><br><span class="line">    <span class="keyword">RETURNS</span> <span class="keyword">type</span></span><br><span class="line">    [characteristic ...] routine_body</span><br><span class="line"></span><br><span class="line">proc_parameter:</span><br><span class="line">    [ <span class="keyword">IN</span> | <span class="keyword">OUT</span> | INOUT ] param_name <span class="keyword">type</span></span><br><span class="line"></span><br><span class="line">func_parameter:</span><br><span class="line">    param_name <span class="keyword">type</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span>:</span><br><span class="line">    <span class="keyword">Any</span> valid MySQL <span class="keyword">data</span> <span class="keyword">type</span></span><br><span class="line"></span><br><span class="line">characteristic:</span><br><span class="line">    <span class="keyword">COMMENT</span> <span class="string">'string'</span></span><br><span class="line">  | <span class="keyword">LANGUAGE</span> <span class="keyword">SQL</span></span><br><span class="line">  | [<span class="keyword">NOT</span>] <span class="keyword">DETERMINISTIC</span></span><br><span class="line">  | &#123; CONTAINS <span class="keyword">SQL</span> | <span class="keyword">NO</span> <span class="keyword">SQL</span> | <span class="keyword">READS</span> <span class="keyword">SQL</span> <span class="keyword">DATA</span> | MODIFIES <span class="keyword">SQL</span> <span class="keyword">DATA</span> &#125;</span><br><span class="line">  | <span class="keyword">SQL</span> <span class="keyword">SECURITY</span> &#123; DEFINER | INVOKER &#125;</span><br><span class="line"></span><br><span class="line">routine_body:</span><br><span class="line">    Valid <span class="keyword">SQL</span> routine <span class="keyword">statement</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">PROCEDURE</span> proc_name [characteristic ...]</span><br><span class="line"></span><br><span class="line">characteristic:</span><br><span class="line">    <span class="keyword">COMMENT</span> <span class="string">'string'</span></span><br><span class="line">  | <span class="keyword">LANGUAGE</span> <span class="keyword">SQL</span></span><br><span class="line">  | &#123; CONTAINS <span class="keyword">SQL</span> | <span class="keyword">NO</span> <span class="keyword">SQL</span> | <span class="keyword">READS</span> <span class="keyword">SQL</span> <span class="keyword">DATA</span> | MODIFIES <span class="keyword">SQL</span> <span class="keyword">DATA</span> &#125;</span><br><span class="line">  | <span class="keyword">SQL</span> <span class="keyword">SECURITY</span> &#123; DEFINER | INVOKER &#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment"># 删除</span></span><br><span class="line"><span class="keyword">DROP</span> &#123;<span class="keyword">PROCEDURE</span> | <span class="keyword">FUNCTION</span>&#125; [<span class="keyword">IF</span> <span class="keyword">EXISTS</span>] sp_name</span><br><span class="line"></span><br><span class="line"><span class="comment"># 调用</span></span><br><span class="line"><span class="keyword">CALL</span> sp_name([parameter[,...]])</span><br><span class="line"><span class="keyword">CALL</span> sp_name[()]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">procedure</span> <span class="keyword">status</span>;</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">create</span> <span class="keyword">procedure</span> proc_name;</span><br></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 创建</span></span><br><span class="line">DELIMITER ;;</span><br><span class="line"><span class="keyword">CREATE</span> DEFINER=<span class="string">`root`</span>@<span class="string">`%`</span> <span class="keyword">PROCEDURE</span> <span class="string">`test_mysql_while_loop`</span>()</span><br><span class="line"><span class="keyword">BEGIN</span></span><br><span class="line"> <span class="keyword">DECLARE</span> x  <span class="built_in">INT</span>;</span><br><span class="line"> <span class="keyword">DECLARE</span> <span class="keyword">str</span>  <span class="built_in">TEXT</span>;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">SET</span> x = <span class="number">1000000001</span>;</span><br><span class="line"> <span class="keyword">SET</span> <span class="keyword">str</span> =  <span class="string">''</span>;</span><br><span class="line"></span><br><span class="line"> WHILE x  &lt;= 1100000001 DO</span><br><span class="line"> <span class="keyword">SET</span>  <span class="keyword">str</span> = <span class="keyword">CONCAT</span>(<span class="keyword">str</span>,x,<span class="string">','</span>);</span><br><span class="line"> <span class="keyword">SET</span>  x = x + <span class="number">1</span>;</span><br><span class="line"> <span class="keyword">END</span> <span class="keyword">WHILE</span>;</span><br><span class="line"></span><br><span class="line"> <span class="keyword">SELECT</span> <span class="keyword">str</span>;</span><br><span class="line"> <span class="keyword">END</span> ;;</span><br><span class="line">DELIMITER ;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">PROCEDURE</span> proc_name [characteristic ...]</span><br><span class="line"></span><br><span class="line">characteristic:</span><br><span class="line">    <span class="keyword">COMMENT</span> <span class="string">'string'</span></span><br><span class="line">  | <span class="keyword">LANGUAGE</span> <span class="keyword">SQL</span></span><br><span class="line">  | &#123; CONTAINS <span class="keyword">SQL</span> | <span class="keyword">NO</span> <span class="keyword">SQL</span> | <span class="keyword">READS</span> <span class="keyword">SQL</span> <span class="keyword">DATA</span> | MODIFIES <span class="keyword">SQL</span> <span class="keyword">DATA</span> &#125;</span><br><span class="line">  | <span class="keyword">SQL</span> <span class="keyword">SECURITY</span> &#123; DEFINER | INVOKER &#125;</span><br><span class="line">  </span><br><span class="line"><span class="comment"># 删除</span></span><br><span class="line"><span class="keyword">DROP</span> &#123;<span class="keyword">PROCEDURE</span> | <span class="keyword">FUNCTION</span>&#125; [<span class="keyword">IF</span> <span class="keyword">EXISTS</span>] sp_name</span><br><span class="line"></span><br><span class="line"><span class="comment"># 调用</span></span><br><span class="line"><span class="keyword">CALL</span> sp_name([parameter[,...]])</span><br><span class="line"><span class="keyword">CALL</span> sp_name[()]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">procedure</span> <span class="keyword">status</span>;</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">create</span> <span class="keyword">procedure</span> proc_name;</span><br></pre></td></tr></table></figure>
 
 <h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">mysql&gt; delimiter //</span><br><span class="line"></span><br><span class="line">mysql&gt; CREATE PROCEDURE simpleproc (OUT <span class="keyword">param</span>1 INT)</span><br><span class="line">    -&gt; <span class="keyword">BEGIN</span></span><br><span class="line">    -&gt;   SELECT COUNT(*) INTO <span class="keyword">param</span>1 FROM t;</span><br><span class="line">    -&gt; <span class="keyword">END</span>//</span><br><span class="line">Query OK, <span class="number">0</span> rows affected (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; delimiter ;</span><br><span class="line"></span><br><span class="line">mysql&gt; CALL simpleproc(@a);</span><br><span class="line">Query OK, <span class="number">0</span> rows affected (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; SELECT @a;</span><br><span class="line">+------+</span><br><span class="line">| @a   |</span><br><span class="line">+------+</span><br><span class="line">| <span class="number">3</span>    |</span><br><span class="line">+------+</span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
 
@@ -7078,7 +7412,7 @@
 <ul>
 <li>启动 mysqld</li>
 </ul>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">$ chown -R mysql:mysql mysql</span><br><span class="line">$ /usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql &gt;/dev/null &amp;s</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">$ chown -R mysql:mysql mysql</span><br><span class="line">$ /usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql &gt;/dev/null &amp;</span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>配置主从复制关系</li>
@@ -8846,7 +9180,7 @@
 <ul>
 <li>配置文件 <code>my.cnf</code></li>
 </ul>
-<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">[client]</span></span><br><span class="line"><span class="string">port</span>                      <span class="string">=</span> <span class="number">3306</span></span><br><span class="line"><span class="string">socket</span>                    <span class="string">=</span> <span class="string">/data/mysql/mysql.sock</span></span><br><span class="line"></span><br><span class="line"><span class="string">[mysqld]</span></span><br><span class="line"><span class="string">port</span>                      <span class="string">=</span> <span class="number">3306</span></span><br><span class="line"><span class="string">socket</span>                    <span class="string">=</span> <span class="string">/data/mysql/mysql.sock</span></span><br><span class="line"><span class="string">pid_file</span>                  <span class="string">=</span> <span class="string">/data/mysql/mysql.pid</span></span><br><span class="line"><span class="string">basedir</span>                   <span class="string">=</span> <span class="string">/usr/local/mysql</span></span><br><span class="line"><span class="string">datadir</span>                   <span class="string">=</span> <span class="string">/data/mysql</span></span><br><span class="line"><span class="string">character_set_server</span>      <span class="string">=</span> <span class="string">utf8</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># LOG</span></span><br><span class="line"><span class="string">slow_query_log</span>            <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">long_query_time</span>           <span class="string">=</span> <span class="number">3</span></span><br><span class="line"><span class="string">log_error</span>                 <span class="string">=</span> <span class="string">/data/mysql/error.log</span></span><br><span class="line"><span class="string">slow_query_log_file</span>       <span class="string">=</span> <span class="string">/data/mysql/slow.log</span></span><br><span class="line"><span class="string">log_queries_not_using_indexes</span>  <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">sync_binlog</span>                    <span class="string">=</span> <span class="number">0</span></span><br><span class="line"><span class="string">innodb_flush_log_at_trx_commit</span> <span class="string">=</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># INNODB</span></span><br><span class="line"><span class="string">innodb_buffer_pool_size</span>   <span class="string">=</span> <span class="number">10240</span><span class="string">M</span></span><br><span class="line"><span class="string">innodb_buffer_pool_instances</span> <span class="string">=</span> <span class="number">4</span></span><br><span class="line"><span class="string">innodb_data_home_dir</span>      <span class="string">=</span> <span class="string">/data/mysql</span></span><br><span class="line"><span class="string">innodb_log_file_size</span>      <span class="string">=</span> <span class="number">1</span><span class="string">G</span></span><br><span class="line"><span class="string">innodb_data_file_path</span>     <span class="string">=</span> <span class="attr">ibdata1:1G:autoextend</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># OTHER</span></span><br><span class="line"><span class="string">max_connections</span>           <span class="string">=</span> <span class="number">3000</span></span><br><span class="line"><span class="string">back_log</span>                  <span class="string">=</span> <span class="number">1024</span></span><br><span class="line"><span class="string">interactive_timeout</span>       <span class="string">=</span> <span class="number">600</span></span><br><span class="line"><span class="string">wait_timeout</span>              <span class="string">=</span> <span class="number">600</span></span><br><span class="line"><span class="string">lower_case_table_names</span>    <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">log_timestamps</span>            <span class="string">=</span> <span class="string">SYSTEM</span></span><br><span class="line"><span class="string">max_allowed_packet</span>        <span class="string">=</span> <span class="number">32</span><span class="string">M</span></span><br><span class="line"><span class="string">sort_buffer_size</span>          <span class="string">=</span> <span class="number">4</span><span class="string">M</span></span><br><span class="line"><span class="string">join_buffer_size</span>          <span class="string">=</span> <span class="number">4</span><span class="string">M</span></span><br><span class="line"><span class="string">tmp_table_size</span>            <span class="string">=</span> <span class="number">32</span><span class="string">M</span></span><br><span class="line"><span class="string">explicit_defaults_for_timestamp</span> <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">skip-ssl</span></span><br><span class="line"><span class="string">skip-name-resolve</span></span><br><span class="line"><span class="string">sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># REPLICATION</span></span><br><span class="line"><span class="string">server-id</span>                 <span class="string">=</span> <span class="number">3306100</span></span><br><span class="line"><span class="string">log-bin</span>                   <span class="string">=</span> <span class="string">/data/mysql/mysql-bin</span></span><br><span class="line"><span class="string">max_binlog_size</span>           <span class="string">=</span> <span class="number">1</span><span class="string">G</span></span><br><span class="line"><span class="string">binlog-format</span>             <span class="string">=</span> <span class="string">row</span></span><br><span class="line"><span class="string">expire_logs_days</span>          <span class="string">=</span> <span class="number">7</span></span><br><span class="line"></span><br><span class="line"><span class="string">[mysqldump]</span></span><br><span class="line"><span class="string">quick</span></span><br><span class="line"><span class="string">max_allowed_packet</span>        <span class="string">=</span> <span class="number">32</span><span class="string">M</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">[client]</span></span><br><span class="line"><span class="string">port</span>                      <span class="string">=</span> <span class="number">3306</span></span><br><span class="line"><span class="string">socket</span>                    <span class="string">=</span> <span class="string">/data/mysql/mysql.sock</span></span><br><span class="line"></span><br><span class="line"><span class="string">[mysqld]</span></span><br><span class="line"><span class="string">port</span>                      <span class="string">=</span> <span class="number">3306</span></span><br><span class="line"><span class="string">socket</span>                    <span class="string">=</span> <span class="string">/data/mysql/mysql.sock</span></span><br><span class="line"><span class="string">pid_file</span>                  <span class="string">=</span> <span class="string">/data/mysql/mysql.pid</span></span><br><span class="line"><span class="string">basedir</span>                   <span class="string">=</span> <span class="string">/usr/local/mysql</span></span><br><span class="line"><span class="string">datadir</span>                   <span class="string">=</span> <span class="string">/data/mysql</span></span><br><span class="line"><span class="string">character_set_server</span>      <span class="string">=</span> <span class="string">utf8</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># LOG</span></span><br><span class="line"><span class="string">slow_query_log</span>            <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">long_query_time</span>           <span class="string">=</span> <span class="number">3</span></span><br><span class="line"><span class="string">log_error</span>                 <span class="string">=</span> <span class="string">/data/mysql/error.log</span></span><br><span class="line"><span class="string">slow_query_log_file</span>       <span class="string">=</span> <span class="string">/data/mysql/slow.log</span></span><br><span class="line"><span class="string">log_queries_not_using_indexes</span>  <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">sync_binlog</span>                    <span class="string">=</span> <span class="number">0</span></span><br><span class="line"><span class="string">innodb_flush_log_at_trx_commit</span> <span class="string">=</span> <span class="number">0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># INNODB</span></span><br><span class="line"><span class="string">innodb_buffer_pool_size</span>   <span class="string">=</span> <span class="number">10240</span><span class="string">M</span></span><br><span class="line"><span class="string">innodb_buffer_pool_instances</span> <span class="string">=</span> <span class="number">4</span></span><br><span class="line"><span class="string">innodb_data_home_dir</span>      <span class="string">=</span> <span class="string">/data/mysql</span></span><br><span class="line"><span class="string">innodb_log_file_size</span>      <span class="string">=</span> <span class="number">1</span><span class="string">G</span></span><br><span class="line"><span class="string">innodb_data_file_path</span>     <span class="string">=</span> <span class="attr">ibdata1:1G:autoextend</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># OTHER</span></span><br><span class="line"><span class="string">max_connections</span>           <span class="string">=</span> <span class="number">3000</span></span><br><span class="line"><span class="string">back_log</span>                  <span class="string">=</span> <span class="number">1024</span></span><br><span class="line"><span class="string">interactive_timeout</span>       <span class="string">=</span> <span class="number">600</span></span><br><span class="line"><span class="string">wait_timeout</span>              <span class="string">=</span> <span class="number">600</span></span><br><span class="line"><span class="string">lower_case_table_names</span>    <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">log_timestamps</span>            <span class="string">=</span> <span class="string">SYSTEM</span></span><br><span class="line"><span class="string">max_allowed_packet</span>        <span class="string">=</span> <span class="number">32</span><span class="string">M</span></span><br><span class="line"><span class="string">sort_buffer_size</span>          <span class="string">=</span> <span class="number">4</span><span class="string">M</span></span><br><span class="line"><span class="string">join_buffer_size</span>          <span class="string">=</span> <span class="number">4</span><span class="string">M</span></span><br><span class="line"><span class="string">tmp_table_size</span>            <span class="string">=</span> <span class="number">32</span><span class="string">M</span></span><br><span class="line"><span class="string">explicit_defaults_for_timestamp</span> <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION</span></span><br><span class="line"><span class="string">skip-ssl</span></span><br><span class="line"><span class="string">skip-name-resolve</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># REPLICATION</span></span><br><span class="line"><span class="string">server-id</span>                 <span class="string">=</span> <span class="number">3306100</span></span><br><span class="line"><span class="string">log-bin</span>                   <span class="string">=</span> <span class="string">/data/mysql/mysql-bin</span></span><br><span class="line"><span class="string">max_binlog_size</span>           <span class="string">=</span> <span class="number">1</span><span class="string">G</span></span><br><span class="line"><span class="string">binlog-format</span>             <span class="string">=</span> <span class="string">row</span></span><br><span class="line"><span class="string">expire_logs_days</span>          <span class="string">=</span> <span class="number">7</span></span><br><span class="line"></span><br><span class="line"><span class="string">[mysqldump]</span></span><br><span class="line"><span class="string">quick</span></span><br><span class="line"><span class="string">max_allowed_packet</span>        <span class="string">=</span> <span class="number">32</span><span class="string">M</span></span><br></pre></td></tr></table></figure>
 
 <ul>
 <li>创建数据目录</li>
@@ -8899,10 +9233,10 @@
 <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">server_id</span>         <span class="string">=</span> <span class="number">3306101</span></span><br><span class="line"><span class="string">log_bin</span>           <span class="string">=</span> <span class="string">mysql-bin</span></span><br><span class="line"><span class="string">relay_log</span>         <span class="string">=</span> <span class="string">relay-log</span></span><br><span class="line"><span class="string">read_only</span>         <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">log_slave_updates</span> <span class="string">=</span> <span class="number">1</span></span><br></pre></td></tr></table></figure>
 
 <ul>
-<li>迁移主库数据至从库</li>
+<li>传输数据至从库</li>
 </ul>
 <ul>
-<li>设置复制</li>
+<li>配置复制</li>
 </ul>
 <figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 主库查看日志和位置</span></span><br><span class="line">mysql&gt; show master status;</span><br><span class="line">+<span class="comment">------------------+----------+--------------+------------------+-------------------+</span></span><br><span class="line">| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |</span><br><span class="line">+<span class="comment">------------------+----------+--------------+------------------+-------------------+</span></span><br><span class="line">| mysql-bin.000002 |     3778 |              |                  |                   |</span><br><span class="line">+<span class="comment">------------------+----------+--------------+------------------+-------------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 从库配置复制</span></span><br><span class="line"><span class="keyword">CHANGE</span> <span class="keyword">MASTER</span> <span class="keyword">TO</span></span><br><span class="line">MASTER_HOST=<span class="string">'x.x.x.x'</span>,</span><br><span class="line">MASTER_USER=<span class="string">'repl'</span>,</span><br><span class="line">MASTER_PASSWORD=<span class="string">'xx'</span>,</span><br><span class="line">MASTER_PORT=<span class="number">3306</span>,</span><br><span class="line">MASTER_LOG_FILE=<span class="string">'mysql-bin.000002'</span>,</span><br><span class="line">MASTER_LOG_POS=<span class="number">3778</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 验证</span></span><br><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.138.98.179</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-bin.000002</span><br><span class="line">          Read_Master_Log_Pos: 3778</span><br><span class="line">               Relay_Log_File: relay-log.000002</span><br><span class="line">                Relay_Log_Pos: 1621</span><br><span class="line">        Relay_Master_Log_File: mysql-bin.000002</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">            ...</span><br></pre></td></tr></table></figure>
 
@@ -8959,9 +9293,9 @@
 <p><strong>原因</strong>：经检查发现，数据库安装时是以 <code>haieradmin</code> 用户启动，默认使用 <code>mysql</code> 用户启动，启动失败。</p>
 <p><strong>解决</strong>：使用 <code>haieradmin</code> 用户启动成功。</p>
 <blockquote>
-<p>Tips：在操作生产环境时，需要先拷贝 <code>mysqld</code> 进程信息，以免启停失败。</p>
+<p>安装脚本 <code>mysql_install.sh</code></p>
 </blockquote>
-<h2 id="脚本"><a href="#脚本" class="headerlink" title="脚本"></a>脚本</h2><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ###########################################################################</span></span><br><span class="line"><span class="comment"># MySQL安装包名字为mysql-5.7.23-el7-x86_64.tar.gz，位置放在/usr/local/</span></span><br><span class="line"><span class="comment"># ###########################################################################</span></span><br><span class="line"></span><br><span class="line">cmd=<span class="variable">$2</span>    <span class="comment"># start or stop or status or install</span></span><br><span class="line">inst=<span class="variable">$4</span></span><br><span class="line"></span><br><span class="line">service_startup_timeout=<span class="number">30</span></span><br><span class="line"></span><br><span class="line">log_failure_msg() &#123;</span><br><span class="line">    echo <span class="string">" ERROR! $@"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">log_success_msg() &#123;</span><br><span class="line">    echo <span class="string">" SUCCESS! $@"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">case `echo <span class="string">"testing\c"</span>`,`echo -n testing` <span class="keyword">in</span></span><br><span class="line">    *c*,-n*) echo_n=   echo_c=     ;;</span><br><span class="line">    *c*,*)   echo_n=-n echo_c=     ;;</span><br><span class="line">    *)       echo_n=   echo_c=<span class="string">'\c'</span> ;;</span><br><span class="line">esac</span><br><span class="line"></span><br><span class="line">wait_for_pid () &#123;</span><br><span class="line">  verb=<span class="string">"<span class="variable">$1</span>"</span>           <span class="comment"># created | removed</span></span><br><span class="line">  pid=<span class="string">"<span class="variable">$2</span>"</span>            <span class="comment"># process ID of the program operating on the pid-file</span></span><br><span class="line">  pid_file_path=<span class="string">"<span class="variable">$3</span>"</span>  <span class="comment"># path to the PID file.</span></span><br><span class="line"></span><br><span class="line">  i=<span class="number">0</span></span><br><span class="line">  avoid_race_condition=<span class="string">"by checking again"</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> test <span class="variable">$i</span> <span class="nomarkup">-ne</span> <span class="variable">$service_startup_timeout</span> ; <span class="keyword">do</span></span><br><span class="line"></span><br><span class="line">    case <span class="string">"<span class="variable">$verb</span>"</span> <span class="keyword">in</span></span><br><span class="line">      <span class="string">'created'</span>)</span><br><span class="line">        <span class="comment"># wait for a PID-file to pop into existence.</span></span><br><span class="line">        test -s <span class="string">"<span class="variable">$pid_file_path</span>"</span> &amp;&amp; i=<span class="string">''</span> &amp;&amp; <span class="keyword">break</span></span><br><span class="line">        ;;</span><br><span class="line">      <span class="string">'removed'</span>)</span><br><span class="line">        <span class="comment"># wait for this PID-file to disappear</span></span><br><span class="line">        test ! -s <span class="string">"<span class="variable">$pid_file_path</span>"</span> &amp;&amp; i=<span class="string">''</span> &amp;&amp; <span class="keyword">break</span></span><br><span class="line">        ;;</span><br><span class="line">      *)</span><br><span class="line">        echo <span class="string">"wait_for_pid () usage: wait_for_pid created|removed pid pid_file_path"</span></span><br><span class="line">        <span class="keyword">exit</span> <span class="number">1</span></span><br><span class="line">        ;;</span><br><span class="line">    esac</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> test -n <span class="string">"<span class="variable">$pid</span>"</span>; then</span><br><span class="line">      <span class="keyword">if</span> kill -<span class="number">0</span> <span class="string">"<span class="variable">$pid</span>"</span> <span class="number">2</span>&gt;/dev/null; then</span><br><span class="line">        :</span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">if</span> test -n <span class="string">"<span class="variable">$avoid_race_condition</span>"</span>; then</span><br><span class="line">          avoid_race_condition=<span class="string">""</span></span><br><span class="line">          <span class="keyword">continue</span></span><br><span class="line">        fi</span><br><span class="line"></span><br><span class="line">        log_failure_msg <span class="string">"The server quit without updating PID file (<span class="variable">$pid_file_path</span>)."</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">      fi</span><br><span class="line">    fi</span><br><span class="line"></span><br><span class="line">    echo <span class="variable">$echo_n</span> <span class="string">".<span class="variable">$echo_c</span>"</span></span><br><span class="line">    i=`expr <span class="variable">$i</span> + <span class="number">1</span>`</span><br><span class="line">    sleep <span class="number">1</span></span><br><span class="line"></span><br><span class="line">  done</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> test -z <span class="string">"<span class="variable">$i</span>"</span> ; then</span><br><span class="line">    log_success_msg</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    log_failure_msg</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">  fi</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># ############################################################################################</span></span><br><span class="line"><span class="comment"># 支持MySQL版本：5.6/5.7，CentOS 6系统建议安装MySQL 5.6版本；CentOS 7系统建议安装MySQL 5.7版本</span></span><br><span class="line"><span class="comment"># 支持MySQL模式：单机/主从</span></span><br><span class="line"><span class="comment"># #############################################################################################</span></span><br><span class="line"></span><br><span class="line">install_mysql() &#123;</span><br><span class="line"></span><br><span class="line">    echo <span class="variable">$echo_n</span> <span class="string">"Installing MySQL..."</span></span><br><span class="line"></span><br><span class="line">    local basedir=<span class="string">"/usr/local/mysql"</span></span><br><span class="line">    local datadir=<span class="string">"/data/mysql"</span></span><br><span class="line">    local defaults_file=<span class="string">"/etc/my.cnf"</span></span><br><span class="line">    local sock_file=<span class="string">"<span class="variable">$datadir</span>/mysql.sock"</span></span><br><span class="line">    local pid_file=<span class="string">"<span class="variable">$datadir</span>/mysql.pid"</span></span><br><span class="line">    local array=($&#123;inst//@/ &#125;)</span><br><span class="line">    local port=$&#123;array[<span class="number">1</span>]&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 创建MySQL用户，指定MySQL所在的用户组</span></span><br><span class="line">    groupadd mysql &gt;/dev/null <span class="number">2</span>&gt;&amp;<span class="number">1</span></span><br><span class="line">    useradd -g mysql mysql -s /sbin/nologin &gt;/dev/null <span class="number">2</span>&gt;&amp;<span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 解压MySQL软件包，并对mysql目录授权</span></span><br><span class="line">    cd /usr/local</span><br><span class="line">    tar -zxvf mysql-<span class="number">5.7</span>.<span class="number">23</span>-el7-x86_64.tar.gz &gt;/dev/null <span class="number">2</span>&gt;&amp;<span class="number">1</span></span><br><span class="line">    ln -s mysql-<span class="number">5.7</span>.<span class="number">23</span>-el7-x86_64 mysql</span><br><span class="line">    chown mysql:mysql -R mysql</span><br><span class="line">    chown mysql:mysql -R mysql-<span class="number">5.7</span>.<span class="number">23</span>-el7-x86_64</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 创建数据目录</span></span><br><span class="line">    mkdir -p <span class="variable">$datadir</span></span><br><span class="line">    chown mysql:mysql -R <span class="variable">$datadir</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 初始化数据库</span></span><br><span class="line">    cd /usr/local/mysql/bin</span><br><span class="line">    ./mysqld --defaults-file=<span class="string">"<span class="variable">$defaults_file</span>"</span> --basedir=<span class="string">"<span class="variable">$basedir</span>"</span> --datadir=<span class="string">"<span class="variable">$datadir</span>"</span> --user=mysql --initialize-insecure &gt;/dev/null <span class="number">2</span>&gt;&amp;<span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 启动数据库</span></span><br><span class="line">    ./mysqld_safe --defaults-file=<span class="string">"<span class="variable">$defaults_file</span>"</span> --pid-file=<span class="string">"<span class="variable">$pid_file</span>"</span> --user=mysql &gt;/dev/null &amp;</span><br><span class="line">    wait_for_pid created <span class="string">"$!"</span> <span class="string">"<span class="variable">$pid_file</span>"</span>; return_value=$?</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 打开防火墙端口</span></span><br><span class="line">    firewall-cmd --permanent --zone=public --add-port=<span class="number">3306</span>/tcp &gt;/dev/null <span class="number">2</span>&gt;&amp;<span class="number">1</span></span><br><span class="line">    firewall-cmd --reload &gt;/dev/null <span class="number">2</span>&gt;&amp;<span class="number">1</span></span><br><span class="line"></span><br><span class="line">    cp mysql* /usr/bin &gt;/dev/null <span class="number">2</span>&gt;&amp;<span class="number">1</span></span><br><span class="line">    <span class="comment"># mv /usr/local/mysql_tool /usr/bin &gt;/dev/null 2&gt;&amp;1</span></span><br><span class="line">    mysql -S <span class="variable">$sock_file</span> mysql -e <span class="string">"SET PASSWORD = 'xx';ALTER USER 'root'@'localhost' PASSWORD EXPIRE NEVER;flush privileges;"</span></span><br><span class="line">    mysql -S <span class="variable">$sock_file</span> mysql -e <span class="string">"SET PASSWORD = 'xx';ALTER USER 'hdm'@'%' PASSWORD EXPIRE NEVER;flush privileges;"</span></span><br><span class="line">    mysql -S <span class="variable">$sock_file</span> mysql -e <span class="string">"SET PASSWORD = 'xx';ALTER USER 'sre'@'%' PASSWORD EXPIRE NEVER;flush privileges;"</span></span><br><span class="line">    <span class="keyword">exit</span> <span class="variable">$return_value</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">case <span class="string">"<span class="variable">$cmd</span>"</span> <span class="keyword">in</span></span><br><span class="line">    <span class="string">'install'</span>) install_mysql ;;</span><br><span class="line">    <span class="string">'uninstall'</span>) mysql_uninstall ;;</span><br><span class="line">    <span class="string">'start'</span>) mysql_start ;;</span><br><span class="line">    <span class="string">'stop'</span>) mysql_stop ;;</span><br><span class="line">    <span class="string">'restart'</span>) mysql_restart ;;</span><br><span class="line">    <span class="string">'config'</span>) mysql_config ;;</span><br><span class="line">    <span class="string">'monitor'</span>) mysql_monitor ;;</span><br><span class="line">*)</span><br><span class="line">    <span class="comment"># usage</span></span><br><span class="line">    basename=`basename <span class="string">"<span class="variable">$0</span>"</span>`</span><br><span class="line">    echo <span class="string">"Usage: <span class="variable">$basename</span> -cmd &#123;start|stop|restart|install|uninstall|status|monitor&#125; -inst &#123;instance name&#125; [ MySQL tool options ]"</span></span><br><span class="line">    <span class="keyword">exit</span> <span class="number">1</span></span><br><span class="line">    ;;</span><br><span class="line">esac</span><br><span class="line"><span class="keyword">exit</span> <span class="number">0</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ###########################################################################</span></span><br><span class="line"><span class="comment"># MySQL安装包名字为mysql-5.7.23-el7-x86_64.tar.gz，位置放在/usr/local/</span></span><br><span class="line"><span class="comment"># ###########################################################################</span></span><br><span class="line"></span><br><span class="line">cmd=<span class="variable">$2</span>    <span class="comment"># start or stop or status or install</span></span><br><span class="line">inst=<span class="variable">$4</span></span><br><span class="line"></span><br><span class="line">service_startup_timeout=<span class="number">30</span></span><br><span class="line"></span><br><span class="line">log_failure_msg() &#123;</span><br><span class="line">    echo <span class="string">" ERROR! $@"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">log_success_msg() &#123;</span><br><span class="line">    echo <span class="string">" SUCCESS! $@"</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">case `echo <span class="string">"testing\c"</span>`,`echo -n testing` <span class="keyword">in</span></span><br><span class="line">    *c*,-n*) echo_n=   echo_c=     ;;</span><br><span class="line">    *c*,*)   echo_n=-n echo_c=     ;;</span><br><span class="line">    *)       echo_n=   echo_c=<span class="string">'\c'</span> ;;</span><br><span class="line">esac</span><br><span class="line"></span><br><span class="line">wait_for_pid () &#123;</span><br><span class="line">  verb=<span class="string">"<span class="variable">$1</span>"</span>           <span class="comment"># created | removed</span></span><br><span class="line">  pid=<span class="string">"<span class="variable">$2</span>"</span>            <span class="comment"># process ID of the program operating on the pid-file</span></span><br><span class="line">  pid_file_path=<span class="string">"<span class="variable">$3</span>"</span>  <span class="comment"># path to the PID file.</span></span><br><span class="line"></span><br><span class="line">  i=<span class="number">0</span></span><br><span class="line">  avoid_race_condition=<span class="string">"by checking again"</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">while</span> test <span class="variable">$i</span> <span class="nomarkup">-ne</span> <span class="variable">$service_startup_timeout</span> ; <span class="keyword">do</span></span><br><span class="line"></span><br><span class="line">    case <span class="string">"<span class="variable">$verb</span>"</span> <span class="keyword">in</span></span><br><span class="line">      <span class="string">'created'</span>)</span><br><span class="line">        <span class="comment"># wait for a PID-file to pop into existence.</span></span><br><span class="line">        test -s <span class="string">"<span class="variable">$pid_file_path</span>"</span> &amp;&amp; i=<span class="string">''</span> &amp;&amp; <span class="keyword">break</span></span><br><span class="line">        ;;</span><br><span class="line">      <span class="string">'removed'</span>)</span><br><span class="line">        <span class="comment"># wait for this PID-file to disappear</span></span><br><span class="line">        test ! -s <span class="string">"<span class="variable">$pid_file_path</span>"</span> &amp;&amp; i=<span class="string">''</span> &amp;&amp; <span class="keyword">break</span></span><br><span class="line">        ;;</span><br><span class="line">      *)</span><br><span class="line">        echo <span class="string">"wait_for_pid () usage: wait_for_pid created|removed pid pid_file_path"</span></span><br><span class="line">        <span class="keyword">exit</span> <span class="number">1</span></span><br><span class="line">        ;;</span><br><span class="line">    esac</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> test -n <span class="string">"<span class="variable">$pid</span>"</span>; then</span><br><span class="line">      <span class="keyword">if</span> kill -<span class="number">0</span> <span class="string">"<span class="variable">$pid</span>"</span> <span class="number">2</span>&gt;/dev/null; then</span><br><span class="line">        :</span><br><span class="line">      <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">if</span> test -n <span class="string">"<span class="variable">$avoid_race_condition</span>"</span>; then</span><br><span class="line">          avoid_race_condition=<span class="string">""</span></span><br><span class="line">          <span class="keyword">continue</span></span><br><span class="line">        fi</span><br><span class="line"></span><br><span class="line">        log_failure_msg <span class="string">"The server quit without updating PID file (<span class="variable">$pid_file_path</span>)."</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">      fi</span><br><span class="line">    fi</span><br><span class="line"></span><br><span class="line">    echo <span class="variable">$echo_n</span> <span class="string">".<span class="variable">$echo_c</span>"</span></span><br><span class="line">    i=`expr <span class="variable">$i</span> + <span class="number">1</span>`</span><br><span class="line">    sleep <span class="number">1</span></span><br><span class="line"></span><br><span class="line">  done</span><br><span class="line"></span><br><span class="line">  <span class="keyword">if</span> test -z <span class="string">"<span class="variable">$i</span>"</span> ; then</span><br><span class="line">    log_success_msg</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">  <span class="keyword">else</span></span><br><span class="line">    log_failure_msg</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span></span><br><span class="line">  fi</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># ############################################################################################</span></span><br><span class="line"><span class="comment"># 支持MySQL版本：5.6/5.7，CentOS 6系统建议安装MySQL 5.6版本；CentOS 7系统建议安装MySQL 5.7版本</span></span><br><span class="line"><span class="comment"># 支持MySQL模式：单机/主从</span></span><br><span class="line"><span class="comment"># #############################################################################################</span></span><br><span class="line"></span><br><span class="line">install_mysql() &#123;</span><br><span class="line"></span><br><span class="line">    echo <span class="variable">$echo_n</span> <span class="string">"Installing MySQL..."</span></span><br><span class="line"></span><br><span class="line">    local basedir=<span class="string">"/usr/local/mysql"</span></span><br><span class="line">    local datadir=<span class="string">"/data/mysql"</span></span><br><span class="line">    local defaults_file=<span class="string">"/etc/my.cnf"</span></span><br><span class="line">    local sock_file=<span class="string">"<span class="variable">$datadir</span>/mysql.sock"</span></span><br><span class="line">    local pid_file=<span class="string">"<span class="variable">$datadir</span>/mysql.pid"</span></span><br><span class="line">    local array=($&#123;inst//@/ &#125;)</span><br><span class="line">    local port=$&#123;array[<span class="number">1</span>]&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 创建MySQL用户，指定MySQL所在的用户组</span></span><br><span class="line">    groupadd mysql &gt;/dev/null <span class="number">2</span>&gt;&amp;<span class="number">1</span></span><br><span class="line">    useradd -g mysql mysql -s /sbin/nologin &gt;/dev/null <span class="number">2</span>&gt;&amp;<span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 解压MySQL软件包，并对mysql目录授权</span></span><br><span class="line">    cd /usr/local</span><br><span class="line">    tar -zxvf mysql-<span class="number">5.7</span>.<span class="number">23</span>-el7-x86_64.tar.gz &gt;/dev/null <span class="number">2</span>&gt;&amp;<span class="number">1</span></span><br><span class="line">    ln -s mysql-<span class="number">5.7</span>.<span class="number">23</span>-el7-x86_64 mysql</span><br><span class="line">    chown mysql:mysql -R mysql</span><br><span class="line">    chown mysql:mysql -R mysql-<span class="number">5.7</span>.<span class="number">23</span>-el7-x86_64</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 创建数据目录</span></span><br><span class="line">    mkdir -p <span class="variable">$datadir</span></span><br><span class="line">    chown mysql:mysql -R <span class="variable">$datadir</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 初始化数据库</span></span><br><span class="line">    cd /usr/local/mysql/bin</span><br><span class="line">    ./mysqld --defaults-file=<span class="string">"<span class="variable">$defaults_file</span>"</span> --basedir=<span class="string">"<span class="variable">$basedir</span>"</span> --datadir=<span class="string">"<span class="variable">$datadir</span>"</span> --user=mysql --initialize-insecure &gt;/dev/null <span class="number">2</span>&gt;&amp;<span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 启动数据库</span></span><br><span class="line">    ./mysqld_safe --defaults-file=<span class="string">"<span class="variable">$defaults_file</span>"</span> --pid-file=<span class="string">"<span class="variable">$pid_file</span>"</span> --user=mysql &gt;/dev/null &amp;</span><br><span class="line">    wait_for_pid created <span class="string">"$!"</span> <span class="string">"<span class="variable">$pid_file</span>"</span>; return_value=$?</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 打开防火墙端口</span></span><br><span class="line">    firewall-cmd --permanent --zone=public --add-port=<span class="number">3306</span>/tcp &gt;/dev/null <span class="number">2</span>&gt;&amp;<span class="number">1</span></span><br><span class="line">    firewall-cmd --reload &gt;/dev/null <span class="number">2</span>&gt;&amp;<span class="number">1</span></span><br><span class="line"></span><br><span class="line">    cp mysql* /usr/bin &gt;/dev/null <span class="number">2</span>&gt;&amp;<span class="number">1</span></span><br><span class="line">    <span class="comment"># mv /usr/local/mysql_tool /usr/bin &gt;/dev/null 2&gt;&amp;1</span></span><br><span class="line">    mysql -S <span class="variable">$sock_file</span> mysql -e <span class="string">"SET PASSWORD = 'xx';ALTER USER 'root'@'localhost' PASSWORD EXPIRE NEVER;flush privileges;"</span></span><br><span class="line">    mysql -S <span class="variable">$sock_file</span> mysql -e <span class="string">"SET PASSWORD = 'xx';ALTER USER 'hdm'@'%' PASSWORD EXPIRE NEVER;flush privileges;"</span></span><br><span class="line">    mysql -S <span class="variable">$sock_file</span> mysql -e <span class="string">"SET PASSWORD = 'xx';ALTER USER 'sre'@'%' PASSWORD EXPIRE NEVER;flush privileges;"</span></span><br><span class="line">    <span class="keyword">exit</span> <span class="variable">$return_value</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">case <span class="string">"<span class="variable">$cmd</span>"</span> <span class="keyword">in</span></span><br><span class="line">    <span class="string">'install'</span>) install_mysql ;;</span><br><span class="line">    <span class="string">'uninstall'</span>) mysql_uninstall ;;</span><br><span class="line">    <span class="string">'start'</span>) mysql_start ;;</span><br><span class="line">    <span class="string">'stop'</span>) mysql_stop ;;</span><br><span class="line">    <span class="string">'restart'</span>) mysql_restart ;;</span><br><span class="line">    <span class="string">'config'</span>) mysql_config ;;</span><br><span class="line">    <span class="string">'monitor'</span>) mysql_monitor ;;</span><br><span class="line">*)</span><br><span class="line">    <span class="comment"># usage</span></span><br><span class="line">    basename=`basename <span class="string">"<span class="variable">$0</span>"</span>`</span><br><span class="line">    echo <span class="string">"Usage: <span class="variable">$basename</span> -cmd &#123;start|stop|restart|install|uninstall|status|monitor&#125; -inst &#123;instance name&#125; [ MySQL tool options ]"</span></span><br><span class="line">    <span class="keyword">exit</span> <span class="number">1</span></span><br><span class="line">    ;;</span><br><span class="line">esac</span><br><span class="line"><span class="keyword">exit</span> <span class="number">0</span></span><br></pre></td></tr></table></figure>
 
 ]]></content>
       <categories>
