@@ -31,67 +31,130 @@
 ]]></content>
   </entry>
   <entry>
-    <title>MySQL · 本地 IDC 自建数据库迁移上云</title>
+    <title>MySQL · 本地 IDC 数据库迁移上云</title>
     <url>/blog/2019/12/13/mysql-migration-to-cloud/</url>
-    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>项目基本信息</p>
-<table>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><table>
 <thead>
 <tr>
-<th>项目信息</th>
-<th>本地 IDC 自建数据库</th>
-<th>阿里云 RDS</th>
+<th>项目基本信息</th>
+<th>说明</th>
 </tr>
 </thead>
 <tbody><tr>
-<td>项目名称：售后服务微信公众号</td>
+<td>项目名称</td>
+<td>售后服务微信公众号</td>
+</tr>
+<tr>
+<td>机房位置</td>
+<td>北京亦庄 / 卓朗机房</td>
+</tr>
+<tr>
+<td>本地数据库</td>
+<td>10.199.96.188</td>
+</tr>
+<tr>
+<td>数据量</td>
+<td>140 GB</td>
+</tr>
+<tr>
+<td>版本</td>
 <td>MySQL 5.5</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>阿里云 ECS</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>主机</td>
+<td>47.95.110.25</td>
+</tr>
+<tr>
+<td>自建 MySQL</td>
+<td>MySQL 5.5</td>
+</tr>
+<tr>
+<td>用户名</td>
+<td>root</td>
+</tr>
+<tr>
+<td>密码</td>
+<td>HkdV*Q4mVavjYRSg</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>阿里云 RDS</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>实例</td>
+<td>rm-2zeh0aso72hr897it.mysql.rds.aliyuncs.com:3306</td>
+</tr>
+<tr>
+<td>版本</td>
 <td>MySQL 5.6</td>
 </tr>
 <tr>
-<td>机房：北京亦庄/卓朗机房</td>
-<td>10.199.96.188</td>
-<td></td>
+<td>用户名</td>
+<td>haierfw</td>
 </tr>
 <tr>
-<td>数据总量：约140GB</td>
-<td></td>
-<td></td>
+<td>密码</td>
+<td>Haier@2019!#$</td>
 </tr>
 </tbody></table>
 <h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><p>本地 IDC 数据库   -&gt;   ECS 自建数据库  -&gt;  阿里云 RDS</p>
-<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ul>
-<li>本地 IDC 数据库信息</li>
-<li>ECS 信息</li>
-<li>RDS 信息</li>
-</ul>
-<h2 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h2><p><strong>RDS</strong></p>
-<ul>
-<li>实例：rm-2zeh0aso72hr897it.mysql.rds.aliyuncs.com:3306</li>
-<li>账号：haierfw/Haier@2019!#$</li>
-</ul>
-<p><strong>ECS</strong></p>
-<ul>
-<li>主机：47.95.110.25</li>
-<li>账号：root/HkdV*Q4mVavjYRSg</li>
-</ul>
-<p><strong>耗时统计</strong></p>
-<ul>
-<li>备份：30分钟</li>
-<li>传输：3小时30分钟</li>
-<li>恢复：20分钟</li>
-<li>迁移：2小时30分钟</li>
-</ul>
+<h2 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h2><table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>耗时</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>全备</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td>传输</td>
+<td>3 h 30 min</td>
+</tr>
+<tr>
+<td>增备</td>
+<td>～</td>
+</tr>
+<tr>
+<td>传输</td>
+<td>～</td>
+</tr>
+<tr>
+<td>恢复</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td>DTS 迁移</td>
+<td>2 h 30 min</td>
+</tr>
+</tbody></table>
 <h2 id="实施"><a href="#实施" class="headerlink" title="实施"></a>实施</h2><p><strong>全量备份</strong></p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">innobackupex --defaults-file=/etc/my.cnf --user=sre --password=<span class="string">'sre@@p$i'</span> --no-timestamp /<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">innobackupex --defaults-file=/etc/my.cnf --user=sre --password=<span class="string">'xx'</span> --no-timestamp /<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
 
 <p><strong>全量恢复</strong></p>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">mysqladmin -uroot -p<span class="string">'xx'</span> shutdown</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --apply-log /<span class="keyword">data</span>/backup</span><br><span class="line">mv mysql mysql_bak</span><br><span class="line">mkdir mysql</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --copy-back /<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
 
 <p><strong>增量备份</strong></p>
 <p>在进行增量备份时，首先要进行一次全量备份，第一次增量备份是基于全备的，之后的增量备份是基于上一次的增量备份，以此类推。</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">innobackupex --defaults-file=/etc/my.cnf --user=sre --password=<span class="string">'sre@@p$i'</span> --incremental /<span class="keyword">data</span>/incremental --incremental-basedir=/<span class="keyword">data</span>/backup --parallel=<span class="number">2</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">innobackupex --defaults-file=/etc/my.cnf --user=sre --password=<span class="string">'xx'</span> --incremental /<span class="keyword">data</span>/incremental --incremental-basedir=/<span class="keyword">data</span>/backup --parallel=<span class="number">2</span></span><br></pre></td></tr></table></figure>
 
 <p><strong>增量恢复</strong></p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">innobackupex --defaults-file=/etc/my.cnf --apply-log --redo-only /<span class="keyword">data</span>/backup</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --apply-log /<span class="keyword">data</span>/backup --incremental-dir=/<span class="keyword">data</span>/incremental/<span class="number">2019</span>-<span class="number">12</span>-<span class="number">16</span>_15-<span class="number">33</span>-<span class="number">48</span></span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --copy-back /<span class="keyword">data</span>/backup</span><br><span class="line">chown -R mysql:mysql mysql</span><br><span class="line">/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql &gt;/dev/null &amp;</span><br></pre></td></tr></table></figure>
+
 <p><strong>配置复制</strong></p>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 获取Master binlog位置</span></span><br><span class="line">$ cat xtrabackup_binlog_info</span><br><span class="line">mysql-binlog.<span class="number">000297</span>	<span class="number">900834433</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置复制</span></span><br><span class="line">CHANGE MASTER TO </span><br><span class="line">MASTER_HOST=<span class="string">'x.x.x.x'</span>,</span><br><span class="line">MASTER_USER=<span class="string">'repl'</span>,</span><br><span class="line">MASTER_PASSWORD=<span class="string">'Changeme_123'</span>,</span><br><span class="line">MASTER_PORT=<span class="number">3306</span>,</span><br><span class="line">MASTER_LOG_FILE=<span class="string">'mysql-bin.000297'</span>, </span><br><span class="line">MASTER_LOG_POS=<span class="number">900834433</span>,</span><br><span class="line">MASTER_CONNECT_RETRY=<span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动同步</span></span><br><span class="line">mysql&gt; start slave;</span><br></pre></td></tr></table></figure>
 
