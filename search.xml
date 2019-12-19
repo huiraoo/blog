@@ -1,9 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Liunx · 常用命令</title>
+    <url>/blog/2019/12/19/linux-command/</url>
+    <content><![CDATA[<p><a href="https://man.linuxde.net/" target="_blank" rel="noopener">命令大全</a></p>
+<p>使用 <code>:s</code> 命令可以实现字符串的替换</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 用字符串 str2 替换行中首次出现的字符串 str1</span></span><br><span class="line">:s/str1/str2/</span><br><span class="line"></span><br><span class="line"><span class="comment"># 用字符串 str2 替换行中所有出现的字符串 str1</span></span><br><span class="line">:s/str1/str2/g </span><br><span class="line"></span><br><span class="line"><span class="comment"># 用字符串 str2 替换正文当前行到末尾所有出现的字符串 str1</span></span><br><span class="line">:.,$ s/str1/str2/g </span><br><span class="line"></span><br><span class="line"><span class="comment"># 用字符串 str2 替换正文中所有出现的字符串 str1</span></span><br><span class="line">:<span class="number">1</span>,$ s/str1/str2/g</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+  </entry>
+  <entry>
+    <title>MySQL · 数据转移</title>
+    <url>/blog/2019/12/18/mysql-transfer/</url>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>北京亦庄机房，MySQL 数据库服务器</p>
+<p>主：10.159.39.238</p>
+<p>从：10.159.39.239</p>
+<h2 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h2><ul>
+<li>修改表名</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">rename</span> <span class="keyword">table</span> xx <span class="keyword">to</span> xx_bak;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>将表数据插入到另外一张表</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">lock</span> <span class="keyword">tables</span> haier_user_clientsso_log <span class="keyword">read</span>;</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">open</span> <span class="keyword">tables</span> <span class="keyword">where</span> in_use &gt; <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">INTO</span> haier_user_clientsso_log_bak <span class="keyword">select</span> * <span class="keyword">FROM</span> haier_user_clientsso_log <span class="keyword">WHERE</span> <span class="keyword">id</span> &gt; <span class="number">20085299</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">rename</span> <span class="keyword">table</span> haier_user_clientsso_log haier_user_clientsso_log_copy;</span><br><span class="line"><span class="keyword">rename</span> <span class="keyword">table</span> user.haier_user_clientsso_log_bak haier_user_clientsso_log;</span><br><span class="line"></span><br><span class="line"><span class="keyword">unlock</span> <span class="keyword">tables</span>;</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">open</span> <span class="keyword">tables</span> <span class="keyword">where</span> in_use &gt; <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> haier_user_clientsso_log <span class="keyword">WHERE</span> <span class="keyword">id</span> &gt; <span class="number">20085299</span>;</span><br></pre></td></tr></table></figure>
+
+]]></content>
+  </entry>
+  <entry>
     <title>MySQL · 本地 IDC 自建数据库迁移上云</title>
     <url>/blog/2019/12/13/mysql-migration-to-cloud/</url>
-    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><table>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>项目基本信息</p>
+<table>
 <thead>
 <tr>
 <th>项目信息</th>
@@ -27,15 +58,11 @@
 <td></td>
 </tr>
 </tbody></table>
-<p><strong>结构</strong></p>
-<ul>
-<li>表：387</li>
-<li>视图：5</li>
-<li>存储过程：19</li>
-</ul>
-<h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><ul>
-<li>由于北京机房无专线直连阿里云，需要通过中间中转</li>
-<li>本地 IDC  -&gt;  ECS 自建数据库 -&gt; 阿里云 RDS</li>
+<h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><p>本地 IDC 数据库   -&gt;   ECS 自建数据库  -&gt;  阿里云 RDS</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><ul>
+<li>本地 IDC 数据库信息</li>
+<li>ECS 信息</li>
+<li>RDS 信息</li>
 </ul>
 <h2 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h2><p><strong>RDS</strong></p>
 <ul>
@@ -54,7 +81,22 @@
 <li>恢复：20分钟</li>
 <li>迁移：2小时30分钟</li>
 </ul>
-]]></content>
+<h2 id="实施"><a href="#实施" class="headerlink" title="实施"></a>实施</h2><p><strong>全量备份</strong></p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">innobackupex --defaults-file=/etc/my.cnf --user=sre --password=<span class="string">'sre@@p$i'</span> --no-timestamp /<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
+
+<p><strong>全量恢复</strong></p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">mysqladmin -uroot -p<span class="string">'xx'</span> shutdown</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --apply-log /<span class="keyword">data</span>/backup</span><br><span class="line">mv mysql mysql_bak</span><br><span class="line">mkdir mysql</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --copy-back /<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
+
+<p><strong>增量备份</strong></p>
+<p>在进行增量备份时，首先要进行一次全量备份，第一次增量备份是基于全备的，之后的增量备份是基于上一次的增量备份，以此类推。</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">innobackupex --defaults-file=/etc/my.cnf --user=sre --password=<span class="string">'sre@@p$i'</span> --incremental /<span class="keyword">data</span>/incremental --incremental-basedir=/<span class="keyword">data</span>/backup --parallel=<span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>增量恢复</strong></p>
+<p><strong>配置复制</strong></p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 获取Master binlog位置</span></span><br><span class="line">$ cat xtrabackup_binlog_info</span><br><span class="line">mysql-binlog.<span class="number">000297</span>	<span class="number">900834433</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置复制</span></span><br><span class="line">CHANGE MASTER TO </span><br><span class="line">MASTER_HOST=<span class="string">'x.x.x.x'</span>,</span><br><span class="line">MASTER_USER=<span class="string">'repl'</span>,</span><br><span class="line">MASTER_PASSWORD=<span class="string">'Changeme_123'</span>,</span><br><span class="line">MASTER_PORT=<span class="number">3306</span>,</span><br><span class="line">MASTER_LOG_FILE=<span class="string">'mysql-bin.000297'</span>, </span><br><span class="line">MASTER_LOG_POS=<span class="number">900834433</span>,</span><br><span class="line">MASTER_CONNECT_RETRY=<span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动同步</span></span><br><span class="line">mysql&gt; start slave;</span><br></pre></td></tr></table></figure>
+
+<p><strong>传输</strong></p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">scp -r /<span class="keyword">data</span>/backup/* root@<span class="number">47.95</span>.<span class="number">110.25</span>:/<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>MySQL</category>
       </categories>
@@ -64,7 +106,7 @@
     <url>/blog/2019/12/10/mysql-tool-mysqldump/</url>
     <content><![CDATA[<h2 id="语法"><a href="#语法" class="headerlink" title="语法"></a>语法</h2><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">Usage: mysqldump [OPTIONS] database [tables] &gt; [backupfile.sql]</span><br><span class="line">       mysqldump [OPTIONS] --databases [OPTIONS] DB1 [DB2 DB3...] &gt; [backupfile.sql]</span><br><span class="line">       mysqldump [OPTIONS] --all-databases [OPTIONS] &gt; [backupfile.sql]</span><br></pre></td></tr></table></figure>
 
-<h2 id="备份"><a href="#备份" class="headerlink" title="备份"></a>备份</h2><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 备份所有库</span></span><br><span class="line">mysqldump -u&lt;user&gt; -p&lt;password&gt; --all-databases &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份指定库</span></span><br><span class="line">mysqldump -u&lt;user&gt; -p&lt;password&gt; --databases school hospital &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份指定表</span></span><br><span class="line">mysqldump -u&lt;user&gt; -p&lt;password&gt; school table_name &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导出表结构，无数据</span></span><br><span class="line">mysqldump -u&lt;user&gt; -p&lt;password&gt; --all--database --no-data &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份存储过程</span></span><br><span class="line">mysqldump --user=sre --password=<span class="string">'xx'</span> --single-transaction --master-data=<span class="number">2</span> -n -d -t -R user &gt; dump.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 常用备份语句</span></span><br><span class="line">nohup mysqldump --socket=mysql.sock --user=user --password=pass --single-transaction --flush-logs --master-data=<span class="number">2</span> --all-databases --extended-insert --routines &gt; dump.sql <span class="number">2</span>&gt; dump.err &amp;</span><br><span class="line"></span><br><span class="line"><span class="comment">## --socket: sock文件</span></span><br><span class="line"><span class="comment">## --user: 用户名</span></span><br><span class="line"><span class="comment">## --password: 密码</span></span><br><span class="line"><span class="comment">## --single-transaction: 备份期间不加锁</span></span><br><span class="line"><span class="comment">## --flush-logs: 开始导出之前刷新日志</span></span><br><span class="line"><span class="comment">## --master-data: 该选项将 binlog 的位置和文件名追加到输出文件中</span></span><br><span class="line"><span class="comment">## --all-databases: 备份所有库</span></span><br><span class="line"><span class="comment">## --extended-insert: 使用具有多个VALUES列的INSERT语法，这样使导出文件更小，并加速导入的速度</span></span><br><span class="line"><span class="comment">## --routines: 导出存储过程以及自定义函数</span></span><br><span class="line"><span class="comment">## --events: 导出事件</span></span><br><span class="line"><span class="comment">## --triggers: 导出触发器，该选项默认启用</span></span><br><span class="line"><span class="comment">## 默认导出视图</span></span><br></pre></td></tr></table></figure>
+<h2 id="备份"><a href="#备份" class="headerlink" title="备份"></a>备份</h2><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 备份所有库</span></span><br><span class="line">mysqldump -u&lt;user&gt; -p&lt;password&gt; --all-databases &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份指定库</span></span><br><span class="line">mysqldump -u&lt;user&gt; -p&lt;password&gt; --databases school hospital &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份指定表</span></span><br><span class="line">mysqldump -u&lt;user&gt; -p&lt;password&gt; school table_name &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导出表结构，无数据</span></span><br><span class="line">mysqldump -u&lt;user&gt; -p&lt;password&gt; --all--database --no-data &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份存储过程</span></span><br><span class="line">mysqldump --user=sre --password=<span class="string">'xx'</span> --single-transaction --master-data=<span class="number">2</span> -n -d -t -R user &gt; dump.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 按条件备份</span></span><br><span class="line">mysqldump -usre -p<span class="string">'xx'</span> -t user uc_event_logs_bak --where=<span class="string">"id &gt; 46005503"</span> &gt; uc_event_logs_bak2.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 后台执行任务</span></span><br><span class="line">nohup mysql -usre -p<span class="string">'xx'</span> user &lt; uc_event_logs_bak2.sql <span class="number">2</span>&gt; myout.file &amp;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 常用备份语句</span></span><br><span class="line">nohup mysqldump --socket=mysql.sock --user=user --password=pass --single-transaction --flush-logs --master-data=<span class="number">2</span> --all-databases --extended-insert --routines &gt; dump.sql <span class="number">2</span>&gt; dump.err &amp;</span><br><span class="line"></span><br><span class="line"><span class="comment">## --socket: sock文件</span></span><br><span class="line"><span class="comment">## --user: 用户名</span></span><br><span class="line"><span class="comment">## --password: 密码</span></span><br><span class="line"><span class="comment">## --single-transaction: 备份期间不加锁</span></span><br><span class="line"><span class="comment">## --flush-logs: 开始导出之前刷新日志</span></span><br><span class="line"><span class="comment">## --master-data: 该选项将 binlog 的位置和文件名追加到输出文件中</span></span><br><span class="line"><span class="comment">## --all-databases: 备份所有库</span></span><br><span class="line"><span class="comment">## --extended-insert: 使用具有多个VALUES列的INSERT语法，这样使导出文件更小，并加速导入的速度</span></span><br><span class="line"><span class="comment">## --routines: 导出存储过程以及自定义函数</span></span><br><span class="line"><span class="comment">## --events: 导出事件</span></span><br><span class="line"><span class="comment">## --triggers: 导出触发器，该选项默认启用</span></span><br><span class="line"><span class="comment">## 默认导出视图</span></span><br></pre></td></tr></table></figure>
 
 <p><strong>Table：<a href="https://dev.mysql.com/doc/refman/5.7/en/mysqldump.html" target="_blank" rel="noopener">mysqldump</a> Options</strong></p>
 <table>
@@ -10349,10 +10391,6 @@
 </blockquote>
 <h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-070801.jpg" alt="PMM架构"></p>
 <h3 id="PMM-Client"><a href="#PMM-Client" class="headerlink" title="PMM Client"></a>PMM Client</h3><ul>
-<li><p><strong>pmm-mysql-queries-0</strong>：是一个管理 <code>qan</code> 代理的服务，它从 <code>MySQL</code> 收集性能数据，然后通过 <code>QAN API</code> 发送到 <code>PMM Server</code>。</p>
-</li>
-<li><p><strong>pmm-mongodb-queries-0</strong>：是一个管理 <code>qan</code> 代理的服务，它从 <code>mongodb</code> 收集性能数据，然后通过 <code>QAN API</code> 发送到 <code>PMM Server</code>。</p>
-</li>
 <li><p><a href="https://github.com/percona/pmm-admin" target="_blank" rel="noopener"><strong>pmm-admin</strong></a>：用于管理 <code>PMM Client</code> 的命令行工具，例如：添加、删除要监视的数据库实例。</p>
 </li>
 <li><p><a href="https://github.com/prometheus/node_exporter" target="_blank" rel="noopener"><strong>node_exporter</strong></a>：采集主机监控指标。</p>
