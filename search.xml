@@ -1,12 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>堡垒机</title>
+    <url>/blog/2019/12/20/jumper/</url>
+    <content><![CDATA[<p><strong>阿里云 ECS 服务器堡垒机登录</strong></p>
+<ul>
+<li>内网登陆：ssh:10.163.193.54 60022</li>
+<li>公网登陆：ssh:47.104.192.254 60022</li>
+<li>登陆账户：工号 + 密码</li>
+</ul>
+<p><strong>本地 IDC 服务器堡垒机登录</strong></p>
+<ul>
+<li>ssh -p 2222 <a href="mailto:01510886@10.138.16.192" target="_blank" rel="noopener">01510886@10.138.16.192</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+  </entry>
+  <entry>
     <title>Liunx · 常用命令</title>
     <url>/blog/2019/12/19/linux-command/</url>
-    <content><![CDATA[<p><a href="https://man.linuxde.net/" target="_blank" rel="noopener">命令大全</a></p>
-<p>使用 <code>:s</code> 命令可以实现字符串的替换</p>
+    <content><![CDATA[<p>使用 <code>:s</code> 命令可以实现字符串的替换</p>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 用字符串 str2 替换行中首次出现的字符串 str1</span></span><br><span class="line">:s/str1/str2/</span><br><span class="line"></span><br><span class="line"><span class="comment"># 用字符串 str2 替换行中所有出现的字符串 str1</span></span><br><span class="line">:s/str1/str2/g </span><br><span class="line"></span><br><span class="line"><span class="comment"># 用字符串 str2 替换正文当前行到末尾所有出现的字符串 str1</span></span><br><span class="line">:.,$ s/str1/str2/g </span><br><span class="line"></span><br><span class="line"><span class="comment"># 用字符串 str2 替换正文中所有出现的字符串 str1</span></span><br><span class="line">:<span class="number">1</span>,$ s/str1/str2/g</span><br></pre></td></tr></table></figure>
 
+<blockquote>
+<p><a href="https://man.linuxde.net/" target="_blank" rel="noopener">命令大全</a></p>
+</blockquote>
 ]]></content>
       <categories>
         <category>Linux</category>
@@ -142,10 +162,19 @@
 <td>2 h 30 min</td>
 </tr>
 </tbody></table>
-<h2 id="实施"><a href="#实施" class="headerlink" title="实施"></a>实施</h2><p><strong>全量备份</strong></p>
+<h2 id="实施"><a href="#实施" class="headerlink" title="实施"></a>实施</h2><ul>
+<li><strong>全量备份</strong></li>
+</ul>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">innobackupex --defaults-file=/etc/my.cnf --user=sre --password=<span class="string">'xx'</span> --no-timestamp /<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
 
-<p><strong>全量恢复</strong></p>
+<ul>
+<li><strong>传输</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">scp -r /<span class="keyword">data</span>/backup/* root@<span class="number">47.95</span>.<span class="number">110.25</span>:/<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>全量恢复</strong></li>
+</ul>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">mysqladmin -uroot -p<span class="string">'xx'</span> shutdown</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --apply-log /<span class="keyword">data</span>/backup</span><br><span class="line">mv mysql mysql_bak</span><br><span class="line">mkdir mysql</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --copy-back /<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
 
 <p><strong>增量备份</strong></p>
