@@ -96,12 +96,12 @@
 
 
 
-  <meta name="description" content="架构原则 高可用 高性能 一致性 扩展性  常见的架构方案方案一：主备架构，只有主库提供读写服务，备库冗余作故障转移用   高可用分析：高可用，主库挂了，keepalive（只是一种工具）会自动切换到备库，这个过程对业务层是透明的，无需修改代码或配置。 高性能分析：读写都操作主库，很容易产生瓶颈。大部分互联网应用读多写少，读会先成为瓶颈，进而影响写性能。另外，备库只是单纯的备份，资源利用率 50%">
+  <meta name="description" content="架构原则 高可用 高性能 一致性 扩展性  常见的架构方案方案一：主备架构，只有主库提供读写服务，备库冗余作故障转移用   高可用分析：高可用，主库挂了，keepalived（只是一种工具）会自动切换到备库，这个过程对业务层是透明的，无需修改代码或配置。 高性能分析：读写都操作主库，很容易产生瓶颈。大部分互联网应用读多写少，读会先成为瓶颈，进而影响写性能。另外，备库只是单纯的备份，资源利用率 50">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL · 常用架构方案">
 <meta property="og:url" content="https://huiraoo.github.io/blog/2019/12/25/mysql-architecture/index.html">
 <meta property="og:site_name" content="Rao&#39;s Blog">
-<meta property="og:description" content="架构原则 高可用 高性能 一致性 扩展性  常见的架构方案方案一：主备架构，只有主库提供读写服务，备库冗余作故障转移用   高可用分析：高可用，主库挂了，keepalive（只是一种工具）会自动切换到备库，这个过程对业务层是透明的，无需修改代码或配置。 高性能分析：读写都操作主库，很容易产生瓶颈。大部分互联网应用读多写少，读会先成为瓶颈，进而影响写性能。另外，备库只是单纯的备份，资源利用率 50%">
+<meta property="og:description" content="架构原则 高可用 高性能 一致性 扩展性  常见的架构方案方案一：主备架构，只有主库提供读写服务，备库冗余作故障转移用   高可用分析：高可用，主库挂了，keepalived（只是一种工具）会自动切换到备库，这个过程对业务层是透明的，无需修改代码或配置。 高性能分析：读写都操作主库，很容易产生瓶颈。大部分互联网应用读多写少，读会先成为瓶颈，进而影响写性能。另外，备库只是单纯的备份，资源利用率 50">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-150623.jpg">
 <meta property="og:image" content="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-150649.jpg">
@@ -114,10 +114,10 @@
 <meta property="og:image" content="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-152955.jpg">
 <meta property="og:image" content="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-153023.jpg">
 <meta property="og:image" content="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-153046.jpg">
-<meta property="og:updated_time" content="2019-12-25T07:40:18.346Z">
+<meta property="og:updated_time" content="2019-12-25T07:49:58.087Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL · 常用架构方案">
-<meta name="twitter:description" content="架构原则 高可用 高性能 一致性 扩展性  常见的架构方案方案一：主备架构，只有主库提供读写服务，备库冗余作故障转移用   高可用分析：高可用，主库挂了，keepalive（只是一种工具）会自动切换到备库，这个过程对业务层是透明的，无需修改代码或配置。 高性能分析：读写都操作主库，很容易产生瓶颈。大部分互联网应用读多写少，读会先成为瓶颈，进而影响写性能。另外，备库只是单纯的备份，资源利用率 50%">
+<meta name="twitter:description" content="架构原则 高可用 高性能 一致性 扩展性  常见的架构方案方案一：主备架构，只有主库提供读写服务，备库冗余作故障转移用   高可用分析：高可用，主库挂了，keepalived（只是一种工具）会自动切换到备库，这个过程对业务层是透明的，无需修改代码或配置。 高性能分析：读写都操作主库，很容易产生瓶颈。大部分互联网应用读多写少，读会先成为瓶颈，进而影响写性能。另外，备库只是单纯的备份，资源利用率 50">
 <meta name="twitter:image" content="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-150623.jpg">
 
 
@@ -407,7 +407,7 @@
                 
               
 
-              <time title="创建时间：2019-12-25 14:50:32 / 修改时间：15:40:18" itemprop="dateCreated datePublished" datetime="2019-12-25T14:50:32+08:00">2019-12-25</time>
+              <time title="创建时间：2019-12-25 14:50:32 / 修改时间：15:49:58" itemprop="dateCreated datePublished" datetime="2019-12-25T14:50:32+08:00">2019-12-25</time>
             
 
             
@@ -480,7 +480,7 @@
 <h2 id="常见的架构方案"><a href="#常见的架构方案" class="headerlink" title="常见的架构方案"></a>常见的架构方案</h2><p><strong>方案一：主备架构，只有主库提供读写服务，备库冗余作故障转移用</strong></p>
 <p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-150623.jpg" alt="img"></p>
 <ul>
-<li><strong>高可用分析：</strong>高可用，主库挂了，keepalive（只是一种工具）会自动切换到备库，这个过程对业务层是透明的，无需修改代码或配置。</li>
+<li><strong>高可用分析：</strong>高可用，主库挂了，<code>keepalived</code>（只是一种工具）会自动切换到备库，这个过程对业务层是透明的，无需修改代码或配置。</li>
 <li><strong>高性能分析：</strong>读写都操作主库，很容易产生瓶颈。大部分互联网应用读多写少，读会先成为瓶颈，进而影响写性能。另外，备库只是单纯的备份，资源利用率 50%，这点方案二可解决。</li>
 <li><strong>一致性分析：</strong>读写都操作主库，不存在数据一致性问题。</li>
 <li><strong>扩展性分析：</strong>无法通过加从库来扩展读性能，进而提高整体性能。</li>
