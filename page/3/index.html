@@ -352,6 +352,766 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/28/java-maven/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/11/28/java-maven/" class="post-title-link" itemprop="url">Java · Maven</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-28 09:53:42 / 修改时间：14:01:53" itemprop="dateCreated datePublished" datetime="2019-11-28T09:53:42+08:00">2019-11-28</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://maven.apache.org/" target="_blank" rel="noopener">Maven</a> 是当前最受欢迎的 Java 项目管理构建自动化综合工具，主要功能：</p>
+<ul>
+<li>统一开发规范与工具</li>
+<li>统一管理 Jar 包</li>
+</ul>
+<h2 id="仓库"><a href="#仓库" class="headerlink" title="仓库"></a>仓库</h2><p>Maven 根据坐标寻找构件时，首先会查看本地仓库，若本地仓库存在此构件则直接使用；若本地仓库不存在此构件，就会去远程仓库查找，查找到下载到本地仓库再使用。</p>
+<p><strong>分类</strong></p>
+<ul>
+<li><strong>本地仓库</strong>：默认位置 <code>${user.home}/.m2/repository</code>，可通过 <code>settings.xml</code> 自定义</li>
+<li><strong>中央仓库</strong>：Maven 自带的远程仓库，<code>http://repo2.maven.org/maven2/</code> </li>
+<li><strong>私服</strong>：一种特殊的远程仓库，为节省带宽和时间，应在局域网内架设一个私有仓库服务器，用其代理所有外部的远程仓库。</li>
+</ul>
+<p><strong>资源库</strong></p>
+<ul>
+<li>中央仓库资源：<a href="http://mvnrepository.com/" target="_blank" rel="noopener">http://mvnrepository.com/</a>   、  <a href="https://search.maven.org/" target="_blank" rel="noopener">https://search.maven.org/</a></li>
+<li>阿里云资源：<a href="http://maven.aliyun.com/nexus/content/groups/public/" target="_blank" rel="noopener">http://maven.aliyun.com/nexus/content/groups/public/</a></li>
+</ul>
+<h2 id="核心概念"><a href="#核心概念" class="headerlink" title="核心概念"></a>核心概念</h2><h3 id="坐标"><a href="#坐标" class="headerlink" title="坐标"></a>坐标</h3><p>groupId，artifactId，version 三个元素是项目的坐标，唯一的标识这个项目。</p>
+<ul>
+<li><strong>groupId</strong>：项目所在组，一般是组织或公司</li>
+<li><strong>artifactId</strong>：是当前项目在组中的唯一 ID，一般是项目名称</li>
+<li><strong>version</strong>：表示版本</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">groupId</span>&gt;</span>co.yixiang<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>yshop<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">packaging</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">packaging</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">version</span>&gt;</span>1.3<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="打包"><a href="#打包" class="headerlink" title="打包"></a>打包</h3><ul>
+<li><strong>jar</strong>：默认打包方式，我们可以在其他工程的 pom 文件中去引用它</li>
+<li><strong>war</strong>：这种打包方式是将工程都部署在服务器上，用户通过浏览器直接访问</li>
+<li><strong>pom</strong>：用在父级工程或聚合工程中，用来做 jar 包的版本控制</li>
+</ul>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">packaging</span>&gt;</span>pom<span class="tag">&lt;/<span class="name">packaging</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">modules</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">module</span>&gt;</span>yshop-common<span class="tag">&lt;/<span class="name">module</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">module</span>&gt;</span>yshop-logging<span class="tag">&lt;/<span class="name">module</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">module</span>&gt;</span>yshop-system<span class="tag">&lt;/<span class="name">module</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">module</span>&gt;</span>yshop-tools<span class="tag">&lt;/<span class="name">module</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">module</span>&gt;</span>yshop-generator<span class="tag">&lt;/<span class="name">module</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">module</span>&gt;</span>yshop-api<span class="tag">&lt;/<span class="name">module</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">module</span>&gt;</span>yshop-mp<span class="tag">&lt;/<span class="name">module</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">modules</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="概念模型"><a href="#概念模型" class="headerlink" title="概念模型"></a>概念模型</h3><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-28-102200.png" alt></p>
+<h3 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h3><ul>
+<li><p><strong>Clean</strong>：目的是清理项目</p>
+<ul>
+<li>pre-clean</li>
+<li>clean：删除前一个构建生成的所有文件</li>
+<li>post-clean</li>
+</ul>
+</li>
+<li><p><strong>Default</strong>：定义了真正构建时所需要执行的所有步骤</p>
+<ul>
+<li>compile：编译</li>
+<li>test：测试</li>
+<li>package：使用已编译的代码，并将其打包成可部署格式</li>
+<li>verify：运行检查以验证包是否有效</li>
+<li>install：将该包安装到本地仓库</li>
+<li>deploy：将项目输出部署到远程仓库</li>
+</ul>
+</li>
+<li><p><strong>Site</strong>：目的是建立和发布项目站点</p>
+<ul>
+<li>pre-site</li>
+<li>site：生成项目的站点文档</li>
+<li>post-site</li>
+<li>site-deploy：将生成的站点文档部署到指定的 web 服务器</li>
+</ul>
+</li>
+</ul>
+<h2 id="标准项目结构"><a href="#标准项目结构" class="headerlink" title="标准项目结构"></a>标准项目结构</h2><p><strong>核心思想</strong>：约束优于配置</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── pom.xml</span><br><span class="line">├── src</span><br><span class="line">│   ├── main</span><br><span class="line">│   │   ├── java: 源代码目录</span><br><span class="line">│   │   └── resources: 资源目录</span><br><span class="line">│   └── test</span><br><span class="line">│       └── java: 测试代码目录</span><br><span class="line">├── target</span><br><span class="line">│   ├── classes: 主体输出目录</span><br><span class="line">│   ├── generated-sources</span><br><span class="line">│   ├── generated-test-sources</span><br><span class="line">│   └── test-classes: 测试输出目录</span><br><span class="line">└── yshop-system.iml</span><br></pre></td></tr></table></figure>
+
+<p><strong>版本规范</strong></p>
+<ul>
+<li>SNAPSHOT：快照版本，开发测试阶段，不稳定版本</li>
+<li>LATEST：某个特定构建的最新发布版本</li>
+<li>RELEASE：正式发布版本，稳定版本</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/27/java-frame-mybatis-plus/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/11/27/java-frame-mybatis-plus/" class="post-title-link" itemprop="url">Java · 框架 · MyBatis-Plus</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-27 16:40:45" itemprop="dateCreated datePublished" datetime="2019-11-27T16:40:45+08:00">2019-11-27</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-28 11:50:38" itemprop="dateModified" datetime="2019-11-28T11:50:38+08:00">2019-11-28</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><strong>官方网站</strong>：<a href="https://mybatis.plus/" target="_blank" rel="noopener">https://mybatis.plus/</a></p>
+<p><strong>GitHub</strong>：<a href="https://github.com/baomidou/mybatis-plus" target="_blank" rel="noopener">https://github.com/baomidou/mybatis-plus</a></p>
+<p><strong>功能：</strong></p>
+<ul>
+<li>强大的 CRUD 操作</li>
+<li>主键自动生成</li>
+<li>强大的代码生成器</li>
+</ul>
+<p><strong>引入</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.baomidou<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis-plus<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.2.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/27/java-frame-jpa/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/11/27/java-frame-jpa/" class="post-title-link" itemprop="url">Java · 框架 · JPA</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-27 14:19:27" itemprop="dateCreated datePublished" datetime="2019-11-27T14:19:27+08:00">2019-11-27</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-28 09:03:11" itemprop="dateModified" datetime="2019-11-28T09:03:11+08:00">2019-11-28</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="ORM"><a href="#ORM" class="headerlink" title="ORM"></a>ORM</h2><p>简单说，ORM 就是通过实例对象的语法，完成关系型数据库的操作的技术，<strong>对象-关系映射（Object/Relational Mapping）</strong> 的缩写，ORM 的主要功能是把数据库映射成对象。</p>
+<ul>
+<li><p>数据库表（table）–&gt; 类（class）</p>
+</li>
+<li><p>记录（record，行数据）–&gt; 对象（object）</p>
+</li>
+<li><p>字段（field）–&gt; 对象的属性（attribute）</p>
+</li>
+</ul>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-27-142500.png" alt></p>
+<p><strong>示例</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 数据库写法</span></span><br><span class="line">SELECT id, first_name, last_name, phone, birth_date, sex FROM person WHERE id = <span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ORM写法</span></span><br><span class="line">p = Person.get(<span class="number">10</span>);</span><br><span class="line">name = p.first_name;</span><br><span class="line">phone = p.phone</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>现在 Dao 持久层的解决方案中，大部分是采用 Spring Data JPA 或 <a href="https://mybatis.org/mybatis-3/zh/index.html" target="_blank" rel="noopener">MyBatis</a> 解决方案，并且传统企业多用前者，互联网企业多用后者。Spring Data JPA 是 Spring Data 在 JPA 和 ORM 框架之间抽象封装层，它不直接代替 ORM 框架，默认低层使用的 ORM 框架是 <a href="http://hibernate.org/" target="_blank" rel="noopener">Hibernate</a>。</p>
+<h2 id="JPA"><a href="#JPA" class="headerlink" title="JPA"></a>JPA</h2><p>Java Persistence API，可以通过注解或者 XML 描述<strong>对象-关系表</strong>之间的映射关系，并将实体对象持久化到数据库中，JPA 是一套 ORM 规范。</p>
+<p><strong><a href="https://spring.io/projects/spring-data-jpa#learn" target="_blank" rel="noopener">Spring Data JPA</a></strong>：是 Spring 提供的一套简化 JPA 开发的框架，按照约定好的方法命名规则写 dao 层接口，就可以在不写接口实现的情况下，实现对数据库的访问和操作，可以理解为 JPA 规范的再次封装抽象，底层还是使用了 Hibernate 的 JPA 技术实现。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-27-143900.jpg" alt></p>
+<p><strong>接口约定命名规则</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">Keyword</th>
+<th align="left">Sample</th>
+<th align="left">JPQL snippet</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>And</code></td>
+<td align="left"><code>findByLastnameAndFirstname</code></td>
+<td align="left"><code>… where x.lastname = ?1 and x.firstname = ?2</code></td>
+</tr>
+<tr>
+<td align="left"><code>Or</code></td>
+<td align="left"><code>findByLastnameOrFirstname</code></td>
+<td align="left"><code>… where x.lastname = ?1 or x.firstname = ?2</code></td>
+</tr>
+<tr>
+<td align="left"><code>Is</code>, <code>Equals</code></td>
+<td align="left"><code>findByFirstname</code>,<code>findByFirstnameEquals</code></td>
+<td align="left"><code>… where x.firstname = ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>Between</code></td>
+<td align="left"><code>findByStartDateBetween</code></td>
+<td align="left"><code>… where x.startDate between ?1 and ?2</code></td>
+</tr>
+<tr>
+<td align="left"><code>LessThan</code></td>
+<td align="left"><code>findByAgeLessThan</code></td>
+<td align="left"><code>… where x.age &lt; ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>LessThanEqual</code></td>
+<td align="left"><code>findByAgeLessThanEqual</code></td>
+<td align="left"><code>… where x.age &lt;= ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>GreaterThan</code></td>
+<td align="left"><code>findByAgeGreaterThan</code></td>
+<td align="left"><code>… where x.age &gt; ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>GreaterThanEqual</code></td>
+<td align="left"><code>findByAgeGreaterThanEqual</code></td>
+<td align="left"><code>… where x.age &gt;= ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>After</code></td>
+<td align="left"><code>findByStartDateAfter</code></td>
+<td align="left"><code>… where x.startDate &gt; ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>Before</code></td>
+<td align="left"><code>findByStartDateBefore</code></td>
+<td align="left"><code>… where x.startDate &lt; ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>IsNull</code>, <code>Null</code></td>
+<td align="left"><code>findByAge(Is)Null</code></td>
+<td align="left"><code>… where x.age is null</code></td>
+</tr>
+<tr>
+<td align="left"><code>IsNotNull</code>, <code>NotNull</code></td>
+<td align="left"><code>findByAge(Is)NotNull</code></td>
+<td align="left"><code>… where x.age not null</code></td>
+</tr>
+<tr>
+<td align="left"><code>Like</code></td>
+<td align="left"><code>findByFirstnameLike</code></td>
+<td align="left"><code>… where x.firstname like ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>NotLike</code></td>
+<td align="left"><code>findByFirstnameNotLike</code></td>
+<td align="left"><code>… where x.firstname not like ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>StartingWith</code></td>
+<td align="left"><code>findByFirstnameStartingWith</code></td>
+<td align="left"><code>… where x.firstname like ?%</code></td>
+</tr>
+<tr>
+<td align="left"><code>EndingWith</code></td>
+<td align="left"><code>findByFirstnameEndingWith</code></td>
+<td align="left"><code>… where x.firstname like %?</code></td>
+</tr>
+<tr>
+<td align="left"><code>Containing</code></td>
+<td align="left"><code>findByFirstnameContaining</code></td>
+<td align="left"><code>… where x.firstname like %?%</code></td>
+</tr>
+<tr>
+<td align="left"><code>OrderBy</code></td>
+<td align="left"><code>findByAgeOrderByLastnameDesc</code></td>
+<td align="left"><code>… where x.age = ?1 order by x.lastname desc</code></td>
+</tr>
+<tr>
+<td align="left"><code>Not</code></td>
+<td align="left"><code>findByLastnameNot</code></td>
+<td align="left"><code>… where x.lastname &lt;&gt; ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>In</code></td>
+<td align="left"><code>findByAgeIn(Collection ages)</code></td>
+<td align="left"><code>… where x.age in ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>NotIn</code></td>
+<td align="left"><code>findByAgeNotIn(Collection ages)</code></td>
+<td align="left"><code>… where x.age not in ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>True</code></td>
+<td align="left"><code>findByActiveTrue()</code></td>
+<td align="left"><code>… where x.active = true</code></td>
+</tr>
+<tr>
+<td align="left"><code>False</code></td>
+<td align="left"><code>findByActiveFalse()</code></td>
+<td align="left"><code>… where x.active = false</code></td>
+</tr>
+<tr>
+<td align="left"><code>IgnoreCase</code></td>
+<td align="left"><code>findByFirstnameIgnoreCase</code></td>
+<td align="left"><code>… where UPPER(x.firstame) = UPPER(?1)</code></td>
+</tr>
+</tbody></table>
+<p><strong>maven 坐标</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-jpa<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>yml 配置</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#配置数据源</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  datasource:</span></span><br><span class="line"><span class="attr">    druid:</span></span><br><span class="line"><span class="attr">      type:</span> <span class="string">com.alibaba.druid.pool.DruidDataSource</span></span><br><span class="line"><span class="attr">      driverClassName:</span> <span class="string">net.sf.log4jdbc.sql.jdbcapi.DriverSpy</span></span><br><span class="line"><span class="attr">      url:</span> <span class="attr">jdbc:log4jdbc:mysql://localhost:3306/yshop</span></span><br><span class="line"><span class="attr">      username:</span> <span class="string">root</span></span><br><span class="line"><span class="attr">      password:</span> <span class="string">root</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">#配置 Jpa</span></span><br><span class="line"><span class="attr">  jpa:</span></span><br><span class="line"><span class="attr">    hibernate:</span></span><br><span class="line">      <span class="comment"># 生产环境设置成 none，避免程序运行时自动更新数据库结构</span></span><br><span class="line"><span class="attr">      ddl-auto:</span> <span class="string">update</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="JPA-vs-MyBatis"><a href="#JPA-vs-MyBatis" class="headerlink" title="JPA vs MyBatis"></a>JPA vs MyBatis</h2><h3 id="Mybatis"><a href="#Mybatis" class="headerlink" title="Mybatis"></a>Mybatis</h3><p><strong>优点</strong>：</p>
+<ul>
+<li>SQL 语句可以自由控制，更灵活，性能更高</li>
+<li>SQL 与代码分离，易于阅读和维护</li>
+<li>提供 XML 标签，支持动态 SQL 语句</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>简单 CRUD 操作还得写 SQL 语句</li>
+<li>XML 中有大量的 SQL 需要维护</li>
+<li>MyBatis 自身功能有限，但支持 Plugin</li>
+</ul>
+<h3 id="JPA-1"><a href="#JPA-1" class="headerlink" title="JPA"></a>JPA</h3><p><strong>优点：</strong></p>
+<ul>
+<li>移植性比较好</li>
+<li>提供了很多 CRUD 方法，开发效率高</li>
+<li>对象化程度高</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>框架比较重，学习成本较高</li>
+<li>性能不好控制</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/26/java-project-yshop/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -372,7 +1132,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/blog/2019/11/26/java-project-yshop/" class="post-title-link" itemprop="url">Java · 项目解析 · yshop</a>
+                <a href="/blog/2019/11/26/java-project-yshop/" class="post-title-link" itemprop="url">Java · 项目 · yshop</a>
               
             
           </h1>
@@ -414,7 +1174,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-11-30 21:00:58" itemprop="dateModified" datetime="2019-11-30T21:00:58+08:00">2019-11-30</time>
+                <time title="修改时间：2019-12-24 16:59:20" itemprop="dateModified" datetime="2019-12-24T16:59:20+08:00">2019-12-24</time>
               
             
           </span>
@@ -1981,1118 +2741,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/18/java-basic-programming-structure/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/11/18/java-basic-programming-structure/" class="post-title-link" itemprop="url">Java · 基本程序设计</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-11-18 16:28:01" itemprop="dateCreated datePublished" datetime="2019-11-18T16:28:01+08:00">2019-11-18</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-25 10:18:11" itemprop="dateModified" datetime="2019-11-25T10:18:11+08:00">2019-11-25</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="命名"><a href="#命名" class="headerlink" title="命名"></a>命名</h2><ul>
-<li><p><strong>包名</strong>：统一使用小写，点分隔符之间有且仅有一个自然语义的英语单词。包名统一使用单数形式，但是类名如果有复数含义，类名可以使用复数形式。</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">正例：应用工具类包名为 com.alibaba.ai.util、类名为 MessageUtils</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>类名</strong>：使用 <code>UpperCamelCase</code> 风格，但以下情形例外：<code>DO / BO / DTO / VO / AO / PO / UID</code> 等。</p>
-<ul>
-<li><em>抽象类名</em>：使用 <code>Abstract</code> 或 <code>Base</code> 开头。</li>
-<li><em>异常类名</em>：使用 <code>Exception</code> 结尾。</li>
-<li><em>测试类名</em>：以它要测试的类的名称开始，以 <code>Test</code> 结尾。</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">正例：JavaServerlessPlatform / UserDO / XmlService / TcpUdpDeal / TaPromotion </span><br><span class="line">反例：javaserverlessplatform / UserDo / XMLService / TCPUDPDeal / TAPromotion</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>方法名、参数名、成员变量、局部变量</strong>：都统一使用 <code>lowerCamelCase</code> 风格，必须遵从驼峰形式。</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">正例：localValue / getHttpMessage() / inputUserId</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>常量名</strong>：全部大写，单词间用下划线隔开，力求语义表达完整清楚，不要嫌名字长。</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">正例：MAX_STOCK_COUNT / CACHE_EXPIRED_TIME </span><br><span class="line">反例：MAX_COUNT / EXPIRED_TIME</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong>各层命名规范</strong></p>
-<ul>
-<li><code>Service/DAO</code> 层方法命名<ul>
-<li>获取单个对象的方法用 <code>get</code> 做前缀</li>
-<li>获取多个对象的方法用 <code>list</code> 做前缀，复数形式结尾如：<code>listObjects</code></li>
-<li>获取统计值的方法用 <code>count</code> 做前缀</li>
-<li>插入的方法用 <code>save/insert</code> 做前缀</li>
-<li>删除的方法用 <code>remove/delete</code> 做前缀</li>
-<li>修改的方法用 <code>update</code> 做前缀</li>
-</ul>
-</li>
-<li>领域模型命名<ul>
-<li>数据对象：<code>xxxDO</code>，xxx 即为数据表名</li>
-<li>数据传输对象：<code>xxxDTO</code>，xxx 为业务领域相关的名称</li>
-<li>展示对象：<code>xxxVO</code>，xxx 一般为网页名称</li>
-<li><code>POJO</code> 是 <code>DO/DTO/BO/VO</code> 的统称，禁止命名成 <code>xxxPOJO</code></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="注释"><a href="#注释" class="headerlink" title="注释"></a>注释</h2><h3 id="注释类型"><a href="#注释类型" class="headerlink" title="注释类型"></a>注释类型</h3><ul>
-<li>单行注释：<code>//</code></li>
-<li>多行注释：<code>/*..*/</code></li>
-<li>文档注释：<code>/**..*/</code></li>
-</ul>
-<h3 id="注释规范"><a href="#注释规范" class="headerlink" title="注释规范"></a>注释规范</h3><ul>
-<li>类、类属性、类方法的注释必须使用 <code>Javadoc</code> 规范，使用 <code>/**..*/</code> 格式。</li>
-<li>抽象方法必须要用 <code>Javadoc</code> 注释、除了返回值、参数、 异常说明外，还必须指出该方法实现的功能。</li>
-<li>所有的类都必须添加创建者和创建日期。</li>
-<li>方法内部单行注释。</li>
-<li>所有的枚举类型字段必须要有注释，说明每个数据项的用途。</li>
-</ul>
-<h2 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h2><p>Java 中，一共有 8 种基本类型，其中有 4 种整型、2 种浮点类型、1 种字符类型、1 种布尔类型。</p>
-<h3 id="整型"><a href="#整型" class="headerlink" title="整型"></a>整型</h3><table>
-<thead>
-<tr>
-<th>类型</th>
-<th>存储</th>
-<th>取值范围</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>int</strong></td>
-<td>4 字节</td>
-<td>-2147483648 ～ 2147483647（约20亿）</td>
-</tr>
-<tr>
-<td>short</td>
-<td>2 字节</td>
-<td>-32768 ～ 32767</td>
-</tr>
-<tr>
-<td>long</td>
-<td>8 字节</td>
-<td>-9223372036854775808 ～ 9223372036854775807</td>
-</tr>
-<tr>
-<td>byte</td>
-<td>1 字节</td>
-<td>-128 ～ 127</td>
-</tr>
-</tbody></table>
-<blockquote>
-<p>提醒：Java 没有任何无符号类型（unsigned），且整型的范围与运行 Java 代码的机器无关。</p>
-</blockquote>
-<h3 id="浮点型"><a href="#浮点型" class="headerlink" title="浮点型"></a>浮点型</h3><table>
-<thead>
-<tr>
-<th>类型</th>
-<th>存储</th>
-<th>取值范围</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>float</td>
-<td>4 字节</td>
-<td>有效位数 6～7 位</td>
-</tr>
-<tr>
-<td><strong>double</strong></td>
-<td>8 字节</td>
-<td>有效位数 15 位</td>
-</tr>
-</tbody></table>
-<blockquote>
-<p>警告：浮点数值不适用于禁止出现舍入误差的金融计算中。</p>
-</blockquote>
-<h3 id="char"><a href="#char" class="headerlink" title="char"></a>char</h3><p>char 类型用于表示单个字符，是一个单一的 16 位 Unicode 字符，最小值是 <code>\u0000</code>（即为 0），最大值是 <code>\uffff</code>（即为 65,535），建议不要在程序中使用 char 类型。</p>
-<h3 id="boolean"><a href="#boolean" class="headerlink" title="boolean"></a>boolean</h3><p>布尔类型有两个值：false 和 true，用于判定逻辑条件，整型值和布尔值之间不能进行相互转换。</p>
-<h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><p>在 Java 中，每一个变量属于一种类型（Type），在声明变量时，变量所属的类型位于变量名之前，声明变量之后，必须用赋值语句对变量进行显式初始化。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">double</span> salary = <span class="number">6500.0</span>;</span><br><span class="line"><span class="keyword">int</span> vacationDays = <span class="number">12</span>;</span><br><span class="line"><span class="keyword">long</span> earthPopulation = xx;</span><br><span class="line"><span class="keyword">boolean</span> done = <span class="keyword">false</span>;</span><br><span class="line">Box box = <span class="keyword">new</span> Box();</span><br></pre></td></tr></table></figure>
-
-<h2 id="常量"><a href="#常量" class="headerlink" title="常量"></a>常量</h2><p>在 Java 中，利用关键字 final 指示常量，final 表示这个变量只能被赋值一次，一旦赋值后就不能改再修改了，习惯上常量名使用全大写。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="keyword">double</span> CM_PER_INCH = <span class="number">2.54</span>;</span><br></pre></td></tr></table></figure>
-
-<h2 id="运算符"><a href="#运算符" class="headerlink" title="运算符"></a>运算符</h2><table>
-<thead>
-<tr>
-<th align="center"><strong>优先级</strong></th>
-<th align="center"><strong>运算符</strong></th>
-<th align="center"><strong>简介</strong></th>
-<th align="center"><strong>结合性</strong></th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="center">1</td>
-<td align="center"><code>[ ]</code>、<code>.</code>、<code>( )</code></td>
-<td align="center">方法调用，属性获取</td>
-<td align="center">从左向右</td>
-</tr>
-<tr>
-<td align="center">2</td>
-<td align="center">!、~、 ++、 –</td>
-<td align="center">一元运算符</td>
-<td align="center">从右向左</td>
-</tr>
-<tr>
-<td align="center">3</td>
-<td align="center">* 、/ 、%</td>
-<td align="center">乘、除、取模（余数）</td>
-<td align="center">从左向右</td>
-</tr>
-<tr>
-<td align="center">4</td>
-<td align="center">+ 、 -</td>
-<td align="center">加减法</td>
-<td align="center">从左向右</td>
-</tr>
-<tr>
-<td align="center">5</td>
-<td align="center">&lt;&lt;、 &gt;&gt;、 &gt;&gt;&gt;</td>
-<td align="center">左右位移</td>
-<td align="center">从左向右</td>
-</tr>
-<tr>
-<td align="center">6</td>
-<td align="center">&lt; 、&lt;= 、&gt;、 &gt;=、 instanceof</td>
-<td align="center">对象是否属于同类型</td>
-<td align="center">从左向右</td>
-</tr>
-<tr>
-<td align="center">7</td>
-<td align="center">== 、!=</td>
-<td align="center">是否相等</td>
-<td align="center">从左向右</td>
-</tr>
-<tr>
-<td align="center">8</td>
-<td align="center">&amp;</td>
-<td align="center">按位与</td>
-<td align="center">从左向右</td>
-</tr>
-<tr>
-<td align="center">9</td>
-<td align="center">^</td>
-<td align="center">按位异或</td>
-<td align="center">从左向右</td>
-</tr>
-<tr>
-<td align="center">10</td>
-<td align="center">|</td>
-<td align="center">按位或</td>
-<td align="center">从左向右</td>
-</tr>
-<tr>
-<td align="center">11</td>
-<td align="center">&amp;&amp;</td>
-<td align="center">短路与</td>
-<td align="center">从左向右</td>
-</tr>
-<tr>
-<td align="center">12</td>
-<td align="center">||</td>
-<td align="center">短路或</td>
-<td align="center">从左向右</td>
-</tr>
-<tr>
-<td align="center">13</td>
-<td align="center">?:</td>
-<td align="center">三元运算符</td>
-<td align="center">从右向左</td>
-</tr>
-<tr>
-<td align="center">14</td>
-<td align="center">=、 += 、-= 、*= 、/=、 %=、 &amp;=、 |=、 ^=、 &lt;、&lt;= 、&gt;、&gt;= 、&gt;&gt;=</td>
-<td align="center">混合赋值运算符</td>
-<td align="center">从右向左</td>
-</tr>
-</tbody></table>
-<blockquote>
-<p>提醒：&amp;&amp; 和 || 是按照“短路”方式求值，如果第一个操作数已经能够确定表达式的值，第二个操作数就不必要计算了。&amp; 和 | 这两个运算符与前面非常相似，只是不按“短路”方式计算，即在得到计算结果之前，一定要计算两个操作数的值。</p>
-</blockquote>
-<h2 id="字符串"><a href="#字符串" class="headerlink" title="字符串"></a>字符串</h2><p>从概念上讲，Java 字符串就是 Unicode 字符序列。Java 没有内置的字符串类型，而是在标准 Java 类库中提供了一个预定义类，叫做 String。Java 有自动垃圾回收机制，如果一块内存不再使用了，系统最终会将其回收。</p>
-<ul>
-<li><p><strong>检测字符串是否相等</strong>：使用 <code>equals</code> 方法，不区分大小写使用 <code>equalsIgnoreCase</code> 方法，不要使用 <code>==</code> 运算符。</p>
-</li>
-<li><p><strong>空串</strong>：空串 “” 是长度为 0 的字符串，用以下方式可以检查是否为空。</p>
-</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (str.length() == <span class="number">0</span>)</span><br><span class="line"><span class="keyword">if</span> (str.equals(<span class="string">""</span>))</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>Null 串</strong>：表示目前没有任何对象与该变量关联，检查一个字符串既不是 null 也不为空串。</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (str != <span class="keyword">null</span> &amp;&amp; str.length() != <span class="number">0</span>)</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>字符串 <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html" target="_blank" rel="noopener">API</a></strong>：<code>java.lang.string</code></li>
-</ul>
-<h2 id="输入输出"><a href="#输入输出" class="headerlink" title="输入输出"></a>输入输出</h2><p><strong>读取输入</strong>：使用 <code>java.util.Scanner</code> 类</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * This program demonstrates console input.</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@version</span> v1.0 2019-11-20</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> Rao Hui</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        Scanner in = <span class="keyword">new</span> Scanner(System.in);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// get frist input</span></span><br><span class="line">        System.out.print(<span class="string">"What is your name? "</span>);</span><br><span class="line">        String name = in.nextLine();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// get second input</span></span><br><span class="line">        System.out.print(<span class="string">"How old are you? "</span>);</span><br><span class="line">        <span class="keyword">int</span> age = in.nextInt();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// dispaly output on console</span></span><br><span class="line">        System.out.println(<span class="string">"Hello, "</span> + name + <span class="string">". Next year, you'll be "</span> + (age + <span class="number">1</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>格式化输出</strong>：使用 <code>System.out.printf()</code></p>
-<ul>
-<li>d：整数类型</li>
-<li>c：Unicode 字符</li>
-<li>b：Boolean 值</li>
-<li>s：String</li>
-<li>f：浮点数（十进制）</li>
-<li>e：浮点数（科学计数）</li>
-<li>x：整数</li>
-<li>h：散列码（十六进制）</li>
-<li>%：字符 “%”</li>
-</ul>
-<h2 id="控制流"><a href="#控制流" class="headerlink" title="控制流"></a>控制流</h2><ul>
-<li><strong>条件语句</strong>：if (condition) statement</li>
-<li><strong>循环</strong>：while (condition) statement、do statement while (condition)、for (int i = 1;  i &lt;= n;  i++)</li>
-<li><strong>多重选择</strong>：switch…case…</li>
-<li><strong>中断控制</strong>：break（跳出循环）、continue（跳转到下一次循环）</li>
-</ul>
-<h2 id="数组"><a href="#数组" class="headerlink" title="数组"></a>数组</h2><p>数组是一种数据结构，用来存储同一类型值的集合。用于数组的增强 for 循环：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Test</span> </span>&#123;</span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String args[])</span></span>&#123;</span><br><span class="line">      <span class="keyword">int</span>[] numbers = &#123;<span class="number">10</span>, <span class="number">20</span>, <span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>&#125;;</span><br><span class="line"> </span><br><span class="line">      <span class="keyword">for</span>(<span class="keyword">int</span> x : numbers )&#123;</span><br><span class="line">         System.out.print( x );</span><br><span class="line">         System.out.print(<span class="string">","</span>);</span><br><span class="line">      &#125;</span><br><span class="line">      System.out.print(<span class="string">"\n"</span>);</span><br><span class="line">      String[] names =&#123;<span class="string">"James"</span>, <span class="string">"Larry"</span>, <span class="string">"Tom"</span>, <span class="string">"Lacy"</span>&#125;;</span><br><span class="line">      <span class="keyword">for</span>( String name : names ) &#123;</span><br><span class="line">         System.out.print( name );</span><br><span class="line">         System.out.print(<span class="string">","</span>);</span><br><span class="line">      &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="关键字"><a href="#关键字" class="headerlink" title="关键字"></a>关键字</h2><table>
-<thead>
-<tr>
-<th>类别</th>
-<th>关键字</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>访问控制</td>
-<td>private</td>
-<td>私有的</td>
-</tr>
-<tr>
-<td></td>
-<td>protected</td>
-<td>受保护的</td>
-</tr>
-<tr>
-<td></td>
-<td>public</td>
-<td>公共的</td>
-</tr>
-<tr>
-<td>类、方法和变量修饰符</td>
-<td>abstract</td>
-<td>声明抽象</td>
-</tr>
-<tr>
-<td></td>
-<td>class</td>
-<td>类</td>
-</tr>
-<tr>
-<td></td>
-<td>extends</td>
-<td>继承</td>
-</tr>
-<tr>
-<td></td>
-<td>final</td>
-<td>不可改变的</td>
-</tr>
-<tr>
-<td></td>
-<td>implements</td>
-<td>实现（接口）</td>
-</tr>
-<tr>
-<td></td>
-<td>interface</td>
-<td>接口</td>
-</tr>
-<tr>
-<td></td>
-<td>native</td>
-<td>本地</td>
-</tr>
-<tr>
-<td></td>
-<td>new</td>
-<td>创建</td>
-</tr>
-<tr>
-<td></td>
-<td>static</td>
-<td>静态</td>
-</tr>
-<tr>
-<td></td>
-<td>strictfp</td>
-<td>严格</td>
-</tr>
-<tr>
-<td></td>
-<td>synchronized</td>
-<td>线程同步</td>
-</tr>
-<tr>
-<td></td>
-<td>transient</td>
-<td>短暂</td>
-</tr>
-<tr>
-<td></td>
-<td>volatile</td>
-<td>易失</td>
-</tr>
-<tr>
-<td>程序控制</td>
-<td>break</td>
-<td>跳出循环</td>
-</tr>
-<tr>
-<td></td>
-<td>continue</td>
-<td>继续</td>
-</tr>
-<tr>
-<td></td>
-<td>switch</td>
-<td>根据值选择执行</td>
-</tr>
-<tr>
-<td></td>
-<td>case</td>
-<td>定义一个值以供 switch 选择</td>
-</tr>
-<tr>
-<td></td>
-<td>default</td>
-<td>默认</td>
-</tr>
-<tr>
-<td></td>
-<td>do</td>
-<td>运行</td>
-</tr>
-<tr>
-<td></td>
-<td>if</td>
-<td>如果</td>
-</tr>
-<tr>
-<td></td>
-<td>else</td>
-<td>否则</td>
-</tr>
-<tr>
-<td></td>
-<td>for</td>
-<td>循环</td>
-</tr>
-<tr>
-<td></td>
-<td>instanceof</td>
-<td>实例</td>
-</tr>
-<tr>
-<td></td>
-<td>return</td>
-<td>返回</td>
-</tr>
-<tr>
-<td></td>
-<td>while</td>
-<td>循环</td>
-</tr>
-<tr>
-<td>错误处理</td>
-<td>assert</td>
-<td>断言表达式是否为真</td>
-</tr>
-<tr>
-<td></td>
-<td>catch</td>
-<td>捕捉异常</td>
-</tr>
-<tr>
-<td></td>
-<td>finally</td>
-<td>有没有异常都执行</td>
-</tr>
-<tr>
-<td></td>
-<td>throw</td>
-<td>抛出一个异常对象</td>
-</tr>
-<tr>
-<td></td>
-<td>throws</td>
-<td>声明一个异常可能被抛出</td>
-</tr>
-<tr>
-<td></td>
-<td>try</td>
-<td>捕获异常</td>
-</tr>
-<tr>
-<td>包</td>
-<td>import</td>
-<td>引入</td>
-</tr>
-<tr>
-<td></td>
-<td>package</td>
-<td>包</td>
-</tr>
-<tr>
-<td>数据基本类型</td>
-<td>byte</td>
-<td>字节型</td>
-</tr>
-<tr>
-<td></td>
-<td>short</td>
-<td>短整型</td>
-</tr>
-<tr>
-<td></td>
-<td>int</td>
-<td>整型</td>
-</tr>
-<tr>
-<td></td>
-<td>long</td>
-<td>长整型</td>
-</tr>
-<tr>
-<td></td>
-<td>float</td>
-<td>单精度浮点</td>
-</tr>
-<tr>
-<td></td>
-<td>double</td>
-<td>双精度浮点</td>
-</tr>
-<tr>
-<td></td>
-<td>char</td>
-<td>字符型</td>
-</tr>
-<tr>
-<td></td>
-<td>boolean</td>
-<td>布尔型</td>
-</tr>
-<tr>
-<td>变量应用</td>
-<td>super</td>
-<td>超类</td>
-</tr>
-<tr>
-<td></td>
-<td>this</td>
-<td>本类</td>
-</tr>
-<tr>
-<td></td>
-<td>void</td>
-<td>无返回值</td>
-</tr>
-<tr>
-<td>保留关键字</td>
-<td>goto</td>
-<td>是关键字，但不能使用</td>
-</tr>
-<tr>
-<td></td>
-<td>const</td>
-<td>是关键字，但不能使用</td>
-</tr>
-<tr>
-<td></td>
-<td>null</td>
-<td>空</td>
-</tr>
-</tbody></table>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/18/java-ide/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/11/18/java-ide/" class="post-title-link" itemprop="url">Java · 开发环境</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-11-18 15:22:16" itemprop="dateCreated datePublished" datetime="2019-11-18T15:22:16+08:00">2019-11-18</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-28 08:19:02" itemprop="dateModified" datetime="2019-11-28T08:19:02+08:00">2019-11-28</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><ul>
-<li><a href="https://www.oracle.com/technetwork/java/javase/downloads/index.html" target="_blank" rel="noopener">Java JDK</a></li>
-<li><a href="http://www.jetbrains.com/" target="_blank" rel="noopener">IntelliJ IDEA</a></li>
-</ul>
-<h2 id="搭建步骤"><a href="#搭建步骤" class="headerlink" title="搭建步骤"></a>搭建步骤</h2><ul>
-<li>安装</li>
-<li>配置环境变量</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># sudo vim /etc/profile</span></span><br><span class="line"></span><br><span class="line">JAVA_HOME=<span class="string">"/Library/Java/JavaVirtualMachines/jdk-13.0.1.jdk/Contents/Home"</span></span><br><span class="line">export JAVA_HOME</span><br><span class="line">PATH=<span class="variable">$JAVA_HOME</span>/bin:<span class="variable">$PATH:</span>.</span><br><span class="line">CLASS_PATH=<span class="string">"<span class="variable">$JAVA_HOME</span>/lib"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># source /etc/profile</span></span><br><span class="line"></span><br><span class="line">➜  ~ java -version</span><br><span class="line">java version <span class="string">"13.0.1"</span> <span class="number">2019</span>-<span class="number">10</span>-<span class="number">15</span></span><br><span class="line">Java(TM) SE Runtime Environment (build <span class="number">13.0</span>.<span class="number">1</span>+<span class="number">9</span>)</span><br><span class="line">Java HotSpot(TM) <span class="number">64</span>-Bit Server VM (build <span class="number">13.0</span>.<span class="number">1</span>+<span class="number">9</span>, mixed mode, sharing)</span><br><span class="line"></span><br><span class="line">~ root<span class="comment"># echo $PATH</span></span><br><span class="line">/Library/Java/JavaVirtualMachines/jdk-<span class="number">13.0</span>.<span class="number">1</span>.jdk/Contents/Home/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:.</span><br><span class="line">~ root<span class="comment"># echo $JAVA_HOME</span></span><br><span class="line">/Library/Java/JavaVirtualMachines/jdk-<span class="number">13.0</span>.<span class="number">1</span>.jdk/Contents/Home</span><br><span class="line">~ root<span class="comment"># echo $CLASS_PATH</span></span><br><span class="line">/Library/Java/JavaVirtualMachines/jdk-<span class="number">13.0</span>.<span class="number">1</span>.jdk/Contents/Home/lib</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>配置 IDE（<strong>File -&gt; Project Structure -&gt; SDKs -&gt; JDK home path</strong>）</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"Hello World!"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Hello World!</span><br></pre></td></tr></table></figure>
-
-<h2 id="Java-术语"><a href="#Java-术语" class="headerlink" title="Java 术语"></a>Java 术语</h2><table>
-<thead>
-<tr>
-<th>术语名</th>
-<th>缩写</th>
-<th>解释</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Java Development Kit</td>
-<td>JDK</td>
-<td>编写 Java 程序的程序员使用的软件，包含编译器</td>
-</tr>
-<tr>
-<td>Java Runtime Environmen</td>
-<td>JRE</td>
-<td>运行 Java 程序的用户使用的软件，包含虚拟机</td>
-</tr>
-<tr>
-<td>Standard Edition</td>
-<td>SE</td>
-<td>用于桌面或简单服务器应用的 Java 平台</td>
-</tr>
-<tr>
-<td>Enterprise Edition</td>
-<td>EE</td>
-<td>用于复杂的服务器应用的 Java 平台</td>
-</tr>
-<tr>
-<td>Micro Edition</td>
-<td>ME</td>
-<td>用于手机或其他小型设备的 Java 平台</td>
-</tr>
-<tr>
-<td>Data Access Object</td>
-<td>DAO</td>
-<td>数据访问对象，主要是将数据库操作都封装起来，对外提供接口</td>
-</tr>
-<tr>
-<td>Data Transfer Object</td>
-<td>DTO</td>
-<td>泛指用于表示层与服务层之间的数据传输对象</td>
-</tr>
-</tbody></table>
-<h2 id="Java-命令行工具"><a href="#Java-命令行工具" class="headerlink" title="Java 命令行工具"></a>Java 命令行工具</h2><table>
-<thead>
-<tr>
-<th>工具</th>
-<th>说明</th>
-<th>使用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>javac</td>
-<td>Java 编译器，将 .java 编译成 .class 字节码文件</td>
-<td>javac HelloWorld.java</td>
-</tr>
-<tr>
-<td>java</td>
-<td>Java 执行程序的命令，执行 .class 文件</td>
-<td>java HelloWorld</td>
-</tr>
-</tbody></table>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/16/mysql-practice-recovery/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/11/16/mysql-practice-recovery/" class="post-title-link" itemprop="url">MySQL · 运维实践 · 备份恢复</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-11-16 08:57:32 / 修改时间：09:11:15" itemprop="dateCreated datePublished" datetime="2019-11-16T08:57:32+08:00">2019-11-16</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><ul>
-<li><strong>项目</strong>：海尔模块商资源平台（HDY）</li>
-<li><strong>数据库</strong>：MySQL 5.5.27</li>
-<li><strong>数据量</strong>：</li>
-</ul>
-<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><ul>
-<li>申请服务器 - 项目经理</li>
-<li>申请特权账号（DBA、DTS 备份）- 项目经理</li>
-<li>搭建数据库 - DBA</li>
-<li>安装恢复软件，并进行相关参数配置 - DTS</li>
-<li>启动恢复</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 数据恢复</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">26</span>K Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">36</span> mysql-bin.<span class="number">000001</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">919</span>K Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">36</span> mysql-bin.<span class="number">000002</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">126</span> Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">38</span> mysql-bin.<span class="number">000003</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">126</span> Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">38</span> mysql-bin.<span class="number">000004</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">126</span> Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">39</span> mysql-bin.<span class="number">000005</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">126</span> Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">45</span> mysql-bin.<span class="number">000006</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">126</span> Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">46</span> mysql-bin.<span class="number">000007</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">1.1</span>G Nov <span class="number">15</span> <span class="number">16</span>:<span class="number">18</span> mysql-bin.<span class="number">000008</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">1.1</span>G Nov <span class="number">15</span> <span class="number">16</span>:<span class="number">21</span> mysql-bin.<span class="number">000009</span></span><br><span class="line">...</span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql <span class="number">1073790463</span> Nov <span class="number">16</span> <span class="number">08</span>:<span class="number">27</span> mysql-bin.<span class="number">000325</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">681747155</span> Nov <span class="number">16</span> <span class="number">08</span>:<span class="number">31</span> mysql-bin.<span class="number">000326</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql       <span class="number">6194</span> Nov <span class="number">16</span> <span class="number">08</span>:<span class="number">27</span> mysql-bin.index</span><br><span class="line"></span><br><span class="line"><span class="comment"># 回滚日志</span></span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><a class="page-number" href="/blog/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/blog/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/15/">15</a><a class="extend next" rel="next" href="/blog/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><a class="page-number" href="/blog/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/blog/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/16/">16</a><a class="extend next" rel="next" href="/blog/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -3136,7 +2789,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">148</span>
+                    <span class="site-state-item-count">151</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

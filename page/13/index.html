@@ -352,6 +352,715 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/04/mysql-disaster/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/04/mysql-disaster/" class="post-title-link" itemprop="url">MySQL · 容灾</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-04 16:16:31" itemprop="dateCreated datePublished" datetime="2019-09-04T16:16:31+08:00">2019-09-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-15 16:33:54" itemprop="dateModified" datetime="2019-11-15T16:33:54+08:00">2019-11-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>数据是企业的生命线，<code>PSI</code> 线上系统数据基本都存储在青岛本地机房，缺少异地容灾能力，当出现机房级灾难场景下（如：地震、海啸、火灾等），业务连续性受到极大的影响，损失不可估量。如下图所示，目前 <code>PSI</code> 已具备前两类故障场景的覆盖能力，需要构建覆盖第三类故障场景能力，全方位保障业务数据安全，有备无患。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-135300.png" alt></p>
+<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><ul>
+<li>保证极端场景下业务数据可恢复</li>
+<li><code>RPO</code> &lt; 2 小时，<code>RTO</code> &lt; 24 小时</li>
+</ul>
+<h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><p><strong>设计方案</strong>：如下图所示，重要系统生产数据（青岛本地机房：电信机房、联通机房、移动机房…）同步至红岛灾备数据中心，特别重要系统数据压缩存储上传至阿里云 <code>OSS</code>。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-135600.png" alt></p>
+<p><strong>实施方案</strong>：从库实例再搭建一个从实例形成级联结构，对数据进行实时同步，主要为避免增加主库负载。</p>
+<p><strong>实例拓扑：</strong></p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-140100.png" alt></p>
+<p><strong>系统监控：</strong></p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-140200.png" alt></p>
+<ul>
+<li><p>主实例：<code>TDDS_M</code></p>
+</li>
+<li><p>从实例：<code>TDDS_S</code></p>
+</li>
+<li><p>灾备实例：<code>TDDS_D</code></p>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/28/docker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/08/28/docker/" class="post-title-link" itemprop="url">容器</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-28 23:04:00" itemprop="dateCreated datePublished" datetime="2019-08-28T23:04:00+08:00">2019-08-28</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-15 16:19:04" itemprop="dateModified" datetime="2019-11-15T16:19:04+08:00">2019-11-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/容器/" itemprop="url" rel="index"><span itemprop="name">容器</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl start docker  // 启动docker</span><br><span class="line">$ systemctl stop docker   // 关闭docker</span><br><span class="line">$ docker restart xxx      // 重启一个容器</span><br><span class="line">$ docker stop xxx         // 停止一个容器</span><br><span class="line">$ docker rm xxx           // 删除一个容器</span><br><span class="line">$ docker rm -f xxx        // 强制删除一个容器</span><br><span class="line">$ docker log xxx          // 查看容器日志</span><br><span class="line">$ docker ps -a            // 查看容器信息</span><br><span class="line">$ docker search xxx       // 查看镜像</span><br></pre></td></tr></table></figure>
+
+<h2 id="学习资源"><a href="#学习资源" class="headerlink" title="学习资源"></a>学习资源</h2><p><a href="http://asdfghjkl.xyz/2019/04/25/%E6%B7%B1%E5%85%A5%E5%89%96%E6%9E%90Kubernetes/" target="_blank" rel="noopener">深入剖析 Kubernetes</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/27/mysql-privilege/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/08/27/mysql-privilege/" class="post-title-link" itemprop="url">MySQL · 用户权限</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-27 17:45:40" itemprop="dateCreated datePublished" datetime="2019-08-27T17:45:40+08:00">2019-08-27</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-07 15:24:23" itemprop="dateModified" datetime="2019-11-07T15:24:23+08:00">2019-11-07</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <table>
+<thead>
+<tr>
+<th>Privilege</th>
+<th>Grant Table Column</th>
+<th>Context</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_all" target="_blank" rel="noopener"><code>ALL PRIVILEGES</code></a></td>
+<td>Synonym for “all privileges”</td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_alter" target="_blank" rel="noopener"><code>ALTER</code></a></td>
+<td><code>Alter_priv</code></td>
+<td>Tables</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_alter-routine" target="_blank" rel="noopener"><code>ALTER ROUTINE</code></a></td>
+<td><code>Alter_routine_priv</code></td>
+<td>Stored routines</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_create" target="_blank" rel="noopener"><code>CREATE</code></a></td>
+<td><code>Create_priv</code></td>
+<td>Databases, tables, or indexes</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_create-routine" target="_blank" rel="noopener"><code>CREATE ROUTINE</code></a></td>
+<td><code>Create_routine_priv</code></td>
+<td>Stored routines</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_create-tablespace" target="_blank" rel="noopener"><code>CREATE TABLESPACE</code></a></td>
+<td><code>Create_tablespace_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_create-temporary-tables" target="_blank" rel="noopener"><code>CREATE TEMPORARY TABLES</code></a></td>
+<td><code>Create_tmp_table_priv</code></td>
+<td>Tables</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_create-user" target="_blank" rel="noopener"><code>CREATE USER</code></a></td>
+<td><code>Create_user_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_create-view" target="_blank" rel="noopener"><code>CREATE VIEW</code></a></td>
+<td><code>Create_view_priv</code></td>
+<td>Views</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_delete" target="_blank" rel="noopener"><code>DELETE</code></a></td>
+<td><code>Delete_priv</code></td>
+<td>Tables</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_drop" target="_blank" rel="noopener"><code>DROP</code></a></td>
+<td><code>Drop_priv</code></td>
+<td>Databases, tables, or views</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_event" target="_blank" rel="noopener"><code>EVENT</code></a></td>
+<td><code>Event_priv</code></td>
+<td>Databases</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_execute" target="_blank" rel="noopener"><code>EXECUTE</code></a></td>
+<td><code>Execute_priv</code></td>
+<td>Stored routines</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_file" target="_blank" rel="noopener"><code>FILE</code></a></td>
+<td><code>File_priv</code></td>
+<td>File access on server host</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_grant-option" target="_blank" rel="noopener"><code>GRANT OPTION</code></a></td>
+<td><code>Grant_priv</code></td>
+<td>Databases, tables, or stored routines</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_index" target="_blank" rel="noopener"><code>INDEX</code></a></td>
+<td><code>Index_priv</code></td>
+<td>Tables</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_insert" target="_blank" rel="noopener"><code>INSERT</code></a></td>
+<td><code>Insert_priv</code></td>
+<td>Tables or columns</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_lock-tables" target="_blank" rel="noopener"><code>LOCK TABLES</code></a></td>
+<td><code>Lock_tables_priv</code></td>
+<td>Databases</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_process" target="_blank" rel="noopener"><code>PROCESS</code></a></td>
+<td><code>Process_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_proxy" target="_blank" rel="noopener"><code>PROXY</code></a></td>
+<td>See <code>proxies_priv</code> table</td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_references" target="_blank" rel="noopener"><code>REFERENCES</code></a></td>
+<td><code>References_priv</code></td>
+<td>Databases or tables</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_reload" target="_blank" rel="noopener"><code>RELOAD</code></a></td>
+<td><code>Reload_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_replication-client" target="_blank" rel="noopener"><code>REPLICATION CLIENT</code></a></td>
+<td><code>Repl_client_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_replication-slave" target="_blank" rel="noopener"><code>REPLICATION SLAVE</code></a></td>
+<td><code>Repl_slave_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_select" target="_blank" rel="noopener"><code>SELECT</code></a></td>
+<td><code>Select_priv</code></td>
+<td>Tables or columns</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_show-databases" target="_blank" rel="noopener"><code>SHOW DATABASES</code></a></td>
+<td><code>Show_db_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_show-view" target="_blank" rel="noopener"><code>SHOW VIEW</code></a></td>
+<td><code>Show_view_priv</code></td>
+<td>Views</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_shutdown" target="_blank" rel="noopener"><code>SHUTDOWN</code></a></td>
+<td><code>Shutdown_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_super" target="_blank" rel="noopener"><code>SUPER</code></a></td>
+<td><code>Super_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_trigger" target="_blank" rel="noopener"><code>TRIGGER</code></a></td>
+<td><code>Trigger_priv</code></td>
+<td>Tables</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_update" target="_blank" rel="noopener"><code>UPDATE</code></a></td>
+<td><code>Update_priv</code></td>
+<td>Tables or columns</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_usage" target="_blank" rel="noopener"><code>USAGE</code></a></td>
+<td>Synonym for “no privileges”</td>
+<td>Server administration</td>
+</tr>
+</tbody></table>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/21/mysql-index/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1843,908 +2552,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/25/mysql-guide/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/25/mysql-guide/" class="post-title-link" itemprop="url">MySQL · 简介</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-25 10:23:48" itemprop="dateCreated datePublished" datetime="2019-07-25T10:23:48+08:00">2019-07-25</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-12-10 17:41:34" itemprop="dateModified" datetime="2019-12-10T17:41:34+08:00">2019-12-10</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="历史"><a href="#历史" class="headerlink" title="历史"></a>历史</h2><ul>
-<li>1979年，Monty Widenius 写了最初的版本</li>
-<li>1996年，发布 1.0 版本</li>
-<li>1995-2000年，MySQL AB 成立</li>
-<li>2000年4月，集成 MyISAM 和 Replication</li>
-<li>2001年，Heikki Tuuri 向 MySQL 建议集成 InnoDB</li>
-<li>2005年，发布 5.0 版本（提供了视图、存储过程等功能）</li>
-<li><strong>2008年，MySQL AB 被 Sun 收购，出价 10 亿美元</strong></li>
-<li><strong>2009年，推出 5.1 版本，同年 4 月，Oracle 收购 Sun</strong></li>
-<li>2010年12月，推出 5.5 GA 版本，InnoDB 改为默认存储引擎</li>
-<li>2013年2月，推出 5.6 GA 版本</li>
-<li>2015年10月，推出 5.7 GA 版本</li>
-<li>2018年5月，推出 8.0 GA 版本</li>
-</ul>
-<h3 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h3><p><strong>优点</strong></p>
-<ul>
-<li>免费</li>
-<li>开源（源码、社区工具丰富）</li>
-<li>简单（部署简单、门槛低、上手快）</li>
-</ul>
-<p><strong>缺点</strong></p>
-<ul>
-<li>优化器对复杂 SQL 支持不好</li>
-<li>大规模集群方案不成熟，主要指中间件</li>
-<li>备份和恢复方案还是比较复杂，需要依赖外部组件</li>
-<li>缺少分库分表解决方案</li>
-</ul>
-<h3 id="分支"><a href="#分支" class="headerlink" title="分支"></a>分支</h3><ul>
-<li>MySQL 社区版</li>
-<li>Percona</li>
-<li>MariaDB</li>
-<li>MySQL 企业版</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>MySQL Standard Edition</th>
-<th>MySQL Enterprise Edition</th>
-<th>MySQL Cluster CGE</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><a href="https://www.mysql.com/cn/support/" target="_blank" rel="noopener"><strong>Oracle Premier Support</strong></a></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>24x7 Support</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Unlimited Support Incidents</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Knowledge Base</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Maintenance Releases</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/support/consultative.html" target="_blank" rel="noopener">MySQL Consultative Support</a></td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Features</strong></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/database/" target="_blank" rel="noopener">MySQL Database Server</a></td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/document_store.html" target="_blank" rel="noopener">MySQL Document Store</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/connector/" target="_blank" rel="noopener">MySQL Connectors</a></td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://dev.mysql.com/doc/refman/5.7/en/replication.html" target="_blank" rel="noopener">MySQL Replication</a></td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/router.html" target="_blank" rel="noopener">MySQL Router</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://dev.mysql.com/doc/refman/5.7/en/partitioning.html" target="_blank" rel="noopener">MySQL Partitioning</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Workbench</strong></td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Storage Engine: MyISAM</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Storage Engine: InnoDB</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Storage Engine: NDB</td>
-<td></td>
-<td></td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Enterprise Monitor</strong></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>MySQL Enterprise Dashboard</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>MySQL Enterprise Advisors</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>MySQL Query Analyzer</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>MySQL Replication Monitor</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Enterprise Backup</strong></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Hot backup for InnoDB</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Full, Incremental, Partial, Optimistic Backups</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Full, Partial, Selective, Hot Selective restore</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Encryption and Compression</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Point-In-Time-Recovery</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Enterprise Security</strong></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/security.html" target="_blank" rel="noopener">MySQL Enterprise Authentication</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/tde.html" target="_blank" rel="noopener">MySQL Enterprise TDE</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/encryption.html" target="_blank" rel="noopener">MySQL Enterprise Encryption</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/masking.html" target="_blank" rel="noopener">MySQL Enterprise Masking</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/firewall.html" target="_blank" rel="noopener">MySQL Enterprise Firewall</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/audit.html" target="_blank" rel="noopener">MySQL Enterprise Audit</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Enterprise Scalability</strong></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Thread Pool</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Enterprise High-Availability</strong></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>MySQL Group Replication</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>MySQL InnoDB Cluster</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Cluster Manager</strong></td>
-<td></td>
-<td></td>
-<td>√</td>
-</tr>
-<tr>
-<td>Configuration &amp; Provisioning</td>
-<td></td>
-<td></td>
-<td>√</td>
-</tr>
-<tr>
-<td>Automatic Scaling</td>
-<td></td>
-<td></td>
-<td>√</td>
-</tr>
-<tr>
-<td>Management &amp; Monitoring</td>
-<td></td>
-<td></td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/cluster/" target="_blank" rel="noopener">MySQL Cluster Geo-Replication</a></td>
-<td></td>
-<td></td>
-<td>√</td>
-</tr>
-</tbody></table>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/24/mysql-split/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/24/mysql-split/" class="post-title-link" itemprop="url">MySQL · 分库分表</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-24 14:52:02" itemprop="dateCreated datePublished" datetime="2019-07-24T14:52:02+08:00">2019-07-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-12-10 17:41:24" itemprop="dateModified" datetime="2019-12-10T17:41:24+08:00">2019-12-10</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>当数据库的数据量非常大时，<strong>水平切分</strong>和<strong>垂直拆分</strong>是两种常见的降低数据库大小，提升性能的方法。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">user</span><br><span class="line">(</span><br><span class="line">uid bigint,</span><br><span class="line">name varchar(16),</span><br><span class="line">pass varchar(16),</span><br><span class="line">age int,</span><br><span class="line">sex tinyint,</span><br><span class="line">flag tinyint,</span><br><span class="line">sign varchar(64),</span><br><span class="line">intro varchar(256)</span><br><span class="line">…);</span><br></pre></td></tr></table></figure>
-
-<p><strong>水平切分</strong>：以某个字段为依据（例如 <code>uid</code>），按照一定规则（例如取模），将一个库（表）上的数据拆分到多个库（表）上，以降低单库（表）大小，达到提升性能的目的的方法，水平切分后，各个库（表）的特点是：</p>
-<ul>
-<li>每个库（表）的<strong>结构</strong>都一样</li>
-<li>每个库（表）的<strong>数据</strong>都不一样，没有交集</li>
-<li>所有库（表）的并集是全量数据</li>
-</ul>
-<p><strong>垂直拆分</strong>：将一个属性较多，一行数据较大的表，将不同的属性拆分到不同的表中，以降低单库（表）大小，达到提升性能的目的的方法，垂直切分后，各个库（表）的特点是：</p>
-<ul>
-<li>每个库（表）的<strong>结构</strong>都不一样</li>
-<li>一般来说，每个库（表）的<strong>属性</strong>至少有一列交集，一般是主键</li>
-<li>所有库（表）的并集是全量数据</li>
-</ul>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">user_base</span><br><span class="line">(</span><br><span class="line">uid bigint,</span><br><span class="line">name varchar(16),</span><br><span class="line">pass varchar(16),</span><br><span class="line">age int,</span><br><span class="line">sex tinyint,</span><br><span class="line">flag tinyint,</span><br><span class="line">…);</span><br><span class="line"></span><br><span class="line">user_ext</span><br><span class="line">(</span><br><span class="line">uid bigint,</span><br><span class="line">sign varchar(64),</span><br><span class="line">intro varchar(256)</span><br><span class="line">…);</span><br></pre></td></tr></table></figure>
-
-<p><strong>拆分原则</strong>：</p>
-<p>①  将长度较短，访问频率较高的属性尽量放在一个表里，这个表暂且称为<strong>主表</strong>。</p>
-<p>②  将字段较长，访问频率较低的属性尽量放在一个表里，这个表暂且称为<strong>扩展表。</strong></p>
-<h2 id="原则"><a href="#原则" class="headerlink" title="原则"></a>原则</h2><ul>
-<li>原则零：能不分就不分</li>
-<li>原则一：数据量太大，正常的运维影响正常的业务访问</li>
-<li>原则二：表设计不合理，需要对某些字段进行垂直拆分</li>
-<li>原则三：某些数据表出现了无穷增长的情况</li>
-<li>原则四：安全性和可用性的考虑</li>
-<li>原则五：业务耦合性考虑</li>
-</ul>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>①  <strong>水平拆分</strong>和<strong>垂直拆分</strong>都是降低数据量大小，提升数据库性能的常见手段</p>
-<p>②  流量大数据量大时，<strong>数据访问要有 service 层</strong>，并且 service 层不要通过 <code>join</code> 来获取主表和扩展表的属性</p>
-<p>③  <strong>垂直拆分的依据</strong>，尽量把长度较短，访问频率较高的属性放在主表里</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/24/mysql-backup/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/24/mysql-backup/" class="post-title-link" itemprop="url">MySQL · 备份恢复</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-24 10:00:24" itemprop="dateCreated datePublished" datetime="2019-07-24T10:00:24+08:00">2019-07-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-15 16:25:03" itemprop="dateModified" datetime="2019-11-15T16:25:03+08:00">2019-11-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>物理备份：直接备份数据库的数据文件，适用于大数据量，需要快速恢复的数据库。</p>
-<p>逻辑备份：备份数据库中数据结构和内容的SQL语句，适用于较小数据量或是跨版本的数据库备份恢复。</p>
-<p>目前备份方式的几个纬度：</p>
-<ul>
-<li>全量备份 VS 增量备份</li>
-<li>热备 VS 冷备</li>
-<li>物理备份 VS 逻辑备份</li>
-<li>延时备份</li>
-<li>全量binlog备份</li>
-</ul>
-<p>建议方式：</p>
-<ul>
-<li>热备＋物理备份</li>
-<li>核心业务：延时备份＋逻辑备份</li>
-<li>全量binlog备份</li>
-</ul>
-<p>主要做的几点：</p>
-<ul>
-<li>备份策略集中式调度管理</li>
-<li>xtrabackup热备</li>
-<li>备份结果统计分析</li>
-<li>备份数据一致性校验</li>
-<li>采用分布式文件系统存储备份</li>
-</ul>
-<p>备份系统采用分布式文件系统原因：</p>
-<ul>
-<li>解决存储分配的问题</li>
-<li>解决存储NFS备份效率低下问题</li>
-<li>存储集中式管理</li>
-<li>数据可靠性更好</li>
-</ul>
-<h2 id="备份方案"><a href="#备份方案" class="headerlink" title="备份方案"></a>备份方案</h2><ul>
-<li>mysqldump</li>
-<li>XtraBackup</li>
-</ul>
-<h2 id="恢复实践"><a href="#恢复实践" class="headerlink" title="恢复实践"></a>恢复实践</h2><p><strong>关于备份，binlog备份自然不用说了，物理备份有很多方式，有没有推荐的一种，逻辑备份在量大的时候恢复速度比较慢，一般用在什么场景？</strong></p>
-<p>物理备份采用xtrabackup热备方案比较好。逻辑备份一般用在单表恢复效果会非常好。比如你删了一个2G表，但你总数据量2T，用物理备份就会要慢了，逻辑备份就非常有用了。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/12/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/12/">12</a><span class="page-number current">13</span><a class="page-number" href="/blog/page/14/">14</a><a class="page-number" href="/blog/page/15/">15</a><a class="extend next" rel="next" href="/blog/page/14/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/page/12/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/12/">12</a><span class="page-number current">13</span><a class="page-number" href="/blog/page/14/">14</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/16/">16</a><a class="extend next" rel="next" href="/blog/page/14/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -2788,7 +2600,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">148</span>
+                    <span class="site-state-item-count">151</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
