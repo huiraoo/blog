@@ -11,13 +11,13 @@
 </ul>
 <h2 id="常见的架构方案"><a href="#常见的架构方案" class="headerlink" title="常见的架构方案"></a>常见的架构方案</h2><p><strong>方案一：主备架构，只有主库提供读写服务，备库冗余作故障转移用</strong></p>
 <p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-150623.jpg" alt="img"></p>
-<ol>
-<li><strong>高可用分析：</strong>高可用，主库挂了，keepalive（只是一种工具）会自动切换到备库。这个过程对业务层是透明的，无需修改代码或配置。</li>
+<ul>
+<li><strong>高可用分析：</strong>高可用，主库挂了，keepalive（只是一种工具）会自动切换到备库，这个过程对业务层是透明的，无需修改代码或配置。</li>
 <li><strong>高性能分析：</strong>读写都操作主库，很容易产生瓶颈。大部分互联网应用读多写少，读会先成为瓶颈，进而影响写性能。另外，备库只是单纯的备份，资源利用率 50%，这点方案二可解决。</li>
 <li><strong>一致性分析：</strong>读写都操作主库，不存在数据一致性问题。</li>
 <li><strong>扩展性分析：</strong>无法通过加从库来扩展读性能，进而提高整体性能。</li>
-<li><strong>可落地分析：</strong>两点影响落地使用。第一，性能一般，这点可以通过建立<strong>高效的索引和引入缓存</strong>来增加读性能，进而提高性能，这也是通用的方案。第二，扩展性差，这点可以通过<strong>分库分表</strong>来扩展。</li>
-</ol>
+<li><strong>可落地分析：</strong>两点影响落地使用。第一、性能一般，这点可以通过建立<strong>高效的索引和引入缓存</strong>来增加读性能，进而提高性能，这也是通用的方案。第二、扩展性差，这点可以通过<strong>分库分表</strong>来扩展。</li>
+</ul>
 <p><strong>方案二：双主架构，两个主库同时提供服务，负载均衡</strong></p>
 <p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-150649.jpg" alt></p>
 <ul>
@@ -25,7 +25,7 @@
 <li><strong>高性能分析：</strong>读写性能相比于方案一都得到提升，提升一倍。</li>
 <li><strong>一致性分析：</strong>存在数据一致性问题。请看，一致性解决方案。</li>
 <li><strong>扩展性分析：</strong>当然可以扩展成三主循环，但笔者不建议（会多一层数据同步，这样同步的时间会更长）。如果非得在数据库架构层面扩展的话，扩展为方案四。</li>
-<li><strong>可落地分析：</strong>两点影响落地使用。第一，数据一致性问题，一致性解决方案可解决问题。第二，主键冲突问题，ID统一地由分布式ID生成服务来生成可解决问题。</li>
+<li><strong>可落地分析：</strong>两点影响落地使用。第一、数据一致性问题，一致性解决方案可解决问题。第二、主键冲突问题，ID 统一地由分布式 ID 生成服务来生成可解决问题。</li>
 </ul>
 <p><strong>方案三：主从架构，一主多从，读写分离</strong></p>
 <p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-150724.jpg" alt></p>
@@ -44,6 +44,35 @@
 <li><strong>一致性分析：</strong>存在数据一致性问题。请看，一致性解决方案。</li>
 <li><strong>扩展性分析</strong>：可以通过加从库来扩展读性能，进而提高整体性能。（带来的问题同方案二）</li>
 <li><strong>可落地分析</strong>：同方案二，但数据同步又多了一层，数据延迟更严重。</li>
+</ul>
+<h2 id="一致性解决方案"><a href="#一致性解决方案" class="headerlink" title="一致性解决方案"></a>一致性解决方案</h2><p><strong>第一类：主库和从库一致性解决方案</strong></p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-152826.jpg" alt></p>
+<p><strong>注</strong>：图中圈出的是数据同步的地方，数据同步（从库从主库拉取 binlog 日志，再执行一遍）是需要时间的，这个同步时间内主库和从库的数据会存在不一致的情况。如果同步过程中有读请求，那么读到的就是从库中的老数据。如下图。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-152901.jpg" alt></p>
+<p>既然知道了数据不一致性产生的原因，有下面几个解决方案供参考：</p>
+<p>1、直接忽略，如果业务允许延时存在，那么就不去管它。</p>
+<p>2、强制读主，采用主备架构方案，读写都走主库。用缓存来扩展数据库读性能 。有一点需要知道：如果缓存挂了，可能会产生雪崩现象，不过一般分布式缓存都是高可用的。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-152918.jpg" alt></p>
+<p>3、选择读主，写操作时根据库 + 表 + 业务特征生成一个 key 放到 Cache 里并设置超时时间（大于等于主从数据同步时间）。读请求时，同样的方式生成 key 先去查 Cache，再判断是否命中。若命中，则读主库，否则读从库。代价是多了一次缓存读写，基本可以忽略。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-152934.jpg" alt></p>
+<p>4、半同步复制，等主从同步完成，写请求才返回。就是大家常说的“半同步复制” <code>semi-sync</code>。这可以利用数据库原生功能，实现比较简单。代价是写请求时延增长，吞吐量降低。</p>
+<p>5、数据库中间件，引入开源（ <code>mycat</code> 等）或自研的数据库中间层。个人理解，思路同选择读主。数据库中间件的成本比较高，并且还多引入了一层。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-152955.jpg" alt></p>
+<p><strong>第二类：DB 和缓存一致性解决方案</strong></p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-153023.jpg" alt></p>
+<p><strong>先来看一下常用的缓存使用方式：</strong></p>
+<p>第一步：淘汰缓存；</p>
+<p>第二步：写入数据库；</p>
+<p>第三步：读取缓存？返回：读取数据库；</p>
+<p>第四步：读取数据库后写入缓存。</p>
+<p>注：如果按照这种方式：图一、不会产生 DB 和缓存不一致问题；图二、会产生 DB 和缓存不一致问题，即 <code>4.read</code> 先于 <code>3.sync</code> 执行。如果不做处理，缓存里的数据可能一直是脏数据。解决方式如下：</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-153046.jpg" alt></p>
+<p><strong>注</strong>：设置缓存时，一定要加上失效时间，以防延时淘汰缓存失败的情况！</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li><strong>加缓存和索引</strong>是通用的提升数据库性能的方式。</li>
+<li><strong>分库分表</strong>带来的好处是巨大的，但同样也会带来一些问题。</li>
+<li>不管是主备 + 分库分表还是主从 + 读写分离 + 分库分表，都要考虑具体的业务场景。某 8 到家发展四年，绝大部分的数据库架构还是采用方案一和方案一 + 分库分表，只有极少部分用方案三 + 读写分离 + 分库分表。另外，阿里云提供的数据库云服务也都是主备方案，要想主从 + 读写分离需要二次架构。</li>
+<li>记住一句话：不考虑业务场景的架构都是耍流氓。</li>
 </ul>
 ]]></content>
       <categories>
