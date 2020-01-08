@@ -437,16 +437,16 @@
   <entry>
     <title>企业上云实践：数据库迁移方案</title>
     <url>/blog/2019/12/23/aliyun-practice-migration/</url>
-    <content><![CDATA[<h2 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h2><p>使用 DTS 服务可以实现在自建应用不停服的情况下，平滑地完成自建 MySQL 数据库的迁移上云。</p>
-<h2 id="二、数据迁移基本原理"><a href="#二、数据迁移基本原理" class="headerlink" title="二、数据迁移基本原理"></a>二、数据迁移基本原理</h2><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-07-165610.png" alt></p>
-<p><strong>说明</strong>：</p>
+    <content><![CDATA[<h2 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h2><p>对于众多企业来说，云的优势越来越明显，出于想使用成熟技术、减少运维成本、提升系统性能等方面的考虑，纷纷向“云”看齐。不过，在涉及到本地或云端的具体实施过程时，一个较为重要的问题就是数据的迁移。如何使用云服务商提供的迁移工具可以实现在自建应用不停服较长时间的情况下，平滑地完成自建数据库的迁移上云是一个首先需要解决的问题 ？</p>
+<h2 id="二、数据库迁移上云方案介绍"><a href="#二、数据库迁移上云方案介绍" class="headerlink" title="二、数据库迁移上云方案介绍"></a>二、数据库迁移上云方案介绍</h2><p><strong>以阿里云为例</strong>：主要使用 <a href="https://www.aliyun.com/product/dts" target="_blank" rel="noopener">DTS</a> 服务，实现本地 IDC 与阿里云 RDS 的数据迁移。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-24-093500.jpg" alt></p>
+<p>不通的迁移方案应对不同的场景：</p>
 <ul>
 <li>结构迁移：将源库中待迁移对象的结构s迁移至目标库（例如表、视图、触发器、存储过程等）。</li>
 <li>全量数据迁移：将源库中存量数据，全部迁移到目标库中。</li>
 <li>增量数据迁移：将与源库保持实时同步的状态，源库产生的增量数据实时同步至目标库。</li>
 </ul>
-<h2 id="二、不同场景下数据库迁移方案"><a href="#二、不同场景下数据库迁移方案" class="headerlink" title="二、不同场景下数据库迁移方案"></a>二、不同场景下数据库迁移方案</h2><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-24-093500.jpg" alt></p>
-<table>
+<h2 id="二、不同场景下数据库迁移方案"><a href="#二、不同场景下数据库迁移方案" class="headerlink" title="二、不同场景下数据库迁移方案"></a>二、不同场景下数据库迁移方案</h2><table>
 <thead>
 <tr>
 <th>场景</th>
@@ -454,25 +454,43 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>本地 IDC 与阿里云机房有专线</td>
+<td>本地 IDC 与阿里云机房，有专线</td>
 <td>通过专线迁移</td>
 </tr>
 <tr>
-<td>本地 IDC 与阿里云无专线，但数据库可开通公网 IP</td>
+<td>本地 IDC 与阿里云，无专线，但数据库可开通公网 IP</td>
 <td>通过公网 IP 迁移</td>
 </tr>
 <tr>
-<td>本地 IDC 与阿里云无专线，且数据库不可开通公网 IP</td>
-<td>通过 ECS 自建数据库中转</td>
+<td>本地 IDC 与阿里云，无专线，且数据库不可开通公网 IP</td>
+<td>通过 ECS 自建数据库与本地自建数据库搭建成主从实时复制，再通过阿里云内网迁移</td>
+</tr>
+<tr>
+<td>本地 IDC 与阿里云机房，有专线，但不是同一个主账号</td>
+<td>通过 RDS 中转迁移，参考 <a href="https://help.aliyun.com/document_detail/26652.html?spm=a2c4g.11186623.6.755.179629f7JLF39Y" target="_blank" rel="noopener">使用DTS跨阿里云账号迁移RDS数据</a></td>
 </tr>
 </tbody></table>
-<h2 id="三、前提条件"><a href="#三、前提条件" class="headerlink" title="三、前提条件"></a>三、前提条件</h2><ul>
+<h2 id="三、数据库迁移基本原理"><a href="#三、数据库迁移基本原理" class="headerlink" title="三、数据库迁移基本原理"></a>三、数据库迁移基本原理</h2><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-07-165610.png" alt></p>
+<ul>
+<li>结构迁移：将源库中待迁移对象的结构迁移至目标库（例如表、视图、触发器、存储过程等）。</li>
+<li>全量数据迁移：将源库中存量数据，全部迁移到目标库中。</li>
+<li>增量数据迁移：将与源库保持实时同步的状态，使用增量迁移功能，可以将系统迁移过程中的应用停机时间降低到分钟级别。</li>
+</ul>
+<h2 id="四、准备与注意事项"><a href="#四、准备与注意事项" class="headerlink" title="四、准备与注意事项"></a>四、准备与注意事项</h2><p><strong>准备事项：</strong></p>
+<ul>
 <li><input checked disabled type="checkbox"> 已开通 <a href="https://www.aliyun.com/product/rds/mysql" target="_blank" rel="noopener">RDS</a> 服务</li>
 <li><input checked disabled type="checkbox"> 已开通 <a href="https://www.aliyun.com/product/dts" target="_blank" rel="noopener">DTS</a> 服务</li>
-<li><input checked disabled type="checkbox"> 源库连接测试通过</li>
-<li><input checked disabled type="checkbox"> 目标库连接测试通过</li>
+<li><input checked disabled type="checkbox"> 源库，网络可通，已创建 MySQL 账号，并连接测试通过</li>
+<li><input checked disabled type="checkbox"> 目标库，已创建 RDS 账号，并连接测试通过</li>
 </ul>
-<h2 id="四、操作实践：用户中心本地自建数据库迁移至阿里云RDS"><a href="#四、操作实践：用户中心本地自建数据库迁移至阿里云RDS" class="headerlink" title="四、操作实践：用户中心本地自建数据库迁移至阿里云RDS"></a>四、操作实践：用户中心本地自建数据库迁移至阿里云RDS</h2><p><strong>基本信息</strong></p>
+<p><strong>注意事项：</strong></p>
+<ul>
+<li><input checked disabled type="checkbox"> 由于执行业务切换操作需要停止数据库写入并暂停业务，请选择业务低峰期操作以降低影响。</li>
+<li><input checked disabled type="checkbox"> 源库区分大小写、目标库不区分大小写，会导致迁移失败，迁移前请将库名和表名全部改成小写。</li>
+<li><input checked disabled type="checkbox"> 某些不同版本迁移，视图或者触发器由于语法差异会导致迁移失败，可以先忽略错误先执行再重写 SQL。</li>
+<li><input checked disabled type="checkbox"> 增量迁移期间，不能执行 DDL 语句，否则会迁移中断。</li>
+</ul>
+<h2 id="五、操作实践：用户中心本地自建数据库迁移至阿里云RDS"><a href="#五、操作实践：用户中心本地自建数据库迁移至阿里云RDS" class="headerlink" title="五、操作实践：用户中心本地自建数据库迁移至阿里云RDS"></a>五、操作实践：用户中心本地自建数据库迁移至阿里云RDS</h2><p><strong>基本信息：</strong></p>
 <table>
 <thead>
 <tr>
@@ -482,63 +500,59 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>数据库引擎</td>
+<td><strong>数据库版本</strong></td>
 <td>MariaDB 10.1.19</td>
 <td>MySQL 5.7</td>
 </tr>
 <tr>
-<td>数据量</td>
-<td>170 GB</td>
-<td></td>
+<td><strong>机房区域</strong></td>
+<td>北京亦庄</td>
+<td>华为2（北京）</td>
 </tr>
 <tr>
-<td>迁移方案</td>
-<td></td>
-<td></td>
+<td><strong>数据量</strong></td>
+<td>170 GB</td>
+<td>～</td>
+</tr>
+<tr>
+<td><strong>要求</strong></td>
+<td>1. 分钟级停服；2. 失败可回退。</td>
+<td>～</td>
+</tr>
+<tr>
+<td><strong>迁移方案</strong></td>
+<td>公网 IP + 结构 + 全量 + 增量</td>
+<td>～</td>
 </tr>
 </tbody></table>
-<p><strong>操作步骤</strong></p>
-<ul>
-<li>进入 DTS 控制台，创建迁移任务</li>
-</ul>
+<p><strong>操作步骤：</strong></p>
+<p>1、进入 DTS 控制台，创建迁移任务</p>
 <p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-24-091250.jpg" alt></p>
-<ul>
-<li>配置源库和目标库，并连接测试通过</li>
-</ul>
+<p>2、配置源库和目标库，并连接测试通过</p>
 <p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-07-160100.jpg" alt></p>
-<ul>
-<li>选择迁移类型和列表</li>
-</ul>
 <p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-07-160205.jpg" alt></p>
+<p>3、选择迁移类型和列表</p>
 <p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-07-160805.jpg" alt></p>
-<p><strong>热迁移：</strong>支持增量迁移，增量迁移可以将数据迁移过程中源数据库产生的增量数据同步到目标库。使用增量迁移功能，可以将系统迁移过程中的应用停机时间<strong>降低到分钟级别</strong>。</p>
-<ul>
-<li>预检查</li>
-</ul>
+<p>4、预检查</p>
 <p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-07-160944.jpg" alt></p>
-<ul>
-<li>启动迁移任务</li>
-</ul>
+<p>5、启动迁移任务</p>
 <p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-07-161113.jpg" alt></p>
-<ul>
-<li>实时查看迁移进度</li>
-</ul>
+<p>6、实时跟踪迁移进度</p>
 <p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-07-161444.jpg" alt></p>
-<ul>
-<li>切换业务流程</li>
-<li>结束数据迁移任务</li>
-</ul>
-<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><p><strong>注意：</strong></p>
-<ul>
-<li>增量迁移不支持 trigger 的同步。</li>
-<li>数据迁移只会将源库的数据（结构）复制一份到目标数据库,并不会对源数据库数据（结构）造成影响。</li>
-<li>数据迁移过程中，不支持 DDL 操作，如进行 DDL 操作可能导致迁移失败。</li>
-<li>数据迁移适合于短期的数据迁移场景，主要应用于上云迁移、数据库扩容拆分及阿里云数据库之间的数据迁移。如果需要进行长期的数据实时同步，请使用数据同步功能。</li>
-</ul>
-<p>报错原因：</p>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">DTS-<span class="number">070203</span>: Connect Target DB failed. cause by [java.sql.SQLException:Access denied <span class="keyword">for</span> user <span class="string">'haibei'</span><span class="string">@'100.104.183.79' (using password: YES)] About more information in [https://yq.aliyun.com/articles/499178].</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2>]]></content>
+<p>7、将业务中断，禁止新的数据写入源数据库</p>
+<p>8、结束数据迁移任务</p>
+<p>观察迁移任务的进度为增量迁移，并显示为<strong>无延迟</strong>状态时，将源库停写几分钟，等待迁移任务的增量迁移再次进入无延迟状态后，手动结束迁移任务。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-08-112743.jpg" alt></p>
+<p>9、创建反向数据迁移任务并启动</p>
+<p>用于将目标库后续产生增量数据迁移回源数据库，此步骤创建的反向迁移任务的作用是为业务提供回退方案，业务恢复运行后，一旦出现异常可将业务切换至原有的数据库中。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-08-115244.jpg" alt></p>
+<p>⚠️ 警告：在配置反向数据迁移任务时，在设置<strong>迁移类型及列表</strong>环节仅需选择<strong>增量数据迁移</strong>。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-08-115344.jpg" alt></p>
+<p>10、切换业务数据源</p>
+<p>验证源和目标的数据一致后，将业务的数据库服务切换至目标数据库并恢复业务。</p>
+<p>11、后续操作</p>
+<p>用于数据迁移的数据库账号拥有读写权限，为保障数据库安全性，在数据迁移完成后，删除自建 MySQL 数据库和 RDS 实例中的数据库账号。</p>
+]]></content>
       <categories>
         <category>阿里云</category>
       </categories>
