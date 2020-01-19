@@ -352,6 +352,317 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/12/13/mysql-migration-to-cloud/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/12/13/mysql-migration-to-cloud/" class="post-title-link" itemprop="url">MySQL · 售后服务数据库迁移上云</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-12-13 10:36:02" itemprop="dateCreated datePublished" datetime="2019-12-13T10:36:02+08:00">2019-12-13</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-01-03 10:40:16" itemprop="dateModified" datetime="2020-01-03T10:40:16+08:00">2020-01-03</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><table>
+<thead>
+<tr>
+<th>项目信息</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>项目名称</td>
+<td>售后服务微信公众号</td>
+</tr>
+<tr>
+<td>机房位置</td>
+<td>北京亦庄 / 卓朗机房</td>
+</tr>
+<tr>
+<td>本地数据库</td>
+<td>10.199.96.188</td>
+</tr>
+<tr>
+<td>数据量</td>
+<td>140 GB</td>
+</tr>
+<tr>
+<td>版本</td>
+<td>MySQL 5.5</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>阿里云 ECS</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>主机</td>
+<td>47.95.110.25</td>
+</tr>
+<tr>
+<td>自建 MySQL</td>
+<td>MySQL 5.5</td>
+</tr>
+<tr>
+<td>用户名</td>
+<td>root</td>
+</tr>
+<tr>
+<td>密码</td>
+<td>HkdV*Q4mVavjYRSg</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>阿里云 RDS</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>实例</td>
+<td>rm-2zeh0aso72hr897it.mysql.rds.aliyuncs.com:3306</td>
+</tr>
+<tr>
+<td>版本</td>
+<td>MySQL 5.6</td>
+</tr>
+<tr>
+<td>用户名</td>
+<td>haierfw</td>
+</tr>
+<tr>
+<td>密码</td>
+<td>**</td>
+</tr>
+</tbody></table>
+<h2 id="迁移方案"><a href="#迁移方案" class="headerlink" title="迁移方案"></a>迁移方案</h2><p>本地 IDC 数据库   -&gt;   ECS 自建数据库  -&gt;  阿里云 RDS</p>
+<h2 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h2><table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>耗时</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>全备</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td>传输</td>
+<td>3 h 30 min</td>
+</tr>
+<tr>
+<td>增备</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td>恢复</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td>DTS 迁移</td>
+<td>2 h 30 min</td>
+</tr>
+</tbody></table>
+<h2 id="实施"><a href="#实施" class="headerlink" title="实施"></a>实施</h2><ul>
+<li><strong>全量备份</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">innobackupex --defaults-file=/etc/my.cnf --user=sre --password=<span class="string">'xx'</span> --no-timestamp /<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>传输</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp -r /<span class="keyword">data</span>/backup/* root@<span class="number">47.95</span>.<span class="number">110.25</span>:/<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>全量恢复</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mysqladmin -uroot -p<span class="string">'xx'</span> shutdown</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --apply-log /<span class="keyword">data</span>/backup</span><br><span class="line">mv mysql mysql_bak</span><br><span class="line">mkdir mysql</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --copy-back /<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>增量备份</strong></li>
+</ul>
+<p>在进行增量备份时，首先要进行一次全量备份，第一次增量备份是基于全备的，之后的增量备份是基于上一次的增量备份，以此类推。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">innobackupex --defaults-file=/etc/my.cnf --user=sre --password=<span class="string">'xx'</span> --incremental /<span class="keyword">data</span>/incremental --incremental-basedir=/<span class="keyword">data</span>/backup --parallel=<span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>增量恢复</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">innobackupex --defaults-file=/etc/my.cnf --apply-log --redo-only /<span class="keyword">data</span>/backup</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --apply-log /<span class="keyword">data</span>/backup --incremental-dir=/<span class="keyword">data</span>/incremental/<span class="number">2019</span>-<span class="number">12</span>-<span class="number">16</span>_15-<span class="number">33</span>-<span class="number">48</span></span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --copy-back /<span class="keyword">data</span>/backup</span><br><span class="line">chown -R mysql:mysql mysql</span><br><span class="line">/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql &gt;/dev/null &amp;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>配置复制</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 获取Master binlog位置</span></span><br><span class="line">$ cat xtrabackup_binlog_info</span><br><span class="line">mysql-binlog.<span class="number">000297</span>	<span class="number">900834433</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置复制</span></span><br><span class="line">CHANGE MASTER TO </span><br><span class="line">MASTER_HOST=<span class="string">'x.x.x.x'</span>,</span><br><span class="line">MASTER_USER=<span class="string">'repl'</span>,</span><br><span class="line">MASTER_PASSWORD=<span class="string">'Changeme_123'</span>,</span><br><span class="line">MASTER_PORT=<span class="number">3306</span>,</span><br><span class="line">MASTER_LOG_FILE=<span class="string">'mysql-bin.000297'</span>, </span><br><span class="line">MASTER_LOG_POS=<span class="number">900834433</span>,</span><br><span class="line">MASTER_CONNECT_RETRY=<span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动同步</span></span><br><span class="line">mysql&gt; start slave;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>传输</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp -r /<span class="keyword">data</span>/backup/* root@<span class="number">47.95</span>.<span class="number">110.25</span>:/<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/12/10/mysql-tool-mysqldump/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2525,192 +2836,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/12/04/mysql-batch-delete/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/12/04/mysql-batch-delete/" class="post-title-link" itemprop="url">MySQL · 大表数据清理</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-12-04 15:42:17" itemprop="dateCreated datePublished" datetime="2019-12-04T15:42:17+08:00">2019-12-04</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-12-06 09:20:51" itemprop="dateModified" datetime="2019-12-06T09:20:51+08:00">2019-12-06</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">select table_name,table_rows,CONCAT(</span><br><span class="line">TRUNCATE(SUM(data_length)/<span class="number">1024</span>/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'GB'</span>) AS data_size, CONCAT(</span><br><span class="line">TRUNCATE(SUM(index_length)/<span class="number">1024</span>/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'GB'</span>) AS index_size from information_schema.tables where TABLE_SCHEMA = <span class="string">'dzspzy'</span> and table_name=<span class="string">'t_hr_13plan_res_history'</span>;</span><br><span class="line"></span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line">| table_name              | table_rows | data_size | index_size |</span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line">| t_hr_13plan_res_history |  <span class="number">296397209</span> | <span class="number">110.43</span>GB  | <span class="number">3.72</span>GB     |</span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line"></span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line">| table_name              | table_rows | data_size | index_size |</span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line">| t_hr_13plan_res_history |  <span class="number">269082432</span> | <span class="number">102.44</span>GB  | <span class="number">3.45</span>GB     |</span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line"></span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line">| table_name              | table_rows | data_size | index_size |</span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br><span class="line">| t_hr_13plan_res_history |  <span class="number">213501502</span> | <span class="number">78.35</span>GB   | <span class="number">2.64</span>GB     |</span><br><span class="line">+-------------------------+------------+-----------+------------+</span><br></pre></td></tr></table></figure>
-
-<h2 id="清理"><a href="#清理" class="headerlink" title="清理"></a>清理</h2><ul>
-<li>批量删除</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pt-archiver --source u=sre,p=<span class="string">'xx'</span>,S=/tmp/mysql-dzsp.sock,P=<span class="number">3306</span>,D=dzspzy,t=t_hr_13plan_res_history --no-check-charset --progress <span class="number">10000</span> --where <span class="string">"ID &lt; 251061689"</span> --limit <span class="number">10000</span> --txn-size <span class="number">1000</span> --bulk-delete --purge --statistics</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">table</span> <span class="keyword">status</span> <span class="keyword">like</span> <span class="string">'t_hr_13plan_res_history'</span>\G</span><br><span class="line">*************************** <span class="number">1.</span> <span class="keyword">row</span> ***************************</span><br><span class="line">           <span class="keyword">Name</span>: t_hr_13plan_res_history</span><br><span class="line">         <span class="keyword">Engine</span>: <span class="keyword">InnoDB</span></span><br><span class="line">        <span class="keyword">Version</span>: <span class="number">10</span></span><br><span class="line">     Row_format: <span class="keyword">Compact</span></span><br><span class="line">           <span class="keyword">Rows</span>: <span class="number">205639249</span></span><br><span class="line"> Avg_row_length: <span class="number">410</span></span><br><span class="line">    Data_length: <span class="number">84329660416</span></span><br><span class="line">Max_data_length: <span class="number">0</span></span><br><span class="line">   Index_length: <span class="number">2843754496</span></span><br><span class="line">      Data_free: <span class="number">35414605824</span></span><br><span class="line"> Auto_increment: <span class="number">590343627</span></span><br><span class="line">    Create_time: <span class="number">2019</span><span class="number">-03</span><span class="number">-27</span> <span class="number">13</span>:<span class="number">18</span>:<span class="number">10</span></span><br><span class="line">    Update_time: <span class="literal">NULL</span></span><br><span class="line">     Check_time: <span class="literal">NULL</span></span><br><span class="line">      <span class="keyword">Collation</span>: utf8_general_ci</span><br><span class="line">       <span class="keyword">Checksum</span>: <span class="literal">NULL</span></span><br><span class="line"> Create_options: </span><br><span class="line">        <span class="keyword">Comment</span>:</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>整理碎片</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 方法一</span></span><br><span class="line">alter table t_hr_13plan_res_history engine = innodb</span><br><span class="line"></span><br><span class="line"><span class="comment"># 方法二</span></span><br><span class="line">optimize table t_hr_13plan_res_history</span><br><span class="line"></span><br><span class="line"><span class="comment"># 方法三</span></span><br><span class="line">pt-online-schema-change --alter=<span class="string">"ENGINE=innodb"</span> D=dzspzy,t=t_hr_13plan_res_history --execute</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2759,7 +2884,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">154</span>
+                    <span class="site-state-item-count">155</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
