@@ -352,6 +352,494 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/08/linux-ssh/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/08/linux-ssh/" class="post-title-link" itemprop="url">SSH</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-08 17:55:43" itemprop="dateCreated datePublished" datetime="2019-07-08T17:55:43+08:00">2019-07-08</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-12-03 13:35:28" itemprop="dateModified" datetime="2019-12-03T13:35:28+08:00">2019-12-03</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="SSH-协议"><a href="#SSH-协议" class="headerlink" title="SSH 协议"></a>SSH 协议</h2><h3 id="SSH"><a href="#SSH" class="headerlink" title="SSH"></a>SSH</h3><p><a href="https://www.ssh.com/" target="_blank" rel="noopener"><strong>SSH</strong></a>（Secure Shell Protocol，安全外壳协议），是建立在应用层和传输层基础上的 <strong>一种加密的网络安全传输协议</strong>。</p>
+<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g679gryzmvj30i609ftc4.jpg" alt="img"></p>
+<h3 id="OpenSSH"><a href="#OpenSSH" class="headerlink" title="OpenSSH"></a>OpenSSH</h3><p><a href="http://www.openssh.com/" target="_blank" rel="noopener"><strong>OpenSSH</strong></a>：是基于 <a href="https://baike.baidu.com/item/SSH" target="_blank" rel="noopener">SSH</a> 协议实现使用最广泛的 <strong>免费开源软件</strong>。</p>
+<p><strong>优点</strong>：</p>
+<ul>
+<li>安全可靠</li>
+<li>便捷</li>
+</ul>
+<p><strong><a href="http://www.openssh.com/" target="_blank" rel="noopener">OpenSSH</a> 套件工具</strong>：</p>
+<p><strong>ssh</strong>：远程登录</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">语法：ssh</span> <span class="string">[-l</span> <span class="string">login_name]</span> <span class="string">[-p</span> <span class="string">port]</span> <span class="string">[user@host]</span></span><br><span class="line"></span><br><span class="line"><span class="string">示例：</span></span><br><span class="line"><span class="string">ssh</span> <span class="number">192.168</span><span class="number">.0</span><span class="number">.11</span>                       <span class="comment"># 不指定用户，默认使用当前宿主用户的用户名登录</span></span><br><span class="line"><span class="string">ssh</span> <span class="string">root@192.168.0.11</span>                  <span class="comment"># 指定用户登录</span></span><br><span class="line"><span class="string">ssh</span> <span class="string">root@192.168.0.11</span> <span class="bullet">-p</span> <span class="number">2222</span>          <span class="comment"># 指定端口，默认端口22</span></span><br><span class="line"><span class="string">ssh</span> <span class="string">root@192.168.0.11</span> <span class="string">"ls /usr/local"</span>  <span class="comment"># 远程登录后执行某命令</span></span><br><span class="line"></span><br><span class="line"><span class="string">备注：配置文件/etc/ssh/sshd_config，修改ssh登录端口和禁止root登录，可以防止被端口扫描</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>sshd</strong>：服务端进程服务</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">服务端修改文件配置：vim</span> <span class="string">/etc/ssh/sshd_config</span> </span><br><span class="line"><span class="string">配置完成之后要重启服务：systemctl</span> <span class="string">restart</span> <span class="string">sshd.service</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>scp</strong>：Secure Copy，远程安全拷贝文件和目录（加密）</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">语法：scp</span> <span class="string">[-P</span> <span class="string">port]</span> <span class="string">[file|folder]</span> <span class="string">[user@host]:[remote_folder]</span></span><br><span class="line"></span><br><span class="line"><span class="string">示例：</span></span><br><span class="line"><span class="string">scp</span> <span class="string">mysql.sh</span> <span class="string">user@host:/tmp</span>      <span class="comment"># 本地文件拷贝到远程目录</span></span><br><span class="line"><span class="string">scp</span> <span class="bullet">-r</span> <span class="string">mysqldata</span> <span class="string">user@host:/tmp</span>  <span class="comment"># 本地目录拷贝到远程目录</span></span><br><span class="line"><span class="string">scp</span> <span class="string">root@host:/tmp</span> <span class="string">file</span>          <span class="comment"># 文件下载</span></span><br><span class="line"><span class="string">scp</span> <span class="bullet">-P</span> <span class="number">10022</span> <span class="string">/usr/local/src/mysql-5.7.23-el7-x86_64.tar.gz</span> <span class="string">root@10.200.62.4:/tmp</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>sftp</strong>：Secure File Transfer Protocol，安全文件传输命令行工具，使用方式和 <code>ftp</code> 类似，但它使用 <code>SSH</code> 作为底层传输协议，安全性比 <code>ftp</code> 好很多。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">语法：sftp</span> <span class="bullet">-oPort=&lt;port&gt;</span> <span class="string">&lt;user&gt;@&lt;host&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="string">常用命令：</span></span><br><span class="line"><span class="string">help/?：打印帮助信息。</span></span><br><span class="line"><span class="string">pwd：查看远程服务器当前目录</span></span><br><span class="line"><span class="string">cd</span> <span class="string">&lt;dir&gt;：将远程服务器的当前目录更改为&lt;dir&gt;</span></span><br><span class="line"><span class="string">ls：显示远程服务器上当前目录的文件名</span></span><br><span class="line"><span class="string">ls</span> <span class="bullet">-l：显示远程服务器上当前目录的文件详细列表</span></span><br><span class="line"><span class="string">get</span> <span class="string">&lt;file&gt;：下载指定文件</span> <span class="string">&lt;file&gt;</span></span><br><span class="line"><span class="string">put</span> <span class="string">&lt;file&gt;：上传指定文件&lt;file&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="string">示例：</span></span><br><span class="line"><span class="string">[iteblog@www.iteblog.com</span> <span class="string">~]$</span> <span class="string">sftp</span> <span class="bullet">-oPort=22</span> <span class="string">iteblog@sftp.iteblog.com</span></span><br><span class="line"><span class="string">Connecting</span> <span class="string">to</span> <span class="string">sftp.iteblog.com...</span></span><br><span class="line"><span class="string">iteblog@sftp.iteblog.com's</span> <span class="attr">password:</span> </span><br><span class="line"><span class="string">sftp&gt;</span> <span class="string">ls</span> <span class="string">/</span></span><br><span class="line"><span class="string">/iteblog.txt</span>  </span><br><span class="line"><span class="string">sftp&gt;</span> <span class="string">ls</span> <span class="bullet">-l</span> <span class="string">/iteblog.txt</span></span><br><span class="line"><span class="bullet">-</span><span class="string">rw-r--r--</span>    <span class="number">2</span> <span class="number">50049</span>    <span class="number">50049</span>        <span class="number">4096</span> <span class="string">Jun</span> <span class="number">21</span> <span class="number">03</span><span class="string">:23</span> <span class="string">/iteblog.txt</span></span><br><span class="line"><span class="string">sftp&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>也可以使用 <code>FileZilla</code> 连接 <code>SFTP</code> 服务器：主机 IP 地址、用户名、密码、端口，端口默认为 <code>22</code>。</p>
+<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g6797j8u3kj30ng0l9400.jpg" alt="img"></p>
+<p><strong>ssh-keygen</strong>：生成密钥的工具</p>
+<ul>
+<li><code>-t</code>：指定生成密钥类型（<code>rsa</code>、<code>dsa</code> 等）</li>
+<li><code>-P</code>：指定 密语，用于确保私钥的安全</li>
+<li><code>-f</code>：指定存放密钥的文件（公钥文件默认和私钥同目录下，不同的是存放公钥的文件名需要加上后缀 .pub）</li>
+<li><code>-C</code> 用来添加注释</li>
+</ul>
+<p><code>~/.ssh</code> 目录下有四个文件：</p>
+<ul>
+<li><code>id_rsa</code>：私钥文件</li>
+<li><code>id_rsa.pub</code>：公钥文件</li>
+<li><code>authorized_keys</code>：保存已授权的客户端公钥</li>
+<li><code>known_hosts</code>：保存已认证的远程主机 ID</li>
+</ul>
+<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g67aallbz9j30ip0d4gm2.jpg" alt="img"></p>
+<blockquote>
+<p>需要注意的是：一台主机可能既是 Client，也是 Server。所以会同时拥有 authorized_keys 和 known_hosts。</p>
+</blockquote>
+<h2 id="SSH-工作原理"><a href="#SSH-工作原理" class="headerlink" title="SSH 工作原理"></a>SSH 工作原理</h2><h3 id="对称加密与非对称加密"><a href="#对称加密与非对称加密" class="headerlink" title="对称加密与非对称加密"></a>对称加密与非对称加密</h3><h4 id="对称加密"><a href="#对称加密" class="headerlink" title="对称加密"></a>对称加密</h4><p><strong>含义</strong>：加密与解密使用同一套秘钥。</p>
+<p><strong>问题</strong>：考虑到数量庞大的 Client 端，很难保证密钥不被泄露，如何安全的保存密钥 ？</p>
+<p><img src="http://ww3.sinaimg.cn/large/006y8mN6ly1g679ssfaapj30l805agls.jpg" alt="img"></p>
+<p><img src="http://ww1.sinaimg.cn/large/006y8mN6ly1g679t6uz1wj30l805bdfr.jpg" alt="img"></p>
+<h4 id="非对称加密"><a href="#非对称加密" class="headerlink" title="非对称加密"></a>非对称加密</h4><p><strong>含义</strong>：加密与解决密码不同，存在两个密钥，<strong>“公钥”</strong> 和 <strong>“私钥”</strong>。</p>
+<blockquote>
+<p>两个密钥的特性：公钥加密后的密文，只能通过对应的私钥进行解密，而通过公钥推理出私钥的可能性微乎其微。</p>
+</blockquote>
+<p><img src="http://ww4.sinaimg.cn/large/006y8mN6ly1g679yam73pj30ft0f2t9b.jpg" alt="img"></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">远程</span> <span class="string">Server</span> <span class="string">收到</span> <span class="string">Client</span> <span class="string">端用户</span> <span class="string">TopGun</span> <span class="string">的登录请求，Server</span> <span class="string">把自己的公钥发给用户。</span></span><br><span class="line"><span class="string">Client</span> <span class="string">使用这个公钥，将密码进行加密。</span></span><br><span class="line"><span class="string">Client</span> <span class="string">将加密的密码发送给</span> <span class="string">Server端。</span></span><br><span class="line"><span class="string">远程</span> <span class="string">Server</span> <span class="string">用自己的私钥，解密登录密码，然后验证其合法性。</span></span><br><span class="line"><span class="string">若验证结果，给</span> <span class="string">Client</span> <span class="string">相应的响应。</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="图解公钥与私钥"><a href="#图解公钥与私钥" class="headerlink" title="图解公钥与私钥"></a>图解公钥与私钥</h3><p><strong>公钥</strong>：可以通过网络传输，别人可以随意截获的密钥。</p>
+<p><strong>私钥</strong>：不能通过网络进行传输，也防止别人截获的密钥。</p>
+<p><strong>交互过程</strong>：</p>
+<p>（1）鲍勃有两把钥匙，一把是公钥，另一把是私钥。</p>
+<p><img src="http://ww3.sinaimg.cn/large/006y8mN6ly1g67d4qd12bj30fa08n0ss.jpg" alt="PubKey1"></p>
+<p>（2）鲍勃把公钥送给他的朋友们 – 帕蒂、道格、苏珊每人一把</p>
+<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g67d7hmtayj30go07pq35.jpg" alt="PubKey2"></p>
+<p>（3）苏珊要给鲍勃写一封保密的信，她写完后用鲍勃的公钥加密，就可以达到保密的效果。</p>
+<p><img src="http://ww1.sinaimg.cn/large/006y8mN6ly1g67d7j9fh9j30go06vglp.jpg" alt="PubKey3"></p>
+<p>（4）鲍勃收信后，用私钥解密，就看到了信件内容。这里要强调的是，只要鲍勃的私钥不泄露，这封信就是安全的，即使落在别人手里，也无法解密。</p>
+<p><img src="http://ww4.sinaimg.cn/large/006y8mN6ly1g67d8c1zbkj30go07o0su.jpg" alt="PubKey4"></p>
+<p>（5）鲍勃给苏珊回信，决定采用”数字签名”。他写完后先用 <code>Hash</code> 函数，生成信件的摘要（digest）。 </p>
+<p><img src="http://ww4.sinaimg.cn/large/006y8mN6ly1g67d8o5r1gj30fa083q32.jpg" alt="PubKey5"></p>
+<p>（6）然后，鲍勃使用私钥，对这个摘要加密，生成”数字签名”（signature）。</p>
+<p><img src="http://ww3.sinaimg.cn/large/006y8mN6ly1g67d8zicuyj30fa06t3yd.jpg" alt="PubKey6"></p>
+<p>（7）鲍勃将这个签名，附在信件下面，一起发给苏珊。</p>
+<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g67d9eeclrj30fa08g0sv.jpg" alt="PubKey7"></p>
+<p>（8）苏珊收信后，取下数字签名，用鲍勃的公钥解密，得到信件的摘要。由此证明，这封信确实是鲍勃发出的。</p>
+<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g67daaqp9rj30fa04qt8k.jpg" alt="PubKey8"> </p>
+<p>（9）苏珊再对信件本身使用 <code>Hash</code> 函数，将得到的结果，与上一步得到的摘要进行对比。如果两者一致，就证明这封信未被修改过。 </p>
+<p><img src="http://ww1.sinaimg.cn/large/006y8mN6ly1g67datch4wj30fa088aa9.jpg" alt="PubKey9"></p>
+<p>（10）复杂的情况出现了，道格想欺骗苏珊，他偷偷使用了苏珊的电脑，用自己的公钥换走了鲍勃的公钥。此时，苏珊实际拥有的是道格的公钥，但是还以为这是鲍勃的公钥。因此，道格就可以冒充鲍勃，用自己的私钥做成”数字签名”，写信给苏珊，让苏珊用假的鲍勃公钥进行解密。</p>
+<p><img src="http://ww1.sinaimg.cn/large/006y8mN6ly1g67dbdl39tj30fa07kaa4.jpg" alt="PubKey10"></p>
+<p>（11）后来，苏珊感觉不对劲，发现自己无法确定公钥是否真的属于鲍勃。她想到了一个办法，要求鲍勃去找”证书中心”（Certificate Authority，简称 CA），为公钥做认证。证书中心用自己的私钥，对鲍勃的公钥和一些相关信息一起加密，生成”数字证书”（Digital Certificate）。</p>
+<p><img src="http://ww1.sinaimg.cn/large/006y8mN6ly1g67dbuly0kj30i20bvt8u.jpg" alt="PubKey11"></p>
+<p>（12）鲍勃拿到数字证书以后，就可以放心了。以后再给苏珊写信，只要在签名的同时，再附上数字证书就行了。 </p>
+<p><img src="http://ww4.sinaimg.cn/large/006y8mN6ly1g67dcfjhntj30f90bywex.jpg" alt="PubKey12"></p>
+<p>（13）苏珊收信后，用 CA 的公钥解开数字证书，就可以拿到鲍勃真实的公钥了，然后就能证明”数字签名”是否真的是鲍勃签的。 </p>
+<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g67dcphc58j30fa09wdfv.jpg" alt="PubKey13"></p>
+<h3 id="两种安全验证方式"><a href="#两种安全验证方式" class="headerlink" title="两种安全验证方式"></a>两种安全验证方式</h3><h4 id="基于口令的安全验证（用户名-密码）"><a href="#基于口令的安全验证（用户名-密码）" class="headerlink" title="基于口令的安全验证（用户名/密码）"></a>基于口令的安全验证（用户名/密码）</h4><ul>
+<li>客户端发送登录请求 <code>ssh user@host</code>；</li>
+<li>服务器接受请求，将服务器的公钥 <code>id_rsa.pub</code> 发送给客户端；</li>
+<li>客户端输入密码，密码使用 <code>id_rsa.pub</code> 加密后发送给服务器（敏感信息安全传输）；</li>
+<li>服务器接受加密后的密码，使用服务器私钥 <code>id_rsa</code> 解密，匹配认证密码是否合法（如果合法！登录成功）；</li>
+<li>客户端生成会话数据加密 <code>sess_key</code>，使用 <code>id_rsa.pub</code> 加密后传输给服务器（会话密钥）；</li>
+<li>服务器获取到后使用 <code>id_rsa</code> 解密，得到 <code>sess_key</code>；</li>
+<li>客户端和服务器通过 <code>sess_key</code> 进行会话数据安全传输。</li>
+</ul>
+<h4 id="基于密钥的安全验证"><a href="#基于密钥的安全验证" class="headerlink" title="基于密钥的安全验证"></a>基于密钥的安全验证</h4><p>简单地说，就是客户端自己生成公钥私钥（通常采用 <code>ssh-keygen</code> 程序生成），然后将公钥以某种方式（通常是手动添加）保存到服务器 <code>~/.ssh/authorized_keys</code> 文件中，以后服务器都会接受客户端传过来的经过会话密钥加密过的公钥，然后解密得到公钥之后和本地 <code>authorized_keys</code> 配置的公钥是否相等，如果是则允许登陆。</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><ul>
+<li><code>SSH</code> 是安全的加密协议，用于远程连接 <code>Linux</code> 服务器；</li>
+<li><code>SSH</code> 的默认端口是 <code>22</code>，安全协议版本是 <code>SSH2</code>；</li>
+<li><code>SSH</code> 服务器端主要包含2个服务功能 <code>SSH</code> 连接和 <code>SFTP</code> 服务器；</li>
+<li><code>SSH</code> 客户端包含 <code>ssh</code> 连接命令和远程拷贝 <code>scp</code> 命令等。</li>
+</ul>
+<h3 id="服务器初始化"><a href="#服务器初始化" class="headerlink" title="服务器初始化"></a>服务器初始化</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># /bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ $(id -u) != <span class="string">"0"</span> ]; then</span><br><span class="line">errorLog <span class="string">"错误：请用root账户运行此脚本"</span></span><br><span class="line"><span class="keyword">exit</span> <span class="number">1</span></span><br><span class="line">fi</span><br><span class="line">echo <span class="string">"提升权限..."</span></span><br><span class="line"><span class="keyword">if</span> [[ ! `cat /etc/sudoers | grep -v grep | grep haieradmin` ]] ; then</span><br><span class="line">    echo <span class="string">"需要提升权限。。。"</span></span><br><span class="line">    sed -i <span class="string">'/## Allow root to run any commands anywhere / a\haieradmin ALL=(ALL) NOPASSWD:ALL'</span> /etc/sudoers</span><br><span class="line">    <span class="keyword">if</span> [[ ! `cat /etc/sudoers | grep -v grep | grep haieradmin` ]] ; then</span><br><span class="line">        echo <span class="string">"权限提升失败..."</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        echo <span class="string">"权限提升成功..."</span></span><br><span class="line">    fi</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    echo <span class="string">"haieradmin已经是sudoers"</span></span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">echo <span class="string">"开启22端口访问..."</span></span><br><span class="line">firewall-cmd --permanent --zone=public --add-port=<span class="number">22</span>/tcp</span><br><span class="line">firewall-cmd --reload</span><br><span class="line"></span><br><span class="line">echo <span class="string">"删除hosts.deny..."</span></span><br><span class="line">sed -i <span class="string">'s/sshd:all/ /g'</span> /etc/hosts.deny</span><br><span class="line"></span><br><span class="line">echo <span class="string">"追加hosts.allow..."</span></span><br><span class="line"><span class="keyword">if</span> [[ `cat /etc/hosts.allow | grep -v <span class="number">10.138</span>.*.*` ]]; then</span><br><span class="line">    echo <span class="string">"追加10.138.*.*"</span></span><br><span class="line">    echo <span class="string">"sshd:10.138.*.*"</span> &gt;&gt; /etc/hosts.allow</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
+
+<h3 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h3><p><strong>问题</strong>：CentOS 7.3 配置 SSH 免密码登录后仍要输入密码的解决方法？</p>
+<p><strong>原因分析</strong>：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span> tail /var/log/secure -n 20</span><br><span class="line">Authentication refused: bad ownership or modes for directory /home/haieradmin</span><br></pre></td></tr></table></figure>
+
+<p>sshd 为了安全，对属主的目录和文件权限有所要求，如果权限不对，则ssh的免密码登陆不生效。</p>
+<ul>
+<li>.ssh 目录权限为 700</li>
+<li>rsa_id.pub 及 authorized_keys 权限一般为 644</li>
+<li>rsa_id 权限必须为 600</li>
+</ul>
+<p><strong>解决方法</strong>：检测目录权限，把不符合要求的按要求设置权限即可。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/05/mysql-sql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/05/mysql-sql/" class="post-title-link" itemprop="url">MySQL · SQL</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-05 17:39:23" itemprop="dateCreated datePublished" datetime="2019-07-05T17:39:23+08:00">2019-07-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-12-19 11:05:53" itemprop="dateModified" datetime="2019-12-19T11:05:53+08:00">2019-12-19</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="连接"><a href="#连接" class="headerlink" title="连接"></a>连接</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -h &lt;host&gt; -P &lt;port&gt; -u &lt;user&gt; -p &lt;password&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="库"><a href="#库" class="headerlink" title="库"></a>库</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看库</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">databases</span>;</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">create</span> <span class="keyword">database</span> <span class="string">'dbname'</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建数据库</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">database</span> <span class="string">'dbname'</span> <span class="comment">/*!40100 DEFAULT CHARACTER SET utf8 */</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除数据库</span></span><br><span class="line"><span class="keyword">drop</span> <span class="keyword">database</span> <span class="string">'dbname'</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看当前时间、用户名、数据库版本</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">now</span>(), <span class="keyword">user</span>(), <span class="keyword">version</span>();</span><br></pre></td></tr></table></figure>
+
+<h3 id="表"><a href="#表" class="headerlink" title="表"></a>表</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建表</span></span><br><span class="line"><span class="keyword">CREATE</span> [<span class="keyword">TEMPORARY</span>] <span class="keyword">TABLE</span>[ <span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span>] [库名.]表名 ( 表的结构定义 )[ 表选项] 每个字段必须有数据类型，最后一个字段后不能有逗号，<span class="keyword">TEMPORARY</span> 临时表，会话结束时表自动消失</span><br><span class="line"></span><br><span class="line">字段名 数据类型 [<span class="keyword">NOT</span> <span class="literal">NULL</span> | <span class="literal">NULL</span>] [<span class="keyword">DEFAULT</span> default_value] [AUTO_INCREMENT] [<span class="keyword">UNIQUE</span> [<span class="keyword">KEY</span>] | [PRIMARY] <span class="keyword">KEY</span>] [<span class="keyword">COMMENT</span> <span class="string">'string'</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 字符集</span></span><br><span class="line"><span class="keyword">CHARSET</span> = charset_name，如果表没有设定，则使用数据库字符集</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 存储引擎</span></span><br><span class="line"><span class="keyword">ENGINE</span> = engine_name</span><br><span class="line">表在管理数据时采用的不同的数据结构，结构不同会导致处理方式、提供的特性操作等不同</span><br><span class="line">常见的引擎：<span class="keyword">InnoDB</span> MyISAM <span class="keyword">Memory</span>/<span class="keyword">Heap</span> BDB <span class="keyword">Merge</span> Example CSV MaxDB <span class="keyword">Archive</span></span><br><span class="line">不同的引擎在保存表的结构和数据时采用不同的方式</span><br><span class="line">MyISAM表文件含义：.frm表定义，.MYD表数据，.MYI表索引</span><br><span class="line"><span class="keyword">InnoDB</span>表文件含义：.frm表定义，表空间数据和日志文件</span><br><span class="line"><span class="keyword">SHOW</span> <span class="keyword">ENGINES</span> <span class="comment">-- 显示存储引擎的状态信息</span></span><br><span class="line"><span class="keyword">SHOW</span> <span class="keyword">ENGINE</span> 引擎名 &#123;<span class="keyword">LOGS</span>|<span class="keyword">STATUS</span>&#125; <span class="comment">-- 显示存储引擎的日志或状态信息</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 自增起始数</span></span><br><span class="line">AUTO_INCREMENT = 行数</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 数据文件目录</span></span><br><span class="line"><span class="keyword">DATA</span> <span class="keyword">DIRECTORY</span> = <span class="string">'目录'</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 索引文件目录</span></span><br><span class="line"><span class="keyword">INDEX</span> <span class="keyword">DIRECTORY</span> = <span class="string">'目录'</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 表注释</span></span><br><span class="line"><span class="keyword">COMMENT</span> = <span class="string">'string'</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 分区选项</span></span><br><span class="line"><span class="keyword">PARTITION</span> <span class="keyword">BY</span> ... (详细见手册)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改表</span></span><br><span class="line"><span class="comment">-- 修改表本身的选项</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> 表名 表的选项</span><br><span class="line">eg: <span class="keyword">ALTER</span> <span class="keyword">TABLE</span> 表名 <span class="keyword">ENGINE</span>=MYISAM;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 对表进行重命名</span></span><br><span class="line"><span class="keyword">RENAME</span> <span class="keyword">TABLE</span> 原表名 <span class="keyword">TO</span> 新表名</span><br><span class="line"><span class="keyword">RENAME</span> <span class="keyword">TABLE</span> 原表名 <span class="keyword">TO</span> 库名.表名 （可将表移动到另一个数据库）</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 修改表的字段机构（13.1.2. ALTER TABLE语法）</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> 表名 操作名</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 操作名</span></span><br><span class="line"><span class="keyword">ADD</span>[ <span class="keyword">COLUMN</span>] 字段定义       <span class="comment">-- 增加字段</span></span><br><span class="line"><span class="keyword">AFTER</span> 字段名          <span class="comment">-- 表示增加在该字段名后面</span></span><br><span class="line"><span class="keyword">FIRST</span>               <span class="comment">-- 表示增加在第一个</span></span><br><span class="line"><span class="keyword">ADD</span> PRIMARY <span class="keyword">KEY</span>(字段名)   <span class="comment">-- 创建主键</span></span><br><span class="line"><span class="keyword">ADD</span> <span class="keyword">UNIQUE</span> [索引名] (字段名)<span class="comment">-- 创建唯一索引</span></span><br><span class="line"><span class="keyword">ADD</span> <span class="keyword">INDEX</span> [索引名] (字段名) <span class="comment">-- 创建普通索引</span></span><br><span class="line"><span class="keyword">DROP</span>[ <span class="keyword">COLUMN</span>] 字段名      <span class="comment">-- 删除字段</span></span><br><span class="line"><span class="keyword">MODIFY</span>[ <span class="keyword">COLUMN</span>] 字段名 字段属性     <span class="comment">-- 支持对字段属性进行修改，不能修改字段名(所有原有属性也需写上)</span></span><br><span class="line"><span class="keyword">CHANGE</span>[ <span class="keyword">COLUMN</span>] 原字段名 新字段名 字段属性      <span class="comment">-- 支持对字段名修改</span></span><br><span class="line"><span class="keyword">DROP</span> PRIMARY <span class="keyword">KEY</span>    <span class="comment">-- 删除主键(删除主键前需删除其AUTO_INCREMENT属性)</span></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">INDEX</span> 索引名 <span class="comment">-- 删除索引</span></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">FOREIGN</span> <span class="keyword">KEY</span> 外键    <span class="comment">-- 删除外键</span></span><br><span class="line"></span><br><span class="line">eg. </span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`testdemo`</span> (</span><br><span class="line">	<span class="string">`id`</span> <span class="built_in">bigint</span> <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,</span><br><span class="line">	<span class="string">`name`</span> <span class="built_in">char</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span>,</span><br><span class="line">  <span class="string">`address`</span> <span class="built_in">varchar</span>(<span class="number">50</span>),</span><br><span class="line">	<span class="string">`age`</span> <span class="built_in">tinyint</span> <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="number">0</span>,</span><br><span class="line">	<span class="string">`gmt_create`</span> datetime <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">CURRENT_TIMESTAMP</span>,</span><br><span class="line">	<span class="string">`gmt_modified`</span> datetime <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">CURRENT_TIMESTAMP</span> <span class="keyword">ON</span> <span class="keyword">UPDATE</span> <span class="keyword">CURRENT_TIMESTAMP</span>,</span><br><span class="line">	PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看表结构</span></span><br><span class="line">desc test;</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">create</span> <span class="keyword">table</span> <span class="keyword">test</span>\G</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">table</span> <span class="keyword">status</span> <span class="keyword">from</span> <span class="string">'db_name'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制表</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">'newname'</span> <span class="keyword">LIKE</span> <span class="string">'oldname'</span>;</span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">'newname'</span> <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> <span class="string">'oldname'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改表存储引擎</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">'table_name'</span> <span class="keyword">engine</span>=myisam;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除表</span></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span>[ <span class="keyword">IF</span> <span class="keyword">EXISTS</span>] 表名</span><br><span class="line"></span><br><span class="line"><span class="comment"># 清空表数据，truncate 是删除表再创建，delete 是逐条删除</span></span><br><span class="line"><span class="keyword">TRUNCATE</span> [<span class="keyword">TABLE</span>] 表名</span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制表结构</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> 表名 <span class="keyword">LIKE</span> 要复制的表名</span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制旧表的数据到新表(假设两个表结构一样)</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> 新表 <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> 旧表</span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制旧表的数据到新表(假设两个表结构不一样)</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> 新表(字段<span class="number">1</span>,字段<span class="number">2</span>,……) <span class="keyword">SELECT</span> 字段<span class="number">1</span>,字段<span class="number">2</span>,…… <span class="keyword">FROM</span> 旧表</span><br><span class="line"></span><br><span class="line"><span class="comment"># 复制表结构和数据</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> 表名 [<span class="keyword">AS</span>] <span class="keyword">SELECT</span> * <span class="keyword">FROM</span> 要复制的表名</span><br><span class="line"></span><br><span class="line"><span class="comment"># CRUD</span></span><br><span class="line"><span class="comment">-- 增</span></span><br><span class="line"><span class="keyword">INSERT</span> [<span class="keyword">INTO</span>] 表名 [(字段列表)] <span class="keyword">VALUES</span> (值列表)[, (值列表), ...]</span><br><span class="line"><span class="keyword">INSERT</span> [<span class="keyword">INTO</span>] 表名 <span class="keyword">SET</span> 字段名=值[, 字段名=值, ...]</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查</span></span><br><span class="line"><span class="keyword">SELECT</span> 字段列表 <span class="keyword">FROM</span> 表名[ 其他子句]</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 删</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> 表名[ 删除条件子句]</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 改</span></span><br><span class="line"><span class="keyword">UPDATE</span> 表名 <span class="keyword">SET</span> 字段名=新值[, 字段名=新值] [更新条件]</span><br></pre></td></tr></table></figure>
+
+<h3 id="索引"><a href="#索引" class="headerlink" title="索引"></a>索引</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 删除索引</span></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">index</span> idx_name <span class="keyword">on</span> <span class="string">'table_name'</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加自增主键</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">'table_name'</span> <span class="keyword">ADD</span> <span class="keyword">id</span> <span class="built_in">bigint</span>(<span class="number">10</span>) PRIMARY <span class="keyword">KEY</span> AUTO_INCREMENT;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看表索引</span></span><br><span class="line"><span class="keyword">SHOW</span> <span class="keyword">INDEX</span> <span class="keyword">FROM</span> <span class="string">'table_name'</span>；</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加主键</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">'table_name'</span> <span class="keyword">ADD</span> PRIMARY <span class="keyword">KEY</span> (<span class="keyword">column</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建唯一索引</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">'table_name'</span> <span class="keyword">ADD</span> <span class="keyword">UNIQUE</span> (<span class="keyword">column</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建普通索引</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">'table_name'</span> <span class="keyword">ADD</span> <span class="string">'index_name'</span>(<span class="keyword">column</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建聚合索引</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">'table_name'</span> <span class="keyword">ADD</span> <span class="keyword">INDEX</span> <span class="string">'index_name'</span> (column1, column2, column3)</span><br></pre></td></tr></table></figure>
+
+<h3 id="视图"><a href="#视图" class="headerlink" title="视图"></a>视图</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查询视图</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> information_schema.views;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建视图</span></span><br><span class="line"><span class="keyword">create</span> <span class="keyword">view</span> <span class="string">'viewname'</span> <span class="keyword">as</span> <span class="string">'sql'</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除视图</span></span><br><span class="line"><span class="keyword">drop</span> <span class="keyword">view</span> <span class="string">'viewname'</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="复杂查询"><a href="#复杂查询" class="headerlink" title="复杂查询"></a>复杂查询</h3><h4 id="DISTINCT"><a href="#DISTINCT" class="headerlink" title="DISTINCT"></a>DISTINCT</h4><p>去除重复记录，默认为 ALL 选项</p>
+<h4 id="LIKE"><a href="#LIKE" class="headerlink" title="LIKE"></a>LIKE</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="string">'table'</span> <span class="keyword">where</span> <span class="keyword">field</span> <span class="keyword">like</span> <span class="string">'%value%'</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="UNION-amp-UNION-ALL"><a href="#UNION-amp-UNION-ALL" class="headerlink" title="UNION &amp; UNION ALL"></a>UNION &amp; UNION ALL</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> column_name(s) <span class="keyword">FROM</span> table_name1</span><br><span class="line"><span class="keyword">UNION</span></span><br><span class="line"><span class="keyword">SELECT</span> column_name(s) <span class="keyword">FROM</span> table_name2</span><br><span class="line"></span><br><span class="line"><span class="keyword">SELECT</span> column_name(s) <span class="keyword">FROM</span> table_name1</span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line"><span class="keyword">SELECT</span> column_name(s) <span class="keyword">FROM</span> table_name2</span><br><span class="line"></span><br><span class="line">注意：默认地，<span class="keyword">UNION</span> 操作符选取不同的值，如果允许重复的值，请使用 <span class="keyword">UNION</span> <span class="keyword">ALL</span>。</span><br></pre></td></tr></table></figure>
+
+<h4 id="子查询"><a href="#子查询" class="headerlink" title="子查询"></a>子查询</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> a,b,c <span class="keyword">from</span> a <span class="keyword">where</span> d <span class="keyword">IN</span> (<span class="keyword">select</span> d <span class="keyword">from</span> b )</span><br></pre></td></tr></table></figure>
+
+<h4 id="BETWEEN-AND"><a href="#BETWEEN-AND" class="headerlink" title="BETWEEN AND"></a>BETWEEN AND</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> table1 <span class="keyword">where</span> <span class="built_in">time</span> <span class="keyword">between</span> time1 <span class="keyword">and</span> time2</span><br></pre></td></tr></table></figure>
+
+<h4 id="IN"><a href="#IN" class="headerlink" title="IN"></a>IN</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> table1 <span class="keyword">where</span> a [<span class="keyword">not</span>] <span class="keyword">in</span> (‘值<span class="number">1</span>’,’值<span class="number">2</span>’,’值<span class="number">4</span>’,’值<span class="number">6</span>’)</span><br></pre></td></tr></table></figure>
+
+<h4 id="ORDER-BY"><a href="#ORDER-BY" class="headerlink" title="ORDER BY"></a>ORDER BY</h4><p><strong>语法：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> field1, field2,...fieldN <span class="keyword">FROM</span> table_name1, table_name2...</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> field1, [field2...] [<span class="keyword">ASC</span> [<span class="keyword">DESC</span>]]</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>你可以使用 ASC 或 DESC 关键字来设置查询结果是按升序或降序排列，默认情况下，按升序排列。</li>
+<li>你可以添加 WHERE…LIKE 子句来设置条件。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> <span class="string">'tabname'</span> <span class="keyword">order</span> <span class="keyword">by</span> field1,field2 [<span class="keyword">desc</span>]</span><br></pre></td></tr></table></figure>
+
+<h3 id="统计信息"><a href="#统计信息" class="headerlink" title="统计信息"></a>统计信息</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查询数据库总量</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">concat</span>(<span class="keyword">round</span>(<span class="keyword">sum</span>((data_length + index_length)/<span class="number">1024</span>/<span class="number">1024</span>/<span class="number">1024</span>),<span class="number">2</span>),<span class="string">'GB'</span>) <span class="keyword">as</span> <span class="keyword">data</span> <span class="keyword">from</span> information_schema.tables;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询所有库数据量并排序</span></span><br><span class="line"><span class="keyword">SELECT</span> table_schema, <span class="keyword">CONCAT</span>(</span><br><span class="line"><span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(data_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> data_size, <span class="keyword">CONCAT</span>(</span><br><span class="line"><span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(index_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> index_size</span><br><span class="line"><span class="keyword">FROM</span> information_schema.tables</span><br><span class="line"><span class="keyword">GROUP</span> <span class="keyword">BY</span> table_schema</span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="keyword">SUM</span>(data_length) <span class="keyword">DESC</span>;</span><br><span class="line">+<span class="comment">--------------------+------------+------------+</span></span><br><span class="line">| table_schema       | data_size  | index_size |</span><br><span class="line">+<span class="comment">--------------------+------------+------------+</span></span><br><span class="line">| csomo-barcode      | 51872.64MB | 49203.56MB |</span><br><span class="line">| cosmodb            | 30257.57MB | 13855.68MB |</span><br><span class="line">| cosmo_im_1001      | 19769.54MB | 6251.67MB  |</span><br><span class="line">| cosmoimbase        | 17594.54MB | 18239.81MB |</span><br><span class="line">| cosmo_im_1004      | 3141.99MB  | 4099.13MB  |</span><br><span class="line">| cosmo_im_1012      | 1524.87MB  | 1592.03MB  |</span><br><span class="line">| cosmo_im_1010      | 1464.20MB  | 2176.00MB  |</span><br><span class="line">| cosmo_im_1016      | 1092.29MB  | 1543.65MB  |</span><br><span class="line">| cosmo_im_1009      | 793.96MB   | 1612.11MB  |</span><br><span class="line">| cosmo_im_1003      | 662.42MB   | 1417.97MB  |</span><br><span class="line">| cosmo_im_1006      | 200.44MB   | 288.24MB   |</span><br><span class="line">| cosmo_im_1047      | 184.14MB   | 90.46MB    |</span><br><span class="line">| cosmo_im_1038      | 32.15MB    | 46.03MB    |</span><br><span class="line">| mysql              | 22.60MB    | 0.14MB     |</span><br><span class="line">| test               | 7.06MB     | 0.03MB     |</span><br><span class="line">| information_schema | 0.00MB     | 0.00MB     |</span><br><span class="line">| performance_schema | 0.00MB     | 0.00MB     |</span><br><span class="line">+<span class="comment">--------------------+------------+------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询单个表数据量</span></span><br><span class="line"><span class="keyword">select</span> table_name,table_rows,<span class="keyword">CONCAT</span>(</span><br><span class="line"><span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(data_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> data_size, <span class="keyword">CONCAT</span>(</span><br><span class="line"><span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(index_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> index_size <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> TABLE_SCHEMA = <span class="string">'mqm'</span> <span class="keyword">and</span> table_name=<span class="string">'t_batch'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询单个库中表数据排序</span></span><br><span class="line"><span class="keyword">select</span> table_name,table_rows <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> TABLE_SCHEMA= <span class="string">'employees'</span> <span class="keyword">order</span> <span class="keyword">by</span> table_rows <span class="keyword">desc</span>;</span><br><span class="line">+<span class="comment">----------------------+------------+</span></span><br><span class="line">| table_name           | table_rows |</span><br><span class="line">+<span class="comment">----------------------+------------+</span></span><br><span class="line">| salaries             |    2838426 |</span><br><span class="line">| titles               |     441772 |</span><br><span class="line">| dept_emp             |     331570 |</span><br><span class="line">| employees            |     299600 |</span><br><span class="line">| dept_manager         |         24 |</span><br><span class="line">| departments          |          9 |</span><br><span class="line">| current_dept_emp     |       NULL |</span><br><span class="line">| dept_emp_latest_date |       NULL |</span><br><span class="line">+<span class="comment">----------------------+------------+</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询单个库中表排序</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="keyword">CONCAT</span>(table_schema,<span class="string">'.'</span>,table_name) <span class="keyword">AS</span> <span class="string">'Table Name'</span>, table_rows <span class="keyword">AS</span> <span class="string">'Rows'</span>, <span class="keyword">CONCAT</span>(<span class="keyword">ROUND</span>(data_length/(<span class="number">1024</span>*<span class="number">1024</span>),<span class="number">2</span>),<span class="string">'M'</span>) <span class="keyword">AS</span> <span class="string">'Data Size'</span>,<span class="keyword">CONCAT</span>(<span class="keyword">ROUND</span>(index_length/(<span class="number">1024</span>*<span class="number">1024</span>),<span class="number">2</span>),<span class="string">'M'</span>) <span class="keyword">AS</span> <span class="string">'Index Size'</span>, <span class="keyword">CONCAT</span>(<span class="keyword">ROUND</span>((data_length+index_length)/(<span class="number">1024</span>*<span class="number">1024</span>),<span class="number">2</span>),<span class="string">'M'</span>) <span class="keyword">AS</span><span class="string">'Total'</span><span class="keyword">FROM</span> information_schema.TABLES <span class="keyword">WHERE</span> TABLE_SCHEMA= <span class="string">'employees'</span> <span class="keyword">ORDER</span> <span class="keyword">BY</span> <span class="comment">--total DESC;</span></span><br><span class="line">+<span class="comment">--------------------------------+---------+-----------+------------+--------+</span></span><br><span class="line">| <span class="keyword">Table</span> <span class="keyword">Name</span>                     | <span class="keyword">Rows</span>    | <span class="keyword">Data</span> <span class="keyword">Size</span> | <span class="keyword">Index</span> <span class="keyword">Size</span> | Total  |</span><br><span class="line">+<span class="comment">--------------------------------+---------+-----------+------------+--------+</span></span><br><span class="line">| employees.salaries             | <span class="number">2838426</span> | <span class="number">95.63</span>M    | <span class="number">0.00</span>M      | <span class="number">95.63</span>M |</span><br><span class="line">| employees.titles               |  <span class="number">441772</span> | <span class="number">19.56</span>M    | <span class="number">0.00</span>M      | <span class="number">19.56</span>M |</span><br><span class="line">| employees.dept_emp             |  <span class="number">331570</span> | <span class="number">11.52</span>M    | <span class="number">5.52</span>M      | <span class="number">17.03</span>M |</span><br><span class="line">| employees.employees            |  <span class="number">299600</span> | <span class="number">14.52</span>M    | <span class="number">0.00</span>M      | <span class="number">14.52</span>M |</span><br><span class="line">| employees.dept_manager         |      <span class="number">24</span> | <span class="number">0.02</span>M     | <span class="number">0.02</span>M      | <span class="number">0.03</span>M  |</span><br><span class="line">| employees.departments          |       <span class="number">9</span> | <span class="number">0.02</span>M     | <span class="number">0.02</span>M      | <span class="number">0.03</span>M  |</span><br><span class="line">| employees.current_dept_emp     |    <span class="literal">NULL</span> | <span class="literal">NULL</span>      | <span class="literal">NULL</span>       | <span class="literal">NULL</span>   |</span><br><span class="line">| employees.dept_emp_latest_date |    <span class="literal">NULL</span> | <span class="literal">NULL</span>      | <span class="literal">NULL</span>       | <span class="literal">NULL</span>   |</span><br><span class="line">+<span class="comment">--------------------------------+---------+-----------+------------+--------+</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="复制"><a href="#复制" class="headerlink" title="复制"></a>复制</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 取消复制</span></span><br><span class="line"><span class="keyword">stop</span> <span class="keyword">slave</span>;</span><br><span class="line"><span class="keyword">reset</span> <span class="keyword">slave</span> <span class="keyword">all</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 建立复制</span></span><br><span class="line"><span class="keyword">CHANGE</span> <span class="keyword">MASTER</span> <span class="keyword">TO</span> </span><br><span class="line">MASTER_HOST=<span class="string">'10.133.7.18'</span>,</span><br><span class="line">MASTER_USER=<span class="string">'repl'</span>,</span><br><span class="line">MASTER_PASSWORD=<span class="string">'Changeme_123'</span>,</span><br><span class="line">MASTER_PORT=<span class="number">3306</span>,</span><br><span class="line">MASTER_LOG_FILE=<span class="string">'mysql-binlog.000297'</span>, </span><br><span class="line">MASTER_LOG_POS=<span class="number">900834433</span>,</span><br><span class="line">MASTER_CONNECT_RETRY=<span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/05/mysql-toolkit/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1716,7 +2204,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">155</span>
+                    <span class="site-state-item-count">157</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
