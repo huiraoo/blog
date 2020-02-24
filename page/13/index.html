@@ -352,215 +352,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/26/mysql-innodb/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/09/26/mysql-innodb/" class="post-title-link" itemprop="url">MySQL · InnoDB 存储引擎</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-09-26 14:32:13" itemprop="dateCreated datePublished" datetime="2019-09-26T14:32:13+08:00">2019-09-26</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-22 21:23:10" itemprop="dateModified" datetime="2019-10-22T21:23:10+08:00">2019-10-22</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="InnoDB-页"><a href="#InnoDB-页" class="headerlink" title="InnoDB 页"></a>InnoDB 页</h2><p><code>InnoDB</code> 是一个将表中的数据存储到磁盘上的存储引擎，而真正处理数据的过程是发生在内存中的，所以需要把磁盘中的数据加载到内存中，如果是处理写入或修改请求的话，还需要把内存中的内容刷新到磁盘上。而我们知道读写磁盘的速度非常慢，和内存读写差了几个数量级，所以当我们想从表中获取某些记录时，<code>InnoDB</code> 存储引擎需要一条一条的把记录从磁盘上读出来么？不，那样会慢死，<code>InnoDB</code> 采取的方式是：将数据划分为若干个页，以页作为磁盘和内存之间交互的基本单位，<code>InnoDB</code> 中页的大小一般为 <code>16KB</code>。也就是在一般情况下，一次最少从磁盘中读取 <code>16KB</code> 的内容到内存中，一次最少把内存中的 <code>16KB</code> 内容刷新到磁盘中。</p>
-<blockquote>
-<p><strong>小结</strong></p>
-</blockquote>
-<ul>
-<li><p>页是 <code>MySQL</code> 中磁盘和内存交互的基本单位，也是 <code>MySQL</code> 是管理存储空间的基本单位</p>
-</li>
-<li><p>指定和修改行格式的语法：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> 表名 (列的信息) ROW_FORMAT=行格式名称</span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> 表名 ROW_FORMAT=行格式名称</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><code>InnoDB</code> 目前定义了 4 种行格式：<code>Compact</code>、<code>Redundant</code>、<code>Dynamic</code>、<code>Compressed</code></p>
-</li>
-<li><p>一个页一般是 <code>16KB</code>，当记录中的数据太多，当前页放不下的时候，会把多余的数据存储到其他页中，这种现象称为<strong>行溢出</strong>。</p>
-</li>
-</ul>
-<h2 id="InnoDB-数据页结构"><a href="#InnoDB-数据页结构" class="headerlink" title="InnoDB 数据页结构"></a>InnoDB 数据页结构</h2><p>InnoDB 为了不同的目的而设计了不同类型的页，我们把用于存放记录的页叫做<strong>数据页</strong>。</p>
-<p>一个数据页可以被大致划分为 7 个部分：</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-26-152320.png" alt></p>
-<ul>
-<li><code>File Header</code>，表示页的一些通用信息，占固定的 <code>38</code> 字节。</li>
-<li><code>Page Header</code>，表示数据页专有的一些信息，占固定的 <code>56</code> 个字节。</li>
-<li><code>Infimum + Supremum</code>，两个虚拟的伪记录，分别表示页中的最小和最大记录，占固定的<code>26</code>个字节。</li>
-<li><code>User Records</code>：真实存储我们插入的记录的部分，大小不固定。</li>
-<li><code>Free Space</code>：页中尚未使用的部分，大小不确定。</li>
-<li><code>Page Directory</code>：页中的某些记录相对位置，也就是各个槽在页面中的地址偏移量，大小不固定，插入的记录越多，这个部分占用的空间越多。</li>
-<li><code>File Trailer</code>：用于检验页是否完整的部分，占用固定的 <code>8</code> 个字节。</li>
-</ul>
-<p>每个记录的头信息中都有一个 <code>next_record</code> 属性，从而使页中的所有记录串联成一个单链表。</p>
-<p><code>InnoDB</code> 会把页中的记录划分为若干个组，每个组的最后一个记录的地址偏移量作为一个<strong>槽</strong>，存放在 <code>Page Directory</code> 中，所以在一个页中根据主键查找记录是非常快的，分成两步：</p>
-<ul>
-<li>通过二分法确定该记录所在的槽</li>
-<li>通过记录的next_record属性遍历该槽所在的组中的各个记录</li>
-</ul>
-<p>每个数据页的 <code>File Header</code> 部分都有上一个和下一个页的编号，所以所有的数据页会组成一个双链表。</p>
-<p>为保证从内存中同步到磁盘的页的完整性，在页的首部和尾部都会存储页中数据的校验和和页面最后修改时对应的 <code>LSN</code> 值，如果首部和尾部的校验和和 <code>LSN</code> 值校验不成功的话，就说明同步过程出现了问题。</p>
-<p>页和记录的关系：</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-26-152840.png" alt></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/25/mysql-character/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2709,6 +2500,187 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/21/mysql-index/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/08/21/mysql-index/" class="post-title-link" itemprop="url">MySQL · 索引</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-21 16:34:04" itemprop="dateCreated datePublished" datetime="2019-08-21T16:34:04+08:00">2019-08-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-15 16:48:31" itemprop="dateModified" datetime="2019-11-15T16:48:31+08:00">2019-11-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>创建一个测试数据库和数据表：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">DATABASE</span> <span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span> db_test <span class="keyword">default</span> <span class="keyword">charset</span> utf8 <span class="keyword">COLLATE</span> utf8_general_ci; </span><br><span class="line"><span class="keyword">use</span> db_test;</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> payment (  </span><br><span class="line">    <span class="keyword">id</span>         <span class="built_in">INT</span> <span class="keyword">UNSIGNED</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT,  </span><br><span class="line">    staff_id  <span class="built_in">INT</span> <span class="keyword">UNSIGNED</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,  </span><br><span class="line">    customer_id <span class="built_in">INT</span> <span class="keyword">UNSIGNED</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>,  </span><br><span class="line">    PRIMARY <span class="keyword">KEY</span> (<span class="keyword">id</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8;</span><br></pre></td></tr></table></figure>
+
+<p>利用存储过程插入 1000w 行随机数据（表引擎可以先设置为 MyISAM，然后改为 InnoDB）：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">DROP</span> <span class="keyword">PROCEDURE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> add_payment;  </span><br><span class="line">DELIMITER //</span><br><span class="line">    <span class="keyword">create</span> <span class="keyword">PROCEDURE</span> add_payment(<span class="keyword">in</span> <span class="keyword">num</span> <span class="built_in">INT</span>)</span><br><span class="line">    <span class="keyword">BEGIN</span></span><br><span class="line">        <span class="keyword">DECLARE</span> <span class="keyword">rowid</span> <span class="built_in">INT</span> <span class="keyword">DEFAULT</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">SET</span> @exesql = <span class="string">'INSERT INTO payment(staff_id, customer_id) values (?, ?)'</span>;</span><br><span class="line">        WHILE rowid &lt; num DO</span><br><span class="line">            <span class="keyword">SET</span> @staff_id = (<span class="number">1</span> + <span class="keyword">FLOOR</span>(<span class="number">5000</span>*<span class="keyword">RAND</span>()) ); </span><br><span class="line">            <span class="keyword">SET</span> @customer_id = (<span class="number">1</span> + <span class="keyword">FLOOR</span>(<span class="number">500000</span>*<span class="keyword">RAND</span>()));</span><br><span class="line">            <span class="keyword">SET</span> <span class="keyword">rowid</span> = <span class="keyword">rowid</span> + <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">prepare</span> stmt <span class="keyword">FROM</span> @exesql;</span><br><span class="line">            <span class="keyword">EXECUTE</span> stmt <span class="keyword">USING</span> @staff_id, @customer_id;            </span><br><span class="line">        <span class="keyword">END</span> <span class="keyword">WHILE</span>;</span><br><span class="line">    <span class="keyword">END</span> //</span><br><span class="line">DELIMITER ;</span><br></pre></td></tr></table></figure>
+
+<p>如何选择索引？</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> <span class="keyword">count</span>(<span class="keyword">DISTINCT</span> <span class="keyword">col</span>), <span class="keyword">count</span>(*) <span class="keyword">from</span> t_batch\G;</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
@@ -2757,7 +2729,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">158</span>
+                    <span class="site-state-item-count">157</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
