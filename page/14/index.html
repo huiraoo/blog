@@ -352,424 +352,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/04/mysql-disaster/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/09/04/mysql-disaster/" class="post-title-link" itemprop="url">MySQL · 容灾</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-09-04 16:16:31" itemprop="dateCreated datePublished" datetime="2019-09-04T16:16:31+08:00">2019-09-04</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-15 16:33:54" itemprop="dateModified" datetime="2019-11-15T16:33:54+08:00">2019-11-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>数据是企业的生命线，<code>PSI</code> 线上系统数据基本都存储在青岛本地机房，缺少异地容灾能力，当出现机房级灾难场景下（如：地震、海啸、火灾等），业务连续性受到极大的影响，损失不可估量。如下图所示，目前 <code>PSI</code> 已具备前两类故障场景的覆盖能力，需要构建覆盖第三类故障场景能力，全方位保障业务数据安全，有备无患。</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-135300.png" alt></p>
-<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><ul>
-<li>保证极端场景下业务数据可恢复</li>
-<li><code>RPO</code> &lt; 2 小时，<code>RTO</code> &lt; 24 小时</li>
-</ul>
-<h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><p><strong>设计方案</strong>：如下图所示，重要系统生产数据（青岛本地机房：电信机房、联通机房、移动机房…）同步至红岛灾备数据中心，特别重要系统数据压缩存储上传至阿里云 <code>OSS</code>。</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-135600.png" alt></p>
-<p><strong>实施方案</strong>：从库实例再搭建一个从实例形成级联结构，对数据进行实时同步，主要为避免增加主库负载。</p>
-<p><strong>实例拓扑：</strong></p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-140100.png" alt></p>
-<p><strong>系统监控：</strong></p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-140200.png" alt></p>
-<ul>
-<li><p>主实例：<code>TDDS_M</code></p>
-</li>
-<li><p>从实例：<code>TDDS_S</code></p>
-</li>
-<li><p>灾备实例：<code>TDDS_D</code></p>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/28/docker/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/08/28/docker/" class="post-title-link" itemprop="url">容器</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-28 23:04:00" itemprop="dateCreated datePublished" datetime="2019-08-28T23:04:00+08:00">2019-08-28</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2020-01-10 17:04:52" itemprop="dateModified" datetime="2020-01-10T17:04:52+08:00">2020-01-10</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/容器/" itemprop="url" rel="index"><span itemprop="name">容器</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="什么是-Docker-？"><a href="#什么是-Docker-？" class="headerlink" title="什么是 Docker ？"></a>什么是 Docker ？</h2><p><strong>Docker</strong> 使用 Google 公司推出的 <a href="https://golang.org/" target="_blank" rel="noopener">Go 语言</a> 进行开发实现，基于 Linux 内核的 <a href="https://zh.wikipedia.org/wiki/Cgroups" target="_blank" rel="noopener">cgroup</a>，<a href="https://en.wikipedia.org/wiki/Linux_namespaces" target="_blank" rel="noopener">namespace</a>，以及 <a href="https://en.wikipedia.org/wiki/Aufs" target="_blank" rel="noopener">AUFS</a> 类的 <a href="https://en.wikipedia.org/wiki/Union_mount" target="_blank" rel="noopener">Union FS</a> 等技术，对进程进行封装隔离，属于 <a href="https://en.wikipedia.org/wiki/Operating-system-level_virtualization" target="_blank" rel="noopener">操作系统层面的虚拟化技术</a>。由于隔离的进程独立于宿主和其它的隔离的进程，因此也称其为容器。</p>
-<p><strong>Docker 架构图</strong></p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-10-105300.png" alt></p>
-<p><strong>虚拟机 vs 容器</strong></p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-10-105600.png" alt></p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-10-105700.png" alt></p>
-<table>
-<thead>
-<tr>
-<th align="left">特性</th>
-<th align="left">容器</th>
-<th align="left">虚拟机</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">启动</td>
-<td align="left">秒级</td>
-<td align="left">分钟级</td>
-</tr>
-<tr>
-<td align="left">硬盘使用</td>
-<td align="left">一般为 <code>MB</code></td>
-<td align="left">一般为 <code>GB</code></td>
-</tr>
-<tr>
-<td align="left">性能</td>
-<td align="left">接近原生</td>
-<td align="left">弱于</td>
-</tr>
-<tr>
-<td align="left">系统支持量</td>
-<td align="left">单机支持上千个容器</td>
-<td align="left">一般几十个</td>
-</tr>
-</tbody></table>
-<h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-10-101130.png" alt></p>
-<p><strong>镜像</strong></p>
-<p>Docker 镜像是一个特殊的文件系统，除了提供容器运行时所需的程序、库、资源、配置等文件外，还包含了一些为运行时准备的一些配置参数（如匿名卷、环境变量、用户等）。镜像文件可以看作是容器的模板，只有通过这个文件，才能生成 Docker 容器。</p>
-<p><strong>容器</strong></p>
-<p>镜像（<code>Image</code>）和容器（<code>Container</code>）的关系，就像是面向对象程序设计中的 <code>类</code> 和 <code>实例</code> 一样，镜像是静态的定义，容器是镜像运行时的实体，容器可以被创建、启动、停止、删除、暂停等。容器的实质是进程，但与直接在宿主执行的进程不同，容器进程运行于属于自己的独立的 <a href="https://en.wikipedia.org/wiki/Linux_namespaces" target="_blank" rel="noopener">命名空间</a>。</p>
-<p><strong>仓库</strong></p>
-<p>镜像构建完成后，可以很容易的在当前宿主机上运行，但是，如果需要在其它服务器上使用这个镜像，我们就需要一个集中的存储、分发镜像的服务，<a href="https://yeasy.gitbooks.io/docker_practice/content/repository/registry.html" target="_blank" rel="noopener">Docker Registry</a> 就是这样的服务。</p>
-<p>一个 <strong>Docker Registry</strong> 中可以包含多个 <strong>仓库</strong>（<code>Repository</code>）；每个仓库可以包含多个 <strong>标签</strong>（<code>Tag</code>）；每个标签对应一个镜像，我们可以通过 <code>&lt;仓库名&gt;:&lt;标签&gt;</code> 的格式来指定具体是这个软件哪个版本的镜像。</p>
-<p><a href="https://hub.docker.com/" target="_blank" rel="noopener">Docker 官方仓库</a>，由于某些原因，在国内访问这些服务可能会比较慢，国内的一些云服务商提供了针对 Docker Hub 的镜像服务（<code>Registry Mirror</code>），这些镜像服务被称为<strong>加速器</strong>，例如 <a href="https://cr.console.aliyun.com/#/accelerator" target="_blank" rel="noopener">阿里云加速器</a>。国内也有一些云服务商提供类似于 Docker Hub 的公开服务。比如 <a href="https://hub.tenxcloud.com/" target="_blank" rel="noopener">时速云镜像仓库</a>、<a href="https://c.163.com/hub#/m/library/" target="_blank" rel="noopener">网易云镜像服务</a>、<a href="https://hub.daocloud.io/" target="_blank" rel="noopener">DaoCloud 镜像市场</a>、<a href="https://cr.console.aliyun.com/" target="_blank" rel="noopener">阿里云镜像库</a> 等。</p>
-<p><strong>Dockerfile</strong></p>
-<p>Docker 根据该文件生成二进制的镜像文件。</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">FROM java:<span class="number">8</span></span><br><span class="line">ADD /mall-admin-<span class="number">1.0</span>-SNAPSHOT.jar //</span><br><span class="line">ENTRYPOINT [<span class="string">"java"</span>, <span class="string">"-jar"</span>, <span class="string">"-Dspring.profiles.active=prod"</span>,<span class="string">"/mall-admin-1.0-SNAPSHOT.jar"</span>]</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-10-165200.png" alt></p>
-<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl start docker  // 启动docker</span><br><span class="line">$ systemctl stop docker   // 关闭docker</span><br><span class="line">$ docker restart xx       // 重启一个容器</span><br><span class="line">$ docker stop xx          // 停止一个容器</span><br><span class="line">$ docker rm xx            // 删除一个容器</span><br><span class="line">$ docker rm -f xx         // 强制删除一个容器</span><br><span class="line">$ docker log xx           // 查看容器日志</span><br><span class="line"></span><br><span class="line"><span class="comment"># 镜像相关</span></span><br><span class="line">docker images：列出已经下载的镜像</span><br><span class="line">docker rmi java：删除本地镜像</span><br><span class="line">docker build：构建镜像</span><br><span class="line">docker search java：在Docker Hub（或阿里镜像）仓库中搜索关键字（如java）的镜像</span><br><span class="line">docker pull java:<span class="number">8</span>：从仓库中下载镜像，若要指定版本，则要在冒号后指定</span><br><span class="line"></span><br><span class="line"><span class="comment"># 容器相关</span></span><br><span class="line">docker ps：列出运行中的容器</span><br><span class="line">docker ps -a ：列出所有的容器</span><br><span class="line">docker stop 容器id：停止容器</span><br><span class="line">docker kill 容器id：强制停止容器</span><br><span class="line">docker start 容器id：启动已停止的容器</span><br><span class="line">docker inspect 容器id：查看容器的所有信息</span><br><span class="line">docker container logs 容器id：查看容器日志</span><br><span class="line">docker top 容器id：查看容器里的进程</span><br><span class="line">docker exec -it 容器id /bin/bash：进入容器</span><br><span class="line"><span class="keyword">exit</span>：退出容器</span><br><span class="line">docker rm 容器id：删除已停止的容器</span><br><span class="line">docker rm -f 容器id：删除正在运行的容器</span><br><span class="line"></span><br><span class="line">docker run -d -p <span class="number">91</span>:<span class="number">80</span> nginx ：在后台运行nginx，若没有镜像则先下载，并将容器的<span class="number">80</span>端口映射为宿主机的<span class="number">91</span>端口。</span><br><span class="line">-d：后台运行</span><br><span class="line">-P：随机端口映射</span><br><span class="line">-p：指定端口映射</span><br><span class="line">-net：网络模式</span><br></pre></td></tr></table></figure>
-
-<h2 id="学习资源"><a href="#学习资源" class="headerlink" title="学习资源"></a>学习资源</h2><p><a href="http://asdfghjkl.xyz/2019/04/25/%E6%B7%B1%E5%85%A5%E5%89%96%E6%9E%90Kubernetes/" target="_blank" rel="noopener">深入剖析 Kubernetes</a></p>
-<p><a href="https://yeasy.gitbooks.io/docker_practice/content/" target="_blank" rel="noopener">Docker 从入门到实践</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/27/mysql-privilege/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2602,11 +2184,740 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/25/mysql-guide/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/25/mysql-guide/" class="post-title-link" itemprop="url">MySQL · 简介</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-25 10:23:48" itemprop="dateCreated datePublished" datetime="2019-07-25T10:23:48+08:00">2019-07-25</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-12-10 17:41:34" itemprop="dateModified" datetime="2019-12-10T17:41:34+08:00">2019-12-10</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="历史"><a href="#历史" class="headerlink" title="历史"></a>历史</h2><ul>
+<li>1979年，Monty Widenius 写了最初的版本</li>
+<li>1996年，发布 1.0 版本</li>
+<li>1995-2000年，MySQL AB 成立</li>
+<li>2000年4月，集成 MyISAM 和 Replication</li>
+<li>2001年，Heikki Tuuri 向 MySQL 建议集成 InnoDB</li>
+<li>2005年，发布 5.0 版本（提供了视图、存储过程等功能）</li>
+<li><strong>2008年，MySQL AB 被 Sun 收购，出价 10 亿美元</strong></li>
+<li><strong>2009年，推出 5.1 版本，同年 4 月，Oracle 收购 Sun</strong></li>
+<li>2010年12月，推出 5.5 GA 版本，InnoDB 改为默认存储引擎</li>
+<li>2013年2月，推出 5.6 GA 版本</li>
+<li>2015年10月，推出 5.7 GA 版本</li>
+<li>2018年5月，推出 8.0 GA 版本</li>
+</ul>
+<h3 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h3><p><strong>优点</strong></p>
+<ul>
+<li>免费</li>
+<li>开源（源码、社区工具丰富）</li>
+<li>简单（部署简单、门槛低、上手快）</li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li>优化器对复杂 SQL 支持不好</li>
+<li>大规模集群方案不成熟，主要指中间件</li>
+<li>备份和恢复方案还是比较复杂，需要依赖外部组件</li>
+<li>缺少分库分表解决方案</li>
+</ul>
+<h3 id="分支"><a href="#分支" class="headerlink" title="分支"></a>分支</h3><ul>
+<li>MySQL 社区版</li>
+<li>Percona</li>
+<li>MariaDB</li>
+<li>MySQL 企业版</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>MySQL Standard Edition</th>
+<th>MySQL Enterprise Edition</th>
+<th>MySQL Cluster CGE</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://www.mysql.com/cn/support/" target="_blank" rel="noopener"><strong>Oracle Premier Support</strong></a></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>24x7 Support</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>Unlimited Support Incidents</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>Knowledge Base</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>Maintenance Releases</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="https://www.mysql.com/cn/support/consultative.html" target="_blank" rel="noopener">MySQL Consultative Support</a></td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>MySQL Features</strong></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.mysql.com/cn/products/enterprise/database/" target="_blank" rel="noopener">MySQL Database Server</a></td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="https://www.mysql.com/cn/products/enterprise/document_store.html" target="_blank" rel="noopener">MySQL Document Store</a></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="https://www.mysql.com/cn/products/connector/" target="_blank" rel="noopener">MySQL Connectors</a></td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/replication.html" target="_blank" rel="noopener">MySQL Replication</a></td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="https://www.mysql.com/cn/products/enterprise/router.html" target="_blank" rel="noopener">MySQL Router</a></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/partitioning.html" target="_blank" rel="noopener">MySQL Partitioning</a></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>MySQL Workbench</strong></td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>Storage Engine: MyISAM</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>Storage Engine: InnoDB</td>
+<td>√</td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>Storage Engine: NDB</td>
+<td></td>
+<td></td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>MySQL Enterprise Monitor</strong></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>MySQL Enterprise Dashboard</td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>MySQL Enterprise Advisors</td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>MySQL Query Analyzer</td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>MySQL Replication Monitor</td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>MySQL Enterprise Backup</strong></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>Hot backup for InnoDB</td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>Full, Incremental, Partial, Optimistic Backups</td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>Full, Partial, Selective, Hot Selective restore</td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>Encryption and Compression</td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>Point-In-Time-Recovery</td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>MySQL Enterprise Security</strong></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="https://www.mysql.com/cn/products/enterprise/security.html" target="_blank" rel="noopener">MySQL Enterprise Authentication</a></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="https://www.mysql.com/cn/products/enterprise/tde.html" target="_blank" rel="noopener">MySQL Enterprise TDE</a></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="https://www.mysql.com/cn/products/enterprise/encryption.html" target="_blank" rel="noopener">MySQL Enterprise Encryption</a></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="https://www.mysql.com/cn/products/enterprise/masking.html" target="_blank" rel="noopener">MySQL Enterprise Masking</a></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="https://www.mysql.com/cn/products/enterprise/firewall.html" target="_blank" rel="noopener">MySQL Enterprise Firewall</a></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="https://www.mysql.com/cn/products/enterprise/audit.html" target="_blank" rel="noopener">MySQL Enterprise Audit</a></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>MySQL Enterprise Scalability</strong></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>Thread Pool</td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>MySQL Enterprise High-Availability</strong></td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>MySQL Group Replication</td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td>MySQL InnoDB Cluster</td>
+<td></td>
+<td>√</td>
+<td>√</td>
+</tr>
+<tr>
+<td><strong>MySQL Cluster Manager</strong></td>
+<td></td>
+<td></td>
+<td>√</td>
+</tr>
+<tr>
+<td>Configuration &amp; Provisioning</td>
+<td></td>
+<td></td>
+<td>√</td>
+</tr>
+<tr>
+<td>Automatic Scaling</td>
+<td></td>
+<td></td>
+<td>√</td>
+</tr>
+<tr>
+<td>Management &amp; Monitoring</td>
+<td></td>
+<td></td>
+<td>√</td>
+</tr>
+<tr>
+<td><a href="https://www.mysql.com/cn/products/cluster/" target="_blank" rel="noopener">MySQL Cluster Geo-Replication</a></td>
+<td></td>
+<td></td>
+<td>√</td>
+</tr>
+</tbody></table>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/24/mysql-split/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/24/mysql-split/" class="post-title-link" itemprop="url">MySQL · 分库分表方案</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-24 14:52:02" itemprop="dateCreated datePublished" datetime="2019-07-24T14:52:02+08:00">2019-07-24</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-12-27 11:50:59" itemprop="dateModified" datetime="2019-12-27T11:50:59+08:00">2019-12-27</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="数据库瓶颈"><a href="#数据库瓶颈" class="headerlink" title="数据库瓶颈"></a>数据库瓶颈</h2><p>不管是 IO 瓶颈，还是 CPU 瓶颈，最终都会导致数据库的<strong>活跃连接数增加</strong>，进而逼近甚至达到数据库可承载活跃连接数的阈值。</p>
+<p><strong>1、IO 瓶颈</strong></p>
+<ul>
+<li>第一种：磁盘读 IO 瓶颈，热点数据太多，数据库缓存放不下，每次查询时会产生大量的 IO，降低查询速度  -&gt;  <strong><a href="https://www.cnblogs.com/littlecharacter/p/9342129.html#fkfb" target="_blank" rel="noopener">分库和垂直分表</a></strong>。</li>
+<li>第二种：网络 IO 瓶颈，请求的数据太多，网络带宽不够  -&gt;  <strong><a href="https://www.cnblogs.com/littlecharacter/p/9342129.html#fkfb" target="_blank" rel="noopener">分库</a></strong>。</li>
+</ul>
+<p><strong>2、CPU 瓶颈</strong></p>
+<ul>
+<li>第一种：SQL 问题，如 SQL 中包含 <code>join</code>，<code>group by</code>，<code>order by</code>，非索引字段条件查询等，增加 CPU 运算的操作，SQL 优化建立合适的索引，在业务 Service 层进行业务计算。</li>
+<li>第二种：单表数据量太大，查询时扫描的行太多，SQL 效率低，CPU 率先出现瓶颈  -&gt;  <strong><a href="https://www.cnblogs.com/littlecharacter/p/9342129.html#fkfb" target="_blank" rel="noopener">水平分表</a></strong>。</li>
+</ul>
+<h2 id="分库分表"><a href="#分库分表" class="headerlink" title="分库分表"></a>分库分表</h2><p><strong>1、水平分库</strong></p>
+<p><strong>概念</strong>：以<strong>字段</strong>为依据，按照一定策略（hash、range 等），将一个<strong>库</strong>中的数据拆分到多个<strong>库</strong>中。</p>
+<p><strong>结果</strong>：</p>
+<ul>
+<li>每个<strong>库</strong>的<strong>结构</strong>都一样；</li>
+<li>每个<strong>库</strong>的<strong>数据</strong>都不一样，没有交集；</li>
+<li>所有<strong>库</strong>的<strong>并集</strong>是全量数据；</li>
+</ul>
+<p><strong>场景</strong>：系统绝对并发量上来了，分表难以根本上解决问题，并且还没有明显的业务归属来垂直分库。</p>
+<p><strong>分析</strong>：库多了，io 和 cpu 的压力自然可以成倍缓解。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155810.png" alt></p>
+<p><strong>2、水平分表</strong></p>
+<p><strong>概念</strong>：以<strong>字段</strong>为依据，按照一定策略（hash、range等），将一个<strong>表</strong>中的数据拆分到多个<strong>表</strong>中。</p>
+<p><strong>结果</strong>：</p>
+<ul>
+<li>每个<strong>表</strong>的<strong>结构</strong>都一样；</li>
+<li>每个<strong>表</strong>的<strong>数据</strong>都不一样，没有交集；</li>
+<li>所有<strong>表</strong>的<strong>并集</strong>是全量数据；</li>
+</ul>
+<p><strong>场景</strong>：系统绝对并发量并没有上来，只是单表的数据量太多，影响了 SQL 效率，加重了 CPU 负担，以至于成为瓶颈。</p>
+<p><strong>分析</strong>：表的数据量少了，单次 SQL 执行效率高，自然减轻了 CPU 的负担。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155835.png" alt></p>
+<p><strong>3、垂直分库</strong></p>
+<p><strong>概念</strong>：以<strong>表</strong>为依据，按照业务归属不同，将不同的<strong>表</strong>拆分到不同的<strong>库</strong>中。</p>
+<p><strong>结果</strong>：</p>
+<ul>
+<li>每个<strong>库</strong>的<strong>结构</strong>都不一样；</li>
+<li>每个<strong>库</strong>的<strong>数据</strong>也不一样，没有交集；</li>
+<li>所有<strong>库</strong>的<strong>并集</strong>是全量数据；</li>
+</ul>
+<p><strong>场景</strong>：系统绝对并发量上来了，并且可以抽象出单独的业务模块。</p>
+<p><strong>分析</strong>：到这一步，基本上就可以服务化了。例如，随着业务的发展一些公用的配置表、字典表等越来越多，这时可以将这些表拆到单独的库中，甚至可以服务化。再有，随着业务的发展孵化出了一套业务模式，这时可以将相关的表拆到单独的库中，甚至可以服务化。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155850.png" alt></p>
+<p><strong>4、垂直分表</strong></p>
+<p><strong>概念</strong>：以<strong>字段</strong>为依据，按照字段的活跃性，将<strong>表</strong>中字段拆到不同的<strong>表</strong>（主表和扩展表）中。</p>
+<p><strong>结果</strong>：</p>
+<ul>
+<li>每个<strong>表</strong>的<strong>结构</strong>都不一样；</li>
+<li>每个<strong>表</strong>的<strong>数据</strong>也不一样，一般来说，每个表的<strong>字段</strong>至少有一列交集，一般是主键，用于关联数据；</li>
+<li>所有<strong>表</strong>的<strong>并集</strong>是全量数据；</li>
+</ul>
+<p><strong>场景</strong>：系统绝对并发量并没有上来，表的记录并不多，但是字段多，并且热点数据和非热点数据在一起，单行数据所需的存储空间较大。以至于数据库缓存的数据行减少，查询时会去读磁盘数据产生大量的随机读IO，产生IO瓶颈。</p>
+<p><strong>分析</strong>：可以用列表页和详情页来帮助理解。垂直分表的拆分原则是将热点数据（可能会冗余经常一起查询的数据）放在一起作为主表，非热点数据放在一起作为扩展表。这样更多的热点数据就能被缓存下来，进而减少了随机读IO。拆了之后，要想获得全部数据就需要关联两个表来取数据。但记住，千万别用 join，因为 join 不仅会增加CPU 负担并且会讲两个表耦合在一起（必须在一个数据库实例上）。关联数据，应该在业务 service 层做文章，分别获取主表和扩展表数据然后用关联字段关联得到全部数据。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155900.png" alt></p>
+<h2 id="分库分表工具"><a href="#分库分表工具" class="headerlink" title="分库分表工具"></a>分库分表工具</h2><ul>
+<li><a href="https://shardingsphere.apache.org/" target="_blank" rel="noopener">sharding-sphere</a>：jar，前身是 sharding-jdbc</li>
+<li>TDDL：jar，Taobao Distribute Data Layer</li>
+<li><a href="http://www.mycat.io/" target="_blank" rel="noopener">Mycat</a>：中间件</li>
+</ul>
+<h2 id="分库分表步骤"><a href="#分库分表步骤" class="headerlink" title="分库分表步骤"></a>分库分表步骤</h2><p>根据容量（当前容量和增长量）评估分库或分表个数 -&gt; 选 <code>key</code>（均匀）-&gt; 分表规则（ <code>hash</code> 或 <code>range</code> 等）-&gt; 执行（一般双写）-&gt; 扩容问题（尽量减少数据的移动）</p>
+<h2 id="原则"><a href="#原则" class="headerlink" title="原则"></a>原则</h2><ul>
+<li>原则零：能不分就不分</li>
+<li>原则一：数据量太大，正常的运维影响正常的业务访问</li>
+<li>原则二：表设计不合理，需要对某些字段进行垂直拆分</li>
+<li>原则三：某些数据表出现了无穷增长的情况</li>
+<li>原则四：安全性和可用性的考虑</li>
+<li>原则五：业务耦合性考虑</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>①  <strong>水平拆分</strong>和<strong>垂直拆分</strong>都是降低数据量大小，提升数据库性能的常见手段</p>
+<p>②  流量大数据量大时，<strong>数据访问要有 service 层</strong>，并且 service 层不要通过 <code>join</code> 来获取主表和扩展表的属性</p>
+<p>③  <strong>垂直拆分的依据</strong>，尽量把长度较短，访问频率较高的属性放在主表里</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/13/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/blog/page/15/">15</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/17/">17</a><a class="extend next" rel="next" href="/blog/page/15/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/page/13/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/13/">13</a><span class="page-number current">14</span><a class="page-number" href="/blog/page/15/">15</a><a class="page-number" href="/blog/page/16/">16</a><a class="extend next" rel="next" href="/blog/page/15/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -2650,7 +2961,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">161</span>
+                    <span class="site-state-item-count">159</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

@@ -352,376 +352,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/22/mysql-case-rows/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/22/mysql-case-rows/" class="post-title-link" itemprop="url">MySQL · 案例分析 · information_schema.tables 与 count(*) 查询数不一致</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-22 11:25:04" itemprop="dateCreated datePublished" datetime="2019-10-22T11:25:04+08:00">2019-10-22</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-15 16:26:08" itemprop="dateModified" datetime="2019-11-15T16:26:08+08:00">2019-11-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="问题现象"><a href="#问题现象" class="headerlink" title="问题现象"></a>问题现象</h2><p>查询表 <code>mqm.t_batch</code> 总行数，发现两种方式查询的结果不一致。</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># information_schema.tables</span></span><br><span class="line">mysql&gt; select table_name,table_rows from information_schema.tables where TABLE_SCHEMA = 'mqm' and table_name='t_batch';</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">| table_name | table_rows |</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">| t_batch    |    9527271 |</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.02</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># count(*)</span></span><br><span class="line">mysql&gt; <span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> t_batch;</span><br><span class="line">+<span class="comment">----------+</span></span><br><span class="line">| count(*) |</span><br><span class="line">+<span class="comment">----------+</span></span><br><span class="line">| 10474287 |</span><br><span class="line">+<span class="comment">----------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">21.52</span> sec)</span><br></pre></td></tr></table></figure>
-
-<h2 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h2><p>默认情况下，MySQL 对表进行增删操作时，是不会自动更新 <code>information_schema.tables</code> 表 <code>table_rows</code> 字段，只有 <code>10%</code> 的行数发生变化才会自动收集，执行 <code>ANALYZE TABLE &#39;table_name&#39;</code> 后会统计所有表数据，结果和 <code>count(*)</code> 一致。</p>
-<blockquote>
-<p><strong>Tips</strong>：生产环境中不建议使用，因为会锁表！</p>
-</blockquote>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; ANALYZE TABLE t_batch;</span><br><span class="line">+<span class="comment">-------------+---------+----------+----------+</span></span><br><span class="line">| Table       | Op      | Msg_type | Msg_text |</span><br><span class="line">+<span class="comment">-------------+---------+----------+----------+</span></span><br><span class="line">| mqm.t_batch | <span class="keyword">analyze</span> | <span class="keyword">status</span>   | OK       |</span><br><span class="line">+<span class="comment">-------------+---------+----------+----------+</span></span><br><span class="line"><span class="number">1</span> <span class="keyword">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">3.85</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">select</span> table_name,table_rows <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> TABLE_SCHEMA = <span class="string">'mqm'</span> <span class="keyword">and</span> table_name=<span class="string">'t_batch'</span>;</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">| table_name | table_rows |</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">| t_batch    |   10261904 |</span><br><span class="line">+<span class="comment">------------+------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.07</span> sec)</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/22/mysql-tuning-like/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/22/mysql-tuning-like/" class="post-title-link" itemprop="url">MySQL · 调优案例 · 千万级大表模糊查询</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-22 10:54:49" itemprop="dateCreated datePublished" datetime="2019-10-22T10:54:49+08:00">2019-10-22</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-15 16:49:57" itemprop="dateModified" datetime="2019-11-15T16:49:57+08:00">2019-11-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p><strong>模糊查询</strong>：使用 <code>like %%</code> 类 <code>SQL</code></p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 生产环境执行的SQL</span></span><br><span class="line"><span class="keyword">SELECT</span> <span class="string">''</span> <span class="keyword">AS</span> batch_fail_id, <span class="string">''</span> <span class="keyword">AS</span> uuid_Fail, b.send_goods_No, b.test_type, b.order_no</span><br><span class="line">	, b.row_no, b.bu, b.mtl_no, b.mtl_name, b.mtl_group, b.mtl_group_name</span><br><span class="line">	, b.materiel_category_id, b.materiel_category_name, b.pattern_amount</span><br><span class="line">	, b.plan_pattern_amount, b.goods_unit, b.plan_send_day, b.fact_send_Day, b.stock_Day</span><br><span class="line">	, b.supply_code, b.supply_name, b.supply_check_level, b.sap_mark_id, b.sap_mark_name</span><br><span class="line">	, b.syb_id, b.syb_name, b.check_style_id, b.check_style_name, b.check_type_id</span><br><span class="line">	, b.check_type_name, b.QC_STATUS, b.QC_STATUS_INSTR_DATE, b.QC_NO, b.factory_code</span><br><span class="line">	, b.goods_sort, b.price_unit, b.stock_price, b.LICHA, b.BSART, b.LGORT</span><br><span class="line">	, b.plan_Date, b.TEST_CONCLUSION, b.IQC_manager_id, b.IQC_manager_name, b.iqc_leader_id</span><br><span class="line">	, b.iqc_leader_name, b.test_complete_day, b.test_start_day, b.new_or_old,b.check_status_id</span><br><span class="line">	, b.is_appeal, b.is_start_check, b.standard_type, b.check_reason, b.is_stop</span><br><span class="line">	, b.check_time, b.instance_id, b.create_date <span class="keyword">AS</span> createDate, b.delete_status</span><br><span class="line"><span class="keyword">FROM</span> t_batch b</span><br><span class="line"><span class="keyword">WHERE</span> b.mtl_no <span class="keyword">LIKE</span> <span class="string">'%0594A%'</span> <span class="keyword">AND</span> b.delete_status = <span class="string">'N'</span></span><br><span class="line"><span class="keyword">UNION</span> <span class="keyword">ALL</span></span><br><span class="line"><span class="keyword">SELECT</span> f.batch_fail_id, f.uuid, f.send_goods_No, f.test_type, f.order_no, f.row_no</span><br><span class="line">        , f.bu, f.mtl_no, f.mtl_name, f.mtl_group, f.mtl_group_name</span><br><span class="line">        , f.materiel_category_id,f.materiel_category_name, f.pattern_amount</span><br><span class="line">        , f.plan_pattern_amount</span><br><span class="line">	, f.goods_unit, f.plan_send_day, f.fact_send_Day, f.stock_Day, f.supply_code</span><br><span class="line">	, f.supply_name, f.supply_check_level, f.sap_mark_id, f.sap_mark_name, f.syb_id</span><br><span class="line">	, f.syb_name, f.check_style_id, f.check_style_name, f.check_type_id, f.check_type_name</span><br><span class="line">	, f.QC_STATUS, f.QC_STATUS_INSTR_DATE, f.QC_NO, f.factory_code, f.goods_sort</span><br><span class="line">	, f.price_unit, f.stock_price, f.LICHA, f.BSART, f.LGORT</span><br><span class="line">	, f.plan_Date, f.TEST_CONCLUSION, f.IQC_manager_id, f.IQC_manager_name, f.iqc_leader_id</span><br><span class="line">	, f.iqc_leader_name, f.test_complete_day, f.test_start_day, f.new_or_old</span><br><span class="line">	, f.check_status_id, f.is_appeal, f.is_start_check, f.standard_type, f.check_reason</span><br><span class="line">	, f.is_stop, f.check_time, f.instance_id, f.create_date <span class="keyword">AS</span> createDate, f.delete_status</span><br><span class="line"><span class="keyword">FROM</span> t_batch_fail f</span><br><span class="line"><span class="keyword">WHERE</span> f.mtl_no <span class="keyword">LIKE</span> <span class="string">'%0594A%'</span> <span class="keyword">AND</span> f.delete_status = <span class="string">'N'</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> createDate <span class="keyword">DESC</span></span><br><span class="line"><span class="keyword">LIMIT</span> <span class="number">0</span>, <span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 表数据量</span></span><br><span class="line">mysql&gt; <span class="keyword">select</span> table_name,table_rows,<span class="keyword">CONCAT</span>(<span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(data_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> data_size, <span class="keyword">CONCAT</span>(<span class="keyword">TRUNCATE</span>(<span class="keyword">SUM</span>(index_length)/<span class="number">1024</span>/<span class="number">1024</span>,<span class="number">2</span>),<span class="string">'MB'</span>) <span class="keyword">AS</span> index_size <span class="keyword">from</span> information_schema.tables <span class="keyword">where</span> TABLE_SCHEMA = <span class="string">'mqm'</span> <span class="keyword">and</span> table_name=<span class="string">'t_batch'</span>;</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| table_name | table_rows | data_size | index_size |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">| t_batch    |   10261904 | 4895.00MB | 8643.23MB  |</span><br><span class="line">+<span class="comment">------------+------------+-----------+------------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">+<span class="comment">--------------+------------+-----------+------------+</span></span><br><span class="line">| table_name   | table_rows | data_size | index_size |</span><br><span class="line">+<span class="comment">--------------+------------+-----------+------------+</span></span><br><span class="line">| t_batch_fail |      <span class="number">43683</span> | <span class="number">19.56</span>MB   | <span class="number">14.57</span>MB    |</span><br><span class="line">+<span class="comment">--------------+------------+-----------+------------+</span></span><br><span class="line"><span class="number">1</span> <span class="keyword">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.01</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行时间</span></span><br><span class="line"><span class="number">10</span> <span class="keyword">rows</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">1</span> <span class="keyword">min</span> <span class="number">26.92</span> sec)</span><br></pre></td></tr></table></figure>
-
-<h2 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h2><p><strong>Union All</strong>：对两个结果集进行并集操作，包括重复行。</p>
-<p><strong>执行计划</strong>：</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br><span class="line">| id | select_type  | table      | type | possible_keys     | key               | key_len | ref   | rows    | Extra                              |</span><br><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br><span class="line">|  1 | PRIMARY      | b          | ALL  | NULL              | NULL              | NULL    | NULL  | 9527271 | Using where                        |</span><br><span class="line">|  2 | UNION        | f          | ref  | idx_delete_status | idx_delete_status | 9       | const |   20469 | Using index condition; Using where |</span><br><span class="line">| NULL | UNION RESULT | &lt;union1,2&gt; | ALL  | NULL              | NULL              | NULL    | NULL  |    NULL | Using temporary; Using filesort    |</span><br><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 添加索引</span></span><br><span class="line">mysql&gt; ALTER TABLE t_batch ADD INDEX idx_delete_status (delete_status);</span><br><span class="line">Query OK, 0 rows affected (2 min 47.24 sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 执行计划</span></span><br><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br><span class="line">| id | select_type  | table      | type | possible_keys     | key               | key_len | ref   | rows    | Extra                              |</span><br><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br><span class="line">|  1 | PRIMARY      | b          | ref  | idx_delete_status | idx_delete_status | 9       | const | 5130952 | Using index condition; Using where |</span><br><span class="line">|  2 | UNION        | f          | ref  | idx_delete_status | idx_delete_status | 9       | const |   20469 | Using index condition; Using where |</span><br><span class="line">| NULL | UNION RESULT | &lt;union1,2&gt; | ALL  | NULL              | NULL              | NULL    | NULL  |    NULL | Using temporary; Using filesort    |</span><br><span class="line">+<span class="comment">----+--------------+------------+------+-------------------+-------------------+---------+-------+---------+------------------------------------+</span></span><br><span class="line">3 rows in <span class="keyword">set</span> (<span class="number">0.07</span> sec)</span><br></pre></td></tr></table></figure>
-
-<p><strong>模糊查询方法对比</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">① mtl_no like <span class="string">'%0594A%'</span></span><br><span class="line"><span class="number">10</span> rows <span class="keyword">in</span> set (<span class="number">1</span> min <span class="number">26.92</span> sec)</span><br><span class="line"></span><br><span class="line">② locate(<span class="string">'0594A'</span>, mtl_no) &gt; <span class="number">0</span></span><br><span class="line"><span class="number">10</span> rows <span class="keyword">in</span> set (<span class="number">32.71</span> sec)</span><br><span class="line"></span><br><span class="line">③ instr(mtl_no,<span class="string">'0594A'</span>) &gt; <span class="number">0</span></span><br><span class="line"><span class="number">10</span> rows <span class="keyword">in</span> set (<span class="number">32.72</span> sec)</span><br></pre></td></tr></table></figure>
-
-<p><strong>结论：</strong></p>
-<ul>
-<li>这三种方法都只能用全表扫描的方式进行查询，但 <code>locate</code> 和 <code>instr</code> 方法速度比 <code>like</code> 稍快。</li>
-<li><code>like %%</code> 此类模糊查询，推荐使用搜索引擎，比如 <code>Elasticsearch</code>。</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/22/confluence/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2391,11 +2021,424 @@
 
 
     
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/21/centos7-pip/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/21/centos7-pip/" class="post-title-link" itemprop="url">CentOS 7 安装 Python pip</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-21 15:24:21" itemprop="dateCreated datePublished" datetime="2019-10-21T15:24:21+08:00">2019-10-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-13 14:01:57" itemprop="dateModified" datetime="2019-11-13T14:01:57+08:00">2019-11-13</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><code>CentOS 7.x</code> 默认安装的版本为 <code>python 2.7.5</code>，默认是没有安装 <code>pip</code></p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p><strong>yum 安装</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ yum -y install epel-release</span><br><span class="line">$ yum -y install python-pip</span><br></pre></td></tr></table></figure>
+
+<p><strong>脚本安装</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py</span><br><span class="line">$ python get-pip.py</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/21/mysql-rollback/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/21/mysql-rollback/" class="post-title-link" itemprop="url">MySQL · 误操作场景下数据快速恢复</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-21 14:25:53" itemprop="dateCreated datePublished" datetime="2019-10-21T14:25:53+08:00">2019-10-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-12 14:09:43" itemprop="dateModified" datetime="2019-11-12T14:09:43+08:00">2019-11-12</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>线上环境核心业务数据，<code>delete/update</code> 操作一张表，忘加 <code>where</code> 限制条件，<strong>如何快速恢复？</strong></p>
+<h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><ul>
+<li><strong>备份恢复</strong>：先用全量备份恢复实例，再利用增量 <code>binlog</code> 备份恢复到误操作之前的状态，<strong>费时费力！</strong></li>
+<li><strong>第三方工具</strong>：<a href="https://github.com/danfengcao/binlog2sql" target="_blank" rel="noopener">binlog2sql</a>（支持 <code>DML Delete/Update</code> 等语句回滚，不支持 <code>DDL Drop</code> 等语句回滚）</li>
+</ul>
+<h2 id="binlog2sql-工具实战"><a href="#binlog2sql-工具实战" class="headerlink" title="binlog2sql 工具实战"></a>binlog2sql 工具实战</h2><h3 id="支持"><a href="#支持" class="headerlink" title="支持"></a>支持</h3><ul>
+<li>MySQL 5.6/5.7</li>
+<li>Delete、Update</li>
+</ul>
+<h3 id="要求"><a href="#要求" class="headerlink" title="要求"></a>要求</h3><ul>
+<li><strong>MySQL 配置要求</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[mysqld]</span><br><span class="line">server_id = <span class="number">1</span></span><br><span class="line">log_bin = /<span class="keyword">data</span>/mysql/mysql-bin.log</span><br><span class="line">binlog_format = row</span><br><span class="line">binlog_row_image = full</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like <span class="string">'server_id'</span>;</span><br><span class="line">+---------------+---------+</span><br><span class="line">| Variable_name | Value   |</span><br><span class="line">+---------------+---------+</span><br><span class="line">| server_id     | <span class="number">3306100</span> |</span><br><span class="line">+---------------+---------+</span><br><span class="line"></span><br><span class="line">mysql&gt; show variables like <span class="string">'log_bin%'</span>;</span><br><span class="line">+---------------------------------+--------------------------------+</span><br><span class="line">| Variable_name                   | Value                          |</span><br><span class="line">+---------------------------------+--------------------------------+</span><br><span class="line">| log_bin                         | ON                             |</span><br><span class="line">| log_bin_basename                | /<span class="keyword">data</span>/mysql/mysql-binlog       |                        </span><br><span class="line">+---------------------------------+--------------------------------+</span><br><span class="line"></span><br><span class="line">mysql&gt; show variables like <span class="string">'binlog_format'</span>;</span><br><span class="line">+---------------+-------+</span><br><span class="line">| Variable_name | Value |</span><br><span class="line">+---------------+-------+</span><br><span class="line">| binlog_format | ROW   |</span><br><span class="line">+---------------+-------+</span><br><span class="line"></span><br><span class="line">mysql&gt; show variables like <span class="string">'binlog_row_image'</span>;</span><br><span class="line">+------------------+-------+</span><br><span class="line">| Variable_name    | Value |</span><br><span class="line">+------------------+-------+</span><br><span class="line">| binlog_row_image | FULL  |</span><br><span class="line">+------------------+-------+</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>MySQL 权限要求</strong>：<code>SELECT</code>、<code>REPLICATION SLAVE</code>、<code>REPLICATION CLIENT</code></li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show grants for 'cosmo_t'\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">Grants for cosmo_t@%: <span class="keyword">GRANT</span> <span class="keyword">SELECT</span>, <span class="keyword">INSERT</span>, <span class="keyword">UPDATE</span>, <span class="keyword">DELETE</span>, <span class="keyword">CREATE</span>, <span class="keyword">DROP</span>, RELOAD, <span class="keyword">SHUTDOWN</span>, PROCESS, <span class="keyword">FILE</span>, <span class="keyword">REFERENCES</span>, <span class="keyword">INDEX</span>, <span class="keyword">ALTER</span>, <span class="keyword">SHOW</span> <span class="keyword">DATABASES</span>, SUPER, <span class="keyword">CREATE</span> <span class="keyword">TEMPORARY</span> <span class="keyword">TABLES</span>, <span class="keyword">LOCK</span> <span class="keyword">TABLES</span>, <span class="keyword">EXECUTE</span>, <span class="keyword">REPLICATION</span> <span class="keyword">SLAVE</span>, <span class="keyword">REPLICATION</span> <span class="keyword">CLIENT</span>, <span class="keyword">CREATE</span> <span class="keyword">VIEW</span>, <span class="keyword">SHOW</span> <span class="keyword">VIEW</span>, <span class="keyword">CREATE</span> ROUTINE, <span class="keyword">ALTER</span> ROUTINE, <span class="keyword">CREATE</span> <span class="keyword">USER</span>, <span class="keyword">EVENT</span>, <span class="keyword">TRIGGER</span> <span class="keyword">ON</span> *.* <span class="keyword">TO</span> <span class="string">'cosmo_t'</span>@<span class="string">'%'</span></span><br><span class="line"><span class="number">1</span> <span class="keyword">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>申请特权账号，登录服务器</strong></li>
+</ul>
+<h3 id="操作步骤"><a href="#操作步骤" class="headerlink" title="操作步骤"></a>操作步骤</h3><ul>
+<li><p>安装 <a href="https://huiraoo.github.io/blog/2019/10/21/centos7-pip/">pip</a></p>
+</li>
+<li><p>安装 <a href="https://github.com/danfengcao/binlog2sql" target="_blank" rel="noopener">binlog2sql</a></p>
+</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ cd /usr/local/src</span><br><span class="line">$ git clone https://github.com/danfengcao/binlog2sql.git &amp;&amp; cd binlog2sql</span><br><span class="line">$ pip install -r requirements.txt</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>根据误操作时间，确定 <code>binlog</code> 文件</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show master status;</span><br><span class="line">+---------------------+-----------+--------------+------------------+-------------------+</span><br><span class="line">| File                | Position  | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |</span><br><span class="line">+---------------------+-----------+--------------+------------------+-------------------+</span><br><span class="line">| mysql-bin.<span class="number">000020</span>    | <span class="number">576640842</span> |              |                  |                   |</span><br><span class="line">+---------------------+-----------+--------------+------------------+-------------------+</span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">$ ll /<span class="keyword">data</span>/mysql | grep mysql-bin</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">1.1</span>G Oct <span class="number">23</span> <span class="number">03</span>:<span class="number">03</span> mysql-binlog.<span class="number">000224</span></span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">1.1</span>G Oct <span class="number">24</span> <span class="number">12</span>:<span class="number">25</span> mysql-binlog.<span class="number">000225</span></span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">1.1</span>G Oct <span class="number">25</span> <span class="number">18</span>:<span class="number">32</span> mysql-binlog.<span class="number">000226</span></span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">1.1</span>G Oct <span class="number">27</span> <span class="number">00</span>:<span class="number">21</span> mysql-binlog.<span class="number">000227</span></span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">1.1</span>G Oct <span class="number">28</span> <span class="number">05</span>:<span class="number">45</span> mysql-binlog.<span class="number">000228</span></span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">1.1</span>G Oct <span class="number">29</span> <span class="number">12</span>:<span class="number">32</span> mysql-binlog.<span class="number">000229</span></span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">1.1</span>G Oct <span class="number">30</span> <span class="number">19</span>:<span class="number">00</span> mysql-binlog.<span class="number">000230</span></span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">1.1</span>G Nov  <span class="number">1</span> <span class="number">16</span>:<span class="number">30</span> mysql-binlog.<span class="number">000231</span></span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">1.1</span>G Nov  <span class="number">3</span> <span class="number">00</span>:<span class="number">20</span> mysql-binlog.<span class="number">000232</span></span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">1.1</span>G Nov  <span class="number">4</span> <span class="number">16</span>:<span class="number">47</span> mysql-binlog.<span class="number">000233</span></span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">1.1</span>G Nov  <span class="number">6</span> <span class="number">00</span>:<span class="number">21</span> mysql-binlog.<span class="number">000234</span></span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">473</span>M Nov  <span class="number">6</span> <span class="number">14</span>:<span class="number">48</span> mysql-binlog.<span class="number">000235</span></span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql  <span class="number">384</span> Nov  <span class="number">6</span> <span class="number">00</span>:<span class="number">21</span> mysql-binlog.index</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>定位误执行 <code>SQL</code></li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ python binlog2sql.py -h'x.x.x.x' -uroot -p'xx' -dtest -temployees <span class="comment">--start-file='mysql-bin.000020' --sql-type=DELETE &gt; result.sql</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> <span class="string">`test`</span>.<span class="string">`employees`</span> <span class="keyword">WHERE</span> <span class="string">`name`</span>=<span class="string">'xujinliang'</span> <span class="keyword">AND</span> <span class="string">`gmt_modified`</span>=<span class="string">'2019-09-24 17:13:00'</span> <span class="keyword">AND</span> <span class="string">`age`</span>=<span class="number">32</span> <span class="keyword">AND</span> <span class="string">`gmt_create`</span>=<span class="string">'2019-09-24 17:13:00'</span> <span class="keyword">AND</span> <span class="string">`address`</span>=<span class="string">'山东省青岛市'</span> <span class="keyword">AND</span> <span class="string">`id`</span>=<span class="number">1</span> <span class="keyword">LIMIT</span> <span class="number">1</span>; <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> <span class="string">`test`</span>.<span class="string">`employees`</span> <span class="keyword">WHERE</span> <span class="string">`name`</span>=<span class="string">'maofang'</span> <span class="keyword">AND</span> <span class="string">`gmt_modified`</span>=<span class="string">'2019-09-24 17:40:49'</span> <span class="keyword">AND</span> <span class="string">`age`</span>=<span class="number">32</span> <span class="keyword">AND</span> <span class="string">`gmt_create`</span>=<span class="string">'2019-09-24 17:32:00'</span> <span class="keyword">AND</span> <span class="string">`address`</span>=<span class="string">'山东省青岛市'</span> <span class="keyword">AND</span> <span class="string">`id`</span>=<span class="number">2</span> <span class="keyword">LIMIT</span> <span class="number">1</span>; <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> <span class="string">`test`</span>.<span class="string">`employees`</span> <span class="keyword">WHERE</span> <span class="string">`name`</span>=<span class="string">'raohui'</span> <span class="keyword">AND</span> <span class="string">`gmt_modified`</span>=<span class="string">'2019-09-24 17:39:28'</span> <span class="keyword">AND</span> <span class="string">`age`</span>=<span class="number">29</span> <span class="keyword">AND</span> <span class="string">`gmt_create`</span>=<span class="string">'2019-09-24 17:39:28'</span> <span class="keyword">AND</span> <span class="string">`address`</span>=<span class="string">'陕西省西安市'</span> <span class="keyword">AND</span> <span class="string">`id`</span>=<span class="number">3</span> <span class="keyword">LIMIT</span> <span class="number">1</span>; <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> <span class="string">`test`</span>.<span class="string">`employees`</span> <span class="keyword">WHERE</span> <span class="string">`name`</span>=<span class="string">'yangnan'</span> <span class="keyword">AND</span> <span class="string">`gmt_modified`</span>=<span class="string">'2019-09-24 17:39:52'</span> <span class="keyword">AND</span> <span class="string">`age`</span>=<span class="number">22</span> <span class="keyword">AND</span> <span class="string">`gmt_create`</span>=<span class="string">'2019-09-24 17:39:52'</span> <span class="keyword">AND</span> <span class="string">`address`</span> <span class="keyword">IS</span> <span class="literal">NULL</span> <span class="keyword">AND</span> <span class="string">`id`</span>=<span class="number">4</span> <span class="keyword">LIMIT</span> <span class="number">1</span>; <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> <span class="string">`test`</span>.<span class="string">`employees`</span> <span class="keyword">WHERE</span> <span class="string">`name`</span>=<span class="string">'yuzhiqiang'</span> <span class="keyword">AND</span> <span class="string">`gmt_modified`</span>=<span class="string">'2019-09-24 17:40:03'</span> <span class="keyword">AND</span> <span class="string">`age`</span>=<span class="number">29</span> <span class="keyword">AND</span> <span class="string">`gmt_create`</span>=<span class="string">'2019-09-24 17:40:03'</span> <span class="keyword">AND</span> <span class="string">`address`</span> <span class="keyword">IS</span> <span class="literal">NULL</span> <span class="keyword">AND</span> <span class="string">`id`</span>=<span class="number">5</span> <span class="keyword">LIMIT</span> <span class="number">1</span>; <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>解析出回滚 <code>SQL</code>，并检查回滚 <code>SQL</code> 是否正确</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ python binlog2sql.py -h127.0.0.1 -P3306 -uroot -p'xx' -dtest -temployees <span class="comment">--start-file='mysql-bin.000020' --start-pos=66374969 --end-pos=66375406 -B &gt; rollback.sql</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`test`</span>.<span class="string">`employees`</span>(<span class="string">`name`</span>, <span class="string">`gmt_modified`</span>, <span class="string">`age`</span>, <span class="string">`gmt_create`</span>, <span class="string">`address`</span>, <span class="string">`id`</span>) <span class="keyword">VALUES</span> (<span class="string">'yuzhiqiang'</span>, <span class="string">'2019-09-24 17:40:03'</span>, <span class="number">29</span>, <span class="string">'2019-09-24 17:40:03'</span>, <span class="literal">NULL</span>, <span class="number">5</span>); <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`test`</span>.<span class="string">`employees`</span>(<span class="string">`name`</span>, <span class="string">`gmt_modified`</span>, <span class="string">`age`</span>, <span class="string">`gmt_create`</span>, <span class="string">`address`</span>, <span class="string">`id`</span>) <span class="keyword">VALUES</span> (<span class="string">'yangnan'</span>, <span class="string">'2019-09-24 17:39:52'</span>, <span class="number">22</span>, <span class="string">'2019-09-24 17:39:52'</span>, <span class="literal">NULL</span>, <span class="number">4</span>); <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`test`</span>.<span class="string">`employees`</span>(<span class="string">`name`</span>, <span class="string">`gmt_modified`</span>, <span class="string">`age`</span>, <span class="string">`gmt_create`</span>, <span class="string">`address`</span>, <span class="string">`id`</span>) <span class="keyword">VALUES</span> (<span class="string">'raohui'</span>, <span class="string">'2019-09-24 17:39:28'</span>, <span class="number">29</span>, <span class="string">'2019-09-24 17:39:28'</span>, <span class="string">'陕西省西安市'</span>, <span class="number">3</span>); <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`test`</span>.<span class="string">`employees`</span>(<span class="string">`name`</span>, <span class="string">`gmt_modified`</span>, <span class="string">`age`</span>, <span class="string">`gmt_create`</span>, <span class="string">`address`</span>, <span class="string">`id`</span>) <span class="keyword">VALUES</span> (<span class="string">'maofang'</span>, <span class="string">'2019-09-24 17:40:49'</span>, <span class="number">32</span>, <span class="string">'2019-09-24 17:32:00'</span>, <span class="string">'山东省青岛市'</span>, <span class="number">2</span>); <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> <span class="string">`test`</span>.<span class="string">`employees`</span>(<span class="string">`name`</span>, <span class="string">`gmt_modified`</span>, <span class="string">`age`</span>, <span class="string">`gmt_create`</span>, <span class="string">`address`</span>, <span class="string">`id`</span>) <span class="keyword">VALUES</span> (<span class="string">'xujinliang'</span>, <span class="string">'2019-09-24 17:13:00'</span>, <span class="number">32</span>, <span class="string">'2019-09-24 17:13:00'</span>, <span class="string">'山东省青岛市'</span>, <span class="number">1</span>); <span class="comment">#start 66374969 end 66375406 time 2019-10-21 15:38:49</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>Tips</strong>：回滚条数可以使用 <code>%s/pattern/&amp;/g</code> 进行统计，<code>pattern</code> 是要搜索的关键字。</p>
+</blockquote>
+<ul>
+<li>确认回滚 <code>SQL</code> 正确，执行回滚语句</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -h127.0.0.1 -P3306 -uroot -p'xx' &lt; rollback.sql</span><br><span class="line"></span><br><span class="line">mysql&gt; select * from employees;</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">| id | name       | address            | age | gmt_create          | gmt_modified        |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">|  1 | xujinliang | 山东省青岛市         |  32 | 2019-09-24 17:13:00 | 2019-09-24 17:13:00 |</span><br><span class="line">|  2 | maofang    | 山东省青岛市         |  32 | 2019-09-24 17:32:00 | 2019-09-24 17:40:49 |</span><br><span class="line">|  3 | raohui     | 陕西省西安市         |  29 | 2019-09-24 17:39:28 | 2019-09-24 17:39:28 |</span><br><span class="line">|  4 | yangnan    | NULL               |  22 | 2019-09-24 17:39:52 | 2019-09-24 17:39:52 |</span><br><span class="line">|  5 | yuzhiqiang | NULL               |  29 | 2019-09-24 17:40:03 | 2019-09-24 17:40:03 |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">5 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h3 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 连接配置</span></span><br><span class="line">-h host; -P port; -u user; -p password</span><br><span class="line"></span><br><span class="line"><span class="comment"># 解析模式</span></span><br><span class="line">-B, --flashback              <span class="comment"># 生成回滚SQL</span></span><br><span class="line">--start-file                 <span class="comment"># 起始解析文件</span></span><br><span class="line">--start-position/--start-pos <span class="comment"># 起始解析位置</span></span><br><span class="line">--stop-file/--end-file       <span class="comment"># 终止解析文件</span></span><br><span class="line">--stop-position/--end-pos    <span class="comment"># 终止解析位置</span></span><br><span class="line">--start-datetime             <span class="comment"># 起始解析时间</span></span><br><span class="line">--stop-datetime              <span class="comment"># 终止解析时间，格式'%Y-%m-%d %H:%M:%S'</span></span><br><span class="line">-d, --databases              <span class="comment"># 只解析目标DB的SQL，多个库用空格隔开</span></span><br><span class="line">-t, --tables                 <span class="comment"># 只解析目标表的SQL，多张表用空格隔开</span></span><br><span class="line">--only-dml                   <span class="comment"># 只解析DML，忽略DDL</span></span><br><span class="line">--sql-type                   <span class="comment"># 只解析指定类型，支持INSERT, UPDATE, DELETE，多个类型用空格隔开</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h2><ul>
+<li>还是先恢复再去面壁思过吧！</li>
+<li>手工执行 <code>delete</code>、<code>update</code> 语句前，先执行 <code>selete</code> 语句。</li>
+<li><code>drop</code> 或者 <code>truncate</code> 语句造成的误操作，通过备份来恢复。</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/9/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/blog/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/17/">17</a><a class="extend next" rel="next" href="/blog/page/11/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/page/9/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/9/">9</a><span class="page-number current">10</span><a class="page-number" href="/blog/page/11/">11</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/16/">16</a><a class="extend next" rel="next" href="/blog/page/11/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -2439,7 +2482,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">161</span>
+                    <span class="site-state-item-count">159</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
