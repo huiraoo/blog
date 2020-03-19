@@ -352,6 +352,266 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/13/postgresql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/11/13/postgresql/" class="post-title-link" itemprop="url">PostgreSQL</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-13 09:19:49" itemprop="dateCreated datePublished" datetime="2019-11-13T09:19:49+08:00">2019-11-13</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-03-03 08:51:36" itemprop="dateModified" datetime="2020-03-03T08:51:36+08:00">2020-03-03</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/PostgreSQL/" itemprop="url" rel="index"><span itemprop="name">PostgreSQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><ul>
+<li><strong>描述</strong>：人力题库数据库即将下线，需要保存数据副本到本地数据库。</li>
+<li><strong>源库</strong>：<code>PostgreSQL 9.2.8</code></li>
+<li><strong>目标库</strong>：<code>10.133.0.52</code> / <code>PostgreSQL 11.5</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>迁移表</th>
+<th>说明</th>
+<th>数据量</th>
+<th>状态</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>t_ems_base</td>
+<td>题库</td>
+<td>3139</td>
+<td><strong>OK</strong></td>
+</tr>
+<tr>
+<td>t_ems_base_category</td>
+<td>题库类别</td>
+<td>164</td>
+<td><strong>OK</strong></td>
+</tr>
+<tr>
+<td>t_ems_item</td>
+<td>试题</td>
+<td>500378</td>
+<td><strong>OK</strong></td>
+</tr>
+<tr>
+<td>t_ems_item_option</td>
+<td>试题选项</td>
+<td>1250290</td>
+<td><strong>OK</strong></td>
+</tr>
+<tr>
+<td>t_ems_paper</td>
+<td>试卷</td>
+<td>3262</td>
+<td><strong>OK</strong></td>
+</tr>
+<tr>
+<td>t_ems_paper_item_rel</td>
+<td>试卷试题</td>
+<td>1920540</td>
+<td><strong>OK</strong></td>
+</tr>
+<tr>
+<td>t_ems_info</td>
+<td>考试</td>
+<td>36229</td>
+<td><strong>OK</strong></td>
+</tr>
+<tr>
+<td>t_ems_result</td>
+<td>考试成绩</td>
+<td>1052490</td>
+<td><strong>OK</strong></td>
+</tr>
+<tr>
+<td>t_ems_result_detail</td>
+<td>考试答题详情</td>
+<td>69602800</td>
+<td><strong>？</strong></td>
+</tr>
+</tbody></table>
+<h2 id="PostgreSQL"><a href="#PostgreSQL" class="headerlink" title="PostgreSQL"></a>PostgreSQL</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><ul>
+<li>操作系统：CentOS Linux release 7.4.1708 (Core)</li>
+<li>安装版本：<a href="https://www.postgresql.org/" target="_blank" rel="noopener">PostgreSQL</a> 11</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载rpm包</span></span><br><span class="line">yum install https://download.postgresql.org/pub/repos/yum/<span class="number">11</span>/redhat/rhel-<span class="number">7</span>-x86_64/pgdg-redhat11-<span class="number">11</span>-<span class="number">2</span>.noarch.rpm -y</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装</span></span><br><span class="line">yum -y install postgresql11 postgresql11-server postgresql11-libs</span><br><span class="line"></span><br><span class="line"><span class="comment"># 初始化数据库</span></span><br><span class="line">/usr/pgsql-<span class="number">11</span>/bin/postgresql-<span class="number">11</span>-setup initdb <span class="comment"># /usr/pgsql-11/bin/initdb -D /data/postgresql</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置开机自启动PostgreSQL和启动服务</span></span><br><span class="line">systemctl enable postgresql-<span class="number">11</span></span><br><span class="line">systemctl start postgresql-<span class="number">11</span></span><br><span class="line">systemctl status postgresql-<span class="number">11</span></span><br><span class="line"></span><br><span class="line">● postgresql-<span class="number">11</span>.service - PostgreSQL <span class="number">11</span> database server</span><br><span class="line">   Loaded: loaded (/usr/lib/systemd/system/postgresql-<span class="number">11</span>.service; enabled; vendor preset: disablesd)</span><br><span class="line">   Active: active (running) since 三 <span class="number">2019</span>-<span class="number">11</span>-<span class="number">13</span> <span class="number">10</span>:<span class="number">11</span>:<span class="number">05</span> CST; <span class="number">6</span>s ago</span><br><span class="line">     Docs: https://www.postgresql.org/docs/<span class="number">11</span>/static/</span><br><span class="line">  <span class="keyword">Process</span>: <span class="number">84380</span> ExecStartPre=/usr/pgsql-<span class="number">11</span>/bin/postgresql-<span class="number">11</span>-check-db-dir $&#123;PGDATA&#125; (code=exited, status=<span class="number">0</span>/SUCCESS)</span><br><span class="line"> Main PID: <span class="number">84386</span> (postmaster)</span><br><span class="line">   CGroup: /system.slice/postgresql-<span class="number">11</span>.service</span><br><span class="line">           ├─<span class="number">84386</span> /usr/pgsql-<span class="number">11</span>/bin/postmaster -D /var/lib/pgsql/<span class="number">11</span>/<span class="keyword">data</span>/</span><br><span class="line">           ├─<span class="number">84388</span> postgres: logger   </span><br><span class="line">           ├─<span class="number">84390</span> postgres: checkpointer   </span><br><span class="line">           ├─<span class="number">84391</span> postgres: background writer   </span><br><span class="line">           ├─<span class="number">84392</span> postgres: walwriter   </span><br><span class="line">           ├─<span class="number">84393</span> postgres: autovacuum launcher   </span><br><span class="line">           ├─<span class="number">84394</span> postgres: stats collector   </span><br><span class="line">           ├─<span class="number">84395</span> postgres: logical replication launcher   </span><br><span class="line">           └─<span class="number">84417</span> /usr/pgsql-<span class="number">11</span>/bin/postmaster -D /var/lib/pgsql/<span class="number">11</span>/<span class="keyword">data</span>/</span><br><span class="line">           </span><br><span class="line"><span class="comment"># 修改数据存储目录</span></span><br><span class="line">systemctl stop postgresql-<span class="number">11</span></span><br><span class="line">mkdir /<span class="keyword">data</span>/postgresql</span><br><span class="line">chown -R postgres:postgres postgresql</span><br><span class="line">chmod <span class="number">700</span> /<span class="keyword">data</span>/postgresql</span><br><span class="line">vi /<span class="keyword">data</span>/postgresql/postgresql.conf  <span class="comment"># data_directory = '/data/postgresql'</span></span><br><span class="line">vi /usr/lib/systemd/system/postgresql-<span class="number">11</span>.service <span class="comment"># Environment=PGDATA=/data/postgresql</span></span><br><span class="line">systemctl restart postgresql-<span class="number">11</span></span><br><span class="line"></span><br><span class="line">$ su - postgres</span><br><span class="line">-bash-<span class="number">4.2</span>$ psql</span><br><span class="line">postgres=<span class="comment"># show data_directory;</span></span><br><span class="line">  data_directory  </span><br><span class="line">------------------</span><br><span class="line"> /<span class="keyword">data</span>/postgresql</span><br></pre></td></tr></table></figure>
+
+<h3 id="后台登录"><a href="#后台登录" class="headerlink" title="后台登录"></a>后台登录</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">$ su - postgres</span><br><span class="line">-bash-<span class="number">4.2</span>$ psql</span><br><span class="line">psql (<span class="number">11.5</span>)</span><br><span class="line">postgres=<span class="comment"># select version();</span></span><br><span class="line">                                                 version                                                 </span><br><span class="line">---------------------------------------------------------------------------------------------------------</span><br><span class="line"> PostgreSQL <span class="number">11.5</span> on x86_64-pc-linux-gnu, compiled by gcc (GCC) <span class="number">4.8</span>.<span class="number">5</span> <span class="number">20150623</span> (Red Hat <span class="number">4.8</span>.<span class="number">5</span>-<span class="number">36</span>), <span class="number">64</span>-bit</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 配置Navicate可登录 &lt;postgres/Haier@123&gt;</span></span><br><span class="line"><span class="comment"># pg_hba.conf：配置对数据库的访问权限</span></span><br><span class="line"><span class="comment"># postgresql.conf：配置PostgreSQL数据库服务器的相应的参数</span></span><br><span class="line"></span><br><span class="line">vi /<span class="keyword">data</span>/postgresql/postgresql.conf  <span class="comment"># listen_addresses = '*'</span></span><br><span class="line">vi /<span class="keyword">data</span>/postgresql/pg_hba.conf  <span class="comment"># 文件末尾添加 host  all  all  0.0.0.0/0  trust</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 开启防火墙5432端口</span></span><br><span class="line">firewall-cmd --zone=public --add-port=<span class="number">5432</span>/tcp --permanent <span class="comment"># 永久生效再加上 permanent </span></span><br><span class="line">firewall-cmd --reload                                      <span class="comment"># 更新防火墙规则</span></span><br><span class="line">firewall-cmd --zone=public --list-ports</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改登录密码</span></span><br><span class="line">sudo -u postgres psql</span><br><span class="line">ALTER USER postgres WITH password <span class="string">'Haier@123'</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="客户端登录"><a href="#客户端登录" class="headerlink" title="客户端登录"></a>客户端登录</h3><ul>
+<li>安装 <a href="https://www.navicat.com.cn/products/navicat-premium" target="_blank" rel="noopener">Navicate</a></li>
+<li>登录数据库<ul>
+<li>主机：10.133.0.52</li>
+<li>端口：5432</li>
+<li>数据库：postgres</li>
+<li>用户名：postgres</li>
+<li>密码：Haier@123</li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/07/mysql-binlog/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2252,226 +2512,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/31/mysql-event/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/31/mysql-event/" class="post-title-link" itemprop="url">MySQL · 事件</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-31 16:31:26" itemprop="dateCreated datePublished" datetime="2019-10-31T16:31:26+08:00">2019-10-31</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-07 15:29:57" itemprop="dateModified" datetime="2019-11-07T15:29:57+08:00">2019-11-07</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>MySQL 使用 <a href="https://dev.mysql.com/doc/refman/5.7/en/events-table.html" target="_blank" rel="noopener">EVENTS</a> 来处理计划任务，类似于 Linux 上的 <a href="http://cron.qqe2.com/" target="_blank" rel="noopener">cron</a>，默认情况下，事件未启用。</p>
-<p><strong>权限</strong>：<a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_event" target="_blank" rel="noopener"><code>EVENT</code></a></p>
-<p><strong>语法</strong>：</p>
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span></span><br><span class="line">    [DEFINER = <span class="keyword">user</span>]</span><br><span class="line">    <span class="keyword">EVENT</span></span><br><span class="line">    [<span class="keyword">IF</span> <span class="keyword">NOT</span> <span class="keyword">EXISTS</span>]</span><br><span class="line">    event_name</span><br><span class="line">    <span class="keyword">ON</span> SCHEDULE schedule</span><br><span class="line">    [<span class="keyword">ON</span> COMPLETION [<span class="keyword">NOT</span>] <span class="keyword">PRESERVE</span>]</span><br><span class="line">    [<span class="keyword">ENABLE</span> | <span class="keyword">DISABLE</span> | <span class="keyword">DISABLE</span> <span class="keyword">ON</span> <span class="keyword">SLAVE</span>]</span><br><span class="line">    [<span class="keyword">COMMENT</span> <span class="string">'string'</span>]</span><br><span class="line">    <span class="keyword">DO</span> event_body;</span><br><span class="line"></span><br><span class="line">schedule:</span><br><span class="line">    AT timestamp [+ INTERVAL interval] ...</span><br><span class="line">  | EVERY interval</span><br><span class="line">    [STARTS timestamp [+ INTERVAL interval] ...]</span><br><span class="line">    [ENDS timestamp [+ INTERVAL interval] ...]</span><br><span class="line"></span><br><span class="line">interval:</span><br><span class="line">    quantity &#123;YEAR | QUARTER | MONTH | DAY | HOUR | MINUTE |</span><br><span class="line">              WEEK | SECOND | YEAR_MONTH | DAY_HOUR | DAY_MINUTE |</span><br><span class="line">              DAY_SECOND | HOUR_MINUTE | HOUR_SECOND | MINUTE_SECOND&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h2><table>
-<thead>
-<tr>
-<th>Property</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Command-Line Format</strong></td>
-<td><code>--event-scheduler[=value]</code></td>
-</tr>
-<tr>
-<td><strong>System Variable</strong></td>
-<td><code>event_scheduler</code></td>
-</tr>
-<tr>
-<td><strong>Scope</strong></td>
-<td>Global</td>
-</tr>
-<tr>
-<td><strong>Dynamic</strong></td>
-<td>Yes</td>
-</tr>
-<tr>
-<td><strong>Type</strong></td>
-<td>Enumeration</td>
-</tr>
-<tr>
-<td><strong>Default Value</strong></td>
-<td><code>OFF</code></td>
-</tr>
-<tr>
-<td><strong>Valid Values</strong></td>
-<td><code>ON、OFF、DISABLED</code></td>
-</tr>
-</tbody></table>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 参数 event_scheduler</span></span><br><span class="line">mysql&gt; set global event_scheduler = on;</span><br><span class="line">mysql&gt; show variables like 'event_scheduler';</span><br><span class="line">+<span class="comment">-----------------+-------+</span></span><br><span class="line">| Variable_name   | Value |</span><br><span class="line">+<span class="comment">-----------------+-------+</span></span><br><span class="line">| event_scheduler | ON    |</span><br><span class="line">+<span class="comment">-----------------+-------+</span></span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建事件</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">EVENT</span> Event_Archive_Daily</span><br><span class="line"><span class="keyword">ON</span> SCHEDULE EVERY <span class="number">1</span> <span class="keyword">DAY</span> STARTS <span class="string">'2019-11-01 02:00:00'</span></span><br><span class="line"><span class="keyword">ON</span> COMPLETION <span class="keyword">PRESERVE</span></span><br><span class="line"><span class="keyword">ENABLE</span></span><br><span class="line"><span class="keyword">DO</span> <span class="keyword">call</span> sp_archive();</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询事件</span></span><br><span class="line">mysql&gt; show create event Event_Archive_Daily\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Event: Event_Archive_Daily</span><br><span class="line">            sql_mode: STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER</span><br><span class="line">           time_zone: SYSTEM</span><br><span class="line">        <span class="keyword">Create</span> <span class="keyword">Event</span>: <span class="keyword">CREATE</span> DEFINER=<span class="string">`root`</span>@<span class="string">`localhost`</span> <span class="keyword">EVENT</span> <span class="string">`Event_Archive_Daily`</span> <span class="keyword">ON</span> SCHEDULE EVERY <span class="number">1</span> <span class="keyword">DAY</span> STARTS <span class="string">'2019-11-01 02:00:00'</span> <span class="keyword">ON</span> COMPLETION <span class="keyword">PRESERVE</span> <span class="keyword">ENABLE</span> <span class="keyword">DO</span> <span class="keyword">call</span> sp_archive()</span><br><span class="line">character_set_client: utf8</span><br><span class="line">collation_connection: utf8_general_ci</span><br><span class="line">  <span class="keyword">Database</span> <span class="keyword">Collation</span>: utf8_general_ci</span><br><span class="line"><span class="number">1</span> <span class="keyword">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/5/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/blog/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/16/">16</a><a class="extend next" rel="next" href="/blog/page/7/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/page/5/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/5/">5</a><span class="page-number current">6</span><a class="page-number" href="/blog/page/7/">7</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/17/">17</a><a class="extend next" rel="next" href="/blog/page/7/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -2515,7 +2560,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">160</span>
+                    <span class="site-state-item-count">161</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

@@ -352,6 +352,220 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2020/03/19/session/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2020/03/19/session/" class="post-title-link" itemprop="url">Session、Cookie、Token、JWT 解析</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-03-19 09:50:57 / 修改时间：11:41:26" itemprop="dateCreated datePublished" datetime="2020-03-19T09:50:57+08:00">2020-03-19</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h2><p>Http 协议是无状态的，也就是说一个请求过来，服务器不知道这个请求的用户是不是已经登录过了，不知道他的状态，只能再把这个请求重定向到登陆页面，这样用户就疯了，怎么一直让我登录？后来人们发现如果 Http 能够保持一些会话信息，将会变得更加有用，例如登录、购物车等场景。</p>
+<p>于是，两种用于保持 HTTP 连接状态的技术就应运而生了：Cookie、Session。</p>
+<p>相同点：</p>
+<ul>
+<li>Session 和 Cookie 都是为了让 Http 协议有状态而存在。</li>
+<li>Session 通过 Cookie 工作，Cookie 传输的 SessionID 让 Session 知道这个客户端到底是谁。</li>
+</ul>
+<p>区别：</p>
+<ul>
+<li>Cookie 将信息保存在客户端。</li>
+<li>Session 将信息保存到服务器。</li>
+</ul>
+<p>举例：有一个店铺发放会员卡，一种是给会员一张卡，上面每消费一次就盖一个戳，这就是客户端保持。另一种是发放的会员卡只有一个卡号，每次店铺店员要根据卡号查一下会员的消费情况，这就是服务端保持状态。</p>
+<h2 id="会话"><a href="#会话" class="headerlink" title="会话"></a>会话</h2><p>简单的讲如果用户需要登录，那么就可以简单的理解为会话，如果不需要登录，那么就是简单的连接。比如，不同用户将不同商品加入到购物车中， 也就是说必须把每个用户区分开。因为 HTTP 请求是无状态的，所以想出了一个办法，那就是给每个用户配发一个<strong>会话标识</strong>(Session id)，简单的讲就是<strong>一个既不会重复，又不容易被找到规律以仿造的随机字符串</strong>，使得每个用户的收到的会话标识都不一样， 每次用户从客户端向服务端发起 HTTP 请求的时候，把这个字符串给一并发送过来， 这样服务端就能区分开谁是谁了，至于客户端（浏览器）如何保存这个“身份标识”，一般默认采用 <strong>Cookie</strong> 的方式，这个会话标识(Session id)会存在客户端的Cookie中。</p>
+<h2 id="Cookie"><a href="#Cookie" class="headerlink" title="Cookie"></a>Cookie</h2><p><strong>含义</strong>：Cookie 是服务器传给客户端并保存在客户端的一小段文本信息，这个 Cookie 是有大小，数量限制的。</p>
+<table>
+<thead>
+<tr>
+<th>属性项</th>
+<th>介绍</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>NAME=VALUE</td>
+<td>键值对，可以设置保存的 Key/Value，这里 NAME 不能和其他属性项名字一样</td>
+</tr>
+<tr>
+<td>Expires</td>
+<td>过期时间，这个时间点后 Cookie 失效</td>
+</tr>
+<tr>
+<td>Domain</td>
+<td>生成 Cookie 域名</td>
+</tr>
+<tr>
+<td>Path</td>
+<td>该 Cookie 是在当前哪个路径下生成的</td>
+</tr>
+<tr>
+<td>Secure</td>
+<td>加密设置，设置之后只会在 SSH 连接时才会回传该 Cookie</td>
+</tr>
+</tbody></table>
+<p><strong>基本原理</strong>：客户端请求服务器，如果服务器需要记录该用户状态，就使用 response 向客户端浏览器颁发一个Cookie。客户端浏览器会把 Cookie 保存起来。当浏览器再请求该网站时，浏览器把请求的网址连同该 Cookie 一同提交给服务器。服务器检查该 Cookie，以此来辨认用户状态。</p>
+<h2 id="Session"><a href="#Session" class="headerlink" title="Session"></a>Session</h2><p><strong>含义</strong>：Session 是基于 Cookie 来工作的，同一个客户端每次访问服务器时，只要当浏览器在第一次访问服务器时，服务器设置一个 id 并保存一些信息（例如登陆就保存用户信息，视具体情况），并把这个 id 通过 Cookie 存到客户端，客户端每次和服务器交互时只传这个 id，就可以实现维持浏览器和服务器的状态，而这个 id 通常是 NAME 为JSESSIONID 的一个 Cookie。</p>
+<p>实际上，有几种方式让 Session 正常工作：</p>
+<ul>
+<li>通过 URL 传递 SessionID，当浏览器不支持 Cookie 功能时，浏览器会将用户的 SessionCookieName（默认为 JSESSIONID）重写到用户请求的URL参数中。格式：<code>/path/Servlet;name=value;name2=value2?Name3=value3</code></li>
+<li>通过 Cookie 传递 SessionID。</li>
+</ul>
+<p><strong>基本原理</strong>：当浏览器第一次访问服务器时，服务器创建 Session 并将 SessionID 通过 Cookie 带给浏览器保存在客户端，同时服务器根据业务逻辑保存相应的客户端信息保存在 Session 中；客户端再访问时上传 Cookie，服务器得到 Cookie 后获取里面的 SessionID，来维持状态。</p>
+<p><strong>生命周期</strong>：当Session 创建后，浏览器关闭，会话级别的 Cookie 被销毁，如果没有超过设定时间，该 SessionID对应的 Session 是没有被销毁的。</p>
+<p><strong>Session 存储和运维</strong>：现在后端服务都是分布式部署，Session 一般统一放在 redis 集群中。这样有个问题就是一旦 redis 故障，可能会影响所有的用户请求。所以，在后台进行 Session 的存储和运维这件事是非常重要和危险的，对可靠性的要求非常高。</p>
+<p>那么，存在两个问题：</p>
+<ul>
+<li>怎么确保安全性？</li>
+<li>如何能不存储 Session 呢？</li>
+</ul>
+<h2 id="基于-Token-的身份验证"><a href="#基于-Token-的身份验证" class="headerlink" title="基于 Token 的身份验证"></a>基于 Token 的身份验证</h2><p><strong>工作原理</strong>：通过对数据做签名 Sign 保障数据安全性， 比如说服务端用 HMAC-SHA256 加密算法，再加上一个只有服务端才知道的密钥， 对数据做一个签名， 把这个签名和数据一起作为 Token 发给客户端， 客户端收到 Token 以后可以把它存储起来，比如存储在 Cookie 里或者 Local Storage 中，由于密钥除了服务端任何其他用户都不知道， 就无法伪造令牌 Token。如此一来，服务端就不需要保存 Token 了， 当客户端把这个 Token 发给服务端时，服务端使用相同的 HMAC-SHA256 算法和相同的密钥，对数据再计算一次签名， 和 Token 中的签名做个对比， 如果相同，说明已经登录过了， 即验证成功，若不相同， 那么说明这个请求是伪造的。这也就实现了时间换取空间（CPU 计算时间换取 Session 存储空间）。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-03-19-111400.jpeg" alt></p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-03-19-111600.jpeg" alt></p>
+<p><strong>JWT</strong>：JSON Web Token，是 Token 的一种实现方式，并且基本是 Java Web 领域的事实标准。由 3 部分构成:</p>
+<ul>
+<li>Header ：描述 JWT 的元数据。定义了生成签名的算法以及 Token 的类型。</li>
+<li>Payload（负载）：用来存放实际需要传递的数据。</li>
+<li>Signature（签名）：服务器通过 Payload、Header 和一个密钥使用 Header 里面指定的签名算法（默认是 HMAC SHA256）生成。</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x_jwt=eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiMDE1MTA4ODYiLCJuYW1lIjoi6aW26L6JIn0sImF1ZCI6Ingtb2F1dGgiLCJleHAiOjE1ODQ1OTM4NDAsImlhdCI6MTU4NDU3OTQ0MCwiaXNzIjoieC1vYXV0aCIsInN1YiI6IjAxNTEwODg2<span class="keyword">In</span>0.<span class="number">9</span>_veR_BC6WYfdeLyDumeRqqgq4yoA7DOHYySZDMXGOK-<span class="number">5</span>BGRBQK9fcaEheAvwePYHOgIzshaImwne0pJjAPVqg;</span><br></pre></td></tr></table></figure>
+
+<p><strong>工作流程</strong>：在基于 Token 进行身份验证的的应用程序中，用户登录时，服务器通过 Payload、Header和一个密钥(secret)创建令牌（Token）并将 Token 发送给客户端，然后客户端将 Token 保存在 Cookie 或者 localStorage 里面，以后客户端发出的所有请求都会携带这个令牌。你可以把它放在 Cookie 里面自动发送，但是这样不能跨域，所以更好的做法是放在 HTTP Header 的 Authorization 字段中：Authorization: 你的 Token。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-03-19-113800.jpeg" alt></p>
+<h2 id="Oauth-2-0"><a href="#Oauth-2-0" class="headerlink" title="Oauth 2.0"></a>Oauth 2.0</h2><p>Oauth 2.0 是一种授权机制，用来授权第三方应用，获取用户数据，它与 JWT 其实并不是一个层面的东西。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2020/03/02/go/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2119,242 +2333,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/12/25/mysql-architecture/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/12/25/mysql-architecture/" class="post-title-link" itemprop="url">MySQL · 常用架构方案</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-12-25 14:50:32 / 修改时间：15:49:58" itemprop="dateCreated datePublished" datetime="2019-12-25T14:50:32+08:00">2019-12-25</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="架构原则"><a href="#架构原则" class="headerlink" title="架构原则"></a>架构原则</h2><ul>
-<li>高可用</li>
-<li>高性能</li>
-<li>一致性</li>
-<li>扩展性</li>
-</ul>
-<h2 id="常见的架构方案"><a href="#常见的架构方案" class="headerlink" title="常见的架构方案"></a>常见的架构方案</h2><p><strong>方案一：主备架构，只有主库提供读写服务，备库冗余作故障转移用</strong></p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-150623.jpg" alt="img"></p>
-<ul>
-<li><strong>高可用分析：</strong>高可用，主库挂了，<code>keepalived</code>（只是一种工具）会自动切换到备库，这个过程对业务层是透明的，无需修改代码或配置。</li>
-<li><strong>高性能分析：</strong>读写都操作主库，很容易产生瓶颈。大部分互联网应用读多写少，读会先成为瓶颈，进而影响写性能。另外，备库只是单纯的备份，资源利用率 50%，这点方案二可解决。</li>
-<li><strong>一致性分析：</strong>读写都操作主库，不存在数据一致性问题。</li>
-<li><strong>扩展性分析：</strong>无法通过加从库来扩展读性能，进而提高整体性能。</li>
-<li><strong>可落地分析：</strong>两点影响落地使用。第一、性能一般，这点可以通过建立<strong>高效的索引和引入缓存</strong>来增加读性能，进而提高性能，这也是通用的方案。第二、扩展性差，这点可以通过<strong>分库分表</strong>来扩展。</li>
-</ul>
-<p><strong>方案二：双主架构，两个主库同时提供服务，负载均衡</strong></p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-150649.jpg" alt></p>
-<ul>
-<li><strong>高可用分析：</strong>高可用，一个主库挂了，不影响另一台主库提供服务。这个过程对业务层是透明的，无需修改代码或配置。</li>
-<li><strong>高性能分析：</strong>读写性能相比于方案一都得到提升，提升一倍。</li>
-<li><strong>一致性分析：</strong>存在数据一致性问题。请看，一致性解决方案。</li>
-<li><strong>扩展性分析：</strong>当然可以扩展成三主循环，但笔者不建议（会多一层数据同步，这样同步的时间会更长）。如果非得在数据库架构层面扩展的话，扩展为方案四。</li>
-<li><strong>可落地分析：</strong>两点影响落地使用。第一、数据一致性问题，一致性解决方案可解决问题。第二、主键冲突问题，ID 统一地由分布式 ID 生成服务来生成可解决问题。</li>
-</ul>
-<p><strong>方案三：主从架构，一主多从，读写分离</strong></p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-150724.jpg" alt></p>
-<ul>
-<li><strong>高可用分析：</strong>主库单点，从库高可用。一旦主库挂了，写服务也就无法提供。</li>
-<li><strong>高性能分析：</strong>大部分互联网应用读多写少，读会先成为瓶颈，进而影响整体性能。读的性能提高了，整体性能也提高了。另外，主库可以不用索引，线上从库和线下从库也可以建立不同的索引（线上从库如果有多个还是要建立相同的索引，不然得不偿失；线下从库是平时开发人员排查线上问题时查的库，可以建更多的索引）。</li>
-<li><strong>一致性分析：</strong>存在数据一致性问题。请看，一致性解决方案。</li>
-<li><strong>扩展性分析：</strong>可以通过加从库来扩展读性能，进而提高整体性能。（带来的问题是，从库越多需要从主库拉取binlog日志的端就越多，进而影响主库的性能，并且数据同步完成的时间也会更长）</li>
-<li><strong>可落地分析：</strong>两点影响落地使用。第一，数据一致性问题，一致性解决方案可解决问题。第二，主库单点问题，笔者暂时没想到很好的解决方案。</li>
-</ul>
-<p><strong>方案四：双主 + 主从架构，看似完美的方案</strong></p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-150747.jpg" alt></p>
-<ul>
-<li><strong>高可用分析：</strong>高可用。</li>
-<li><strong>高性能分析：</strong>高性能。</li>
-<li><strong>一致性分析：</strong>存在数据一致性问题。请看，一致性解决方案。</li>
-<li><strong>扩展性分析</strong>：可以通过加从库来扩展读性能，进而提高整体性能。（带来的问题同方案二）</li>
-<li><strong>可落地分析</strong>：同方案二，但数据同步又多了一层，数据延迟更严重。</li>
-</ul>
-<h2 id="一致性解决方案"><a href="#一致性解决方案" class="headerlink" title="一致性解决方案"></a>一致性解决方案</h2><p><strong>第一类：主库和从库一致性解决方案</strong></p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-152826.jpg" alt></p>
-<p><strong>注</strong>：图中圈出的是数据同步的地方，数据同步（从库从主库拉取 binlog 日志，再执行一遍）是需要时间的，这个同步时间内主库和从库的数据会存在不一致的情况。如果同步过程中有读请求，那么读到的就是从库中的老数据。如下图。</p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-152901.jpg" alt></p>
-<p>既然知道了数据不一致性产生的原因，有下面几个解决方案供参考：</p>
-<p>1、直接忽略，如果业务允许延时存在，那么就不去管它。</p>
-<p>2、强制读主，采用主备架构方案，读写都走主库。用缓存来扩展数据库读性能 。有一点需要知道：如果缓存挂了，可能会产生雪崩现象，不过一般分布式缓存都是高可用的。</p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-152918.jpg" alt></p>
-<p>3、选择读主，写操作时根据库 + 表 + 业务特征生成一个 key 放到 Cache 里并设置超时时间（大于等于主从数据同步时间）。读请求时，同样的方式生成 key 先去查 Cache，再判断是否命中。若命中，则读主库，否则读从库。代价是多了一次缓存读写，基本可以忽略。</p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-152934.jpg" alt></p>
-<p>4、半同步复制，等主从同步完成，写请求才返回。就是大家常说的“半同步复制” <code>semi-sync</code>。这可以利用数据库原生功能，实现比较简单。代价是写请求时延增长，吞吐量降低。</p>
-<p>5、数据库中间件，引入开源（ <code>mycat</code> 等）或自研的数据库中间层。个人理解，思路同选择读主。数据库中间件的成本比较高，并且还多引入了一层。</p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-152955.jpg" alt></p>
-<p><strong>第二类：DB 和缓存一致性解决方案</strong></p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-153023.jpg" alt></p>
-<p><strong>先来看一下常用的缓存使用方式：</strong></p>
-<p>第一步：淘汰缓存；</p>
-<p>第二步：写入数据库；</p>
-<p>第三步：读取缓存？返回：读取数据库；</p>
-<p>第四步：读取数据库后写入缓存。</p>
-<p>注：如果按照这种方式：图一、不会产生 DB 和缓存不一致问题；图二、会产生 DB 和缓存不一致问题，即 <code>4.read</code> 先于 <code>3.sync</code> 执行。如果不做处理，缓存里的数据可能一直是脏数据。解决方式如下：</p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-153046.jpg" alt></p>
-<p><strong>注</strong>：设置缓存时，一定要加上失效时间，以防延时淘汰缓存失败的情况！</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
-<li><strong>加缓存和索引</strong>是通用的提升数据库性能的方式。</li>
-<li><strong>分库分表</strong>带来的好处是巨大的，但同样也会带来一些问题。</li>
-<li>不管是主备 + 分库分表还是主从 + 读写分离 + 分库分表，都要考虑具体的业务场景。某 8 到家发展四年，绝大部分的数据库架构还是采用方案一和方案一 + 分库分表，只有极少部分用方案三 + 读写分离 + 分库分表。另外，阿里云提供的数据库云服务也都是主备方案，要想主从 + 读写分离需要二次架构。</li>
-<li>记住一句话：不考虑业务场景的架构都是耍流氓。</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/blog/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/16/">16</a><a class="extend next" rel="next" href="/blog/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/blog/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/17/">17</a><a class="extend next" rel="next" href="/blog/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -2398,7 +2381,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">160</span>
+                    <span class="site-state-item-count">161</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
