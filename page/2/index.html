@@ -352,6 +352,713 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/12/25/mysql-architecture/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/12/25/mysql-architecture/" class="post-title-link" itemprop="url">MySQL · 常用架构方案</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-12-25 14:50:32 / 修改时间：15:49:58" itemprop="dateCreated datePublished" datetime="2019-12-25T14:50:32+08:00">2019-12-25</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="架构原则"><a href="#架构原则" class="headerlink" title="架构原则"></a>架构原则</h2><ul>
+<li>高可用</li>
+<li>高性能</li>
+<li>一致性</li>
+<li>扩展性</li>
+</ul>
+<h2 id="常见的架构方案"><a href="#常见的架构方案" class="headerlink" title="常见的架构方案"></a>常见的架构方案</h2><p><strong>方案一：主备架构，只有主库提供读写服务，备库冗余作故障转移用</strong></p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-150623.jpg" alt="img"></p>
+<ul>
+<li><strong>高可用分析：</strong>高可用，主库挂了，<code>keepalived</code>（只是一种工具）会自动切换到备库，这个过程对业务层是透明的，无需修改代码或配置。</li>
+<li><strong>高性能分析：</strong>读写都操作主库，很容易产生瓶颈。大部分互联网应用读多写少，读会先成为瓶颈，进而影响写性能。另外，备库只是单纯的备份，资源利用率 50%，这点方案二可解决。</li>
+<li><strong>一致性分析：</strong>读写都操作主库，不存在数据一致性问题。</li>
+<li><strong>扩展性分析：</strong>无法通过加从库来扩展读性能，进而提高整体性能。</li>
+<li><strong>可落地分析：</strong>两点影响落地使用。第一、性能一般，这点可以通过建立<strong>高效的索引和引入缓存</strong>来增加读性能，进而提高性能，这也是通用的方案。第二、扩展性差，这点可以通过<strong>分库分表</strong>来扩展。</li>
+</ul>
+<p><strong>方案二：双主架构，两个主库同时提供服务，负载均衡</strong></p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-150649.jpg" alt></p>
+<ul>
+<li><strong>高可用分析：</strong>高可用，一个主库挂了，不影响另一台主库提供服务。这个过程对业务层是透明的，无需修改代码或配置。</li>
+<li><strong>高性能分析：</strong>读写性能相比于方案一都得到提升，提升一倍。</li>
+<li><strong>一致性分析：</strong>存在数据一致性问题。请看，一致性解决方案。</li>
+<li><strong>扩展性分析：</strong>当然可以扩展成三主循环，但笔者不建议（会多一层数据同步，这样同步的时间会更长）。如果非得在数据库架构层面扩展的话，扩展为方案四。</li>
+<li><strong>可落地分析：</strong>两点影响落地使用。第一、数据一致性问题，一致性解决方案可解决问题。第二、主键冲突问题，ID 统一地由分布式 ID 生成服务来生成可解决问题。</li>
+</ul>
+<p><strong>方案三：主从架构，一主多从，读写分离</strong></p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-150724.jpg" alt></p>
+<ul>
+<li><strong>高可用分析：</strong>主库单点，从库高可用。一旦主库挂了，写服务也就无法提供。</li>
+<li><strong>高性能分析：</strong>大部分互联网应用读多写少，读会先成为瓶颈，进而影响整体性能。读的性能提高了，整体性能也提高了。另外，主库可以不用索引，线上从库和线下从库也可以建立不同的索引（线上从库如果有多个还是要建立相同的索引，不然得不偿失；线下从库是平时开发人员排查线上问题时查的库，可以建更多的索引）。</li>
+<li><strong>一致性分析：</strong>存在数据一致性问题。请看，一致性解决方案。</li>
+<li><strong>扩展性分析：</strong>可以通过加从库来扩展读性能，进而提高整体性能。（带来的问题是，从库越多需要从主库拉取binlog日志的端就越多，进而影响主库的性能，并且数据同步完成的时间也会更长）</li>
+<li><strong>可落地分析：</strong>两点影响落地使用。第一，数据一致性问题，一致性解决方案可解决问题。第二，主库单点问题，笔者暂时没想到很好的解决方案。</li>
+</ul>
+<p><strong>方案四：双主 + 主从架构，看似完美的方案</strong></p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-150747.jpg" alt></p>
+<ul>
+<li><strong>高可用分析：</strong>高可用。</li>
+<li><strong>高性能分析：</strong>高性能。</li>
+<li><strong>一致性分析：</strong>存在数据一致性问题。请看，一致性解决方案。</li>
+<li><strong>扩展性分析</strong>：可以通过加从库来扩展读性能，进而提高整体性能。（带来的问题同方案二）</li>
+<li><strong>可落地分析</strong>：同方案二，但数据同步又多了一层，数据延迟更严重。</li>
+</ul>
+<h2 id="一致性解决方案"><a href="#一致性解决方案" class="headerlink" title="一致性解决方案"></a>一致性解决方案</h2><p><strong>第一类：主库和从库一致性解决方案</strong></p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-152826.jpg" alt></p>
+<p><strong>注</strong>：图中圈出的是数据同步的地方，数据同步（从库从主库拉取 binlog 日志，再执行一遍）是需要时间的，这个同步时间内主库和从库的数据会存在不一致的情况。如果同步过程中有读请求，那么读到的就是从库中的老数据。如下图。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-152901.jpg" alt></p>
+<p>既然知道了数据不一致性产生的原因，有下面几个解决方案供参考：</p>
+<p>1、直接忽略，如果业务允许延时存在，那么就不去管它。</p>
+<p>2、强制读主，采用主备架构方案，读写都走主库。用缓存来扩展数据库读性能 。有一点需要知道：如果缓存挂了，可能会产生雪崩现象，不过一般分布式缓存都是高可用的。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-152918.jpg" alt></p>
+<p>3、选择读主，写操作时根据库 + 表 + 业务特征生成一个 key 放到 Cache 里并设置超时时间（大于等于主从数据同步时间）。读请求时，同样的方式生成 key 先去查 Cache，再判断是否命中。若命中，则读主库，否则读从库。代价是多了一次缓存读写，基本可以忽略。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-152934.jpg" alt></p>
+<p>4、半同步复制，等主从同步完成，写请求才返回。就是大家常说的“半同步复制” <code>semi-sync</code>。这可以利用数据库原生功能，实现比较简单。代价是写请求时延增长，吞吐量降低。</p>
+<p>5、数据库中间件，引入开源（ <code>mycat</code> 等）或自研的数据库中间层。个人理解，思路同选择读主。数据库中间件的成本比较高，并且还多引入了一层。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-152955.jpg" alt></p>
+<p><strong>第二类：DB 和缓存一致性解决方案</strong></p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-153023.jpg" alt></p>
+<p><strong>先来看一下常用的缓存使用方式：</strong></p>
+<p>第一步：淘汰缓存；</p>
+<p>第二步：写入数据库；</p>
+<p>第三步：读取缓存？返回：读取数据库；</p>
+<p>第四步：读取数据库后写入缓存。</p>
+<p>注：如果按照这种方式：图一、不会产生 DB 和缓存不一致问题；图二、会产生 DB 和缓存不一致问题，即 <code>4.read</code> 先于 <code>3.sync</code> 执行。如果不做处理，缓存里的数据可能一直是脏数据。解决方式如下：</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-153046.jpg" alt></p>
+<p><strong>注</strong>：设置缓存时，一定要加上失效时间，以防延时淘汰缓存失败的情况！</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ul>
+<li><strong>加缓存和索引</strong>是通用的提升数据库性能的方式。</li>
+<li><strong>分库分表</strong>带来的好处是巨大的，但同样也会带来一些问题。</li>
+<li>不管是主备 + 分库分表还是主从 + 读写分离 + 分库分表，都要考虑具体的业务场景。某 8 到家发展四年，绝大部分的数据库架构还是采用方案一和方案一 + 分库分表，只有极少部分用方案三 + 读写分离 + 分库分表。另外，阿里云提供的数据库云服务也都是主备方案，要想主从 + 读写分离需要二次架构。</li>
+<li>记住一句话：不考虑业务场景的架构都是耍流氓。</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/12/24/java-project-mall/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/12/24/java-project-mall/" class="post-title-link" itemprop="url">Java · 项目 · mall</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-12-24 17:06:55" itemprop="dateCreated datePublished" datetime="2019-12-24T17:06:55+08:00">2019-12-24</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-01-20 15:10:51" itemprop="dateModified" datetime="2020-01-20T15:10:51+08:00">2020-01-20</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="后端"><a href="#后端" class="headerlink" title="后端"></a>后端</h1><h2 id="项目简介"><a href="#项目简介" class="headerlink" title="项目简介"></a>项目简介</h2><p>mall 项目是一套电商系统，包括前台商城系统及后台管理系统，基于 SpringBoot + MyBatis 实现。 前台商城系统包含首页门户、商品推荐、商品搜索、商品展示、购物车、订单流程、会员中心、客户服务、帮助中心等模块。 后台管理系统包含商品管理、订单管理、会员管理、促销管理、运营管理、内容管理、统计报表、财务管理、权限管理、设置等模块。</p>
+<blockquote>
+<p><a href="https://github.com/macrozheng/mall" target="_blank" rel="noopener">后端</a> | <a href="https://github.com/macrozheng/mall-admin-web" target="_blank" rel="noopener">前端</a> | <a href="https://github.com/macrozheng/mall-learning" target="_blank" rel="noopener">学习教程</a></p>
+</blockquote>
+<h2 id="项目演示"><a href="#项目演示" class="headerlink" title="项目演示"></a>项目演示</h2><ul>
+<li>后台项目演示：<a href="http://www.macrozheng.com/admin/index.html" target="_blank" rel="noopener">http://www.macrozheng.com/admin/index.html</a>    |  [admin/macro123]</li>
+<li>移动端项目演示：<a href="http://www.macrozheng.com/app/index.html" target="_blank" rel="noopener">http://www.macrozheng.com/app/index.html</a></li>
+</ul>
+<h2 id="技术选型"><a href="#技术选型" class="headerlink" title="技术选型"></a>技术选型</h2><p><strong>后端</strong></p>
+<table>
+<thead>
+<tr>
+<th>技术</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://spring.io/projects/spring-boot/" target="_blank" rel="noopener">Spring Boot</a></td>
+<td>容器 + MVC 框架</td>
+</tr>
+<tr>
+<td><a href="https://spring.io/projects/spring-security" target="_blank" rel="noopener">Spring Security</a></td>
+<td>认证和授权框架</td>
+</tr>
+<tr>
+<td><a href="https://mybatis.org/mybatis-3/zh/index.html" target="_blank" rel="noopener">MyBatis</a></td>
+<td>ORM 框架</td>
+</tr>
+<tr>
+<td><a href="http://mybatis.org/generator/" target="_blank" rel="noopener">MyBatis Generator</a></td>
+<td>数据层代码生成</td>
+</tr>
+<tr>
+<td><a href="https://pagehelper.github.io/" target="_blank" rel="noopener">PageHelper</a></td>
+<td>MyBatis 物理分页插件</td>
+</tr>
+<tr>
+<td><a href="https://swagger.io/tools/swagger-ui/" target="_blank" rel="noopener">Swagger UI</a></td>
+<td>文档生产工具</td>
+</tr>
+<tr>
+<td><a href="https://www.elastic.co/cn/" target="_blank" rel="noopener">Elasticsearch</a></td>
+<td>搜索引擎</td>
+</tr>
+<tr>
+<td><a href="https://www.rabbitmq.com/" target="_blank" rel="noopener">RabbitMQ</a></td>
+<td>消息队列</td>
+</tr>
+<tr>
+<td><a href="https://redis.io/" target="_blank" rel="noopener">Redis</a></td>
+<td>分布式缓存</td>
+</tr>
+<tr>
+<td><a href="https://www.mongodb.com/" target="_blank" rel="noopener">MongoDB</a></td>
+<td>NoSQL 数据库</td>
+</tr>
+<tr>
+<td><a href="https://www.docker.com/" target="_blank" rel="noopener">Docker</a></td>
+<td>应用容器引擎</td>
+</tr>
+<tr>
+<td><a href="https://druid.apache.org/" target="_blank" rel="noopener">Druid</a></td>
+<td>数据库连接池</td>
+</tr>
+<tr>
+<td><a href="https://www.aliyun.com/product/oss" target="_blank" rel="noopener">OSS</a></td>
+<td>对象存储</td>
+</tr>
+<tr>
+<td><a href="https://jwt.io/" target="_blank" rel="noopener">JWT</a></td>
+<td>JWT 登录支持</td>
+</tr>
+<tr>
+<td><a href="https://projectlombok.org/" target="_blank" rel="noopener">Lombok</a></td>
+<td>简化对象封装工具</td>
+</tr>
+<tr>
+<td><a href="http://hibernate.org/validator/" target="_blank" rel="noopener">Hibernator-Validator</a></td>
+<td>验证框架</td>
+</tr>
+<tr>
+<td><a href="https://www.elastic.co/cn/products/logstash" target="_blank" rel="noopener">LogStash</a></td>
+<td>日志收集工具</td>
+</tr>
+<tr>
+<td><a href="https://www.elastic.co/cn/products/kibana" target="_blank" rel="noopener">Kibana</a></td>
+<td>为 Elasticsearch 设计的开源分析和可视化平台</td>
+</tr>
+</tbody></table>
+<p><strong>前端</strong></p>
+<table>
+<thead>
+<tr>
+<th>技术</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://vuejs.org/" target="_blank" rel="noopener">Vue</a></td>
+<td>前端框架</td>
+</tr>
+<tr>
+<td><a href="https://router.vuejs.org/" target="_blank" rel="noopener">Vue-router</a></td>
+<td>路由框架</td>
+</tr>
+<tr>
+<td><a href="https://vuex.vuejs.org/" target="_blank" rel="noopener">Vuex</a></td>
+<td>全局状态管理框架</td>
+</tr>
+<tr>
+<td><a href="https://element.eleme.io/" target="_blank" rel="noopener">Element</a></td>
+<td>前端 UI 框架</td>
+</tr>
+<tr>
+<td><a href="https://github.com/axios/axios" target="_blank" rel="noopener">Axios</a></td>
+<td>前端 HTTP 框架</td>
+</tr>
+<tr>
+<td><a href="https://v-charts.js.org/" target="_blank" rel="noopener">v-charts</a></td>
+<td>基于 Echarts 的图表框架</td>
+</tr>
+<tr>
+<td><a href="https://github.com/js-cookie/js-cookie" target="_blank" rel="noopener">Js-cookie</a></td>
+<td>cookie 管理工具</td>
+</tr>
+<tr>
+<td><a href="https://github.com/rstacruz/nprogress" target="_blank" rel="noopener">nprogress</a></td>
+<td>进度条控件</td>
+</tr>
+<tr>
+<td><a href="https://github.com/PanJiaChen/vue-element-admin" target="_blank" rel="noopener">vue-element-admin</a></td>
+<td>项目脚手架参考</td>
+</tr>
+</tbody></table>
+<h2 id="功能概览"><a href="#功能概览" class="headerlink" title="功能概览"></a>功能概览</h2><ul>
+<li>商品模块<ul>
+<li>商品管理</li>
+<li>商品分类管理</li>
+<li>商品类型管理</li>
+<li>品牌管理</li>
+</ul>
+</li>
+<li>订单模块<ul>
+<li>订单管理</li>
+<li>订单设置</li>
+<li>退货申请处理</li>
+<li>退货原因设置</li>
+</ul>
+</li>
+<li>营销模块<ul>
+<li>秒杀活动管理</li>
+<li>优惠价管理</li>
+<li>品牌推荐管理</li>
+<li>新品推荐管理</li>
+<li>人气推荐管理</li>
+<li>专题推荐管理</li>
+<li>首页广告管理</li>
+</ul>
+</li>
+</ul>
+<h2 id="数据库表"><a href="#数据库表" class="headerlink" title="数据库表"></a>数据库表</h2><ul>
+<li><strong>cms_*</strong>：内容管理模块相关表</li>
+<li><strong>oms_*</strong>：订单管理模块相关表</li>
+<li><strong>pms_*</strong>：商品模块相关表</li>
+<li><strong>sms_*</strong>：营销模块相关表</li>
+<li><strong>ums_*</strong>：会员模块相关表</li>
+</ul>
+<h2 id="工具篇"><a href="#工具篇" class="headerlink" title="工具篇"></a>工具篇</h2><table>
+<thead>
+<tr>
+<th>工具</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://www.jetbrains.com/idea/download" target="_blank" rel="noopener">IDEA</a></td>
+<td>开发 IDE</td>
+</tr>
+<tr>
+<td><a href="https://redisdesktop.com/download" target="_blank" rel="noopener">Redis Desktop</a></td>
+<td>Redis 客户端连接工具</td>
+</tr>
+<tr>
+<td><a href="https://robomongo.org/download" target="_blank" rel="noopener">Robomongo</a></td>
+<td>MongoDB 客户端连接工具</td>
+</tr>
+<tr>
+<td><a href="http://www.netsarang.com/download/software.html" target="_blank" rel="noopener">XShell</a></td>
+<td>Linux 远程连接工具</td>
+</tr>
+<tr>
+<td><a href="http://www.formysql.com/xiazai.html" target="_blank" rel="noopener">Navicat</a></td>
+<td>数据库连接工具</td>
+</tr>
+<tr>
+<td><a href="http://powerdesigner.de/" target="_blank" rel="noopener">Power Designer</a></td>
+<td>数据库设计工具</td>
+</tr>
+<tr>
+<td><a href="https://www.axure.com/" target="_blank" rel="noopener">Axure</a></td>
+<td>原型设计工具</td>
+</tr>
+<tr>
+<td><a href="https://www.xmind.cn/" target="_blank" rel="noopener">XMind</a></td>
+<td>思维导图设计工具</td>
+</tr>
+<tr>
+<td><a href="https://www.screentogif.com/" target="_blank" rel="noopener">ScreenToGif</a></td>
+<td>gif 录制工具</td>
+</tr>
+<tr>
+<td><a href="https://www.processon.com/" target="_blank" rel="noopener">ProcessOn</a></td>
+<td>流程图绘制工具</td>
+</tr>
+<tr>
+<td><a href="https://picpick.app/zh/" target="_blank" rel="noopener">PicPick</a></td>
+<td>图片处理工具</td>
+</tr>
+<tr>
+<td><a href="https://www.snipaste.com/" target="_blank" rel="noopener">Snipaste</a></td>
+<td>屏幕截图工具</td>
+</tr>
+</tbody></table>
+<h2 id="架构篇"><a href="#架构篇" class="headerlink" title="架构篇"></a>架构篇</h2><p><strong>系统微服务架构图</strong></p>
+<p><img src="https://github.com/macrozheng/mall/blob/master/document/resource/mall_micro_service_arch.jpg?raw=true" alt="mall_micro_service_arch.jpg"></p>
+<h2 id="业务篇"><a href="#业务篇" class="headerlink" title="业务篇"></a>业务篇</h2><p><img src="https://github.com/macrozheng/mall/blob/master/document/resource/mall_business_arch.png?raw=true" alt="mall_business_arch.png"></p>
+<h2 id="代码篇"><a href="#代码篇" class="headerlink" title="代码篇"></a>代码篇</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mall</span><br><span class="line">├── mall-common   -- 工具类及通用代码</span><br><span class="line">├── mall-mbg      -- MyBatis Generator 生成的数据库操作代码</span><br><span class="line">├── mall-security -- Spring Security 封装公用模块</span><br><span class="line">├── mall-admin    -- 后台商城管理系统接口</span><br><span class="line">├── mall-search   -- 基于 Elasticsearch 的商品搜索系统</span><br><span class="line">├── mall-portal   -- 前台商城系统接口</span><br><span class="line">└── mall-demo     -- 框架搭建时的测试代码</span><br></pre></td></tr></table></figure>
+
+<h1 id="前端"><a href="#前端" class="headerlink" title="前端"></a>前端</h1><h2 id="技术选型-1"><a href="#技术选型-1" class="headerlink" title="技术选型"></a>技术选型</h2><table>
+<thead>
+<tr>
+<th>技术</th>
+<th>说明</th>
+<th>官网</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Vue</td>
+<td>前端框架</td>
+<td><a href="https://vuejs.org/" target="_blank" rel="noopener">https://vuejs.org/</a></td>
+</tr>
+<tr>
+<td>Vue-router</td>
+<td>路由框架</td>
+<td><a href="https://router.vuejs.org/" target="_blank" rel="noopener">https://router.vuejs.org/</a></td>
+</tr>
+<tr>
+<td>Vuex</td>
+<td>全局状态管理框架</td>
+<td><a href="https://vuex.vuejs.org/" target="_blank" rel="noopener">https://vuex.vuejs.org/</a></td>
+</tr>
+<tr>
+<td>Element</td>
+<td>前端 UI 框架</td>
+<td><a href="https://element.eleme.io/" target="_blank" rel="noopener">https://element.eleme.io/</a></td>
+</tr>
+<tr>
+<td>Axios</td>
+<td>前端 HTTP 框架</td>
+<td><a href="https://github.com/axios/axios" target="_blank" rel="noopener">https://github.com/axios/axios</a></td>
+</tr>
+<tr>
+<td>v-charts</td>
+<td>基于 Echarts 的图表框架</td>
+<td><a href="https://v-charts.js.org/" target="_blank" rel="noopener">https://v-charts.js.org/</a></td>
+</tr>
+<tr>
+<td>Js-cookie</td>
+<td>cookie 管理工具</td>
+<td><a href="https://github.com/js-cookie/js-cookie" target="_blank" rel="noopener">https://github.com/js-cookie/js-cookie</a></td>
+</tr>
+<tr>
+<td>nprogress</td>
+<td>进度条控件</td>
+<td><a href="https://github.com/rstacruz/nprogress" target="_blank" rel="noopener">https://github.com/rstacruz/nprogress</a></td>
+</tr>
+<tr>
+<td>vue-element-admin</td>
+<td>项目脚手架参考</td>
+<td><a href="https://github.com/PanJiaChen/vue-element-admin" target="_blank" rel="noopener">https://github.com/PanJiaChen/vue-element-admin</a></td>
+</tr>
+</tbody></table>
+<h2 id="工程目录"><a href="#工程目录" class="headerlink" title="工程目录"></a>工程目录</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">src -- 源码目录</span><br><span class="line">├── api -- axios网络请求定义</span><br><span class="line">├── assets -- 静态图片资源文件</span><br><span class="line">├── components -- 通用组件封装</span><br><span class="line">├── icons -- svg矢量图片文件</span><br><span class="line">├── router -- vue-router路由配置</span><br><span class="line">├── store -- vuex的状态管理</span><br><span class="line">├── styles -- 全局css样式</span><br><span class="line">├── utils -- 工具类</span><br><span class="line">└── views -- 前端页面</span><br><span class="line">    ├── home -- 首页</span><br><span class="line">    ├── layout -- 通用页面加载框架</span><br><span class="line">    ├── login -- 登录页</span><br><span class="line">    ├── oms -- 订单模块页面</span><br><span class="line">    ├── pms -- 商品模块页面</span><br><span class="line">    └── sms -- 营销模块页面</span><br></pre></td></tr></table></figure>
+
+<h2 id="打包部署"><a href="#打包部署" class="headerlink" title="打包部署"></a>打包部署</h2><p><strong>前端项目部署：</strong></p>
+<p>1、下载前端代码 <a href="https://github.com/macrozheng/mall-admin-web" target="_blank" rel="noopener">mall-admin-web</a></p>
+<p>2、<a href="https://code.visualstudio.com/" target="_blank" rel="noopener">VS Code</a> 打开代码</p>
+<p>3、打开控制台，通过 <code>npm install</code> 命令安装相关依赖</p>
+<p>4、修改 <code>dev.env.js</code> 文件中 <code>BASE_API</code>，使用线上 API 进行访问，线上地址为：<a href="http://120.27.63.9:8080" target="_blank" rel="noopener">http://120.27.63.9:8080</a></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">'use strict'</span></span><br><span class="line"><span class="keyword">const</span> merge = <span class="built_in">require</span>(<span class="string">'webpack-merge'</span>)</span><br><span class="line"><span class="keyword">const</span> prodEnv = <span class="built_in">require</span>(<span class="string">'./prod.env'</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = merge(prodEnv, &#123;</span><br><span class="line">  NODE_ENV: <span class="string">'"development"'</span>,</span><br><span class="line">  <span class="comment">// 后台API地址：BASE_API: '"http://10.133.0.53:8080"'</span></span><br><span class="line">  BASE_API: <span class="string">'"http://120.27.63.9:8080"'</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>5、通过 <code>npm run dev</code> 命令，启动 <code>mall-admin-web</code></p>
+<p>6、访问地址 <a href="http://localhost:8090/" target="_blank" rel="noopener">http://localhost:8090</a> 查看效果</p>
+<p><strong>后端项目部署</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 构建镜像</span></span><br><span class="line">docker build -t mall/mall-admin:<span class="number">1.0</span>-SNAPSHOT .</span><br><span class="line">docker build -t mall/mall-portal:<span class="number">1.0</span>-SNAPSHOT .</span><br><span class="line">docker build -t mall/mall-search:<span class="number">1.0</span>-SNAPSHOT .</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 删除镜像</span></span><br><span class="line">docker rmi registry.cn-qingdao.aliyuncs.com/raoo/images:v1.<span class="number">0.0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 拉取镜像</span></span><br><span class="line">docker pull registry.cn-qingdao.aliyuncs.com/raoo/images:v1.<span class="number">0.0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动镜像</span></span><br><span class="line">docker run -p <span class="number">8080</span>:<span class="number">8080</span> --name mall-admin \</span><br><span class="line">--link mysql:db \</span><br><span class="line">-v /etc/localtime:/etc/localtime \</span><br><span class="line">-v /mydata/app/admin/logs:/var/logs \</span><br><span class="line">-d mall/mall-admin:<span class="number">1.0</span>-SNAPSHOT</span><br><span class="line"></span><br><span class="line"><span class="comment"># 移除容器</span></span><br><span class="line">docker rm xx</span><br></pre></td></tr></table></figure>
+
+<p><strong>常用命令</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker search java：在 Docker Hub（或阿里镜像）仓库中搜索关键字（如java）的镜像</span><br><span class="line">docker pull java:<span class="number">8</span>：从仓库中下载镜像，若要指定版本，则要在冒号后指定</span><br><span class="line">docker images：列出已经下载的镜像</span><br><span class="line">docker rmi java：删除本地镜像</span><br><span class="line">docker build：构建镜像</span><br><span class="line">docker tag <span class="number">0</span>ead9e3f95d6 mall/mall-admin:<span class="number">1.0</span>-SNAPSHOT：修改镜像</span><br></pre></td></tr></table></figure>
+
+<p><strong>Dockerfile</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">FROM java:<span class="number">8</span></span><br><span class="line">ADD /mall-search-<span class="number">1.0</span>-SNAPSHOT.jar //</span><br><span class="line">ENTRYPOINT [<span class="string">"java"</span>, <span class="string">"-jar"</span>, <span class="string">"-Dspring.profiles.active=prod"</span>,<span class="string">"/mall-search-1.0-SNAPSHOT.jar"</span>]</span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/12/23/aliyun-practice-migration/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2523,375 +3230,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/12/10/idea-shortcut/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/12/10/idea-shortcut/" class="post-title-link" itemprop="url">IDEA</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-12-10 10:24:19" itemprop="dateCreated datePublished" datetime="2019-12-10T10:24:19+08:00">2019-12-10</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-12-24 15:20:35" itemprop="dateModified" datetime="2019-12-24T15:20:35+08:00">2019-12-24</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="学习教程"><a href="#学习教程" class="headerlink" title="学习教程"></a>学习教程</h2><p><a href="https://github.com/judasn/IntelliJ-IDEA-Tutorial" target="_blank" rel="noopener">https://github.com/judasn/IntelliJ-IDEA-Tutorial</a></p>
-<h2 id="快捷键"><a href="#快捷键" class="headerlink" title="快捷键"></a>快捷键</h2><p>1、打开项目属性配置对话框：<strong>⌘ Cmd  +  ;</strong></p>
-<p>2、打开整个 IDEA 属性配置对话框：<strong>⌘ Cmd  +  ,</strong></p>
-<p>3、搜索文件名：<strong>↑ Shift</strong> 快速连续按两下</p>
-<p>4、显示便捷提示和快速修复：<strong>⌘ Cmd  +  ⤶ Enter</strong></p>
-<p>5、快速生成代码：<strong>^  Control  +  ⤶ Enter</strong></p>
-<p>6、选中方法，查看参数信息：<strong>⌘ Cmd  +  P</strong></p>
-<p>7、弹出当前打开的文件列表：<strong>⌘ Cmd  +  E</strong></p>
-<p>8、保存文件：<strong>⌘ Cmd  +  S</strong></p>
-<p>9、查找当前文件：<strong>⌘ Cmd  +  F</strong></p>
-<p>10、快速定位到某一行某一列：<strong>⌘ Cmd  +  G</strong></p>
-<p>11、替换：<strong>⌘ Cmd  +  R</strong></p>
-<p>12、在路径里寻找：<strong>^  Control  +   ↑ Shift  +  F</strong></p>
-<p>13、在路径里替换：<strong>^  Control  +  ↑ Shift  +  R</strong></p>
-<p>14、环绕选中代码块，生成注释：<strong>⌘ Cmd  +  ⌥ Option  +  T</strong></p>
-<p>15、注释代码或者取消注释：<strong>⌘ Cmd  +  /</strong></p>
-<p>16、格式化代码：<strong>⌘ Cmd  +  ⌥ Option  +  L</strong></p>
-<p>17、优化导入，删除掉没用被使用的导入：⌘ Cmd + ⌥ Option + O</p>
-<p>18、缩进选中的行：<strong>Tab</strong></p>
-<p>19、取消缩进选中的行：<strong>↑ Shift  +  Tab</strong></p>
-<p>20、将当前行剪切到剪贴板：<strong>⌘ Cmd  +  X</strong></p>
-<p>21、将当前行复制到剪贴板：<strong>⌘ Cmd  +  C</strong></p>
-<p>22、从粘贴板复制：<strong>⌘ Cmd  +  V</strong></p>
-<p>23、重复输入当前行：<strong>⌘ Cmd  +  D</strong></p>
-<p>24、开始新的一行：<strong>↑ Shift  +  ⤶ Enter</strong></p>
-<p>25、选中的单词或者代码，切换大小写：<strong>⌘ Cmd  +  ↑ Shift  +  U</strong></p>
-<p>26、返回或者前进最近编辑的地方：<strong>⌘ Cmd  +  ⌥ Option  +  ← / →</strong></p>
-<p>27、打开变量声明处：<strong>⌘ Cmd + B</strong> 或者 <strong>⌘ Cmd +</strong> 鼠标左键</p>
-<p>28、打开类型声明处：<strong>^ Control  +  ↑ Shift  +  B</strong></p>
-<p>29、插入注释模板：<strong>⌘ Cmd  +  J</strong></p>
-<p><a href="https://resources.jetbrains.com/storage/products/intellij-idea/docs/IntelliJIDEA_ReferenceCard.pdf" target="_blank" rel="noopener">官方快捷键</a></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/12/09/mysql-tuning-flow/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/12/09/mysql-tuning-flow/" class="post-title-link" itemprop="url">MySQL · 一条 SQL 是如何执行的？</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-12-09 14:52:30 / 修改时间：16:30:28" itemprop="dateCreated datePublished" datetime="2019-12-09T14:52:30+08:00">2019-12-09</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="执行流程"><a href="#执行流程" class="headerlink" title="执行流程"></a>执行流程</h2><p>MySQL 由三层组成：</p>
-<ul>
-<li>连接层：客户端和服务器端建立连接，客户端发送 SQL 至 Server</li>
-<li>Server 层：对 SQL 语句进行查询处理</li>
-<li>存储引擎层：与数据库文件打交道，负责数据的存储和读取</li>
-</ul>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-09-144000.png" alt></p>
-<ul>
-<li><p><strong>连接器</strong>：建立连接、验证权限、管理连接（长连接，连接建立处于 <code>Sleep</code> 状态，默认 <code>8h</code> 自动关闭）</p>
-</li>
-<li><p><strong>查询缓存</strong>：命中返回、未命中更新缓存，默认关闭（生产环境不推荐打开）</p>
-</li>
-<li><p><strong>解析器</strong>：对 SQL 语句进行词法分析、语义分析</p>
-</li>
-<li><p><strong>优化器</strong>：选择索引，生成执行计划（算法：代价模型）</p>
-</li>
-<li><p><strong>执行器</strong>：调用 API 接口查询，返回结果</p>
-</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="page-number current">2</span><a class="page-number" href="/blog/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/16/">16</a><a class="extend next" rel="next" href="/blog/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="page-number current">2</span><a class="page-number" href="/blog/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/17/">17</a><a class="extend next" rel="next" href="/blog/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -2935,7 +3278,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">159</span>
+                    <span class="site-state-item-count">161</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2984,7 +3327,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">16</span>
+                      
+                    
+                    <span class="site-state-item-count">17</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
