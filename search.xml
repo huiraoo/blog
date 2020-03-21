@@ -10090,14 +10090,12 @@
       </categories>
   </entry>
   <entry>
-    <title>MySQL · 基本原理</title>
+    <title>MySQL · InnoDB 数据存储</title>
     <url>/blog/2019/07/23/mysql-principle/</url>
-    <content><![CDATA[<h2 id="体系架构"><a href="#体系架构" class="headerlink" title="体系架构"></a>体系架构</h2><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134135.png" alt></p>
-<p><img src="http://ww4.sinaimg.cn/large/006tNc79ly1g5te8biz9hj30ne0fj404.jpg" alt="img"></p>
-<h2 id="数据存储"><a href="#数据存储" class="headerlink" title="数据存储"></a>数据存储</h2><h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p><code>InnoDB</code> 存储引擎可将所有数据存放于 <code>ibdata*</code> 的共享表空间，也可将每张表存放于独立的 <code>.ibd</code> 文件的独立表空间。共享表空间以及独立表空间都是针对数据的存储方式而言的。</p>
+    <content><![CDATA[<h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p><code>InnoDB</code> 存储引擎可将所有数据存放于 <code>ibdata*</code> 的共享表空间，也可将每张表存放于独立的 <code>.ibd</code> 文件的独立表空间。共享表空间以及独立表空间都是针对数据的存储方式而言的。</p>
 <p><strong>共享表空间:</strong>  某一个数据库的所有的表数据，索引文件全部放在一个文件中，默认这个共享表空间的文件路径在 <code>data</code> 目录下， 默认的文件名为 <code>ibdata1</code>，初始化为 <code>10M</code>。</p>
 <p><strong>独立表空间:</strong>  每一个表都将会生成以独立的文件方式来进行存储，每一个表都有一个 <code>.frm</code> 表描述文件，还有一个 <code>.ibd</code> 文件。 其中这个文件包括了单独一个表的数据内容以及索引内容，默认情况下它的存储位置也是在表的位置之中。</p>
-<h3 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h3><p><strong>共享表空间</strong></p>
+<h2 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h2><p><strong>共享表空间</strong></p>
 <p><strong>优点：</strong>可以将表空间分成多个文件存放到各个磁盘上（表空间文件大小不受表大小的限制，如一个表可以分布在不同的文件上），数据和文件放在一起方便管理。</p>
 <p><strong>缺点</strong>：所有的数据和索引存放到一个文件中，虽然可以把一个大文件分成多个小文件，但是多个表及索引在表空间中混合存储，这样对于一个表做了大量删除操作后表空间中将会有大量的空隙，特别是对于统计分析这类应用最不适合用共享表空间。</p>
 <p><strong>独立表空间</strong>：在配置文件（<code>my.cnf</code>）中设置 <code>innodb_file_per_table</code></p>
@@ -10113,7 +10111,7 @@
 <li>单表增加过大，如超过100G。</li>
 <li>相比较之下，使用独占表空间的效率以及性能会更高一点。</li>
 </ul>
-<h3 id="参数详解"><a href="#参数详解" class="headerlink" title="参数详解"></a>参数详解</h3><table>
+<h2 id="参数详解"><a href="#参数详解" class="headerlink" title="参数详解"></a>参数详解</h2><table>
 <thead>
 <tr>
 <th>Command-Line Format</th>
@@ -10167,7 +10165,7 @@
 <li><p>修改配置文件 <code>my.cnf</code> 中的参数 <code>innodb_file_per_table</code> 参数为 <code>1</code>，重启服务后将需要修改的所有 <code>innodb</code> 表都执行一遍：<code>alter table table_name engine=innodb;</code> 使用第二种方式修改后，原来库中的表中的数据会继续存放于 <code>ibdata1</code> 中，新建的表才会使用独立表空间。</p>
 </li>
 </ol>
-<h3 id="操作实战"><a href="#操作实战" class="headerlink" title="操作实战"></a>操作实战</h3><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 导出所有数据</span></span><br><span class="line">mysqldump -u &lt;user&gt; -p &lt;password&gt; --all-databases --master-data=<span class="number">2</span> --single-transaction &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除所有数据库 </span></span><br><span class="line">drop database database_N</span><br><span class="line"></span><br><span class="line"><span class="comment"># 停止MySQL服务</span></span><br><span class="line">service mysql stop  / service mariadb stop</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除文件 ibdata1, ib_logfile0, ib_logfile1</span></span><br><span class="line">rm -rf xxx</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改MySQL配置文件/etc/my.cnf，增加或修改如下：</span></span><br><span class="line">[mysqld]</span><br><span class="line">innodb_file_per_table=<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启MySQL服务</span></span><br><span class="line">service mysql start</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导入备份数据</span></span><br><span class="line">mysql -u &lt;user&gt; -p &lt;password&gt; &lt; backup.sql</span><br></pre></td></tr></table></figure>]]></content>
+<h2 id="操作实战"><a href="#操作实战" class="headerlink" title="操作实战"></a>操作实战</h2><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 导出所有数据</span></span><br><span class="line">mysqldump -u &lt;user&gt; -p &lt;password&gt; --all-databases --master-data=<span class="number">2</span> --single-transaction &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除所有数据库 </span></span><br><span class="line">drop database database_N</span><br><span class="line"></span><br><span class="line"><span class="comment"># 停止MySQL服务</span></span><br><span class="line">service mysql stop  / service mariadb stop</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除文件 ibdata1, ib_logfile0, ib_logfile1</span></span><br><span class="line">rm -rf xxx</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改MySQL配置文件/etc/my.cnf，增加或修改如下：</span></span><br><span class="line">[mysqld]</span><br><span class="line">innodb_file_per_table=<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启MySQL服务</span></span><br><span class="line">service mysql start</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导入备份数据</span></span><br><span class="line">mysql -u &lt;user&gt; -p &lt;password&gt; &lt; backup.sql</span><br></pre></td></tr></table></figure>]]></content>
       <categories>
         <category>MySQL</category>
       </categories>
@@ -10808,7 +10806,7 @@
 </li>
 <li><p><a href="https://huiraoo.github.io/blog/2019/11/06/mysql-connection/">MySQL · 连接</a></p>
 </li>
-<li><p>MySQL · 体系结构</p>
+<li><p><a href="https://huiraoo.github.io/blog/2020/03/21/mysql-structure/">MySQL · 体系结构</a></p>
 </li>
 </ul>
 ]]></content>
