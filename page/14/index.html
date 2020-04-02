@@ -352,6 +352,231 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/28/docker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/08/28/docker/" class="post-title-link" itemprop="url">容器</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-28 23:04:00" itemprop="dateCreated datePublished" datetime="2019-08-28T23:04:00+08:00">2019-08-28</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-01-10 17:04:52" itemprop="dateModified" datetime="2020-01-10T17:04:52+08:00">2020-01-10</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/容器/" itemprop="url" rel="index"><span itemprop="name">容器</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="什么是-Docker-？"><a href="#什么是-Docker-？" class="headerlink" title="什么是 Docker ？"></a>什么是 Docker ？</h2><p><strong>Docker</strong> 使用 Google 公司推出的 <a href="https://golang.org/" target="_blank" rel="noopener">Go 语言</a> 进行开发实现，基于 Linux 内核的 <a href="https://zh.wikipedia.org/wiki/Cgroups" target="_blank" rel="noopener">cgroup</a>，<a href="https://en.wikipedia.org/wiki/Linux_namespaces" target="_blank" rel="noopener">namespace</a>，以及 <a href="https://en.wikipedia.org/wiki/Aufs" target="_blank" rel="noopener">AUFS</a> 类的 <a href="https://en.wikipedia.org/wiki/Union_mount" target="_blank" rel="noopener">Union FS</a> 等技术，对进程进行封装隔离，属于 <a href="https://en.wikipedia.org/wiki/Operating-system-level_virtualization" target="_blank" rel="noopener">操作系统层面的虚拟化技术</a>。由于隔离的进程独立于宿主和其它的隔离的进程，因此也称其为容器。</p>
+<p><strong>Docker 架构图</strong></p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-10-105300.png" alt></p>
+<p><strong>虚拟机 vs 容器</strong></p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-10-105600.png" alt></p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-10-105700.png" alt></p>
+<table>
+<thead>
+<tr>
+<th align="left">特性</th>
+<th align="left">容器</th>
+<th align="left">虚拟机</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">启动</td>
+<td align="left">秒级</td>
+<td align="left">分钟级</td>
+</tr>
+<tr>
+<td align="left">硬盘使用</td>
+<td align="left">一般为 <code>MB</code></td>
+<td align="left">一般为 <code>GB</code></td>
+</tr>
+<tr>
+<td align="left">性能</td>
+<td align="left">接近原生</td>
+<td align="left">弱于</td>
+</tr>
+<tr>
+<td align="left">系统支持量</td>
+<td align="left">单机支持上千个容器</td>
+<td align="left">一般几十个</td>
+</tr>
+</tbody></table>
+<h2 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h2><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-10-101130.png" alt></p>
+<p><strong>镜像</strong></p>
+<p>Docker 镜像是一个特殊的文件系统，除了提供容器运行时所需的程序、库、资源、配置等文件外，还包含了一些为运行时准备的一些配置参数（如匿名卷、环境变量、用户等）。镜像文件可以看作是容器的模板，只有通过这个文件，才能生成 Docker 容器。</p>
+<p><strong>容器</strong></p>
+<p>镜像（<code>Image</code>）和容器（<code>Container</code>）的关系，就像是面向对象程序设计中的 <code>类</code> 和 <code>实例</code> 一样，镜像是静态的定义，容器是镜像运行时的实体，容器可以被创建、启动、停止、删除、暂停等。容器的实质是进程，但与直接在宿主执行的进程不同，容器进程运行于属于自己的独立的 <a href="https://en.wikipedia.org/wiki/Linux_namespaces" target="_blank" rel="noopener">命名空间</a>。</p>
+<p><strong>仓库</strong></p>
+<p>镜像构建完成后，可以很容易的在当前宿主机上运行，但是，如果需要在其它服务器上使用这个镜像，我们就需要一个集中的存储、分发镜像的服务，<a href="https://yeasy.gitbooks.io/docker_practice/content/repository/registry.html" target="_blank" rel="noopener">Docker Registry</a> 就是这样的服务。</p>
+<p>一个 <strong>Docker Registry</strong> 中可以包含多个 <strong>仓库</strong>（<code>Repository</code>）；每个仓库可以包含多个 <strong>标签</strong>（<code>Tag</code>）；每个标签对应一个镜像，我们可以通过 <code>&lt;仓库名&gt;:&lt;标签&gt;</code> 的格式来指定具体是这个软件哪个版本的镜像。</p>
+<p><a href="https://hub.docker.com/" target="_blank" rel="noopener">Docker 官方仓库</a>，由于某些原因，在国内访问这些服务可能会比较慢，国内的一些云服务商提供了针对 Docker Hub 的镜像服务（<code>Registry Mirror</code>），这些镜像服务被称为<strong>加速器</strong>，例如 <a href="https://cr.console.aliyun.com/#/accelerator" target="_blank" rel="noopener">阿里云加速器</a>。国内也有一些云服务商提供类似于 Docker Hub 的公开服务。比如 <a href="https://hub.tenxcloud.com/" target="_blank" rel="noopener">时速云镜像仓库</a>、<a href="https://c.163.com/hub#/m/library/" target="_blank" rel="noopener">网易云镜像服务</a>、<a href="https://hub.daocloud.io/" target="_blank" rel="noopener">DaoCloud 镜像市场</a>、<a href="https://cr.console.aliyun.com/" target="_blank" rel="noopener">阿里云镜像库</a> 等。</p>
+<p><strong>Dockerfile</strong></p>
+<p>Docker 根据该文件生成二进制的镜像文件。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">FROM java:<span class="number">8</span></span><br><span class="line">ADD /mall-admin-<span class="number">1.0</span>-SNAPSHOT.jar //</span><br><span class="line">ENTRYPOINT [<span class="string">"java"</span>, <span class="string">"-jar"</span>, <span class="string">"-Dspring.profiles.active=prod"</span>,<span class="string">"/mall-admin-1.0-SNAPSHOT.jar"</span>]</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-10-165200.png" alt></p>
+<h2 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">$ systemctl start docker  // 启动docker</span><br><span class="line">$ systemctl stop docker   // 关闭docker</span><br><span class="line">$ docker restart xx       // 重启一个容器</span><br><span class="line">$ docker stop xx          // 停止一个容器</span><br><span class="line">$ docker rm xx            // 删除一个容器</span><br><span class="line">$ docker rm -f xx         // 强制删除一个容器</span><br><span class="line">$ docker log xx           // 查看容器日志</span><br><span class="line"></span><br><span class="line"><span class="comment"># 镜像相关</span></span><br><span class="line">docker images：列出已经下载的镜像</span><br><span class="line">docker rmi java：删除本地镜像</span><br><span class="line">docker build：构建镜像</span><br><span class="line">docker search java：在Docker Hub（或阿里镜像）仓库中搜索关键字（如java）的镜像</span><br><span class="line">docker pull java:<span class="number">8</span>：从仓库中下载镜像，若要指定版本，则要在冒号后指定</span><br><span class="line"></span><br><span class="line"><span class="comment"># 容器相关</span></span><br><span class="line">docker ps：列出运行中的容器</span><br><span class="line">docker ps -a ：列出所有的容器</span><br><span class="line">docker stop 容器id：停止容器</span><br><span class="line">docker kill 容器id：强制停止容器</span><br><span class="line">docker start 容器id：启动已停止的容器</span><br><span class="line">docker inspect 容器id：查看容器的所有信息</span><br><span class="line">docker container logs 容器id：查看容器日志</span><br><span class="line">docker top 容器id：查看容器里的进程</span><br><span class="line">docker exec -it 容器id /bin/bash：进入容器</span><br><span class="line"><span class="keyword">exit</span>：退出容器</span><br><span class="line">docker rm 容器id：删除已停止的容器</span><br><span class="line">docker rm -f 容器id：删除正在运行的容器</span><br><span class="line"></span><br><span class="line">docker run -d -p <span class="number">91</span>:<span class="number">80</span> nginx ：在后台运行nginx，若没有镜像则先下载，并将容器的<span class="number">80</span>端口映射为宿主机的<span class="number">91</span>端口。</span><br><span class="line">-d：后台运行</span><br><span class="line">-P：随机端口映射</span><br><span class="line">-p：指定端口映射</span><br><span class="line">-net：网络模式</span><br></pre></td></tr></table></figure>
+
+<h2 id="学习资源"><a href="#学习资源" class="headerlink" title="学习资源"></a>学习资源</h2><p><a href="http://asdfghjkl.xyz/2019/04/25/%E6%B7%B1%E5%85%A5%E5%89%96%E6%9E%90Kubernetes/" target="_blank" rel="noopener">深入剖析 Kubernetes</a></p>
+<p><a href="https://yeasy.gitbooks.io/docker_practice/content/" target="_blank" rel="noopener">Docker 从入门到实践</a></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/27/mysql-privilege/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2661,250 +2886,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/24/mysql-split/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/24/mysql-split/" class="post-title-link" itemprop="url">MySQL · 分库分表方案</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-24 14:52:02" itemprop="dateCreated datePublished" datetime="2019-07-24T14:52:02+08:00">2019-07-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-12-27 11:50:59" itemprop="dateModified" datetime="2019-12-27T11:50:59+08:00">2019-12-27</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="数据库瓶颈"><a href="#数据库瓶颈" class="headerlink" title="数据库瓶颈"></a>数据库瓶颈</h2><p>不管是 IO 瓶颈，还是 CPU 瓶颈，最终都会导致数据库的<strong>活跃连接数增加</strong>，进而逼近甚至达到数据库可承载活跃连接数的阈值。</p>
-<p><strong>1、IO 瓶颈</strong></p>
-<ul>
-<li>第一种：磁盘读 IO 瓶颈，热点数据太多，数据库缓存放不下，每次查询时会产生大量的 IO，降低查询速度  -&gt;  <strong><a href="https://www.cnblogs.com/littlecharacter/p/9342129.html#fkfb" target="_blank" rel="noopener">分库和垂直分表</a></strong>。</li>
-<li>第二种：网络 IO 瓶颈，请求的数据太多，网络带宽不够  -&gt;  <strong><a href="https://www.cnblogs.com/littlecharacter/p/9342129.html#fkfb" target="_blank" rel="noopener">分库</a></strong>。</li>
-</ul>
-<p><strong>2、CPU 瓶颈</strong></p>
-<ul>
-<li>第一种：SQL 问题，如 SQL 中包含 <code>join</code>，<code>group by</code>，<code>order by</code>，非索引字段条件查询等，增加 CPU 运算的操作，SQL 优化建立合适的索引，在业务 Service 层进行业务计算。</li>
-<li>第二种：单表数据量太大，查询时扫描的行太多，SQL 效率低，CPU 率先出现瓶颈  -&gt;  <strong><a href="https://www.cnblogs.com/littlecharacter/p/9342129.html#fkfb" target="_blank" rel="noopener">水平分表</a></strong>。</li>
-</ul>
-<h2 id="分库分表"><a href="#分库分表" class="headerlink" title="分库分表"></a>分库分表</h2><p><strong>1、水平分库</strong></p>
-<p><strong>概念</strong>：以<strong>字段</strong>为依据，按照一定策略（hash、range 等），将一个<strong>库</strong>中的数据拆分到多个<strong>库</strong>中。</p>
-<p><strong>结果</strong>：</p>
-<ul>
-<li>每个<strong>库</strong>的<strong>结构</strong>都一样；</li>
-<li>每个<strong>库</strong>的<strong>数据</strong>都不一样，没有交集；</li>
-<li>所有<strong>库</strong>的<strong>并集</strong>是全量数据；</li>
-</ul>
-<p><strong>场景</strong>：系统绝对并发量上来了，分表难以根本上解决问题，并且还没有明显的业务归属来垂直分库。</p>
-<p><strong>分析</strong>：库多了，io 和 cpu 的压力自然可以成倍缓解。</p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155810.png" alt></p>
-<p><strong>2、水平分表</strong></p>
-<p><strong>概念</strong>：以<strong>字段</strong>为依据，按照一定策略（hash、range等），将一个<strong>表</strong>中的数据拆分到多个<strong>表</strong>中。</p>
-<p><strong>结果</strong>：</p>
-<ul>
-<li>每个<strong>表</strong>的<strong>结构</strong>都一样；</li>
-<li>每个<strong>表</strong>的<strong>数据</strong>都不一样，没有交集；</li>
-<li>所有<strong>表</strong>的<strong>并集</strong>是全量数据；</li>
-</ul>
-<p><strong>场景</strong>：系统绝对并发量并没有上来，只是单表的数据量太多，影响了 SQL 效率，加重了 CPU 负担，以至于成为瓶颈。</p>
-<p><strong>分析</strong>：表的数据量少了，单次 SQL 执行效率高，自然减轻了 CPU 的负担。</p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155835.png" alt></p>
-<p><strong>3、垂直分库</strong></p>
-<p><strong>概念</strong>：以<strong>表</strong>为依据，按照业务归属不同，将不同的<strong>表</strong>拆分到不同的<strong>库</strong>中。</p>
-<p><strong>结果</strong>：</p>
-<ul>
-<li>每个<strong>库</strong>的<strong>结构</strong>都不一样；</li>
-<li>每个<strong>库</strong>的<strong>数据</strong>也不一样，没有交集；</li>
-<li>所有<strong>库</strong>的<strong>并集</strong>是全量数据；</li>
-</ul>
-<p><strong>场景</strong>：系统绝对并发量上来了，并且可以抽象出单独的业务模块。</p>
-<p><strong>分析</strong>：到这一步，基本上就可以服务化了。例如，随着业务的发展一些公用的配置表、字典表等越来越多，这时可以将这些表拆到单独的库中，甚至可以服务化。再有，随着业务的发展孵化出了一套业务模式，这时可以将相关的表拆到单独的库中，甚至可以服务化。</p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155850.png" alt></p>
-<p><strong>4、垂直分表</strong></p>
-<p><strong>概念</strong>：以<strong>字段</strong>为依据，按照字段的活跃性，将<strong>表</strong>中字段拆到不同的<strong>表</strong>（主表和扩展表）中。</p>
-<p><strong>结果</strong>：</p>
-<ul>
-<li>每个<strong>表</strong>的<strong>结构</strong>都不一样；</li>
-<li>每个<strong>表</strong>的<strong>数据</strong>也不一样，一般来说，每个表的<strong>字段</strong>至少有一列交集，一般是主键，用于关联数据；</li>
-<li>所有<strong>表</strong>的<strong>并集</strong>是全量数据；</li>
-</ul>
-<p><strong>场景</strong>：系统绝对并发量并没有上来，表的记录并不多，但是字段多，并且热点数据和非热点数据在一起，单行数据所需的存储空间较大。以至于数据库缓存的数据行减少，查询时会去读磁盘数据产生大量的随机读IO，产生IO瓶颈。</p>
-<p><strong>分析</strong>：可以用列表页和详情页来帮助理解。垂直分表的拆分原则是将热点数据（可能会冗余经常一起查询的数据）放在一起作为主表，非热点数据放在一起作为扩展表。这样更多的热点数据就能被缓存下来，进而减少了随机读IO。拆了之后，要想获得全部数据就需要关联两个表来取数据。但记住，千万别用 join，因为 join 不仅会增加CPU 负担并且会讲两个表耦合在一起（必须在一个数据库实例上）。关联数据，应该在业务 service 层做文章，分别获取主表和扩展表数据然后用关联字段关联得到全部数据。</p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155900.png" alt></p>
-<h2 id="分库分表工具"><a href="#分库分表工具" class="headerlink" title="分库分表工具"></a>分库分表工具</h2><ul>
-<li><a href="https://shardingsphere.apache.org/" target="_blank" rel="noopener">sharding-sphere</a>：jar，前身是 sharding-jdbc</li>
-<li>TDDL：jar，Taobao Distribute Data Layer</li>
-<li><a href="http://www.mycat.io/" target="_blank" rel="noopener">Mycat</a>：中间件</li>
-</ul>
-<h2 id="分库分表步骤"><a href="#分库分表步骤" class="headerlink" title="分库分表步骤"></a>分库分表步骤</h2><p>根据容量（当前容量和增长量）评估分库或分表个数 -&gt; 选 <code>key</code>（均匀）-&gt; 分表规则（ <code>hash</code> 或 <code>range</code> 等）-&gt; 执行（一般双写）-&gt; 扩容问题（尽量减少数据的移动）</p>
-<h2 id="原则"><a href="#原则" class="headerlink" title="原则"></a>原则</h2><ul>
-<li>原则零：能不分就不分</li>
-<li>原则一：数据量太大，正常的运维影响正常的业务访问</li>
-<li>原则二：表设计不合理，需要对某些字段进行垂直拆分</li>
-<li>原则三：某些数据表出现了无穷增长的情况</li>
-<li>原则四：安全性和可用性的考虑</li>
-<li>原则五：业务耦合性考虑</li>
-</ul>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>①  <strong>水平拆分</strong>和<strong>垂直拆分</strong>都是降低数据量大小，提升数据库性能的常见手段</p>
-<p>②  流量大数据量大时，<strong>数据访问要有 service 层</strong>，并且 service 层不要通过 <code>join</code> 来获取主表和扩展表的属性</p>
-<p>③  <strong>垂直拆分的依据</strong>，尽量把长度较短，访问频率较高的属性放在主表里</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2953,7 +2934,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">159</span>
+                    <span class="site-state-item-count">160</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
