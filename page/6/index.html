@@ -414,7 +414,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2020-04-14 16:38:47" itemprop="dateModified" datetime="2020-04-14T16:38:47+08:00">2020-04-14</time>
+                <time title="修改时间：2020-04-14 16:47:05" itemprop="dateModified" datetime="2020-04-14T16:47:05+08:00">2020-04-14</time>
               
             
           </span>
@@ -537,7 +537,7 @@
 <td><strong>？</strong></td>
 </tr>
 </tbody></table>
-<h2 id="PostgreSQL"><a href="#PostgreSQL" class="headerlink" title="PostgreSQL"></a>PostgreSQL</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>PostgreSQL 是一个免费的对象-关系数据库服务器 (ORDBMS)，OODBMS 面向对象数据库管理系统，将所有实体都看着对象，并将这些对象类进行封装，对象之间的通信通过消息，OODBMS 对象关系数据库在实质上还是关系数据库 。</p>
+<h2 id="PostgreSQL"><a href="#PostgreSQL" class="headerlink" title="PostgreSQL"></a>PostgreSQL</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>PostgreSQL 是一个免费的对象-关系数据库服务 (ORDBMS)，ORDBMS 面向对象数据库管理系统，将所有实体都看着对象，并将这些对象类进行封装，对象之间的通信通过消息，ORDBMS 对象关系数据库在实质上还是关系数据库 。</p>
 <h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><ul>
 <li>操作系统：CentOS Linux release 7.4.1708 (Core)</li>
 <li>安装版本：<a href="https://www.postgresql.org/" target="_blank" rel="noopener">PostgreSQL</a> 11</li>
@@ -558,26 +558,30 @@
 </li>
 </ul>
 <h2 id="日常运维"><a href="#日常运维" class="headerlink" title="日常运维"></a>日常运维</h2><ul>
-<li><strong>登录数据库</strong></li>
+<li>登录数据库</li>
 </ul>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">psql -U dbuser -d exampledb -h <span class="number">127.0</span>.<span class="number">0.1</span> -p <span class="number">5432</span></span><br></pre></td></tr></table></figure>
 
 <ul>
-<li><strong>创建账号和数据库</strong></li>
+<li>创建账号和数据库</li>
 </ul>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">CREATE USER dbuser WITH PASSWORD <span class="string">'password'</span>;</span><br><span class="line">CREATE DATABASE exampledb OWNER dbuser;</span><br><span class="line">GRANT ALL PRIVILEGES ON DATABASE exampledb to dbuser;</span><br></pre></td></tr></table></figure>
 
 <ul>
-<li><strong>控制台命令</strong></li>
+<li>控制台命令</li>
 </ul>
 <p>“postgres=#”，表示这时已经进入了数据库控制台，除了 \q 命令（退出）以外，控制台还提供一系列其他命令：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">\h：查看SQL命令的解释，比如\h select。</span><br><span class="line">\?：查看psql命令列表。</span><br><span class="line">\l：列出所有数据库。</span><br><span class="line">\c [database_name]：连接其他数据库。</span><br><span class="line">\d：列出当前数据库的所有表格。</span><br><span class="line">\d [table_name]：列出某一张表格的结构。</span><br><span class="line">\du：列出所有用户。</span><br><span class="line">\e：打开文本编辑器。</span><br><span class="line">\conninfo：列出当前数据库和连接的信息。</span><br></pre></td></tr></table></figure>
 
 <ul>
-<li><strong>数据库操作</strong></li>
+<li>数据库操作</li>
 </ul>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建新表</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> user_tbl(<span class="keyword">name</span> <span class="built_in">VARCHAR</span>(<span class="number">20</span>), signup_date <span class="built_in">DATE</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment"># 插入数据</span></span><br><span class="line"><span class="keyword">INSERT</span> <span class="keyword">INTO</span> user_tbl(<span class="keyword">name</span>, signup_date) <span class="keyword">VALUES</span>(<span class="string">'张三'</span>, <span class="string">'2013-12-22'</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment"># 选择记录</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> user_tbl;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 更新数据</span></span><br><span class="line"><span class="keyword">UPDATE</span> user_tbl <span class="keyword">set</span> <span class="keyword">name</span> = <span class="string">'李四'</span> <span class="keyword">WHERE</span> <span class="keyword">name</span> = <span class="string">'张三'</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除记录</span></span><br><span class="line"><span class="keyword">DELETE</span> <span class="keyword">FROM</span> user_tbl <span class="keyword">WHERE</span> <span class="keyword">name</span> = <span class="string">'李四'</span> ;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加栏位</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> user_tbl <span class="keyword">ADD</span> email <span class="built_in">VARCHAR</span>(<span class="number">40</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment"># 更新结构</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> user_tbl <span class="keyword">ALTER</span> <span class="keyword">COLUMN</span> signup_date <span class="keyword">SET</span> <span class="keyword">NOT</span> <span class="literal">NULL</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 更名栏位</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> user_tbl <span class="keyword">RENAME</span> <span class="keyword">COLUMN</span> signup_date <span class="keyword">TO</span> signup;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除栏位</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> user_tbl <span class="keyword">DROP</span> <span class="keyword">COLUMN</span> email;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 表格更名</span></span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> user_tbl <span class="keyword">RENAME</span> <span class="keyword">TO</span> backup_tbl;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除表格</span></span><br><span class="line"><span class="keyword">DROP</span> <span class="keyword">TABLE</span> <span class="keyword">IF</span> <span class="keyword">EXISTS</span> backup_tbl;</span><br></pre></td></tr></table></figure>
 
+<ul>
+<li>数据迁移</li>
+</ul>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-14-164137.jpg" alt></p>
 
           
         
