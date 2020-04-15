@@ -11271,10 +11271,38 @@
   <entry>
     <title>MySQL · 调优</title>
     <url>/blog/2019/07/11/mysql-tuning/</url>
-    <content><![CDATA[<h2 id="SQL-优化"><a href="#SQL-优化" class="headerlink" title="SQL 优化"></a>SQL 优化</h2><ul>
-<li><p>慢日志，定位低效率 SQL</p>
+    <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>MySQL 可以从四个方面进行优化：</p>
+<ul>
+<li>优化成本：硬件配置  &gt;  架构优化  &gt;  MySQL 配置参数  &gt;  表结构与索引</li>
+<li>优化效果：表结构与索引  &gt;  MySQL 配置参数  &gt;  架构优化  &gt;  硬件配置</li>
+</ul>
+<h2 id="硬件配置优化"><a href="#硬件配置优化" class="headerlink" title="硬件配置优化"></a>硬件配置优化</h2><ul>
+<li><a href="https://huiraoo.github.io/blog/2019/10/25/linux-disk/">硬盘</a>，固态硬盘 SSD  &gt;  普通硬盘 HDD</li>
+<li>内存，MySQL 内存一般设置为物理内存大小的 80%</li>
+</ul>
+<h2 id="架构优化"><a href="#架构优化" class="headerlink" title="架构优化"></a>架构优化</h2><ul>
+<li>加缓存</li>
+<li>分库分表</li>
+<li>读写分离</li>
+</ul>
+<h2 id="MySQL-配置参数优化"><a href="#MySQL-配置参数优化" class="headerlink" title="MySQL 配置参数优化"></a>MySQL 配置参数优化</h2><ul>
+<li><a href="https://huiraoo.github.io/blog/2019/06/18/mysql-innodb_buffer_pool_size/">innodb_buffer_pool_size</a></li>
+<li><a href="https://huiraoo.github.io/blog/2019/10/24/mysql-config-max-connections/">max_connections</a></li>
+<li><a href="https://huiraoo.github.io/blog/2019/10/25/mysql-config-innodb-flush-log-at-trx-commit/">innodb_flush_log_at_trx_commit</a></li>
+<li><a href="https://huiraoo.github.io/blog/2019/10/25/mysql-config-sync-binlog/">sync_binlog</a></li>
+</ul>
+<h2 id="表结构与索引优化"><a href="#表结构与索引优化" class="headerlink" title="表结构与索引优化"></a>表结构与索引优化</h2><ul>
+<li><p><a href="https://huiraoo.github.io/blog/2019/10/24/mysql-primarykey/">主键</a></p>
 </li>
-<li><p>通过 <code>explain</code> 查看 SQL 执行计划</p>
+<li><p><a href="https://huiraoo.github.io/blog/2019/12/10/mysql-datatype/">选择合适的数据类型</a>，例如：<a href="https://huiraoo.github.io/blog/2019/09/24/mysql-timetype/">datetime vs timestamp</a>、<a href="https://huiraoo.github.io/blog/2019/09/24/mysql-stringtype/">varchar vs char</a></p>
+</li>
+<li><p>修改 SQL 语句，例如： <a href="https://huiraoo.github.io/blog/2019/12/06/mysql-select-all/">select *</a>、<a href="https://huiraoo.github.io/blog/2019/10/22/mysql-tuning-like/">模糊匹配 like</a> 等</p>
+</li>
+<li><p><a href="https://huiraoo.github.io/blog/2019/11/15/mysql-live-session/">实时会话抓取</a>，show processlist</p>
+</li>
+<li><p>分析慢查询日志，利用分析工具 <a href="https://huiraoo.github.io/blog/2019/10/19/pt-query-digest/">pt-query-digest</a></p>
+</li>
+<li><p><a href="https://huiraoo.github.io/blog/2019/12/09/mysql-explain/">查看查询计划</a>，调整索引</p>
 <ul>
 <li><p><code>select_type</code>：查询类型（SIMPLE - 简单查询、PRIMARY - 主查询、UNION - 并集、SUBQUERY - 子查询）。</p>
 </li>
@@ -11294,37 +11322,6 @@
 </li>
 </ul>
 </li>
-<li><p>通过 <code>show profiles</code> 和 <code>show profile for query</code> 分析 SQL。</p>
-</li>
-<li><p>优化 CRUD 操作</p>
-<ul>
-<li>优化 <code>insert</code> 语句</li>
-<li>优化 <code>order by</code> 语句</li>
-<li>优化 <code>group by</code> 语句</li>
-<li>优化 <code>join</code> 语句</li>
-<li>优化 <code>or</code> 语句</li>
-<li>优化分页</li>
-</ul>
-</li>
-<li><p><strong>pt-query-digest</strong></p>
-</li>
-<li><p><strong>explain</strong></p>
-</li>
-<li><p><strong>show profiling</strong></p>
-</li>
-</ul>
-<h2 id="配置参数优化"><a href="#配置参数优化" class="headerlink" title="配置参数优化"></a>配置参数优化</h2><ul>
-<li>innodb_buffer_pool_size ：InnoDB 数据和索引的内存缓冲区大小，以字节为单位，这个值设置得越高，访问表数据需要进行的磁盘 I/O 操作就越少，如果可能甚至可以将该值设置为物理内存大小的 80%。</li>
-<li>max_connections</li>
-<li>back_log</li>
-<li>table_open_cache</li>
-<li>thread_cache_size</li>
-<li>innodb_lock_wait_timeout</li>
-</ul>
-<h2 id="架构优化"><a href="#架构优化" class="headerlink" title="架构优化"></a>架构优化</h2><ul>
-<li>加缓存</li>
-<li>分库分表（水平拆分 / 垂直拆分）</li>
-<li>读写分离</li>
 </ul>
 ]]></content>
       <categories>
