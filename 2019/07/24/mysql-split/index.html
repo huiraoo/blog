@@ -96,22 +96,22 @@
 
 
 
-  <meta name="description" content="数据库瓶颈不管是 IO 瓶颈，还是 CPU 瓶颈，最终都会导致数据库的活跃连接数增加，进而逼近甚至达到数据库可承载活跃连接数的阈值。 1、IO 瓶颈  第一种：磁盘读 IO 瓶颈，热点数据太多，数据库缓存放不下，每次查询时会产生大量的 IO，降低查询速度  -&amp;gt;  分库和垂直分表。 第二种：网络 IO 瓶颈，请求的数据太多，网络带宽不够  -&amp;gt;  分库。  2、CPU 瓶颈  第一种：">
+  <meta name="description" content="背景由于单机存储容量、连接数、处理能力有限，当超过一定上限后，数据库会遭遇性能瓶颈，即使优化索引，很多操作的性能仍下降严重。切分 (Sharding) 的目的就在于减少数据库的负担，缩短查询时间。 根据切分类型，可以分为两种方式：垂直切分和水平切分。  第一种：磁盘读 IO 瓶颈，热点数据太多，数据库缓存放不下，每次查询时会产生大量的 IO，降低查询速度  -&amp;gt;  分库和垂直分表。 第二种：">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MySQL · 分库分表方案">
+<meta property="og:title" content="MySQL · 分库分表">
 <meta property="og:url" content="https://huiraoo.github.io/blog/2019/07/24/mysql-split/index.html">
 <meta property="og:site_name" content="Rao&#39;s Blog">
-<meta property="og:description" content="数据库瓶颈不管是 IO 瓶颈，还是 CPU 瓶颈，最终都会导致数据库的活跃连接数增加，进而逼近甚至达到数据库可承载活跃连接数的阈值。 1、IO 瓶颈  第一种：磁盘读 IO 瓶颈，热点数据太多，数据库缓存放不下，每次查询时会产生大量的 IO，降低查询速度  -&amp;gt;  分库和垂直分表。 第二种：网络 IO 瓶颈，请求的数据太多，网络带宽不够  -&amp;gt;  分库。  2、CPU 瓶颈  第一种：">
+<meta property="og:description" content="背景由于单机存储容量、连接数、处理能力有限，当超过一定上限后，数据库会遭遇性能瓶颈，即使优化索引，很多操作的性能仍下降严重。切分 (Sharding) 的目的就在于减少数据库的负担，缩短查询时间。 根据切分类型，可以分为两种方式：垂直切分和水平切分。  第一种：磁盘读 IO 瓶颈，热点数据太多，数据库缓存放不下，每次查询时会产生大量的 IO，降低查询速度  -&amp;gt;  分库和垂直分表。 第二种：">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155810.png">
-<meta property="og:image" content="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155835.png">
 <meta property="og:image" content="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155850.png">
 <meta property="og:image" content="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155900.png">
-<meta property="og:updated_time" content="2019-12-27T03:50:59.572Z">
+<meta property="og:image" content="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155810.png">
+<meta property="og:image" content="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155835.png">
+<meta property="og:updated_time" content="2020-04-15T03:41:53.691Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="MySQL · 分库分表方案">
-<meta name="twitter:description" content="数据库瓶颈不管是 IO 瓶颈，还是 CPU 瓶颈，最终都会导致数据库的活跃连接数增加，进而逼近甚至达到数据库可承载活跃连接数的阈值。 1、IO 瓶颈  第一种：磁盘读 IO 瓶颈，热点数据太多，数据库缓存放不下，每次查询时会产生大量的 IO，降低查询速度  -&amp;gt;  分库和垂直分表。 第二种：网络 IO 瓶颈，请求的数据太多，网络带宽不够  -&amp;gt;  分库。  2、CPU 瓶颈  第一种：">
-<meta name="twitter:image" content="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155810.png">
+<meta name="twitter:title" content="MySQL · 分库分表">
+<meta name="twitter:description" content="背景由于单机存储容量、连接数、处理能力有限，当超过一定上限后，数据库会遭遇性能瓶颈，即使优化索引，很多操作的性能仍下降严重。切分 (Sharding) 的目的就在于减少数据库的负担，缩短查询时间。 根据切分类型，可以分为两种方式：垂直切分和水平切分。  第一种：磁盘读 IO 瓶颈，热点数据太多，数据库缓存放不下，每次查询时会产生大量的 IO，降低查询速度  -&amp;gt;  分库和垂直分表。 第二种：">
+<meta name="twitter:image" content="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155850.png">
 
 
 
@@ -129,7 +129,7 @@
   };
 </script>
 
-  <title>MySQL · 分库分表方案 | Rao's Blog</title>
+  <title>MySQL · 分库分表 | Rao's Blog</title>
   
 
 
@@ -374,7 +374,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">MySQL · 分库分表方案
+          <h1 class="post-title" itemprop="name headline">MySQL · 分库分表
 
               
             
@@ -417,7 +417,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-12-27 11:50:59" itemprop="dateModified" datetime="2019-12-27T11:50:59+08:00">2019-12-27</time>
+                <time title="修改时间：2020-04-15 11:41:53" itemprop="dateModified" datetime="2020-04-15T11:41:53+08:00">2020-04-15</time>
               
             
           </span>
@@ -476,8 +476,8 @@
       
 
       
-        <h2 id="数据库瓶颈"><a href="#数据库瓶颈" class="headerlink" title="数据库瓶颈"></a>数据库瓶颈</h2><p>不管是 IO 瓶颈，还是 CPU 瓶颈，最终都会导致数据库的<strong>活跃连接数增加</strong>，进而逼近甚至达到数据库可承载活跃连接数的阈值。</p>
-<p><strong>1、IO 瓶颈</strong></p>
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>由于单机存储容量、连接数、处理能力有限，当超过一定上限后，数据库会遭遇性能瓶颈，即使优化索引，很多操作的性能仍下降严重。切分 (Sharding) 的目的就在于减少数据库的负担，缩短查询时间。</p>
+<p>根据切分类型，可以分为两种方式：垂直切分和水平切分。</p>
 <ul>
 <li>第一种：磁盘读 IO 瓶颈，热点数据太多，数据库缓存放不下，每次查询时会产生大量的 IO，降低查询速度  -&gt;  <strong><a href="https://www.cnblogs.com/littlecharacter/p/9342129.html#fkfb" target="_blank" rel="noopener">分库和垂直分表</a></strong>。</li>
 <li>第二种：网络 IO 瓶颈，请求的数据太多，网络带宽不够  -&gt;  <strong><a href="https://www.cnblogs.com/littlecharacter/p/9342129.html#fkfb" target="_blank" rel="noopener">分库</a></strong>。</li>
@@ -487,8 +487,39 @@
 <li>第一种：SQL 问题，如 SQL 中包含 <code>join</code>，<code>group by</code>，<code>order by</code>，非索引字段条件查询等，增加 CPU 运算的操作，SQL 优化建立合适的索引，在业务 Service 层进行业务计算。</li>
 <li>第二种：单表数据量太大，查询时扫描的行太多，SQL 效率低，CPU 率先出现瓶颈  -&gt;  <strong><a href="https://www.cnblogs.com/littlecharacter/p/9342129.html#fkfb" target="_blank" rel="noopener">水平分表</a></strong>。</li>
 </ul>
-<h2 id="分库分表"><a href="#分库分表" class="headerlink" title="分库分表"></a>分库分表</h2><p><strong>1、水平分库</strong></p>
-<p><strong>概念</strong>：以<strong>字段</strong>为依据，按照一定策略（hash、range 等），将一个<strong>库</strong>中的数据拆分到多个<strong>库</strong>中。</p>
+<h2 id="分库分表"><a href="#分库分表" class="headerlink" title="分库分表"></a>分库分表</h2><h3 id="垂直切分"><a href="#垂直切分" class="headerlink" title="垂直切分"></a>垂直切分</h3><p><strong>①  垂直分库</strong></p>
+<p><strong>概念</strong>：根据业务耦合性，将关联度低的不同表存储在不同的数据库。与”微服务治理”的做法相似，每个微服务使用单独的一个数据库。</p>
+<p><strong>结果</strong>：</p>
+<ul>
+<li>每个库的结构、数据都不一样。</li>
+<li>所有库的并集是全量数据。</li>
+</ul>
+<p><strong>场景</strong>：系统绝对并发量上来了，并且可以抽象出单独的业务模块。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155850.png" alt></p>
+<p><strong>②  垂直分表</strong></p>
+<p><strong>概念</strong>：某个表字段较多，以列为依据，按照字段的活跃性，将<strong>表</strong>中字段拆到不同的<strong>表</strong>（主表和扩展表）中。</p>
+<p><strong>结果</strong>：</p>
+<ul>
+<li>每个<strong>表</strong>的<strong>结构、数据</strong>都不一样；</li>
+<li>所有<strong>表</strong>的<strong>并集</strong>是全量数据；</li>
+</ul>
+<p><strong>场景</strong>：表字段多，并且热点数据和非热点数据在一起，单行数据所需的存储空间较大。以至于数据库缓存的数据行减少，查询时会去读磁盘数据产生大量的随机读 IO，产生 IO 瓶颈。</p>
+<p><strong>分析</strong>：拆了之后，要想获得全部数据就需要关联两个表来取数据。但记住，千万别用 join，因为 join 不仅会增加CPU 负担并且会将两个表耦合在一起（必须在一个数据库实例上）。关联数据，应该在业务 service 层做文章，分别获取主表和扩展表数据然后用关联字段关联得到全部数据。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155900.png" alt></p>
+<p><strong>③ 优缺点</strong></p>
+<p>优点：</p>
+<ul>
+<li>解决业务系统层面的耦合，业务清晰。</li>
+<li>与微服务的治理类似，也能对不同业务的数据进行分级管理、维护、监控、扩展等。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>部分表无法 join，只能通过接口聚合方式解决，提升了开发的复杂度。</li>
+<li>分布式事务处理复杂。</li>
+<li>依然存在单表数据量过大的问题（需要水平切分）。</li>
+</ul>
+<h3 id="水平拆分"><a href="#水平拆分" class="headerlink" title="水平拆分"></a>水平拆分</h3><p><strong>①  水平分库</strong></p>
+<p><strong>概念</strong>：当一个应用数据量行数巨大，存在单库读写、存储性能瓶颈，这时候就需要进行水平切分了。以<strong>字段</strong>为依据，按照一定策略（hash、range 等），将一个<strong>库</strong>中的数据拆分到多个<strong>库</strong>中。</p>
 <p><strong>结果</strong>：</p>
 <ul>
 <li>每个<strong>库</strong>的<strong>结构</strong>都一样；</li>
@@ -496,9 +527,8 @@
 <li>所有<strong>库</strong>的<strong>并集</strong>是全量数据；</li>
 </ul>
 <p><strong>场景</strong>：系统绝对并发量上来了，分表难以根本上解决问题，并且还没有明显的业务归属来垂直分库。</p>
-<p><strong>分析</strong>：库多了，io 和 cpu 的压力自然可以成倍缓解。</p>
 <p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155810.png" alt></p>
-<p><strong>2、水平分表</strong></p>
+<p><strong>②  水平分表</strong></p>
 <p><strong>概念</strong>：以<strong>字段</strong>为依据，按照一定策略（hash、range等），将一个<strong>表</strong>中的数据拆分到多个<strong>表</strong>中。</p>
 <p><strong>结果</strong>：</p>
 <ul>
@@ -506,48 +536,46 @@
 <li>每个<strong>表</strong>的<strong>数据</strong>都不一样，没有交集；</li>
 <li>所有<strong>表</strong>的<strong>并集</strong>是全量数据；</li>
 </ul>
-<p><strong>场景</strong>：系统绝对并发量并没有上来，只是单表的数据量太多，影响了 SQL 效率，加重了 CPU 负担，以至于成为瓶颈。</p>
+<p><strong>场景</strong>：解决了单一表数据量过大的问题。</p>
 <p><strong>分析</strong>：表的数据量少了，单次 SQL 执行效率高，自然减轻了 CPU 的负担。</p>
 <p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155835.png" alt></p>
-<p><strong>3、垂直分库</strong></p>
-<p><strong>概念</strong>：以<strong>表</strong>为依据，按照业务归属不同，将不同的<strong>表</strong>拆分到不同的<strong>库</strong>中。</p>
-<p><strong>结果</strong>：</p>
+<p><strong>③ 优缺点</strong></p>
+<p>优点：</p>
 <ul>
-<li>每个<strong>库</strong>的<strong>结构</strong>都不一样；</li>
-<li>每个<strong>库</strong>的<strong>数据</strong>也不一样，没有交集；</li>
-<li>所有<strong>库</strong>的<strong>并集</strong>是全量数据；</li>
+<li>不存在单库数据量过大、高并发的性能瓶颈，提升系统稳定性和负载能力。</li>
+<li>应用端改造较小，不需要拆分业务模块。</li>
 </ul>
-<p><strong>场景</strong>：系统绝对并发量上来了，并且可以抽象出单独的业务模块。</p>
-<p><strong>分析</strong>：到这一步，基本上就可以服务化了。例如，随着业务的发展一些公用的配置表、字典表等越来越多，这时可以将这些表拆到单独的库中，甚至可以服务化。再有，随着业务的发展孵化出了一套业务模式，这时可以将相关的表拆到单独的库中，甚至可以服务化。</p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155850.png" alt></p>
-<p><strong>4、垂直分表</strong></p>
-<p><strong>概念</strong>：以<strong>字段</strong>为依据，按照字段的活跃性，将<strong>表</strong>中字段拆到不同的<strong>表</strong>（主表和扩展表）中。</p>
-<p><strong>结果</strong>：</p>
+<p>缺点：</p>
 <ul>
-<li>每个<strong>表</strong>的<strong>结构</strong>都不一样；</li>
-<li>每个<strong>表</strong>的<strong>数据</strong>也不一样，一般来说，每个表的<strong>字段</strong>至少有一列交集，一般是主键，用于关联数据；</li>
-<li>所有<strong>表</strong>的<strong>并集</strong>是全量数据；</li>
+<li>跨库的 join 关联查询性能较差。</li>
+<li>数据多次扩展难度和维护量极大。</li>
 </ul>
-<p><strong>场景</strong>：系统绝对并发量并没有上来，表的记录并不多，但是字段多，并且热点数据和非热点数据在一起，单行数据所需的存储空间较大。以至于数据库缓存的数据行减少，查询时会去读磁盘数据产生大量的随机读IO，产生IO瓶颈。</p>
-<p><strong>分析</strong>：可以用列表页和详情页来帮助理解。垂直分表的拆分原则是将热点数据（可能会冗余经常一起查询的数据）放在一起作为主表，非热点数据放在一起作为扩展表。这样更多的热点数据就能被缓存下来，进而减少了随机读IO。拆了之后，要想获得全部数据就需要关联两个表来取数据。但记住，千万别用 join，因为 join 不仅会增加CPU 负担并且会讲两个表耦合在一起（必须在一个数据库实例上）。关联数据，应该在业务 service 层做文章，分别获取主表和扩展表数据然后用关联字段关联得到全部数据。</p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155900.png" alt></p>
-<h2 id="分库分表工具"><a href="#分库分表工具" class="headerlink" title="分库分表工具"></a>分库分表工具</h2><ul>
+<p><strong>几种典型的数据水平分片规则：</strong></p>
+<ul>
+<li>根据数值范围：按照时间区间或ID区间切分，例如：按日期将不同月甚至是日的数据分散到不同的库表中，将userId 为 1<del>9999 的记录分到第一个库或表，10000</del>20000 的分到第二个库或表。</li>
+<li>根据数值取模：一般采用 hash 取模 mod 的切分方式，例如：将 Customer 表根据 cusno 字段切分到 4 个库中，余数为 0 的放到第一个库，余数为 1 的放到第二个库。</li>
+</ul>
+<h2 id="分库分表带来的问题"><a href="#分库分表带来的问题" class="headerlink" title="分库分表带来的问题"></a>分库分表带来的问题</h2><p>事务一致性问题</p>
+<p>跨节点关联查询 join 问题</p>
+<p>跨节点分页、排序、函数问题</p>
+<p>全局主键避重问题</p>
+<p>数据迁移、扩容问题</p>
+<h2 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h2><ul>
 <li><a href="https://shardingsphere.apache.org/" target="_blank" rel="noopener">sharding-sphere</a>：jar，前身是 sharding-jdbc</li>
 <li>TDDL：jar，Taobao Distribute Data Layer</li>
 <li><a href="http://www.mycat.io/" target="_blank" rel="noopener">Mycat</a>：中间件</li>
 </ul>
-<h2 id="分库分表步骤"><a href="#分库分表步骤" class="headerlink" title="分库分表步骤"></a>分库分表步骤</h2><p>根据容量（当前容量和增长量）评估分库或分表个数 -&gt; 选 <code>key</code>（均匀）-&gt; 分表规则（ <code>hash</code> 或 <code>range</code> 等）-&gt; 执行（一般双写）-&gt; 扩容问题（尽量减少数据的移动）</p>
 <h2 id="原则"><a href="#原则" class="headerlink" title="原则"></a>原则</h2><ul>
-<li>原则零：能不分就不分</li>
-<li>原则一：数据量太大，正常的运维影响正常的业务访问</li>
-<li>原则二：表设计不合理，需要对某些字段进行垂直拆分</li>
-<li>原则三：某些数据表出现了无穷增长的情况</li>
-<li>原则四：安全性和可用性的考虑</li>
-<li>原则五：业务耦合性考虑</li>
+<li>原则 0：能不分就不分。</li>
+<li>原则 1：数据量太大，正常的运维影响正常的业务访问。</li>
+<li>原则 2：表设计不合理，需要对某些字段进行垂直拆分。</li>
+<li>原则 3：某些数据表出现了无穷增长的情况。</li>
+<li>原则 4：安全性和可用性的考虑。</li>
+<li>原则 5：业务耦合性考虑。</li>
 </ul>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>①  <strong>水平拆分</strong>和<strong>垂直拆分</strong>都是降低数据量大小，提升数据库性能的常见手段</p>
-<p>②  流量大数据量大时，<strong>数据访问要有 service 层</strong>，并且 service 层不要通过 <code>join</code> 来获取主表和扩展表的属性</p>
-<p>③  <strong>垂直拆分的依据</strong>，尽量把长度较短，访问频率较高的属性放在主表里</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>①  <strong>水平拆分</strong>和<strong>垂直拆分</strong>都是降低数据量大小，提升数据库性能的常见手段。</p>
+<p>②  流量大数据量大时，<strong>数据访问要有 service 层</strong>，并且 service 层不要通过 join 来获取主表和扩展表的属性。</p>
+<p>③  <strong>垂直拆分的依据</strong>，尽量把长度较短，访问频率较高的属性放在主表里。</p>
 
       
     </div>
@@ -821,7 +849,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库瓶颈"><span class="nav-number">1.</span> <span class="nav-text">数据库瓶颈</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分库分表"><span class="nav-number">2.</span> <span class="nav-text">分库分表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分库分表工具"><span class="nav-number">3.</span> <span class="nav-text">分库分表工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分库分表步骤"><span class="nav-number">4.</span> <span class="nav-text">分库分表步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原则"><span class="nav-number">5.</span> <span class="nav-text">原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分库分表"><span class="nav-number">2.</span> <span class="nav-text">分库分表</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#垂直切分"><span class="nav-number">2.1.</span> <span class="nav-text">垂直切分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#水平拆分"><span class="nav-number">2.2.</span> <span class="nav-text">水平拆分</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分库分表带来的问题"><span class="nav-number">3.</span> <span class="nav-text">分库分表带来的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#工具"><span class="nav-number">4.</span> <span class="nav-text">工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原则"><span class="nav-number">5.</span> <span class="nav-text">原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>
