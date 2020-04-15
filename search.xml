@@ -10209,8 +10209,7 @@
   <entry>
     <title>MySQL · 分库分表</title>
     <url>/blog/2019/07/24/mysql-split/</url>
-    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>由于单机存储容量、连接数、处理能力有限，当超过一定上限后，数据库会遭遇性能瓶颈，即使优化索引，很多操作的性能仍下降严重。切分 (Sharding) 的目的就在于减少数据库的负担，缩短查询时间。</p>
-<p>根据切分类型，可以分为两种方式：垂直切分和水平切分。</p>
+    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>由于单机存储容量、连接数、处理能力有限，当超过一定上限后，数据库会遭遇性能瓶颈，即使优化索引，很多操作的性能仍下降严重。切分 (Sharding) 的目的就在于减少数据库的负担，缩短查询时间。根据切分类型，可以分为两种方式：垂直切分和水平切分。</p>
 <ul>
 <li>第一种：磁盘读 IO 瓶颈，热点数据太多，数据库缓存放不下，每次查询时会产生大量的 IO，降低查询速度  -&gt;  <strong><a href="https://www.cnblogs.com/littlecharacter/p/9342129.html#fkfb" target="_blank" rel="noopener">分库和垂直分表</a></strong>。</li>
 <li>第二种：网络 IO 瓶颈，请求的数据太多，网络带宽不够  -&gt;  <strong><a href="https://www.cnblogs.com/littlecharacter/p/9342129.html#fkfb" target="_blank" rel="noopener">分库</a></strong>。</li>
@@ -10285,7 +10284,7 @@
 </ul>
 <p><strong>几种典型的数据水平分片规则：</strong></p>
 <ul>
-<li><p>根据数值范围：按照时间区间或 ID 区间切分，例如：按日期将不同月甚至是日的数据分散到不同的库表中，将userId 为 1<del>9999 的记录分到第一个库或表，10000</del>20000 的分到第二个库或表。</p>
+<li><p>根据数值范围：按照时间区间或 ID 区间切分，例如：按日期将不同月甚至是日的数据分散到不同的库表中，将 userId 为 1<del>9999 的记录分到第一个库或表，10000</del>20000 的分到第二个库或表。</p>
 <ul>
 <li><p>优点：扩容简单</p>
 </li>
@@ -10312,7 +10311,7 @@
 </li>
 <li><p><strong>全局主键避重问题</strong>：由于表中数据同时存在不同数据库中，主键值平时使用的自增长将无用武之地，某个分区数据库自生成的 ID 无法保证全局唯一。因此需要单独设计全局主键，以避免跨库主键重复问题。一些常见的主键生成策略：</p>
 <ul>
-<li>UUID：32个16进制数字，缺点是长和无序，会占用大量的存储空间且无序性会引起数据位置频繁变动，导致分页。</li>
+<li>UUID：32 个 16 进制数字，缺点是太长和无序，会占用大量的存储空间且无序性会引起数据位置频繁变动，导致分页。</li>
 <li>Twitter 的 <a href="https://github.com/twitter-archive/snowflake" target="_blank" rel="noopener">Snowflake</a> 算法：缺点是强依赖机器时钟，如果时钟回拨，则可能导致生成 ID 重复。</li>
 <li>美团的 <a href="https://tech.meituan.com/2017/04/21/mt-leaf.html" target="_blank" rel="noopener">Leaf</a></li>
 </ul>
