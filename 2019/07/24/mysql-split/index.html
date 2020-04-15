@@ -107,7 +107,7 @@
 <meta property="og:image" content="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155900.png">
 <meta property="og:image" content="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155810.png">
 <meta property="og:image" content="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-25-155835.png">
-<meta property="og:updated_time" content="2020-04-15T03:41:53.691Z">
+<meta property="og:updated_time" content="2020-04-15T06:36:06.640Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL · 分库分表">
 <meta name="twitter:description" content="背景由于单机存储容量、连接数、处理能力有限，当超过一定上限后，数据库会遭遇性能瓶颈，即使优化索引，很多操作的性能仍下降严重。切分 (Sharding) 的目的就在于减少数据库的负担，缩短查询时间。 根据切分类型，可以分为两种方式：垂直切分和水平切分。  第一种：磁盘读 IO 瓶颈，热点数据太多，数据库缓存放不下，每次查询时会产生大量的 IO，降低查询速度  -&amp;gt;  分库和垂直分表。 第二种：">
@@ -417,7 +417,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2020-04-15 11:41:53" itemprop="dateModified" datetime="2020-04-15T11:41:53+08:00">2020-04-15</time>
+                <time title="修改时间：2020-04-15 14:36:06" itemprop="dateModified" datetime="2020-04-15T14:36:06+08:00">2020-04-15</time>
               
             
           </span>
@@ -552,18 +552,44 @@
 </ul>
 <p><strong>几种典型的数据水平分片规则：</strong></p>
 <ul>
-<li>根据数值范围：按照时间区间或ID区间切分，例如：按日期将不同月甚至是日的数据分散到不同的库表中，将userId 为 1<del>9999 的记录分到第一个库或表，10000</del>20000 的分到第二个库或表。</li>
-<li>根据数值取模：一般采用 hash 取模 mod 的切分方式，例如：将 Customer 表根据 cusno 字段切分到 4 个库中，余数为 0 的放到第一个库，余数为 1 的放到第二个库。</li>
+<li><p>根据数值范围：按照时间区间或 ID 区间切分，例如：按日期将不同月甚至是日的数据分散到不同的库表中，将userId 为 1<del>9999 的记录分到第一个库或表，10000</del>20000 的分到第二个库或表。</p>
+<ul>
+<li><p>优点：扩容简单</p>
+</li>
+<li><p>缺点：请求量分布不均匀，导致服务器利用率不平衡</p>
+</li>
 </ul>
-<h2 id="分库分表带来的问题"><a href="#分库分表带来的问题" class="headerlink" title="分库分表带来的问题"></a>分库分表带来的问题</h2><p>事务一致性问题</p>
-<p>跨节点关联查询 join 问题</p>
-<p>跨节点分页、排序、函数问题</p>
-<p>全局主键避重问题</p>
-<p>数据迁移、扩容问题</p>
-<h2 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h2><ul>
-<li><a href="https://shardingsphere.apache.org/" target="_blank" rel="noopener">sharding-sphere</a>：jar，前身是 sharding-jdbc</li>
-<li>TDDL：jar，Taobao Distribute Data Layer</li>
-<li><a href="http://www.mycat.io/" target="_blank" rel="noopener">Mycat</a>：中间件</li>
+</li>
+<li><p>根据数值取模：一般采用 hash 取模 mod 的切分方式，例如：将 Customer 表根据 cusno 字段切分到 4 个库中，余数为 0 的放到第一个库，余数为 1 的放到第二个库。</p>
+<ul>
+<li><p>优点：数据量和请求量分布均匀</p>
+</li>
+<li><p>缺点：扩容麻烦，需要考虑对数据进行平滑的迁移</p>
+</li>
+</ul>
+</li>
+</ul>
+<h2 id="分库分表带来的问题"><a href="#分库分表带来的问题" class="headerlink" title="分库分表带来的问题"></a>分库分表带来的问题</h2><p>分库分表能有效的环节单机和单库带来的性能瓶颈和压力，突破网络 IO、硬件资源、连接数的瓶颈，同时也带来了一些问题。</p>
+<ul>
+<li><p><strong>事务一致性问题</strong>：往往不苛求系统的实时一致性，只要在允许的时间段内达到最终一致性即可，可采用事务补偿的方式。</p>
+</li>
+<li><p><strong>跨节点关联查询 join 问题</strong>：考虑到性能，尽量避免使用 join 查询，一般通过<strong>字段冗余</strong>反范式设计、<strong>数据组装</strong>等方法。</p>
+</li>
+<li><p><strong>跨节点分页、排序、函数问题</strong>：需要先在不同的分片节点中将数据进行排序并返回，然后将不同分片返回的结果集进行汇总和再次排序，最终返回给用户。</p>
+</li>
+<li><p><strong>全局主键避重问题</strong>：由于表中数据同时存在不同数据库中，主键值平时使用的自增长将无用武之地，某个分区数据库自生成的 ID 无法保证全局唯一。因此需要单独设计全局主键，以避免跨库主键重复问题。一些常见的主键生成策略：</p>
+<ul>
+<li>UUID：32个16进制数字，缺点是长和无序，会占用大量的存储空间且无序性会引起数据位置频繁变动，导致分页。</li>
+<li>Twitter 的 <a href="https://github.com/twitter-archive/snowflake" target="_blank" rel="noopener">Snowflake</a> 算法：缺点是强依赖机器时钟，如果时钟回拨，则可能导致生成 ID 重复。</li>
+<li>美团的 <a href="https://tech.meituan.com/2017/04/21/mt-leaf.html" target="_blank" rel="noopener">Leaf</a></li>
+</ul>
+</li>
+</ul>
+<h2 id="工具中间件"><a href="#工具中间件" class="headerlink" title="工具中间件"></a>工具中间件</h2><ul>
+<li><a href="https://shardingsphere.apache.org/document/current/cn/overview/" target="_blank" rel="noopener">ShardingSphere（当当）</a></li>
+<li><a href="https://github.com/Qihoo360/Atlas/blob/master/README_ZH.md" target="_blank" rel="noopener">Atlas（奇虎360）</a></li>
+<li><a href="http://www.mycat.io/" target="_blank" rel="noopener">Mycat（阿里巴巴）</a></li>
+<li><a href="https://github.com/vitessio/vitess" target="_blank" rel="noopener">Vitess（谷歌）</a></li>
 </ul>
 <h2 id="原则"><a href="#原则" class="headerlink" title="原则"></a>原则</h2><ul>
 <li>原则 0：能不分就不分。</li>
@@ -849,7 +875,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分库分表"><span class="nav-number">2.</span> <span class="nav-text">分库分表</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#垂直切分"><span class="nav-number">2.1.</span> <span class="nav-text">垂直切分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#水平拆分"><span class="nav-number">2.2.</span> <span class="nav-text">水平拆分</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分库分表带来的问题"><span class="nav-number">3.</span> <span class="nav-text">分库分表带来的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#工具"><span class="nav-number">4.</span> <span class="nav-text">工具</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原则"><span class="nav-number">5.</span> <span class="nav-text">原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分库分表"><span class="nav-number">2.</span> <span class="nav-text">分库分表</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#垂直切分"><span class="nav-number">2.1.</span> <span class="nav-text">垂直切分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#水平拆分"><span class="nav-number">2.2.</span> <span class="nav-text">水平拆分</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分库分表带来的问题"><span class="nav-number">3.</span> <span class="nav-text">分库分表带来的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#工具中间件"><span class="nav-number">4.</span> <span class="nav-text">工具中间件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原则"><span class="nav-number">5.</span> <span class="nav-text">原则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>
