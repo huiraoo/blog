@@ -96,17 +96,17 @@
 
 
 
-  <meta name="description" content="概述物理备份：直接备份数据库的数据文件，适用于大数据量，需要快速恢复的数据库。 逻辑备份：备份数据库中数据结构和内容的SQL语句，适用于较小数据量或是跨版本的数据库备份恢复。 目前备份方式的几个纬度：  全量备份 VS 增量备份 热备 VS 冷备 物理备份 VS 逻辑备份 延时备份 全量binlog备份  建议方式：  热备＋物理备份 核心业务：延时备份＋逻辑备份 全量binlog备份  主要做的">
+  <meta name="description" content="概述根据备份方法不同：  热备：数据库运行过程中直接备份，对正在运行的数据库操作没有任何的影响。 冷备：备份操作是在数据库停止的情况下，这种备份最为简单，只需要复制相关的数据库物理文件即可。 温备：数据库运行过程中直接备份，但是会对当前数据库操作有所影响。  根据备份后文件的内容不同：  逻辑备份：是指备份出的文件内容是可读的，一般内容是 SQL 语句，如 mysqldump。 物理备份：是指复制">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MySQL · 备份恢复">
+<meta property="og:title" content="MySQL · 备份与恢复">
 <meta property="og:url" content="https://huiraoo.github.io/blog/2019/07/24/mysql-backup/index.html">
 <meta property="og:site_name" content="Rao&#39;s Blog">
-<meta property="og:description" content="概述物理备份：直接备份数据库的数据文件，适用于大数据量，需要快速恢复的数据库。 逻辑备份：备份数据库中数据结构和内容的SQL语句，适用于较小数据量或是跨版本的数据库备份恢复。 目前备份方式的几个纬度：  全量备份 VS 增量备份 热备 VS 冷备 物理备份 VS 逻辑备份 延时备份 全量binlog备份  建议方式：  热备＋物理备份 核心业务：延时备份＋逻辑备份 全量binlog备份  主要做的">
+<meta property="og:description" content="概述根据备份方法不同：  热备：数据库运行过程中直接备份，对正在运行的数据库操作没有任何的影响。 冷备：备份操作是在数据库停止的情况下，这种备份最为简单，只需要复制相关的数据库物理文件即可。 温备：数据库运行过程中直接备份，但是会对当前数据库操作有所影响。  根据备份后文件的内容不同：  逻辑备份：是指备份出的文件内容是可读的，一般内容是 SQL 语句，如 mysqldump。 物理备份：是指复制">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-15T08:25:03.227Z">
+<meta property="og:updated_time" content="2020-04-17T10:01:27.609Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="MySQL · 备份恢复">
-<meta name="twitter:description" content="概述物理备份：直接备份数据库的数据文件，适用于大数据量，需要快速恢复的数据库。 逻辑备份：备份数据库中数据结构和内容的SQL语句，适用于较小数据量或是跨版本的数据库备份恢复。 目前备份方式的几个纬度：  全量备份 VS 增量备份 热备 VS 冷备 物理备份 VS 逻辑备份 延时备份 全量binlog备份  建议方式：  热备＋物理备份 核心业务：延时备份＋逻辑备份 全量binlog备份  主要做的">
+<meta name="twitter:title" content="MySQL · 备份与恢复">
+<meta name="twitter:description" content="概述根据备份方法不同：  热备：数据库运行过程中直接备份，对正在运行的数据库操作没有任何的影响。 冷备：备份操作是在数据库停止的情况下，这种备份最为简单，只需要复制相关的数据库物理文件即可。 温备：数据库运行过程中直接备份，但是会对当前数据库操作有所影响。  根据备份后文件的内容不同：  逻辑备份：是指备份出的文件内容是可读的，一般内容是 SQL 语句，如 mysqldump。 物理备份：是指复制">
 
 
 
@@ -124,7 +124,7 @@
   };
 </script>
 
-  <title>MySQL · 备份恢复 | Rao's Blog</title>
+  <title>MySQL · 备份与恢复 | Rao's Blog</title>
   
 
 
@@ -369,7 +369,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">MySQL · 备份恢复
+          <h1 class="post-title" itemprop="name headline">MySQL · 备份与恢复
 
               
             
@@ -412,7 +412,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-11-15 16:25:03" itemprop="dateModified" datetime="2019-11-15T16:25:03+08:00">2019-11-15</time>
+                <time title="修改时间：2020-04-17 18:01:27" itemprop="dateModified" datetime="2020-04-17T18:01:27+08:00">2020-04-17</time>
               
             
           </span>
@@ -471,43 +471,101 @@
       
 
       
-        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>物理备份：直接备份数据库的数据文件，适用于大数据量，需要快速恢复的数据库。</p>
-<p>逻辑备份：备份数据库中数据结构和内容的SQL语句，适用于较小数据量或是跨版本的数据库备份恢复。</p>
-<p>目前备份方式的几个纬度：</p>
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>根据备份方法不同：</p>
 <ul>
-<li>全量备份 VS 增量备份</li>
-<li>热备 VS 冷备</li>
-<li>物理备份 VS 逻辑备份</li>
-<li>延时备份</li>
-<li>全量binlog备份</li>
+<li>热备：数据库运行过程中直接备份，对正在运行的数据库操作没有任何的影响。</li>
+<li>冷备：备份操作是在数据库停止的情况下，这种备份最为简单，只需要复制相关的数据库物理文件即可。</li>
+<li>温备：数据库运行过程中直接备份，但是会对当前数据库操作有所影响。</li>
 </ul>
-<p>建议方式：</p>
+<p>根据备份后文件的内容不同：</p>
 <ul>
-<li>热备＋物理备份</li>
-<li>核心业务：延时备份＋逻辑备份</li>
-<li>全量binlog备份</li>
+<li>逻辑备份：是指备份出的文件内容是可读的，一般内容是 SQL 语句，如 mysqldump。</li>
+<li>物理备份：是指复制数据库的物理文件，如 xtrabackup。</li>
 </ul>
-<p>主要做的几点：</p>
+<p>根据备份数据库内容不同：</p>
 <ul>
-<li>备份策略集中式调度管理</li>
-<li>xtrabackup热备</li>
-<li>备份结果统计分析</li>
-<li>备份数据一致性校验</li>
-<li>采用分布式文件系统存储备份</li>
+<li>全量备份：是指对数据库进行一个完整的备份。</li>
+<li>增量备份：是指在上次完全备份的基础上，对于更改的数据进行备份。</li>
+<li>日志备份：是指对二进制日志的备份，通过它可以完成 point-in-time 的恢复工作。</li>
 </ul>
-<p>备份系统采用分布式文件系统原因：</p>
+<h2 id="冷备"><a href="#冷备" class="headerlink" title="冷备"></a>冷备</h2><p><strong>备份内容</strong>：共享表空间文件 <code>.frm</code>、独立表空间文件 <code>.ibd</code>、重做日志文件、配置文件 <code>my.cnf</code>。</p>
+<p><strong>优缺点</strong>：</p>
 <ul>
-<li>解决存储分配的问题</li>
-<li>解决存储NFS备份效率低下问题</li>
-<li>存储集中式管理</li>
-<li>数据可靠性更好</li>
+<li>优点：备份恢复简单、速度快。</li>
+<li>缺点：备份的文件通常比逻辑文件大很多，且需要停机，不适于用于生产环境。</li>
 </ul>
-<h2 id="备份方案"><a href="#备份方案" class="headerlink" title="备份方案"></a>备份方案</h2><ul>
-<li>mysqldump</li>
-<li>XtraBackup</li>
+<h2 id="逻辑备份"><a href="#逻辑备份" class="headerlink" title="逻辑备份"></a>逻辑备份</h2><h3 id="mysqldump"><a href="#mysqldump" class="headerlink" title="mysqldump"></a>mysqldump</h3><p><strong>语法</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Usage: mysqldump [OPTIONS] database [tables] &gt; [backupfile.sql]</span><br><span class="line">       mysqldump [OPTIONS] --databases [OPTIONS] DB1 [DB2 DB3...] &gt; [backupfile.sql]</span><br><span class="line">       mysqldump [OPTIONS] --all-databases [OPTIONS] &gt; [backupfile.sql]</span><br></pre></td></tr></table></figure>
+
+<p><strong>参数</strong></p>
+<ul>
+<li><p>–single-transaction：在备份之前，先执行 start transaction 命令，以此来获得备份的一致性，当前该参数只对 InnoDB 存储引擎有效。当启用此参数时，确保没有任何 DDL 语句执行，因为一致性读并不能隔离 DDL 操作。</p>
+</li>
+<li><p>–lock-tables ( -l )：在备份中，依次锁住每个库下所有表，一般用于 MyISAM 存储引擎，当备份时只对数据库进行读取操作，不过备份依然可以保证一致性。对于 InnoDB 存储引擎，不需要使用该参数。</p>
+</li>
+<li><p>–lock-all-tables ( -x )：在备份中，对所有库的所有表上锁。</p>
+</li>
+<li><p>–no-data ( -d )：不备份数据。</p>
+</li>
+<li><p>–extended-insert ( -e )：使用全新多行 insert 语法，默认开启。</p>
+</li>
+<li><p>–master-data [=value]：通过该参数产生的备份转存文件主要用来建立一个 replication。</p>
+<ul>
+<li><p>1：转存文件中记录 change master 语句。</p>
+</li>
+<li><p>2：转存文件中 change master 语句被注释。</p>
+</li>
 </ul>
-<h2 id="恢复实践"><a href="#恢复实践" class="headerlink" title="恢复实践"></a>恢复实践</h2><p><strong>关于备份，binlog备份自然不用说了，物理备份有很多方式，有没有推荐的一种，逻辑备份在量大的时候恢复速度比较慢，一般用在什么场景？</strong></p>
-<p>物理备份采用xtrabackup热备方案比较好。逻辑备份一般用在单表恢复效果会非常好。比如你删了一个2G表，但你总数据量2T，用物理备份就会要慢了，逻辑备份就非常有用了。</p>
+</li>
+<li><p>–flush-logs：开始备份之前刷新日志。</p>
+</li>
+<li><p>–events ( -E )：备份事件。</p>
+</li>
+<li><p>–routines ( -R )：备份存储过程和函数。</p>
+</li>
+<li><p>–triggers：备份触发器，该选项默认启用。</p>
+</li>
+<li><p>–where=’where_condition’ (-w ‘where_condition’)：导出给定条件的数据。</p>
+</li>
+</ul>
+<p><strong>实践</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 备份所有库</span></span><br><span class="line">mysqldump --user=sre --password=<span class="string">'xx'</span> --all-databases &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份指定库</span></span><br><span class="line">mysqldump -u&lt;user&gt; -p&lt;password&gt; --databases school hospital &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份指定表</span></span><br><span class="line">mysqldump --user=sre --password=<span class="string">'xx'</span> school table_name &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导出表结构，无数据</span></span><br><span class="line">mysqldump --user=sre --password=<span class="string">'xx'</span> --all--database --no-data &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份存储过程</span></span><br><span class="line">mysqldump --user=sre --password=<span class="string">'xx'</span> --single-transaction --master-data=<span class="number">2</span> -n -d -t -R user &gt; dump.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份InnoDB</span></span><br><span class="line">mysqldump --socket=mysql.sock --user=user --password=pass --single-transaction --flush-logs --master-data=<span class="number">2</span> --all-databases --routines --events &gt; dump.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份Myisam</span></span><br><span class="line">mysqldump --socket=mysql.sock --user=user --password=pass --lock-all-tables --flush-logs --master-data=<span class="number">2</span> --all-databases --routines --events &gt; dump.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 按条件备份</span></span><br><span class="line">mysqldump -usre -p<span class="string">'xx'</span> -t user uc_event_logs_bak --where=<span class="string">"id &gt; 46005503"</span> &gt; uc_event_logs_bak2.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 后台执行任务</span></span><br><span class="line">nohup mysql -usre -p<span class="string">'xx'</span> user &lt; uc_event_logs_bak2.sql <span class="number">2</span>&gt; myout.file &amp;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：默认是会备份视图。</p>
+</blockquote>
+<h3 id="select…into-outfile"><a href="#select…into-outfile" class="headerlink" title="select…into outfile"></a>select…into outfile</h3><p><strong>作用</strong>：也是一种逻辑备份的方法，更准确的说是导出一张表中的数据。</p>
+<p><strong>语法</strong>：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">select [column1],[column2]...</span><br><span class="line">into outfile <span class="string">'file_name'</span></span><br><span class="line">from table where...</span><br><span class="line"></span><br><span class="line">FIELDS TERMINATED BY 用来对字段值之间进行分割，</span><br><span class="line">FIELDS [OPTIONALLY] ENCLOSED BY 用来对字段值进行包裹</span><br><span class="line">FIELDS  LINES TERMINATED BY  用来对每行结束指定换行符</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：file_name 文件所在路径权限必须是 mysql:mysql。</p>
+</blockquote>
+<p><strong>实践</strong>：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">// departments表数据</span><br><span class="line">mysql&gt; select * from departments;</span><br><span class="line">+---------+--------------------+</span><br><span class="line">| dept_no | dept_name          |</span><br><span class="line">+---------+--------------------+</span><br><span class="line">| d009    | Customer Service   |</span><br><span class="line">| d005    | Development        |</span><br><span class="line">| d002    | Finance            |</span><br><span class="line">| d003    | Human Resources    |</span><br><span class="line">| d001    | Marketing          |</span><br><span class="line">| d004    | Production         |</span><br><span class="line">| d006    | Quality Management |</span><br><span class="line">| d008    | Research           |</span><br><span class="line">| d007    | Sales              |</span><br><span class="line">+---------+--------------------+</span><br><span class="line"></span><br><span class="line">// 导出为文件</span><br><span class="line">select * from departments into outfile <span class="string">'/data/mysql/department.sql'</span>;</span><br><span class="line"></span><br><span class="line">// 查看导出数据</span><br><span class="line">[root@db mysql]<span class="comment"># cat department.sql </span></span><br><span class="line">d009	Customer Service</span><br><span class="line">d005	Development</span><br><span class="line">d002	Finance</span><br><span class="line">d003	Human Resources</span><br><span class="line">d001	Marketing</span><br><span class="line">d004	Production</span><br><span class="line">d006	Quality Management</span><br><span class="line">d008	Research</span><br><span class="line">d007	Sales</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意</strong>：使用该命令导出文件可能会报错：”The MySQL server is running with the –secure-file-priv option so it cannot execute this statement “，原因是 secure_file_priv 为 NULL，需要设置目录。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SHOW VARIABLES LIKE <span class="string">"secure_file_priv"</span>;</span><br><span class="line">+------------------+--------------+</span><br><span class="line">| Variable_name    | Value        |</span><br><span class="line">+------------------+--------------+</span><br><span class="line">| secure_file_priv | /<span class="keyword">data</span>/mysql/ |</span><br><span class="line">+------------------+--------------+</span><br></pre></td></tr></table></figure>
+
+<h3 id="逻辑备份恢复"><a href="#逻辑备份恢复" class="headerlink" title="逻辑备份恢复"></a>逻辑备份恢复</h3><p>有三种方式：</p>
+<ul>
+<li>mysql</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -p<span class="string">'xx'</span> &lt; backup.sql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>source</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; source /<span class="keyword">data</span>/mysql/backup.sql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>load data infile</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from departments;</span><br><span class="line">Empty set (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; load <span class="keyword">data</span> infile <span class="string">'/data/mysql/department.sql'</span> into table departments;</span><br><span class="line">Query OK, <span class="number">9</span> rows affected (<span class="number">0.01</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select * from departments;</span><br><span class="line">+---------+--------------------+</span><br><span class="line">| dept_no | dept_name          |</span><br><span class="line">+---------+--------------------+</span><br><span class="line">| d009    | Customer Service   |</span><br><span class="line">| d005    | Development        |</span><br><span class="line">| d002    | Finance            |</span><br><span class="line">| d003    | Human Resources    |</span><br><span class="line">| d001    | Marketing          |</span><br><span class="line">| d004    | Production         |</span><br><span class="line">| d006    | Quality Management |</span><br><span class="line">| d008    | Research           |</span><br><span class="line">| d007    | Sales              |</span><br><span class="line">+---------+--------------------+</span><br></pre></td></tr></table></figure>
+
+<h2 id="热备"><a href="#热备" class="headerlink" title="热备"></a>热备</h2><p>XtraBackup</p>
+<h2 id="二进制日志备份"><a href="#二进制日志备份" class="headerlink" title="二进制日志备份"></a>二进制日志备份</h2><h2 id="快照备份"><a href="#快照备份" class="headerlink" title="快照备份"></a>快照备份</h2><p>MySQL 数据库本身并不支持快照功能，因此快照备份是指通过文件系统支持的快照功能对数据库进行备份。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>注意：任何时候都需要做好远程异地备份，也就是容灾的防范。</p>
 
       
     </div>
@@ -781,7 +839,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#备份方案"><span class="nav-number">2.</span> <span class="nav-text">备份方案</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#恢复实践"><span class="nav-number">3.</span> <span class="nav-text">恢复实践</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#冷备"><span class="nav-number">2.</span> <span class="nav-text">冷备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#逻辑备份"><span class="nav-number">3.</span> <span class="nav-text">逻辑备份</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#mysqldump"><span class="nav-number">3.1.</span> <span class="nav-text">mysqldump</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#select…into-outfile"><span class="nav-number">3.2.</span> <span class="nav-text">select…into outfile</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#逻辑备份恢复"><span class="nav-number">3.3.</span> <span class="nav-text">逻辑备份恢复</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#热备"><span class="nav-number">4.</span> <span class="nav-text">热备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二进制日志备份"><span class="nav-number">5.</span> <span class="nav-text">二进制日志备份</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#快照备份"><span class="nav-number">6.</span> <span class="nav-text">快照备份</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>

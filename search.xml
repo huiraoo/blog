@@ -1,6 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>MySQL · 高可用方案</title>
+    <url>/blog/2020/04/17/mysql-ha/</url>
+    <content><![CDATA[<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><ul>
+<li><p>可用性</p>
+<ul>
+<li>运行中断时间</li>
+<li>平均故障时间</li>
+<li>平均恢复时间</li>
+</ul>
+</li>
+<li><p>容量/性能</p>
+</li>
+<li><p>冗余度</p>
+</li>
+<li><p>故障容忍度</p>
+</li>
+<li><p>灾难恢复</p>
+</li>
+</ul>
+<p>需要的手段</p>
+<ul>
+<li>运维管理</li>
+<li>故障检测和处理</li>
+<li>可扩展性</li>
+<li>数据一致性保证</li>
+<li>提高在线运维能力</li>
+</ul>
+]]></content>
+      <categories>
+        <category>MySQL</category>
+      </categories>
+  </entry>
+  <entry>
     <title>MySQL · 文件</title>
     <url>/blog/2020/04/16/mysql-file/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>解析构成 MySQL 数据库和 InnoDB 存储引擎表的各种类型文件。</p>
@@ -98,6 +131,7 @@
 <h3 id="表空间文件"><a href="#表空间文件" class="headerlink" title="表空间文件"></a>表空间文件</h3><p>InnoDB 采用将存储的数据按表空间（tablespace）进行存放的设计。</p>
 <ul>
 <li>系统表空间：文件名为 <code>ibdata1</code>，初始化为 <code>10M</code>，存放 undo logs、缓存等。</li>
+<li>共享表空间：<strong>.frm</strong> 共享表空间文件。</li>
 <li>独立表空间：每个表都将会生成以独立的文件方式 <strong>.ibd</strong> 来存储，在 <code>MySQL 5.6.6</code> 后的版本，默认选择，主要存放数据、索引等信息，其余信息还是存放在共享表空间中。</li>
 </ul>
 <p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-03-22-085500.png" alt></p>
@@ -4175,28 +4209,6 @@
 ]]></content>
       <categories>
         <category>Java</category>
-      </categories>
-  </entry>
-  <entry>
-    <title>MySQL · 运维实践 · 备份恢复</title>
-    <url>/blog/2019/11/16/mysql-practice-recovery/</url>
-    <content><![CDATA[<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><ul>
-<li><strong>项目</strong>：海尔模块商资源平台（HDY）</li>
-<li><strong>数据库</strong>：MySQL 5.5.27</li>
-<li><strong>数据量</strong>：</li>
-</ul>
-<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><ul>
-<li>申请服务器 - 项目经理</li>
-<li>申请特权账号（DBA、DTS 备份）- 项目经理</li>
-<li>搭建数据库 - DBA</li>
-<li>安装恢复软件，并进行相关参数配置 - DTS</li>
-<li>启动恢复</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 数据恢复</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">26</span>K Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">36</span> mysql-bin.<span class="number">000001</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">919</span>K Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">36</span> mysql-bin.<span class="number">000002</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">126</span> Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">38</span> mysql-bin.<span class="number">000003</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">126</span> Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">38</span> mysql-bin.<span class="number">000004</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">126</span> Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">39</span> mysql-bin.<span class="number">000005</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">126</span> Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">45</span> mysql-bin.<span class="number">000006</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql   <span class="number">126</span> Nov <span class="number">15</span> <span class="number">11</span>:<span class="number">46</span> mysql-bin.<span class="number">000007</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">1.1</span>G Nov <span class="number">15</span> <span class="number">16</span>:<span class="number">18</span> mysql-bin.<span class="number">000008</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">1.1</span>G Nov <span class="number">15</span> <span class="number">16</span>:<span class="number">21</span> mysql-bin.<span class="number">000009</span></span><br><span class="line">...</span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql <span class="number">1073790463</span> Nov <span class="number">16</span> <span class="number">08</span>:<span class="number">27</span> mysql-bin.<span class="number">000325</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql  <span class="number">681747155</span> Nov <span class="number">16</span> <span class="number">08</span>:<span class="number">31</span> mysql-bin.<span class="number">000326</span></span><br><span class="line">-rw-rw---- <span class="number">1</span> mysql mysql       <span class="number">6194</span> Nov <span class="number">16</span> <span class="number">08</span>:<span class="number">27</span> mysql-bin.index</span><br><span class="line"></span><br><span class="line"><span class="comment"># 回滚日志</span></span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>MySQL</category>
       </categories>
   </entry>
   <entry>
@@ -10465,45 +10477,103 @@
       </categories>
   </entry>
   <entry>
-    <title>MySQL · 备份恢复</title>
+    <title>MySQL · 备份与恢复</title>
     <url>/blog/2019/07/24/mysql-backup/</url>
-    <content><![CDATA[<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>物理备份：直接备份数据库的数据文件，适用于大数据量，需要快速恢复的数据库。</p>
-<p>逻辑备份：备份数据库中数据结构和内容的SQL语句，适用于较小数据量或是跨版本的数据库备份恢复。</p>
-<p>目前备份方式的几个纬度：</p>
+    <content><![CDATA[<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>根据备份方法不同：</p>
 <ul>
-<li>全量备份 VS 增量备份</li>
-<li>热备 VS 冷备</li>
-<li>物理备份 VS 逻辑备份</li>
-<li>延时备份</li>
-<li>全量binlog备份</li>
+<li>热备：数据库运行过程中直接备份，对正在运行的数据库操作没有任何的影响。</li>
+<li>冷备：备份操作是在数据库停止的情况下，这种备份最为简单，只需要复制相关的数据库物理文件即可。</li>
+<li>温备：数据库运行过程中直接备份，但是会对当前数据库操作有所影响。</li>
 </ul>
-<p>建议方式：</p>
+<p>根据备份后文件的内容不同：</p>
 <ul>
-<li>热备＋物理备份</li>
-<li>核心业务：延时备份＋逻辑备份</li>
-<li>全量binlog备份</li>
+<li>逻辑备份：是指备份出的文件内容是可读的，一般内容是 SQL 语句，如 mysqldump。</li>
+<li>物理备份：是指复制数据库的物理文件，如 xtrabackup。</li>
 </ul>
-<p>主要做的几点：</p>
+<p>根据备份数据库内容不同：</p>
 <ul>
-<li>备份策略集中式调度管理</li>
-<li>xtrabackup热备</li>
-<li>备份结果统计分析</li>
-<li>备份数据一致性校验</li>
-<li>采用分布式文件系统存储备份</li>
+<li>全量备份：是指对数据库进行一个完整的备份。</li>
+<li>增量备份：是指在上次完全备份的基础上，对于更改的数据进行备份。</li>
+<li>日志备份：是指对二进制日志的备份，通过它可以完成 point-in-time 的恢复工作。</li>
 </ul>
-<p>备份系统采用分布式文件系统原因：</p>
+<h2 id="冷备"><a href="#冷备" class="headerlink" title="冷备"></a>冷备</h2><p><strong>备份内容</strong>：共享表空间文件 <code>.frm</code>、独立表空间文件 <code>.ibd</code>、重做日志文件、配置文件 <code>my.cnf</code>。</p>
+<p><strong>优缺点</strong>：</p>
 <ul>
-<li>解决存储分配的问题</li>
-<li>解决存储NFS备份效率低下问题</li>
-<li>存储集中式管理</li>
-<li>数据可靠性更好</li>
+<li>优点：备份恢复简单、速度快。</li>
+<li>缺点：备份的文件通常比逻辑文件大很多，且需要停机，不适于用于生产环境。</li>
 </ul>
-<h2 id="备份方案"><a href="#备份方案" class="headerlink" title="备份方案"></a>备份方案</h2><ul>
-<li>mysqldump</li>
-<li>XtraBackup</li>
+<h2 id="逻辑备份"><a href="#逻辑备份" class="headerlink" title="逻辑备份"></a>逻辑备份</h2><h3 id="mysqldump"><a href="#mysqldump" class="headerlink" title="mysqldump"></a>mysqldump</h3><p><strong>语法</strong></p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">Usage: mysqldump [OPTIONS] database [tables] &gt; [backupfile.sql]</span><br><span class="line">       mysqldump [OPTIONS] --databases [OPTIONS] DB1 [DB2 DB3...] &gt; [backupfile.sql]</span><br><span class="line">       mysqldump [OPTIONS] --all-databases [OPTIONS] &gt; [backupfile.sql]</span><br></pre></td></tr></table></figure>
+
+<p><strong>参数</strong></p>
+<ul>
+<li><p>–single-transaction：在备份之前，先执行 start transaction 命令，以此来获得备份的一致性，当前该参数只对 InnoDB 存储引擎有效。当启用此参数时，确保没有任何 DDL 语句执行，因为一致性读并不能隔离 DDL 操作。</p>
+</li>
+<li><p>–lock-tables ( -l )：在备份中，依次锁住每个库下所有表，一般用于 MyISAM 存储引擎，当备份时只对数据库进行读取操作，不过备份依然可以保证一致性。对于 InnoDB 存储引擎，不需要使用该参数。</p>
+</li>
+<li><p>–lock-all-tables ( -x )：在备份中，对所有库的所有表上锁。</p>
+</li>
+<li><p>–no-data ( -d )：不备份数据。</p>
+</li>
+<li><p>–extended-insert ( -e )：使用全新多行 insert 语法，默认开启。</p>
+</li>
+<li><p>–master-data [=value]：通过该参数产生的备份转存文件主要用来建立一个 replication。</p>
+<ul>
+<li><p>1：转存文件中记录 change master 语句。</p>
+</li>
+<li><p>2：转存文件中 change master 语句被注释。</p>
+</li>
 </ul>
-<h2 id="恢复实践"><a href="#恢复实践" class="headerlink" title="恢复实践"></a>恢复实践</h2><p><strong>关于备份，binlog备份自然不用说了，物理备份有很多方式，有没有推荐的一种，逻辑备份在量大的时候恢复速度比较慢，一般用在什么场景？</strong></p>
-<p>物理备份采用xtrabackup热备方案比较好。逻辑备份一般用在单表恢复效果会非常好。比如你删了一个2G表，但你总数据量2T，用物理备份就会要慢了，逻辑备份就非常有用了。</p>
+</li>
+<li><p>–flush-logs：开始备份之前刷新日志。</p>
+</li>
+<li><p>–events ( -E )：备份事件。</p>
+</li>
+<li><p>–routines ( -R )：备份存储过程和函数。</p>
+</li>
+<li><p>–triggers：备份触发器，该选项默认启用。</p>
+</li>
+<li><p>–where=’where_condition’ (-w ‘where_condition’)：导出给定条件的数据。</p>
+</li>
+</ul>
+<p><strong>实践</strong></p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 备份所有库</span></span><br><span class="line">mysqldump --user=sre --password=<span class="string">'xx'</span> --all-databases &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份指定库</span></span><br><span class="line">mysqldump -u&lt;user&gt; -p&lt;password&gt; --databases school hospital &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份指定表</span></span><br><span class="line">mysqldump --user=sre --password=<span class="string">'xx'</span> school table_name &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导出表结构，无数据</span></span><br><span class="line">mysqldump --user=sre --password=<span class="string">'xx'</span> --all--database --no-data &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份存储过程</span></span><br><span class="line">mysqldump --user=sre --password=<span class="string">'xx'</span> --single-transaction --master-data=<span class="number">2</span> -n -d -t -R user &gt; dump.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份InnoDB</span></span><br><span class="line">mysqldump --socket=mysql.sock --user=user --password=pass --single-transaction --flush-logs --master-data=<span class="number">2</span> --all-databases --routines --events &gt; dump.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份Myisam</span></span><br><span class="line">mysqldump --socket=mysql.sock --user=user --password=pass --lock-all-tables --flush-logs --master-data=<span class="number">2</span> --all-databases --routines --events &gt; dump.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 按条件备份</span></span><br><span class="line">mysqldump -usre -p<span class="string">'xx'</span> -t user uc_event_logs_bak --where=<span class="string">"id &gt; 46005503"</span> &gt; uc_event_logs_bak2.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 后台执行任务</span></span><br><span class="line">nohup mysql -usre -p<span class="string">'xx'</span> user &lt; uc_event_logs_bak2.sql <span class="number">2</span>&gt; myout.file &amp;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：默认是会备份视图。</p>
+</blockquote>
+<h3 id="select…into-outfile"><a href="#select…into-outfile" class="headerlink" title="select…into outfile"></a>select…into outfile</h3><p><strong>作用</strong>：也是一种逻辑备份的方法，更准确的说是导出一张表中的数据。</p>
+<p><strong>语法</strong>：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">select [column1],[column2]...</span><br><span class="line">into outfile <span class="string">'file_name'</span></span><br><span class="line">from table where...</span><br><span class="line"></span><br><span class="line">FIELDS TERMINATED BY 用来对字段值之间进行分割，</span><br><span class="line">FIELDS [OPTIONALLY] ENCLOSED BY 用来对字段值进行包裹</span><br><span class="line">FIELDS  LINES TERMINATED BY  用来对每行结束指定换行符</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：file_name 文件所在路径权限必须是 mysql:mysql。</p>
+</blockquote>
+<p><strong>实践</strong>：</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">// departments表数据</span><br><span class="line">mysql&gt; select * from departments;</span><br><span class="line">+---------+--------------------+</span><br><span class="line">| dept_no | dept_name          |</span><br><span class="line">+---------+--------------------+</span><br><span class="line">| d009    | Customer Service   |</span><br><span class="line">| d005    | Development        |</span><br><span class="line">| d002    | Finance            |</span><br><span class="line">| d003    | Human Resources    |</span><br><span class="line">| d001    | Marketing          |</span><br><span class="line">| d004    | Production         |</span><br><span class="line">| d006    | Quality Management |</span><br><span class="line">| d008    | Research           |</span><br><span class="line">| d007    | Sales              |</span><br><span class="line">+---------+--------------------+</span><br><span class="line"></span><br><span class="line">// 导出为文件</span><br><span class="line">select * from departments into outfile <span class="string">'/data/mysql/department.sql'</span>;</span><br><span class="line"></span><br><span class="line">// 查看导出数据</span><br><span class="line">[root@db mysql]<span class="comment"># cat department.sql </span></span><br><span class="line">d009	Customer Service</span><br><span class="line">d005	Development</span><br><span class="line">d002	Finance</span><br><span class="line">d003	Human Resources</span><br><span class="line">d001	Marketing</span><br><span class="line">d004	Production</span><br><span class="line">d006	Quality Management</span><br><span class="line">d008	Research</span><br><span class="line">d007	Sales</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意</strong>：使用该命令导出文件可能会报错：”The MySQL server is running with the –secure-file-priv option so it cannot execute this statement “，原因是 secure_file_priv 为 NULL，需要设置目录。</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">mysql&gt; SHOW VARIABLES LIKE <span class="string">"secure_file_priv"</span>;</span><br><span class="line">+------------------+--------------+</span><br><span class="line">| Variable_name    | Value        |</span><br><span class="line">+------------------+--------------+</span><br><span class="line">| secure_file_priv | /<span class="keyword">data</span>/mysql/ |</span><br><span class="line">+------------------+--------------+</span><br></pre></td></tr></table></figure>
+
+<h3 id="逻辑备份恢复"><a href="#逻辑备份恢复" class="headerlink" title="逻辑备份恢复"></a>逻辑备份恢复</h3><p>有三种方式：</p>
+<ul>
+<li>mysql</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">mysql -uroot -p<span class="string">'xx'</span> &lt; backup.sql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>source</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">mysql&gt; source /<span class="keyword">data</span>/mysql/backup.sql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>load data infile</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">mysql&gt; select * from departments;</span><br><span class="line">Empty set (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; load <span class="keyword">data</span> infile <span class="string">'/data/mysql/department.sql'</span> into table departments;</span><br><span class="line">Query OK, <span class="number">9</span> rows affected (<span class="number">0.01</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select * from departments;</span><br><span class="line">+---------+--------------------+</span><br><span class="line">| dept_no | dept_name          |</span><br><span class="line">+---------+--------------------+</span><br><span class="line">| d009    | Customer Service   |</span><br><span class="line">| d005    | Development        |</span><br><span class="line">| d002    | Finance            |</span><br><span class="line">| d003    | Human Resources    |</span><br><span class="line">| d001    | Marketing          |</span><br><span class="line">| d004    | Production         |</span><br><span class="line">| d006    | Quality Management |</span><br><span class="line">| d008    | Research           |</span><br><span class="line">| d007    | Sales              |</span><br><span class="line">+---------+--------------------+</span><br></pre></td></tr></table></figure>
+
+<h2 id="热备"><a href="#热备" class="headerlink" title="热备"></a>热备</h2><p>XtraBackup</p>
+<h2 id="二进制日志备份"><a href="#二进制日志备份" class="headerlink" title="二进制日志备份"></a>二进制日志备份</h2><h2 id="快照备份"><a href="#快照备份" class="headerlink" title="快照备份"></a>快照备份</h2><p>MySQL 数据库本身并不支持快照功能，因此快照备份是指通过文件系统支持的快照功能对数据库进行备份。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>注意：任何时候都需要做好远程异地备份，也就是容灾的防范。</p>
 ]]></content>
       <categories>
         <category>MySQL</category>
@@ -10936,88 +11006,9 @@
       </categories>
   </entry>
   <entry>
-    <title>MySQL · 开发</title>
+    <title>MySQL · 高级特性</title>
     <url>/blog/2019/07/22/mysql-develop/</url>
-    <content><![CDATA[<h2 id="百万级数据量"><a href="#百万级数据量" class="headerlink" title="百万级数据量"></a>百万级数据量</h2><p>这个阶段的性能问题开始显露，优化几乎是最重要的，因为到后期千万级，甚至亿级别的阶段，数据库几乎无法动弹，可调整性很低。</p>
-<p><strong>字段优化</strong></p>
-<ul>
-<li>表字段 not null，因为 null 值很难查询优化且占用额外的索引空间，推荐默认数字 0</li>
-<li>数据状态类型的字段，比如 status, type 等，尽量不要定义负数，如 -1。因为这样可以加上 UNSIGNED，数值容量就会扩大一倍</li>
-<li>可以的话用 TINYINT、SMALLINT 等代替 INT，尽量不使用 BIGINT，因为占的空间更小</li>
-<li>字符串类型的字段会比数字类型占的空间更大，所以尽量用整型代替字符串，很多场景是可以通过编码逻辑来实现用整型代替的</li>
-<li>字符串类型长度不要随意设置，保证满足业务的前提下尽量小</li>
-<li>用整型来存 IP</li>
-<li>单表不要有太多字段，建议在20以内</li>
-<li>为能预见的字段提前预留，因为数据量越大，修改数据结构越耗时</li>
-</ul>
-<p><strong>索引优化</strong></p>
-<p>索引，空间换时间的优化策略，基本上根据业务需求设计好索引，足以应付百万级的数据量，养成使用 <strong>explain</strong> 的习惯。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">既不能绝大多数都相同，又不能只有极少数相同</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>一个常识：索引并不是越多越好，索引是会降低数据写入性能的。</li>
-<li>索引字段长度尽量短，这样能够节省大量索引空间。</li>
-<li>取消外键，可交由程序来约束，性能更好。</li>
-<li>复合索引的匹配最左列规则，索引的顺序和查询条件保持一致，尽量去除没必要的单列索引。</li>
-<li>值分布较少的字段（不重复的较少）不适合建索引，比如像性别这种只有两三个值的情况字段建立索引意义不大。</li>
-<li>需要排序的字段建议加上索引，因为索引是会排序的，能提高查询性能。</li>
-<li>字符串字段使用前缀索引，不使用全字段索引，可大幅减小索引空间。</li>
-</ul>
-<p><strong>sql优化</strong></p>
-<ul>
-<li><p>查询不使用 select *，尽量查询带索引的字段，避免回表</p>
-</li>
-<li><p>尽量使用 limit 对查询数量进行限制</p>
-</li>
-<li><p>查询字段尽量落在索引上，尤其是复合索引，顺序很重要</p>
-</li>
-<li><p>拆分大的 delete / insert 操作，一方面会锁表，影响其他业务操作，还有一方面是 MySQL 对 sql 长度也是有限制的</p>
-</li>
-<li><p>不建议使用 MySQL 的函数，计算等，可先由程序处理，从上面提的一些点会发现，能交由程序处理的尽量不要把压力转至数据库上</p>
-</li>
-<li><p>查询 count，性能：count(1) = count(*) &gt; count(主键) &gt; count(其他字段)</p>
-</li>
-<li><p>查询操作符能用 between 则不用 in，能用 in 则不用 or</p>
-</li>
-<li><p>避免使用 != 或＜＞、IS NULL 或 IS NOT NULL、IN ，NOT IN等这样的操作符，因为这些查询无法使用索引</p>
-</li>
-<li><p>sql 尽量简单，少用 join，不建议两个 join 以上。</p>
-</li>
-</ul>
-<h2 id="千万级数据量"><a href="#千万级数据量" class="headerlink" title="千万级数据量"></a>千万级数据量</h2><p>到了这个阶段的数据量，数据本身已经有很大的价值了，数据除了满足常规业务需求外，还会有一些数据分析的需求。而这个时候数据可变动性不高，基本上不会考虑修改原有结构，一般会考虑从分区，分表，分库三方面做优化。</p>
-<p><strong>分区</strong></p>
-<p>分区是根据一定的规则，数据库把一个表分解成多个更小的、更容易管理的部分，是一种水平划分。对应用来说是完全透明的，不影响应用的业务逻辑，即不用修改代码。因此能存更多的数据，查询，删除也支持按分区来操作，从而达到优化的目的。如果有考虑分区，可以提前做准备，避免下列一些限制：</p>
-<ul>
-<li>一个表最多只能有1024个分区（mysql5.6之后支持8192个分区）。</li>
-<li>如果分区字段中有主键或者唯一索引列，那么所有主键列和唯一索引列都必须包含进来，如果表中有主键或唯一索引，那么分区键必须是主键或唯一索引。</li>
-<li>分区表中无法使用外键约束。</li>
-<li>NULL值会使分区过滤无效。</li>
-<li>目前mysql不支持空间类型和临时表类型进行分区。不支持全文索引。</li>
-<li>所有分区必须使用相同的存储引擎。</li>
-</ul>
-<p>分区可按以下四种类型分区：</p>
-<ul>
-<li>RANGE表分区：范围表分区，按照一定的范围值来确定每个分区包含的数据;</li>
-<li>LIST表分区：列表表分区，按照一个一个确定的值来确定每个分区包含的数据;</li>
-<li>HASH表分区：哈希表分区，按照一个自定义的函数返回值来确定每个分区包含的数据;</li>
-<li>KEY表分区 ：key表分区，与哈希表分区类似，只是用MySQL自己的HASH函数来确定每个分区包含的数据。</li>
-</ul>
-<p><strong>分表</strong></p>
-<p>分表分水平分表和垂直分表。</p>
-<p>水平分表即拆分成数据结构相同的各个小表，如拆分成 table<em>1, table</em>2…，从而缓解数据库读写压力。</p>
-<p>垂直分表即将一些字段分出去形成一个新表，各个表数据结构不相同，可以优化高并发下锁表的情况。</p>
-<p>可想而知，分表的话，程序的逻辑是需要做修改的，所以，一般是在项目初期时，预见到大数据量的情况，才会考虑分表。后期阶段不建议分表，成本很大</p>
-<p><strong>分库</strong></p>
-<p>分库一般是主从模式，一个数据库服务器主节点复制到一个或多个从节点多个数据库，主库负责写操作，从库负责读操作，从而达到主从分离，高可用，数据备份等优化目的。</p>
-<p>当然，主从模式也会有一些缺陷，主从同步延迟，binlog 文件太大导致的问题等等，这里不细讲（笔者也学不动了）。</p>
-<h2 id="亿级数据量"><a href="#亿级数据量" class="headerlink" title="亿级数据量"></a>亿级数据量</h2><p>理论上，MySQL 绝对是可以支撑这个级别数据的，但是现在大部分公司数据库性能水平完全取决于开发人员能力。当然一些公司有 DBA 把关，如没有上述的优化习惯，大多情况到这个阶段，MySQL 数据库性能已经接近崩溃临界点，甚至有些都到不了这个阶段。</p>
-<p>技术选型</p>
-<p>如何写优质的 SQL？</p>
-<p>SQL 审核</p>
-<p>索引设计</p>
-<p>如何在一个大表添加索引？</p>
-<p>是否需要产品化？</p>
-]]></content>
+    <content><![CDATA[<h2 id="分区表"><a href="#分区表" class="headerlink" title="分区表"></a>分区表</h2><h2 id="视图"><a href="#视图" class="headerlink" title="视图"></a>视图</h2><h2 id="存储过程"><a href="#存储过程" class="headerlink" title="存储过程"></a>存储过程</h2><h2 id="事件"><a href="#事件" class="headerlink" title="事件"></a>事件</h2><h2 id="外键"><a href="#外键" class="headerlink" title="外键"></a>外键</h2><h2 id="分布式事务"><a href="#分布式事务" class="headerlink" title="分布式事务"></a>分布式事务</h2>]]></content>
       <categories>
         <category>MySQL</category>
       </categories>
@@ -11447,7 +11438,7 @@
       </categories>
   </entry>
   <entry>
-    <title>MySQL · 调优</title>
+    <title>MySQL · 性能调优</title>
     <url>/blog/2019/07/11/mysql-tuning/</url>
     <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>MySQL 可以从四个方面进行优化：</p>
 <ul>
