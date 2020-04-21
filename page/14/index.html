@@ -352,6 +352,254 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/20/mysql-case-replication/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/20/mysql-case-replication/" class="post-title-link" itemprop="url">MySQL · 主从复制中断</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-20 09:51:44" itemprop="dateCreated datePublished" datetime="2019-09-20T09:51:44+08:00">2019-09-20</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-12-10 15:58:18" itemprop="dateModified" datetime="2019-12-10T15:58:18+08:00">2019-12-10</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="Slave-IO-Running-No"><a href="#Slave-IO-Running-No" class="headerlink" title="Slave_IO_Running: No"></a>Slave_IO_Running: No</h2><h3 id="找不到初始日志"><a href="#找不到初始日志" class="headerlink" title="找不到初始日志"></a>找不到初始日志</h3><ul>
+<li><strong>报错信息</strong></li>
+</ul>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-20-015800.png" alt="image-20190920095751451"></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Slave_IO_Running: No</span><br><span class="line">Slave_SQL_Running: Yes</span><br><span class="line">Last_IO_Errno: <span class="number">1236</span></span><br><span class="line">Last_IO_Error: Got fatal error <span class="number">1236</span> from master when reading <span class="keyword">data</span> from binary log: <span class="string">'Could not find first log file name in binary log index file'</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>原因分析</strong></li>
+</ul>
+<p>该错误发生在从库 <code>io</code> 进程从主库拉取日志时，发现主库的 <code>mysql_bin.index</code> 文件中第一个文件不存在，出现此类报错可能有两个原因：</p>
+<p>1）<code>Slave</code> 由于某种原因停了好长一段是时间，当你重启 <code>Slave</code> 复制的时候，在主库上找不到相应的 <code>binlog</code> 。</p>
+<p>2）由于某些设置主库上的 <code>binlog</code> 被删除了，导致从库获取不到对应的 <code>binlog</code>。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@hop02 mzjh]<span class="comment"># ll | grep mysql-bin</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073742013</span> Sep <span class="number">12</span> <span class="number">14</span>:<span class="number">55</span> mysql-bin.<span class="number">001948</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073742073</span> Sep <span class="number">13</span> <span class="number">11</span>:<span class="number">53</span> mysql-bin.<span class="number">001949</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073742120</span> Sep <span class="number">14</span> <span class="number">08</span>:<span class="number">39</span> mysql-bin.<span class="number">001950</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1073859355</span> Sep <span class="number">15</span> <span class="number">06</span>:<span class="number">21</span> mysql-bin.<span class="number">001951</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1074054892</span> Sep <span class="number">16</span> <span class="number">06</span>:<span class="number">18</span> mysql-bin.<span class="number">001952</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1075243641</span> Sep <span class="number">17</span> <span class="number">06</span>:<span class="number">18</span> mysql-bin.<span class="number">001953</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1074801420</span> Sep <span class="number">18</span> <span class="number">06</span>:<span class="number">16</span> mysql-bin.<span class="number">001954</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1075257243</span> Sep <span class="number">19</span> <span class="number">06</span>:<span class="number">16</span> mysql-bin.<span class="number">001955</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql   <span class="number">619405162</span> Sep <span class="number">19</span> <span class="number">13</span>:<span class="number">32</span> mysql-bin.<span class="number">001956</span></span><br><span class="line">-rw-rw----. <span class="number">1</span> mysql mysql  <span class="number">1072898197</span> Sep <span class="number">20</span> <span class="number">09</span>:<span class="number">44</span> mysql-bin.<span class="number">001957</span></span><br><span class="line">-rw-r-----. <span class="number">1</span> mysql mysql         <span class="number">190</span> Sep <span class="number">19</span> <span class="number">13</span>:<span class="number">32</span> mysql-bin.index</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>解决方法</strong></li>
+</ul>
+<p>为了避免数据丢失，需要重新搭建 <code>Slave</code></p>
+<h3 id="磁盘空间不足，日志被截断"><a href="#磁盘空间不足，日志被截断" class="headerlink" title="磁盘空间不足，日志被截断"></a>磁盘空间不足，日志被截断</h3><ul>
+<li><strong>报错信息</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Slave_IO_Running: No</span><br><span class="line">Slave_SQL_Running: Yes</span><br><span class="line">Last_IO_Errno: <span class="number">1236</span></span><br><span class="line">Last_IO_Error: Got fatal error <span class="number">1236</span> from master when reading <span class="keyword">data</span> from binary log: <span class="string">'binlog truncated in the middle of event; consider out of disk space on master; the first event '</span>mysql-bin.<span class="number">006130</span><span class="string">' at 733347710, the last event read from '</span>./mysql-bin.<span class="number">006130</span><span class="string">' at 733347710, the last byte read from '</span>./mysql-bin.<span class="number">006130</span><span class="string">' at 733347840.'</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>原因分析</strong></li>
+</ul>
+<p>该错误和主库的空间和 <code>sync_binlog</code> 配置有关，当主库 <code>sync_binlog = N</code> 不等于 1 且磁盘空间满时，MySQL 每写 N 次 <code>binlog</code>，系统才会同步到磁盘，但是由于存储日志的磁盘空间满而导致 MySQL 没有将日志完全写入磁盘，<code>binlog event</code> 被截断，从库读取该 <code>binlog</code> 时就会报错 <code>binlog truncated in the middle of event</code>。</p>
+<ul>
+<li><strong>解决方法</strong></li>
+</ul>
+<p>在从库重新指向到主库下一个可用的 <code>binlog</code> 并且从初始化的位置开始：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">stop</span> <span class="keyword">slave</span>;</span><br><span class="line"><span class="keyword">change</span> <span class="keyword">master</span> <span class="keyword">to</span> master_log_file = <span class="string">'mysql-bin.006131'</span>, master_log_pos = <span class="number">4</span>;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">slave</span>;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Slave-SQL-Running-No"><a href="#Slave-SQL-Running-No" class="headerlink" title="Slave_SQL_Running: No"></a>Slave_SQL_Running: No</h2><h3 id="1026：HA-ERR-RBR-LOGGING-FAILED"><a href="#1026：HA-ERR-RBR-LOGGING-FAILED" class="headerlink" title="1026：HA_ERR_RBR_LOGGING_FAILED"></a>1026：HA_ERR_RBR_LOGGING_FAILED</h3><ul>
+<li><strong>报错信息</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Slave_IO_Running: Yes</span><br><span class="line">Slave_SQL_Running: No</span><br><span class="line">Error_code: <span class="number">1026</span></span><br><span class="line">Last_Error: Could not execute Update_rows event on table cosmo-aps.bns_aps_versiontolineinfo; Error writing file <span class="string">'/data/mysql/tmp/MLpTCcJu'</span> (Errcode: <span class="number">28</span> - No space left on device), Error_code: <span class="number">3</span>; Error writing file <span class="string">'mysql-bin'</span> (errno: <span class="number">28</span> - No space left on device), Error_code: <span class="number">1026</span>; handler error HA_ERR_RBR_LOGGING_FAILED; the event<span class="string">'s master log mysql-bin.000528, end_log_pos 674303230</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><p><strong>原因分析</strong></p>
+<ul>
+<li><code>Master</code> 和 <code>Slave</code> 数据不一致导致</li>
+<li><code>Slave</code> 服务器重启，事务回滚造成</li>
+</ul>
+</li>
+<li><p><strong>解决方法</strong></p>
+<ul>
+<li>手动跳过</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">stop</span> <span class="keyword">slave</span> ;</span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> sql_slave_skip_counter=<span class="number">1</span>;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">slave</span> ;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><a href="https://huiraoo.github.io/blog/2019/10/19/pt-slave-restart/">pt-slave-restart</a></li>
+</ul>
+</li>
+</ul>
+<h3 id="1205：HA-ERR-LOCK-WAIT-TIMEOUT"><a href="#1205：HA-ERR-LOCK-WAIT-TIMEOUT" class="headerlink" title="1205：HA_ERR_LOCK_WAIT_TIMEOUT"></a>1205：HA_ERR_LOCK_WAIT_TIMEOUT</h3><p><strong>报错信息：</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Last_Error: Could not execute Update_rows event on table haier.haier_weixin_user; Lock wait timeout exceeded; <span class="keyword">try</span> restarting transaction, Error_code: <span class="number">1205</span>; handler error HA_ERR_LOCK_WAIT_TIMEOUT; the event<span class="string">'s master log mysql-bin.000001, end_log_pos 629671840</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="1032：HA-ERR-END-OF-FILE"><a href="#1032：HA-ERR-END-OF-FILE" class="headerlink" title="1032：HA_ERR_END_OF_FILE"></a>1032：HA_ERR_END_OF_FILE</h3><ul>
+<li><strong>报错信息</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Slave_IO_Running: Yes</span><br><span class="line">Slave_SQL_Running: No</span><br><span class="line">Last_Errno: <span class="number">1032</span></span><br><span class="line">Last_Error: Could not execute Update_rows event on table haier.haier_yonghuzhongxin_shebei; Can<span class="string">'t find record in '</span>haier_yonghuzhongxin_shebei<span class="string">', Error_code: 1032; handler error HA_ERR_END_OF_FILE; the event'</span>s master log mysql-bin.<span class="number">000030</span>, end_log_pos <span class="number">130643848</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>原因分析</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">191208</span> <span class="number">23</span>:<span class="number">06</span>:<span class="number">33</span> [ERROR] Slave SQL: Could not execute Update_rows event on table haier.haier_yonghuzhongxin_shebei; Can<span class="string">'t find record in '</span>haier_yonghuzhongxin_shebei<span class="string">', Error_code: 1032; handler error HA_ERR_END_OF_FILE; the event'</span>s master log mysql-bin.<span class="number">000030</span>, end_log_pos <span class="number">130643848</span>, Error_code: <span class="number">1032</span></span><br><span class="line"><span class="number">191208</span> <span class="number">23</span>:<span class="number">06</span>:<span class="number">33</span> [Warning] Slave: Can<span class="string">'t find record in '</span>haier_yonghuzhongxin_shebei<span class="string">' Error_code: 1032</span></span><br><span class="line"><span class="string">191208 23:06:33 [ERROR] Error running query, slave SQL thread aborted. Fix the problem, and restart the slave SQL thread with "SLAVE START". We stopped at log '</span>mysql-bin.<span class="number">000030</span><span class="string">' position 130643274</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>解决方法</strong></li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">stop</span> <span class="keyword">slave</span>;</span><br><span class="line"><span class="keyword">set</span> <span class="keyword">global</span> sql_slave_skip_counter=<span class="number">1</span>;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">slave</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1032：HA-ERR-KEY-NOT-FOUND"><a href="#1032：HA-ERR-KEY-NOT-FOUND" class="headerlink" title="1032：HA_ERR_KEY_NOT_FOUND"></a>1032：HA_ERR_KEY_NOT_FOUND</h3><p>Last_SQL_Errno: 1032</p>
+<p>Last_SQL_Error: Could not execute Delete_rows event on table hce.dim_r_cei_general; Can’t find record in ‘dim_r_cei_general’, Error_code: 1032; handler error HA_ERR_KEY_NOT_FOUND; the event’s master log mysql-bin.000273, end_log_pos 139807561</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/04/mysql-disaster/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2049,7 +2297,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-10-24 22:05:51" itemprop="dateModified" datetime="2019-10-24T22:05:51+08:00">2019-10-24</time>
+                <time title="修改时间：2020-04-20 16:15:16" itemprop="dateModified" datetime="2020-04-20T16:15:16+08:00">2020-04-20</time>
               
             
           </span>
@@ -2110,7 +2358,6 @@
 <h2 id="运维"><a href="#运维" class="headerlink" title="运维"></a>运维</h2><p><a href="http://www.percona.com/software/percona-toolkit" target="_blank" rel="noopener">Percona-Toolkit</a></p>
 <p><a href="https://huiraoo.github.io/blog/2019/06/18/mysql-xtrabackup/">XtraBackup</a></p>
 <h2 id="压测"><a href="#压测" class="headerlink" title="压测"></a>压测</h2><p><a href="https://github.com/akopytov/sysbench" target="_blank" rel="noopener">sysbench</a></p>
-<p><a href="https://dev.mysql.com/doc/refman/5.7/en/mysqlslap.html" target="_blank" rel="noopener">mysqlslap</a></p>
 <p><a href="https://github.com/Percona-Lab/tpcc-mysql" target="_blank" rel="noopener">tpcc-mysql</a></p>
 <h2 id="中间件"><a href="#中间件" class="headerlink" title="中间件"></a>中间件</h2><p><a href="https://downloads.mysql.com/archives/proxy/" target="_blank" rel="noopener">MySQL Proxy</a></p>
 <p><a href="https://github.com/Qihoo360/Atlas" target="_blank" rel="noopener">Atlas</a></p>
@@ -2414,186 +2661,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/25/mysql-best-practices/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/25/mysql-best-practices/" class="post-title-link" itemprop="url">MySQL · 最佳实践</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-25 11:32:54" itemprop="dateCreated datePublished" datetime="2019-07-25T11:32:54+08:00">2019-07-25</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-15 16:25:15" itemprop="dateModified" datetime="2019-11-15T16:25:15+08:00">2019-11-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a>最佳实践</h2><ul>
-<li><a href="https://huiraoo.github.io/blog/2019/10/17/mysql-archiver/">MySQL · 数据归档</a></li>
-<li><a href="https://huiraoo.github.io/blog/2019/10/21/mysql-delete-bigtable/">MySQL · 快速删除大表</a></li>
-<li><a href="https://huiraoo.github.io/blog/2019/10/21/mysql-modify-dbname/">MySQL · 修改数据库名</a></li>
-<li><a href="https://huiraoo.github.io/blog/2019/10/19/pt-online-schema-change/">MySQL · 在线修改索引</a></li>
-<li><a href="https://huiraoo.github.io/blog/2019/10/21/mysql-rollback/">MySQL · 使用 binlog2sql 工具快速回滚误操作</a></li>
-<li><a href="https://huiraoo.github.io/blog/2019/10/22/mysql-migration/">MySQL · 使用 XtraBackup 迁移数据库</a></li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2642,7 +2709,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">161</span>
+                    <span class="site-state-item-count">162</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
