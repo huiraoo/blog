@@ -7,7 +7,6 @@
 <li>MySQL 中只有 InnoDB 存储引擎才支持事务。</li>
 <li>数据库系统引入事务的主要目的：事务会把数据库从一种一致状态转换为另一种一致状态，在数据库提交工作时，可以确保要么所有修改都已经保存，要么都不保存。</li>
 <li>事务（Transaction）是数据库区别于文件系统的重要特性之一。</li>
-<li>事务用来管理 Insert、Update、Delete 语句。</li>
 </ul>
 <h2 id="事务的特性"><a href="#事务的特性" class="headerlink" title="事务的特性"></a>事务的特性</h2><p>InnoDB 存储引擎中的事务完全符合 ACID 特性：</p>
 <ul>
@@ -16,10 +15,12 @@
 <li><strong>隔离性（Isolation）</strong>：数据库允许多个并发事务同时对其数据进行读写和修改的能力，隔离性可以防止多个事务并发执行时由于交叉执行而导致数据的不一致，通常使用锁来实现。</li>
 <li><strong>持久性（durability）</strong>：事务一旦提交，其结果将是永久性的。即使发生宕机等故障，数据库也能将数据恢复。</li>
 </ul>
-<h2 id="事务的隔离级别"><a href="#事务的隔离级别" class="headerlink" title="事务的隔离级别"></a>事务的隔离级别</h2><p>Read uncommitted：事务 A 和事务 B，事务 A 未提交的数据，事务 B 可以读取到，这种现象称为<strong>脏读</strong>。</p>
-<p>Read committed：事务 A 和事务 B，事务 A 提交的数据，事务 B 才能读取到，这种级别可以避免脏读，但会造成<strong>不可重复读</strong>。</p>
-<p>Repeatable read：事务 A 和事务 B，事务 A 提交之后的数据，事务 B 读取不到，这种级别可以避免不可重复读，但可能会造成<strong>幻读</strong>。这是 InnoDB 存储引擎默认事务隔离级别。</p>
-<p>Serializable：事务 A 和事务 B，事务 A 在操作数据库时，事务 B 只能排队等待。</p>
+<h2 id="事务的隔离级别"><a href="#事务的隔离级别" class="headerlink" title="事务的隔离级别"></a>事务的隔离级别</h2><ul>
+<li>Read uncommitted：事务 A 和事务 B，事务 A 未提交的数据，事务 B 可以读取到，这种现象称为<strong>脏读</strong>。</li>
+<li>Read committed：事务 A 和事务 B，事务 A 提交的数据，事务 B 才能读取到，这种级别可以避免脏读，但会造成<strong>不可重复读</strong>。</li>
+<li>Repeatable read：事务 A 和事务 B，事务 A 提交之后的数据，事务 B 读取不到，这种级别可以避免不可重复读，但可能会造成<strong>幻读</strong>。这是 InnoDB 存储引擎默认事务隔离级别。</li>
+<li>Serializable：事务 A 和事务 B，事务 A 在操作数据库时，事务 B 只能排队等待。</li>
+</ul>
 <p>幻读和不可重复读都是指的一个事务范围内的操作受到其他事务的影响了，只不过不可重复读主要针对 update 操作，幻读主要针对 insert、delete 操作。</p>
 <table>
 <thead>
@@ -43,7 +44,7 @@
 <td>√</td>
 </tr>
 <tr>
-<td><strong>Repeatable read</strong>（可重复读，默认）</td>
+<td><strong>Repeatable read</strong>（可重复读）</td>
 <td>×</td>
 <td>×</td>
 <td>√</td>
@@ -55,12 +56,12 @@
 <td>×</td>
 </tr>
 </tbody></table>
-<h2 id="事务的实现原理"><a href="#事务的实现原理" class="headerlink" title="事务的实现原理"></a>事务的实现原理</h2><p>事务的隔离性是由锁来实现的。原子性、一致性、持久性是通过数据库的 redo log 和 undo log 来完成。redo log 称为重做日志，用来保证事务的原子性和持久性。undo log 用来保证事务的一致性。</p>
+<h2 id="事务的实现原理"><a href="#事务的实现原理" class="headerlink" title="事务的实现原理"></a>事务的实现原理</h2><p>事务的隔离性是由锁来实现的。原子性、一致性、持久性是通过数据库的 redo log 和 undo log 来完成。redo log 称为重做日志，用来保证事务的原子性和持久性，undo log 用来保证事务的一致性。</p>
 <p>redo 和 undo 的作用都可以视为一种恢复操作，redo 恢复提交事务修改的页操作，而 undo 回滚行记录到某个特定版本。因此两者记录的内容不同，redo 通常是物理日志，记录的是页的物理修改操作。undo 是逻辑日志，根据每行记录进行记录。 </p>
 <h3 id="redo-log"><a href="#redo-log" class="headerlink" title="redo log"></a>redo log</h3><p><strong>介绍</strong>：其由两部分组成：一是内存中重做日志缓冲（redo log buffer），在内存中是易失的；二是重做日志文件（redo log file），在磁盘中是持久的，当事务提交之后会把所有修改信息都会存到该日志中。</p>
 <p><strong>用途</strong>：redo log 重做日志用来实现事务的持久性，即事务 ACID 中的 D。</p>
 <p><strong>场景</strong>：MySQL 为了提升性能不会把每次的修改都实时同步到磁盘，而是会先存到 Boffer Pool（缓冲池）里头，把这个当作缓存来用，然后使用后台线程去做缓冲池和磁盘之间的同步。如果还没来的及同步的时候宕机或断电了怎么办？这样会导致丢部分已提交事务的修改信息！所以引入了 redo log 来记录已成功提交事务的修改信息，并且会把 redo log 持久化到磁盘，系统重启之后在读取 redo log 恢复最新数据。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">// 原始bank表</span><br><span class="line">mysql&gt; select * from bank;</span><br><span class="line">+----+----------+---------+</span><br><span class="line">| id | name     | balance |</span><br><span class="line">+----+----------+---------+</span><br><span class="line">|  1 | zhangsan |    1000 |</span><br><span class="line">+----+----------+---------+</span><br><span class="line"></span><br><span class="line">// 原始finance表</span><br><span class="line">mysql&gt; select * from finance;</span><br><span class="line">+----+----------+--------+</span><br><span class="line">| id | name     | amount |</span><br><span class="line">+----+----------+--------+</span><br><span class="line">|  1 | zhangsan |      0 |</span><br><span class="line">+----+----------+--------+</span><br><span class="line"></span><br><span class="line">start transaction;</span><br><span class="line">select balance from bank where name=&quot;zhangsan&quot;;</span><br><span class="line"></span><br><span class="line">// 生成重做日志 balance=600</span><br><span class="line">update bank set balance = balance - 400; </span><br><span class="line"></span><br><span class="line">// 生成重做日志 amount=400</span><br><span class="line">update finance set amount = amount + 400;</span><br></pre></td></tr></table></figure>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">// 原始bank表</span><br><span class="line">mysql&gt; select * from bank;</span><br><span class="line">+----+----------+---------+</span><br><span class="line">| id | name     | balance |</span><br><span class="line">+----+----------+---------+</span><br><span class="line">|  <span class="number">1</span> | zhangsan |    <span class="number">1000</span> |</span><br><span class="line">+----+----------+---------+</span><br><span class="line"></span><br><span class="line">// 原始finance表</span><br><span class="line">mysql&gt; select * from finance;</span><br><span class="line">+----+----------+--------+</span><br><span class="line">| id | name     | amount |</span><br><span class="line">+----+----------+--------+</span><br><span class="line">|  <span class="number">1</span> | zhangsan |      <span class="number">0</span> |</span><br><span class="line">+----+----------+--------+</span><br><span class="line"></span><br><span class="line">start transaction;</span><br><span class="line">select balance from bank where name=<span class="string">"zhangsan"</span>;</span><br><span class="line"></span><br><span class="line">// 生成重做日志 balance=<span class="number">600</span></span><br><span class="line">update bank set balance = balance - <span class="number">400</span>; </span><br><span class="line"></span><br><span class="line">// 生成重做日志 amount=<span class="number">400</span></span><br><span class="line">update finance set amount = amount + <span class="number">400</span>;</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-20-182000.png" alt></p>
 <h3 id="undo-log"><a href="#undo-log" class="headerlink" title="undo log"></a>undo log</h3><p><strong>介绍</strong>：undo log 叫做回滚日志，用于记录数据被修改前的信息。</p>
@@ -68,11 +69,16 @@
 <p><strong>场景</strong>：每次写入数据或者修改数据之前都会把修改前的信息记录到 undo log。</p>
 <p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-21-093000.png" alt></p>
 <h3 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h3><p><strong>用途</strong>：锁用来实现事务的隔离性，即事务 ACID 中的 I。</p>
+<p><strong>场景</strong>：当有多个请求来读取表中的数据时可以不采取任何操作，但是多个请求里有读请求，又有修改请求时，必须有一种措施来进行并发控制，不然很有可能会造成不一致。解决上述问题很简单，只需用两种锁的组合来对读写请求进行控制即可。</p>
+<ul>
+<li>共享锁 (shared lock)，又叫做 “读锁”：读锁是可以共享的，或者说多个读请求可以共享一把锁读数据，不会造成阻塞。</li>
+<li>排他锁 (exclusive lock)，又叫做 “写锁”： 写锁会排斥其他所有获取锁的请求，一直阻塞，直到写入完成释放锁。</li>
+</ul>
 <h3 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h3><p><strong>介绍</strong>：MVCC (Multi Version Concurrency Control) 叫做多版本并发控制。一般情况下，事务性储存引擎不是只使用表锁，行锁处理数据，而是结合了 MVCC 机制，以处理更多的并发问题。</p>
 <p><strong>用途</strong>：读不加锁，读写不冲突，在读多写少的 OLTP 应用中，读写不冲突是非常重要的，极大的增加了系统的并发性能。</p>
 <p><strong>实现方法</strong>：InnoDB 的 MVCC ，是通过在每行记录的后面保存两个隐藏的列来实现的，这两个列， 一个保存了行的创建时间，一个保存了行的过期时间， 当然存储的并不是实际的时间值，而是系统版本号（可以理解为事务 ID），每开始一个新的事务，系统版本号就会自动递增。</p>
 <p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-21-101600.png" alt></p>
-<h2 id="事务控制语句"><a href="#事务控制语句" class="headerlink" title="事务控制语句"></a>事务控制语句</h2><p>事务控制：</p>
+<h2 id="事务控制"><a href="#事务控制" class="headerlink" title="事务控制"></a>事务控制</h2><p>事务控制：</p>
 <ul>
 <li><strong>BEGIN</strong>：开始一个事务</li>
 <li><strong>ROLLBACK</strong>：事务回滚</li>
