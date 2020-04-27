@@ -352,6 +352,427 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2020/04/27/mysql-keepalived/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2020/04/27/mysql-keepalived/" class="post-title-link" itemprop="url">MySQL · 配置 Keepalived 实现双机热备</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-04-27 10:47:09 / 修改时间：11:22:01" itemprop="dateCreated datePublished" datetime="2020-04-27T10:47:09+08:00">2020-04-27</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://www.keepalived.org/" target="_blank" rel="noopener">Keepalived</a> 是集群管理中保证集群高可用的一个服务软件，其功能类似于 heartbeat，用来防止单点故障。</p>
+<p>Keepalived 是以 VRRP（Virtual Router Redundancy Protocol，虚拟路由冗余协议）协议为实现基础的，这个协议可以认为是实现了路由器高可用的协议，将多台提供相同功能的路由器组成一个路由器组。</p>
+<ul>
+<li>这里面有一个 MASTER 和多个 BACKUP；</li>
+<li>MASTER 上面有一个对外提供服务的 Virtual IP (VIP)；</li>
+<li>MASTER 会发组播，当 BACKUP 收不到 VRRP 包时就认为 MASTER 宕机</li>
+<li>这时需要根据 VRRP 优先级来选举一个 BACKUP 为 MASTER，这样就保证路由器的正常使用了。</li>
+</ul>
+<h2 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h2><ul>
+<li><strong>安装 Keepalived</strong></li>
+</ul>
+<p>Keepalived 可以使用 yum 直接安装，在 master 服务器和 backup 服务器执行：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ yum install keepalived</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>配置 Master 服务器</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line">[root@hop02 keepalived]<span class="comment"># pwd</span></span><br><span class="line">/etc/keepalived</span><br><span class="line"></span><br><span class="line">[root@hop02 keepalived]<span class="comment"># cat keepalived.conf </span></span><br><span class="line">! Configuration File <span class="keyword">for</span> keepalived</span><br><span class="line"></span><br><span class="line">global_defs &#123;</span><br><span class="line">   notification_email &#123;</span><br><span class="line">     wangsen@haier.com</span><br><span class="line">   &#125;</span><br><span class="line">   notification_email_from Alexandre.Cassen@firewall.loc</span><br><span class="line">   smtp_server <span class="number">127.0</span>.<span class="number">0.1</span></span><br><span class="line">   smtp_connect_timeout <span class="number">30</span></span><br><span class="line">   router_id LVS_DEVEL</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_script check_run &#123;</span><br><span class="line">   script <span class="string">"/etc/keepalived/check_mysql.sh"</span></span><br><span class="line">   interval <span class="number">5</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">    state MASTER</span><br><span class="line">    interface bond0 </span><br><span class="line">    virtual_router_id <span class="number">51</span></span><br><span class="line">    priority <span class="number">100</span></span><br><span class="line">    advert_int <span class="number">1</span></span><br><span class="line">    mcast_src_ip <span class="number">10.135</span>.<span class="number">22.70</span></span><br><span class="line"></span><br><span class="line">    authentication &#123;</span><br><span class="line">        auth_type PASS</span><br><span class="line">        auth_pass <span class="number">7777</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    track_script &#123;</span><br><span class="line">        check_run</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        <span class="number">10.135</span>.<span class="number">22.69</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">[root@hop02 keepalived]<span class="comment"># cat check_mysql.sh </span></span><br><span class="line"><span class="comment">#!/bin/bash</span></span><br><span class="line">MYSQL=/usr/local/mysql/bin/mysql</span><br><span class="line">MYSQL_HOST=localhost</span><br><span class="line">MYSQL_USER=root</span><br><span class="line">MYSQL_PASSWORD=<span class="string">'aea&amp;Lch6bs27zSyT'</span></span><br><span class="line">CHECK_TIME=<span class="number">3</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#mysql  is working MYSQL_OK is 1 , mysql down MYSQL_OK is 0</span></span><br><span class="line">MYSQL_OK=<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> check_mysql_helth ()&#123;</span><br><span class="line">    <span class="variable">$MYSQL</span> -h <span class="variable">$MYSQL_HOST</span> -u <span class="variable">$MYSQL_USER</span> -p$&#123;MYSQL_PASSWORD&#125; -e <span class="string">"show status;"</span> &gt;/dev/null <span class="number">2</span>&gt;&amp;<span class="number">1</span></span><br><span class="line">    <span class="keyword">if</span> [ $? = <span class="number">0</span> ] ;then</span><br><span class="line">        MYSQL_OK=<span class="number">1</span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        MYSQL_OK=<span class="number">0</span></span><br><span class="line">    fi</span><br><span class="line">    <span class="keyword">return</span> <span class="variable">$MYSQL_OK</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">while</span> [ <span class="variable">$CHECK_TIME</span> <span class="nomarkup">-ne</span> <span class="number">0</span> ]</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">    let <span class="string">"CHECK_TIME -= 1"</span></span><br><span class="line">    check_mysql_helth</span><br><span class="line"><span class="keyword">if</span> [ <span class="variable">$MYSQL_OK</span> = <span class="number">1</span> ] ; then</span><br><span class="line">    CHECK_TIME=<span class="number">0</span></span><br><span class="line">    <span class="keyword">exit</span> <span class="number">0</span></span><br><span class="line">fi</span><br><span class="line"><span class="keyword">if</span> [ <span class="variable">$MYSQL_OK</span> <span class="nomarkup">-eq</span> <span class="number">0</span> ] &amp;&amp;  [ <span class="variable">$CHECK_TIME</span> <span class="nomarkup">-eq</span> <span class="number">0</span> ]</span><br><span class="line">then</span><br><span class="line">    /etc/init.d/keepalived stop</span><br><span class="line">    <span class="keyword">exit</span> <span class="number">1</span></span><br><span class="line">fi</span><br><span class="line">sleep <span class="number">1</span></span><br><span class="line">done</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>配置 BACKUP 服务器</strong></li>
+</ul>
+<p>注意以下几点变动：</p>
+<ol>
+<li>state 角色为 BACKUP</li>
+<li>interface 为网卡的 ID，要根据机器确认</li>
+<li>virtual_route_id 要与 MASTER 一致，默认为 51</li>
+<li>priority 要比 MASTER 小</li>
+<li>设置 vrrp_strict 选项</li>
+</ol>
+<ul>
+<li><strong>配置并启动服务</strong></li>
+</ul>
+<p>配置 IP 转发，需要修改配置文件 <code>/etc/sysctl.conf</code>，默认只有 root 可以修改</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ su - root</span><br><span class="line">Password:</span><br><span class="line"><span class="comment"># echo "net.ipv4.ip_forward = 1" &gt;&gt; /etc/sysctl.conf</span></span><br><span class="line"><span class="comment"># sysctl -p</span></span><br><span class="line"><span class="comment"># exit</span></span><br></pre></td></tr></table></figure>
+
+<p>防火墙添加规则，因为 VRRP 使用 <code>224.0.0.18</code> 这个组播地址</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ sudo firewall-cmd --direct --permanent --add-rule ipv4 <span class="keyword">filter</span> INPUT <span class="number">0</span> --in-interface em1 --destination <span class="number">224.0</span>.<span class="number">0.18</span> --protocol vrrp -j ACCEPT</span><br><span class="line">success</span><br><span class="line">$ sudo firewall-cmd --direct --permanent --add-rule ipv4 <span class="keyword">filter</span> OUTPUT <span class="number">0</span> --out-interface em1 --destination <span class="number">224.0</span>.<span class="number">0.18</span> --protocol vrrp -j ACCEPT</span><br><span class="line">success</span><br><span class="line">$ sudo firewall-cmd --reload</span><br><span class="line">success</span><br></pre></td></tr></table></figure>
+
+<p>可以查看一下这两条规则</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ sudo firewall-cmd --direct --get-rules ipv4 <span class="keyword">filter</span> INPUT</span><br><span class="line"><span class="number">0</span> --in-interface em1 --destination <span class="number">224.0</span>.<span class="number">0.18</span> --protocol vrrp -j ACCEPT</span><br><span class="line">$ sudo firewall-cmd --direct --get-rules ipv4 <span class="keyword">filter</span> OUTPUT</span><br><span class="line"><span class="number">0</span> --out-interface em1 --destination <span class="number">224.0</span>.<span class="number">0.18</span> --protocol vrrp -j ACCEPT</span><br></pre></td></tr></table></figure>
+
+<p>启动 MASTER 和 BACKUP 的 keepalived 服务，并设置开机启动</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@hop02 etc]<span class="comment"># cat /etc/redhat-release</span></span><br><span class="line">CentOS release <span class="number">6.5</span> (Final)</span><br><span class="line"></span><br><span class="line">[root@hop02 etc]<span class="comment"># service keepalived start</span></span><br><span class="line">Starting keepalived:                                       [  OK  ]</span><br><span class="line"></span><br><span class="line">$ systemctl enable keepalived</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@hop02 etc]<span class="comment"># ps -ef | grep keepalived</span></span><br><span class="line">root     <span class="number">17660</span>     <span class="number">1</span>  <span class="number">0</span> <span class="number">09</span>:<span class="number">42</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> /usr/sbin/keepalived -D</span><br><span class="line">root     <span class="number">17661</span> <span class="number">17660</span>  <span class="number">0</span> <span class="number">09</span>:<span class="number">42</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> /usr/sbin/keepalived -D</span><br><span class="line">root     <span class="number">17662</span> <span class="number">17660</span>  <span class="number">0</span> <span class="number">09</span>:<span class="number">42</span> ?        <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> /usr/sbin/keepalived -D</span><br><span class="line">root     <span class="number">17703</span> <span class="number">15307</span>  <span class="number">0</span> <span class="number">09</span>:<span class="number">42</span> pts/<span class="number">2</span>    <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> grep keepalived</span><br></pre></td></tr></table></figure>
+
+<p>查看 MASTER 网卡，可以发现 MASTER 服务器的 bond0 网卡上多了 <code>10.135.22.69</code> 这个虚拟 IP 地址。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">[root@hop02 keepalived]<span class="comment"># ip a</span></span><br><span class="line"><span class="number">1</span>: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu <span class="number">16436</span> qdisc noqueue state UNKNOWN </span><br><span class="line">    link/loopback <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> brd <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span></span><br><span class="line">    inet <span class="number">127.0</span>.<span class="number">0.1</span>/<span class="number">8</span> scope host lo</span><br><span class="line">    inet6 ::<span class="number">1</span>/<span class="number">128</span> scope host </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line"><span class="number">2</span>: em1: &lt;BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP&gt; mtu <span class="number">1500</span> qdisc mq master bond0 state UP qlen <span class="number">1000</span></span><br><span class="line">    link/ether c8:<span class="number">1</span>f:<span class="number">66</span>:f2:<span class="number">09</span>:<span class="number">35</span> brd ff:ff:ff:ff:ff:ff</span><br><span class="line"><span class="number">3</span>: em2: &lt;BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP&gt; mtu <span class="number">1500</span> qdisc mq master bond0 state UP qlen <span class="number">1000</span></span><br><span class="line">    link/ether c8:<span class="number">1</span>f:<span class="number">66</span>:f2:<span class="number">09</span>:<span class="number">35</span> brd ff:ff:ff:ff:ff:ff</span><br><span class="line"><span class="number">4</span>: em3: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span class="number">1500</span> qdisc mq state UP qlen <span class="number">1000</span></span><br><span class="line">    link/ether c8:<span class="number">1</span>f:<span class="number">66</span>:f2:<span class="number">09</span>:<span class="number">37</span> brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet <span class="number">172.25</span>.<span class="number">178.22</span>/<span class="number">24</span> brd <span class="number">172.25</span>.<span class="number">178.255</span> scope global em3</span><br><span class="line">    inet6 fe80::ca1f:<span class="number">66</span>ff:fef2:<span class="number">937</span>/<span class="number">64</span> scope link </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line"><span class="number">5</span>: em4: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span class="number">1500</span> qdisc mq state UP qlen <span class="number">1000</span></span><br><span class="line">    link/ether c8:<span class="number">1</span>f:<span class="number">66</span>:f2:<span class="number">09</span>:<span class="number">38</span> brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet <span class="number">172.23</span>.<span class="number">178.183</span>/<span class="number">24</span> brd <span class="number">172.23</span>.<span class="number">178.255</span> scope global em4</span><br><span class="line">    inet6 fe80::ca1f:<span class="number">66</span>ff:fef2:<span class="number">938</span>/<span class="number">64</span> scope link </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line"><span class="number">6</span>: bond0: &lt;BROADCAST,MULTICAST,MASTER,UP,LOWER_UP&gt; mtu <span class="number">1500</span> qdisc noqueue state UP </span><br><span class="line">    link/ether c8:<span class="number">1</span>f:<span class="number">66</span>:f2:<span class="number">09</span>:<span class="number">35</span> brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet <span class="number">10.135</span>.<span class="number">22.70</span>/<span class="number">23</span> brd <span class="number">10.135</span>.<span class="number">23.255</span> scope global bond0</span><br><span class="line">    inet <span class="number">10.135</span>.<span class="number">22.69</span>/<span class="number">32</span> scope global bond0</span><br><span class="line">    inet6 fe80::ca1f:<span class="number">66</span>ff:fef2:<span class="number">935</span>/<span class="number">64</span> scope link </span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line"><span class="number">7</span>: virbr0: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu <span class="number">1500</span> qdisc noqueue state UNKNOWN </span><br><span class="line">    link/ether <span class="number">52</span>:<span class="number">54</span>:<span class="number">00</span>:<span class="number">20</span>:<span class="number">68</span>:<span class="number">13</span> brd ff:ff:ff:ff:ff:ff</span><br><span class="line">    inet <span class="number">192.168</span>.<span class="number">122.1</span>/<span class="number">24</span> brd <span class="number">192.168</span>.<span class="number">122.255</span> scope global virbr0</span><br><span class="line"><span class="number">8</span>: virbr0-nic: &lt;BROADCAST,MULTICAST&gt; mtu <span class="number">1500</span> qdisc noop state DOWN qlen <span class="number">500</span></span><br><span class="line">    link/ether <span class="number">52</span>:<span class="number">54</span>:<span class="number">00</span>:<span class="number">20</span>:<span class="number">68</span>:<span class="number">13</span> brd ff:ff:ff:ff:ff:ff</span><br></pre></td></tr></table></figure>
+
+<p>漂移规则如下：</p>
+<ol>
+<li>默认使用 MASTER 服务器 <code>10.135.22.70</code>，虚拟 IP 为 <code>10.135.22.69</code>，此时 MASTER 服务器会有 2 个IP。</li>
+<li>当 MASTER 出问题时，IP 会漂移到 BACKUP 服务器（<code>10.135.22.71</code>），此时 BACKUP 服务器会有 2 个IP。</li>
+<li>当 MASTER 重新启动后，虚拟 IP 又会漂移回 MASTER 服务器。</li>
+</ol>
+<h2 id="附录"><a href="#附录" class="headerlink" title="附录"></a>附录</h2><p>配置文件说明：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line">! Configuration File <span class="keyword">for</span> keepalived</span><br><span class="line"></span><br><span class="line">global_defs &#123;</span><br><span class="line">   notification_email &#123;</span><br><span class="line">     <span class="comment"># email 接收方</span></span><br><span class="line">     acassen@firewall.loc</span><br><span class="line">     failover@firewall.loc</span><br><span class="line">     sysadmin@firewall.loc</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="comment"># email 发送方</span></span><br><span class="line">   notification_email_from Alexandre.Cassen@firewall.loc</span><br><span class="line">   <span class="comment"># 邮件服务器, smtp 协议</span></span><br><span class="line">   smtp_server <span class="number">192.168</span>.<span class="number">200.1</span></span><br><span class="line">   smtp_connect_timeout <span class="number">30</span></span><br><span class="line">   router_id app2</span><br><span class="line">   vrrp_skip_check_adv_addr</span><br><span class="line">   <span class="comment"># 使用 unicast_src_ip 需要注释 vrrp_strict，而且也可以进行 ping 测试</span></span><br><span class="line">   <span class="comment">#vrrp_strict </span></span><br><span class="line">   vrrp_garp_interval <span class="number">0</span></span><br><span class="line">   vrrp_gna_interval <span class="number">0</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># vrrp实例</span></span><br><span class="line">vrrp_instance VI_1 &#123;</span><br><span class="line">    <span class="comment"># 指定 keepalived 的角色，MASTER 表示此主机是主服务器，BACKUP 表示此主机是备用服务器</span></span><br><span class="line">    state MASTER</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 指定网卡</span></span><br><span class="line">    interface em1</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 虚拟路由标识，这个标识是一个数字，同一个vrrp实例使用唯一的标识。</span></span><br><span class="line">    <span class="comment"># 即同一vrrp_instance下，MASTER和BACKUP必须是一致的</span></span><br><span class="line">    virtual_router_id <span class="number">51</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 定义优先级，数字越大，优先级越高（0-255）。</span></span><br><span class="line">    <span class="comment"># 在同一个vrrp_instance下，MASTER 的优先级必须大于 BACKUP 的优先级</span></span><br><span class="line">    priority <span class="number">100</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 设定 MASTER 与 BACKUP 负载均衡器之间同步检查的时间间隔，单位是秒</span></span><br><span class="line">    advert_int <span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 如果两节点的上联交换机禁用了组播，则采用 vrrp 单播通告的方式</span></span><br><span class="line">    unicast_src_ip <span class="number">10.0</span>.<span class="number">0.11</span></span><br><span class="line">    unicast_peer &#123;</span><br><span class="line">        <span class="number">10.0</span>.<span class="number">0.12</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 设置验证类型和密码</span></span><br><span class="line">    authentication &#123;</span><br><span class="line">        <span class="comment">#设置验证类型，主要有PASS和AH两种</span></span><br><span class="line">        auth_type PASS</span><br><span class="line">        <span class="comment">#设置验证密码，在同一个vrrp_instance下，MASTER与BACKUP必须使用相同的密码才能正常通信</span></span><br><span class="line">        auth_pass <span class="number">1111</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">#设置虚拟IP地址，可以设置多个虚拟IP地址，每行一个</span></span><br><span class="line">    virtual_ipaddress &#123;</span><br><span class="line">        <span class="comment"># 虚拟 IP</span></span><br><span class="line">        <span class="number">10.0</span>.<span class="number">0.10</span>/<span class="number">24</span> brd <span class="number">10.0</span>.<span class="number">0.255</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 虚拟服务器端口配置</span></span><br><span class="line">virtual_server <span class="number">10.0</span>.<span class="number">0.10</span> <span class="number">80</span> &#123;</span><br><span class="line">    delay_loop <span class="number">6</span></span><br><span class="line">    lb_algo rr</span><br><span class="line">    lb_kind NAT</span><br><span class="line">    persistence_timeout <span class="number">50</span></span><br><span class="line">    protocol TCP</span><br><span class="line"></span><br><span class="line">    real_server <span class="number">10.0</span>.<span class="number">0.11</span> <span class="number">80</span> &#123;</span><br><span class="line">        weight <span class="number">1</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><a href="https://qizhanming.com/blog/2018/05/17/how-to-config-keepalived-on-centos-7" target="_blank" rel="noopener">参考</a></p>
+</blockquote>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2020/04/21/mysql-innodb-table-structure/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2020/04/21/mysql-innodb-table-structure/" class="post-title-link" itemprop="url">MySQL · InnoDB 表结构</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-04-21 16:13:12" itemprop="dateCreated datePublished" datetime="2020-04-21T16:13:12+08:00">2020-04-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-04-23 16:21:20" itemprop="dateModified" datetime="2020-04-23T16:21:20+08:00">2020-04-23</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><h2 id="逻辑存储结构"><a href="#逻辑存储结构" class="headerlink" title="逻辑存储结构"></a>逻辑存储结构</h2><p>从 InnoDB 存储引擎的逻辑存储结构看，所有数据都被逻辑地存放在同一个空间中，称为表空间（tablespace）。表空间又由段（segment）、区（extent）、页（page）组成。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-21-161800.png" alt></p>
+<h3 id="表空间"><a href="#表空间" class="headerlink" title="表空间"></a>表空间</h3><p>表空间可以看作是 InnoDB 存储引擎逻辑结构的最高层，所有的数据都存放在表空间中。</p>
+<p><strong>共享表空间</strong>：<code>ibdata1</code></p>
+<p>undo log、插入缓冲索引页、系统事务信息、二次写缓冲（Double write buffer）等</p>
+<p><strong>独立表空间</strong>：<code>表名.ibd</code></p>
+<p>数据、索引、插入缓冲 Bitmap 页</p>
+<h3 id="段"><a href="#段" class="headerlink" title="段"></a>段</h3><p>表空间是由各个段组成，常见的段有数据段、索引段、回滚段等。InnoDB 存储引擎表是索引组织的，因此数据即索引，索引即数据。那么数据段即为 B+ 树的叶子节点，索引段即为 B+ 树的非索引节点。</p>
+<h3 id="区"><a href="#区" class="headerlink" title="区"></a>区</h3><p>区是由连续页组成的空间，在任何情况下每个区的大小都是 1MB。为了保证区中页的连续性，InnoDB 存储引擎一次从磁盘申请 4～5 个区。在默认情况下，InnoDB 存储引擎页的大小是 16KB，即一个区中一共有 64 个连续的页。</p>
+<p>InnoDB 1.2.x 版本新增了参数 innodb_page_size，通过该参数可以将默认页的大小进行调整，但不论页的大小怎么变化，区的大小总是为 1M。</p>
+<h3 id="页"><a href="#页" class="headerlink" title="页"></a>页</h3><p>页是 InnoDB 磁盘管理的最小单位。在 InnoDB 存储引擎中，默认每个页的大小为 16KB，常见的页类型有：</p>
+<ul>
+<li>数据页（B-tree Node）</li>
+<li>undo 页（undo Log Page）</li>
+<li>系统页（System Page）</li>
+<li>事务数据页（Transaction system Page）</li>
+<li>插入缓冲位图页（Insert Buffer Bitmap）</li>
+<li>插入缓冲空闲列表页（Insert Buffer Free List）</li>
+<li>未压缩的二进制大对象页（Uncompressed BLOB Page）</li>
+<li>压缩的二进制大对象页（compressed BLOB Page）</li>
+</ul>
+<h3 id="行"><a href="#行" class="headerlink" title="行"></a>行</h3><p>InnoDB 存储引擎是面向列（row-oriented）的，也就是说数据是按行进行存储的。</p>
+<h2 id="行记录格式"><a href="#行记录格式" class="headerlink" title="行记录格式"></a>行记录格式</h2><p>InnoDB 存储引擎提供了 4 种不同类型的行格式，分别是 <code>Compact</code>、<code>Redundant</code>、<code>Dynamic</code> 和 <code>Compressed</code> 行格式来存放行记录数据，通过 Row_format 属性可以查询到表使用的行记录结构类型。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show table status like <span class="string">'employees'</span>\G</span><br><span class="line">*************************** <span class="number">1</span>. row ***************************</span><br><span class="line">           Name: employees</span><br><span class="line">         Engine: InnoDB</span><br><span class="line">        Version: <span class="number">10</span></span><br><span class="line">     Row_format: Dynamic</span><br><span class="line">           Rows: <span class="number">299556</span></span><br><span class="line"> Avg_row_length: <span class="number">50</span></span><br><span class="line">    Data_length: <span class="number">15220736</span></span><br><span class="line">Max_data_length: <span class="number">0</span></span><br><span class="line">   Index_length: <span class="number">0</span></span><br><span class="line">      Data_free: <span class="number">0</span></span><br><span class="line"> Auto_increment: NULL</span><br><span class="line">    Create_time: <span class="number">2020</span>-<span class="number">04</span>-<span class="number">16</span> <span class="number">11</span>:<span class="number">27</span>:<span class="number">41</span></span><br><span class="line">    Update_time: NULL</span><br><span class="line">     Check_time: NULL</span><br><span class="line">      Collation: utf8_general_ci</span><br><span class="line">       Checksum: NULL</span><br><span class="line"> Create_options: </span><br><span class="line">        Comment: </span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> set (<span class="number">0.01</span> sec)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> 表名 (列的信息) ROW_FORMAT=行格式名称</span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> 表名 ROW_FORMAT=行格式名称</span><br></pre></td></tr></table></figure>
+
+<h3 id="Compact-行记录格式"><a href="#Compact-行记录格式" class="headerlink" title="Compact 行记录格式"></a>Compact 行记录格式</h3><h3 id="Redundant-行记录格式"><a href="#Redundant-行记录格式" class="headerlink" title="Redundant 行记录格式"></a>Redundant 行记录格式</h3><h3 id="Compressed-行记录格式"><a href="#Compressed-行记录格式" class="headerlink" title="Compressed 行记录格式"></a>Compressed 行记录格式</h3><h3 id="Dynamic-行记录格式"><a href="#Dynamic-行记录格式" class="headerlink" title="Dynamic 行记录格式"></a>Dynamic 行记录格式</h3><h2 id="数据页结构"><a href="#数据页结构" class="headerlink" title="数据页结构"></a>数据页结构</h2>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2020/04/20/mysql-transaction/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2082,536 +2503,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2020/03/02/go/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2020/03/02/go/" class="post-title-link" itemprop="url">Go · 搭建开发环境</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2020-03-02 14:12:26" itemprop="dateCreated datePublished" datetime="2020-03-02T14:12:26+08:00">2020-03-02</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2020-03-03 08:55:28" itemprop="dateModified" datetime="2020-03-03T08:55:28+08:00">2020-03-03</time>
-              
-            
-          </span>
-
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">brew install <span class="keyword">go</span></span><br><span class="line"><span class="keyword">go</span> version</span><br><span class="line"><span class="keyword">go</span> env</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">vim ~/.bash_profile</span><br><span class="line"></span><br><span class="line">GOROOT=/usr/local/Cellar/<span class="keyword">go</span>/<span class="number">1.14</span>/libexec</span><br><span class="line">export GOROOT</span><br><span class="line">export GOPATH=/Users/raohui/<span class="keyword">go</span></span><br><span class="line">export GOBIN=$GOPATH/bin</span><br><span class="line">export PATH=$PATH:$GOBIN:$GOROOT/bin</span><br><span class="line"></span><br><span class="line">source ~/.bash_profile</span><br></pre></td></tr></table></figure>
-
-<h2 id="解决依赖"><a href="#解决依赖" class="headerlink" title="解决依赖"></a>解决依赖</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">export GOPROXY=https:<span class="comment">//goproxy.cn</span></span><br><span class="line"><span class="keyword">go</span> mod tidy</span><br><span class="line"><span class="keyword">go</span> mod download</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2020/02/10/dev-font/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2020/02/10/dev-font/" class="post-title-link" itemprop="url">数据库运维平台</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2020-02-10 17:08:35" itemprop="dateCreated datePublished" datetime="2020-02-10T17:08:35+08:00">2020-02-10</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2020-03-19 17:54:45" itemprop="dateModified" datetime="2020-03-19T17:54:45+08:00">2020-03-19</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/其他/" itemprop="url" rel="index"><span itemprop="name">其他</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="项目简介"><a href="#项目简介" class="headerlink" title="项目简介"></a>项目简介</h2><p>DBM 是控制台一个数据库运维管理功能模块，包括管理、监控、告警等功能，目标是构建 MySQL 数据库自动化运维能力，支撑 PSI 全量数据库，实现自动化运维。</p>
-<p><a href="https://git.haier.net/sre/dbm" target="_blank" rel="noopener">Gitlab</a> | <a href="http://x-dev2.qd-ctcc.haier.net/console/database" target="_blank" rel="noopener">测试地址</a></p>
-<h2 id="技术选型"><a href="#技术选型" class="headerlink" title="技术选型"></a>技术选型</h2><p><strong>前端</strong></p>
-<table>
-<thead>
-<tr>
-<th>技术</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><a href="https://vuejs.org/" target="_blank" rel="noopener">Vue</a></td>
-<td>前端框架</td>
-</tr>
-<tr>
-<td><a href="https://router.vuejs.org/" target="_blank" rel="noopener">Vue-router</a></td>
-<td>路由框架</td>
-</tr>
-<tr>
-<td><a href="https://vuex.vuejs.org/" target="_blank" rel="noopener">Vuex</a></td>
-<td>全局状态管理框架</td>
-</tr>
-<tr>
-<td><a href="https://www.antdv.com/docs/vue/introduce-cn/" target="_blank" rel="noopener">Ant Design of Vue</a></td>
-<td>前端 UI 框架</td>
-</tr>
-<tr>
-<td><a href="https://github.com/axios/axios" target="_blank" rel="noopener">Axios</a></td>
-<td>前端 HTTP 框架</td>
-</tr>
-<tr>
-<td><a href="https://viserjs.gitee.io/demoHome.html" target="_blank" rel="noopener">Viser</a></td>
-<td>前端图表框架</td>
-</tr>
-</tbody></table>
-<p><strong>后端</strong></p>
-<table>
-<thead>
-<tr>
-<th>技术</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><a href="https://spring.io/projects/spring-boot/" target="_blank" rel="noopener">Spring Boot</a></td>
-<td>容器 + MVC 框架</td>
-</tr>
-<tr>
-<td><a href="https://mybatis.org/mybatis-3/zh/index.html" target="_blank" rel="noopener">MyBatis</a></td>
-<td>ORM 框架</td>
-</tr>
-<tr>
-<td><a href="http://mybatis.org/generator/" target="_blank" rel="noopener">MyBatis Generator</a></td>
-<td>数据层代码生成</td>
-</tr>
-<tr>
-<td><a href="https://swagger.io/tools/swagger-ui/" target="_blank" rel="noopener">Swagger UI</a></td>
-<td>文档生产工具</td>
-</tr>
-<tr>
-<td><a href="https://www.docker.com/" target="_blank" rel="noopener">Docker</a></td>
-<td>应用容器引擎</td>
-</tr>
-<tr>
-<td><a href="https://druid.apache.org/" target="_blank" rel="noopener">Druid</a></td>
-<td>数据库连接池</td>
-</tr>
-<tr>
-<td><a href="https://projectlombok.org/" target="_blank" rel="noopener">Lombok</a></td>
-<td>简化对象封装工具</td>
-</tr>
-<tr>
-<td><a href="http://hibernate.org/validator/" target="_blank" rel="noopener">Hibernator-Validator</a></td>
-<td>验证框架</td>
-</tr>
-</tbody></table>
-<h2 id="功能概览"><a href="#功能概览" class="headerlink" title="功能概览"></a>功能概览</h2><ul>
-<li>数据库<ul>
-<li>阿里云 RDS<ul>
-<li>显示列表</li>
-<li>基本信息</li>
-<li>监控信息</li>
-<li>备份恢复</li>
-<li>日志管理</li>
-</ul>
-</li>
-<li>自建 MySQL<ul>
-<li>显示列表</li>
-<li>基本信息</li>
-<li>监控信息</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<h2 id="数据库表"><a href="#数据库表" class="headerlink" title="数据库表"></a>数据库表</h2><p><strong>console_db_rds</strong>：阿里云 RDS 信息表</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*------- CREATE SQL---------*/</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`console_db_rds`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT <span class="keyword">COMMENT</span> <span class="string">'主键'</span>,</span><br><span class="line">  <span class="string">`domain`</span> <span class="built_in">varchar</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span> <span class="keyword">COMMENT</span> <span class="string">'领域'</span>,</span><br><span class="line">  <span class="string">`project`</span> <span class="built_in">varchar</span>(<span class="number">32</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span> <span class="keyword">COMMENT</span> <span class="string">'项目名称'</span>,</span><br><span class="line">  <span class="string">`instanceid`</span> <span class="built_in">varchar</span>(<span class="number">32</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span> <span class="keyword">COMMENT</span> <span class="string">'实例ID'</span>,</span><br><span class="line">  <span class="string">`instance`</span> <span class="built_in">char</span>(<span class="number">50</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span> <span class="keyword">COMMENT</span> <span class="string">'实例地址'</span>,</span><br><span class="line">  <span class="string">`port`</span> <span class="built_in">varchar</span>(<span class="number">10</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span> <span class="keyword">COMMENT</span> <span class="string">'端口'</span>,</span><br><span class="line">  <span class="string">`env`</span> enum(<span class="string">'生产'</span>,<span class="string">'测试'</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">'生产'</span> <span class="keyword">COMMENT</span> <span class="string">'环境'</span>,</span><br><span class="line">  <span class="string">`version`</span> <span class="built_in">char</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span> <span class="keyword">COMMENT</span> <span class="string">'版本'</span>,</span><br><span class="line">  <span class="string">`region`</span> <span class="built_in">varchar</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span> <span class="keyword">COMMENT</span> <span class="string">'区域'</span>,</span><br><span class="line">  <span class="string">`inst_status`</span> <span class="built_in">int</span>(<span class="number">10</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">'1'</span> <span class="keyword">COMMENT</span> <span class="string">'运行状态, 1:运行中，0:其他'</span>,</span><br><span class="line">  <span class="string">`config`</span> <span class="built_in">varchar</span>(<span class="number">32</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span> <span class="keyword">COMMENT</span> <span class="string">'实例配置'</span>,</span><br><span class="line">  <span class="string">`storage_type`</span> <span class="built_in">varchar</span>(<span class="number">32</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span> <span class="keyword">COMMENT</span> <span class="string">'存储类型'</span>,</span><br><span class="line">  <span class="string">`max_iops`</span> <span class="built_in">int</span>(<span class="number">6</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">'0'</span> <span class="keyword">COMMENT</span> <span class="string">'最大IOPS'</span>,</span><br><span class="line">  <span class="string">`max_connections`</span> <span class="built_in">int</span>(<span class="number">6</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">'0'</span> <span class="keyword">COMMENT</span> <span class="string">'最大连接数'</span>,</span><br><span class="line">  <span class="string">`type`</span> <span class="built_in">varchar</span>(<span class="number">32</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span> <span class="keyword">COMMENT</span> <span class="string">'系列'</span>,</span><br><span class="line">  <span class="string">`desc`</span> <span class="built_in">varchar</span>(<span class="number">32</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span> <span class="keyword">COMMENT</span> <span class="string">'描述信息'</span>,</span><br><span class="line">  <span class="string">`created_at`</span> datetime <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">CURRENT_TIMESTAMP</span> <span class="keyword">COMMENT</span> <span class="string">'创建时间'</span>,</span><br><span class="line">  <span class="string">`updated_at`</span> datetime <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">CURRENT_TIMESTAMP</span> <span class="keyword">ON</span> <span class="keyword">UPDATE</span> <span class="keyword">CURRENT_TIMESTAMP</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>),</span><br><span class="line">  <span class="keyword">UNIQUE</span> <span class="keyword">KEY</span> <span class="string">`idx_instanceid`</span> (<span class="string">`instanceid`</span>(<span class="number">20</span>)) <span class="keyword">USING</span> BTREE,</span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`idx_project`</span> (<span class="string">`project`</span>(<span class="number">20</span>)) <span class="keyword">USING</span> BTREE</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> AUTO_INCREMENT=<span class="number">37</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8 <span class="keyword">COMMENT</span>=<span class="string">'阿里云RDS信息表'</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>console_db_mysql</strong>：本地 MySQL 信息表</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*------- CREATE SQL---------*/</span></span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`console_db_mysql`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> AUTO_INCREMENT <span class="keyword">COMMENT</span> <span class="string">'主键'</span>,</span><br><span class="line">  <span class="string">`domain`</span> <span class="built_in">varchar</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span> <span class="keyword">COMMENT</span> <span class="string">'领域'</span>,</span><br><span class="line">  <span class="string">`project`</span> <span class="built_in">varchar</span>(<span class="number">32</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span> <span class="keyword">COMMENT</span> <span class="string">'项目名称'</span>,</span><br><span class="line">  <span class="string">`instance`</span> <span class="built_in">char</span>(<span class="number">50</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span> <span class="keyword">COMMENT</span> <span class="string">'实例'</span>,</span><br><span class="line">  <span class="string">`ip`</span> <span class="built_in">char</span>(<span class="number">50</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span> <span class="keyword">COMMENT</span> <span class="string">'IP'</span>,</span><br><span class="line">  <span class="string">`port`</span> <span class="built_in">varchar</span>(<span class="number">10</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span> <span class="keyword">COMMENT</span> <span class="string">'端口'</span>,</span><br><span class="line">  <span class="string">`env`</span> enum(<span class="string">'生产'</span>,<span class="string">'测试'</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">'生产'</span> <span class="keyword">COMMENT</span> <span class="string">'环境'</span>,</span><br><span class="line">  <span class="string">`version`</span> <span class="built_in">char</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span> <span class="keyword">COMMENT</span> <span class="string">'版本'</span>,</span><br><span class="line">  <span class="string">`room`</span> <span class="built_in">varchar</span>(<span class="number">20</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span> <span class="keyword">COMMENT</span> <span class="string">'机房位置'</span>,</span><br><span class="line">  <span class="string">`role`</span> enum(<span class="string">'主'</span>,<span class="string">'从'</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">'主'</span> <span class="keyword">COMMENT</span> <span class="string">'角色'</span>,</span><br><span class="line">  <span class="string">`inst_status`</span> <span class="built_in">int</span>(<span class="number">2</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">'2'</span> <span class="keyword">COMMENT</span> <span class="string">'运行状态'</span>,</span><br><span class="line">  <span class="string">`repli_status`</span> <span class="built_in">int</span>(<span class="number">2</span>) <span class="keyword">unsigned</span> <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">'0'</span> <span class="keyword">COMMENT</span> <span class="string">'复制状态'</span>,</span><br><span class="line">  <span class="string">`desc`</span> <span class="built_in">varchar</span>(<span class="number">64</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span> <span class="keyword">COMMENT</span> <span class="string">'描述信息'</span>,</span><br><span class="line">  <span class="string">`config`</span> <span class="built_in">varchar</span>(<span class="number">32</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="string">''</span> <span class="keyword">COMMENT</span> <span class="string">'机器配置'</span>,</span><br><span class="line">  <span class="string">`created_at`</span> datetime <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">CURRENT_TIMESTAMP</span> <span class="keyword">COMMENT</span> <span class="string">'创建时间'</span>,</span><br><span class="line">  <span class="string">`updated_at`</span> datetime <span class="keyword">NOT</span> <span class="literal">NULL</span> <span class="keyword">DEFAULT</span> <span class="keyword">CURRENT_TIMESTAMP</span> <span class="keyword">ON</span> <span class="keyword">UPDATE</span> <span class="keyword">CURRENT_TIMESTAMP</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>),</span><br><span class="line">  <span class="keyword">UNIQUE</span> <span class="keyword">KEY</span> <span class="string">`idx_instance`</span> (<span class="string">`instance`</span>(<span class="number">20</span>)) <span class="keyword">USING</span> BTREE,</span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`idx_project`</span> (<span class="string">`project`</span>(<span class="number">20</span>)) <span class="keyword">USING</span> BTREE</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span> AUTO_INCREMENT=<span class="number">116</span> <span class="keyword">DEFAULT</span> <span class="keyword">CHARSET</span>=utf8 <span class="keyword">COMMENT</span>=<span class="string">'本地MySQL信息表'</span></span><br></pre></td></tr></table></figure>
-
-<h2 id="开发"><a href="#开发" class="headerlink" title="开发"></a>开发</h2><h3 id="前端"><a href="#前端" class="headerlink" title="前端"></a>前端</h3><ul>
-<li>安装 Yarn</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cnpm i -g yarn  //直接全局安装</span><br><span class="line">yarn --version</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>下载代码</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git clone -b 分支名 仓库地址</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>安装依赖</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn install</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>安装 Nginx</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">brew install nginx</span><br><span class="line"></span><br><span class="line"><span class="comment"># nginx.conf 配置文件目录</span></span><br><span class="line">/usr/local/etc/nginx</span><br><span class="line"></span><br><span class="line"><span class="comment"># nginx 命令目录</span></span><br><span class="line">/usr/local/Cellar/nginx/<span class="number">1.17</span>.<span class="number">8</span>/bin</span><br><span class="line"></span><br><span class="line"><span class="comment"># nginx 相关命令</span></span><br><span class="line">nginx  </span><br><span class="line">nginx -s reload</span><br><span class="line">nginx -s stop </span><br><span class="line">nginx -t</span><br><span class="line">lsof -i tcp:port  // 查看端口占用情况</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#user  nobody;</span></span><br><span class="line"><span class="string">worker_processes</span>  <span class="number">1</span><span class="string">;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#error_log  logs/error.log;</span></span><br><span class="line"><span class="comment">#error_log  logs/error.log  notice;</span></span><br><span class="line"><span class="comment">#error_log  logs/error.log  info;</span></span><br><span class="line"><span class="comment">#pid        logs/nginx.pid;</span></span><br><span class="line"></span><br><span class="line"><span class="string">events</span> <span class="string">&#123;</span></span><br><span class="line">    <span class="string">worker_connections</span>  <span class="number">1024</span><span class="string">;</span></span><br><span class="line">	<span class="comment">#accept_mutex on;   #设置网路连接序列化，防止惊群现象发生，默认为on</span></span><br><span class="line">    <span class="comment">#multi_accept off;  #设置一个进程是否同时接受多个网络连接，默认为off</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="string">http</span> <span class="string">&#123;</span></span><br><span class="line">    <span class="string">include</span>       <span class="string">mime.types;</span></span><br><span class="line">    <span class="string">default_type</span>  <span class="string">application/octet-stream;</span></span><br><span class="line"></span><br><span class="line">    <span class="string">log_format</span>  <span class="string">main</span>  <span class="string">'$remote_addr - $remote_user [$time_local] "$request" '</span></span><br><span class="line">                      <span class="string">'$status $body_bytes_sent "$http_referer" '</span></span><br><span class="line">                      <span class="string">'"$http_user_agent" "$http_x_forwarded_for"'</span><span class="string">;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">#access_log  logs/access.log  main;</span></span><br><span class="line"></span><br><span class="line">    <span class="string">sendfile</span>        <span class="string">on;</span></span><br><span class="line">    <span class="comment">#tcp_nopush     on;</span></span><br><span class="line">	</span><br><span class="line">	<span class="string">server_names_hash_bucket_size</span> <span class="number">64</span><span class="string">;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">#keepalive_timeout  0;</span></span><br><span class="line">    <span class="string">keepalive_timeout</span>  <span class="number">65</span><span class="string">;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">#gzip  on;</span></span><br><span class="line"></span><br><span class="line">  <span class="string">upstream</span> <span class="string">console-web</span> <span class="string">&#123;</span></span><br><span class="line">    <span class="string">server</span>    <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span><span class="string">:8040;</span></span><br><span class="line">    <span class="string">keepalive</span> <span class="number">10</span><span class="string">;</span></span><br><span class="line">  <span class="string">&#125;</span></span><br><span class="line">  <span class="string">map</span> <span class="string">$http_upgrade</span> <span class="string">$connection_upgrade</span> <span class="string">&#123;</span></span><br><span class="line">   <span class="string">default</span> <span class="string">upgrade;</span></span><br><span class="line">   <span class="string">''</span>      <span class="string">close;</span></span><br><span class="line">  <span class="string">&#125;</span></span><br><span class="line">  <span class="string">upstream</span> <span class="string">console-backend</span> <span class="string">&#123;</span></span><br><span class="line">    <span class="string">server</span>    <span class="number">10.135</span><span class="number">.7</span><span class="number">.102</span><span class="string">;</span></span><br><span class="line">    <span class="string">keepalive</span> <span class="number">10</span><span class="string">;</span></span><br><span class="line">  <span class="string">&#125;</span></span><br><span class="line">  <span class="string">server</span> <span class="string">&#123;</span></span><br><span class="line">    <span class="string">listen</span>      <span class="number">80</span><span class="string">;</span></span><br><span class="line">    <span class="string">server_name</span> <span class="string">x-dev2.qd-ctcc.haier.net;</span></span><br><span class="line">    <span class="string">location</span> <span class="string">/</span> <span class="string">&#123;</span></span><br><span class="line">      <span class="string">proxy_set_header</span> <span class="string">Host</span>            <span class="string">"localhost"</span>               <span class="string">;</span></span><br><span class="line">      <span class="string">proxy_set_header</span> <span class="string">X-Real-IP</span>       <span class="string">$remote_addr</span>              <span class="string">;</span></span><br><span class="line">      <span class="string">proxy_set_header</span> <span class="string">X-Forwarded-For</span> <span class="string">$proxy_add_x_forwarded_for;</span></span><br><span class="line">      <span class="string">proxy_set_header</span> <span class="string">Connection</span>      <span class="string">""</span>                        <span class="string">;</span></span><br><span class="line">      <span class="string">proxy_pass</span>       <span class="attr">http://console-web;</span></span><br><span class="line">    <span class="string">&#125;</span></span><br><span class="line"></span><br><span class="line">    <span class="string">location</span> <span class="string">/api</span> <span class="string">&#123;</span></span><br><span class="line">		<span class="string">proxy_set_header</span> <span class="string">Host</span>            <span class="string">"x-dev2.qd-ctcc.haier.net"</span><span class="string">;</span></span><br><span class="line">		<span class="string">proxy_set_header</span> <span class="string">X-Real-IP</span>       <span class="string">$remote_addr</span>                            <span class="string">;</span></span><br><span class="line">		<span class="string">proxy_set_header</span> <span class="string">X-Forwarded-For</span> <span class="string">$proxy_add_x_forwarded_for</span>              <span class="string">;</span></span><br><span class="line">		<span class="string">proxy_pass</span>       <span class="attr">http://console-backend;</span></span><br><span class="line">		<span class="string">proxy_read_timeout</span> <span class="number">600</span><span class="string">s;</span></span><br><span class="line">		<span class="comment"># 支持sse</span></span><br><span class="line">		<span class="string">proxy_http_version</span> <span class="number">1.1</span><span class="string">;</span></span><br><span class="line">		<span class="string">chunked_transfer_encoding</span> <span class="string">off;</span></span><br><span class="line">		<span class="comment"># 支持websocket</span></span><br><span class="line">		<span class="string">proxy_set_header</span> <span class="string">Upgrade</span> <span class="string">$http_upgrade;</span></span><br><span class="line">		<span class="string">proxy_set_header</span> <span class="string">Connection</span> <span class="string">$connection_upgrade;</span></span><br><span class="line">	<span class="string">&#125;</span></span><br><span class="line">	</span><br><span class="line">   <span class="string">location</span> <span class="string">/api/v2</span> <span class="string">&#123;</span></span><br><span class="line">                <span class="string">proxy_set_header</span> <span class="string">X-Real-IP</span>       <span class="string">$remote_addr</span>                            <span class="string">;</span></span><br><span class="line">                <span class="string">proxy_set_header</span> <span class="string">X-Forwarded-For</span> <span class="string">$proxy_add_x_forwarded_for</span>              <span class="string">;</span></span><br><span class="line">                <span class="string">proxy_pass</span>       <span class="attr">http://localhost:8090;</span></span><br><span class="line">        <span class="string">&#125;</span></span><br><span class="line">  <span class="string">&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>修改 Host</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/hosts</span><br><span class="line"><span class="number">127.0</span>.<span class="number">0.1</span>	    x-dev2.qd-ctcc.haier.net</span><br><span class="line"><span class="comment">#127.0.0.1    localhost</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>运行</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn run serve</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>提交代码到指定分支</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git add .</span><br><span class="line">git commit -m <span class="string">'database'</span></span><br><span class="line">git push origin liuxh</span><br></pre></td></tr></table></figure>
-
-<h3 id="后端"><a href="#后端" class="headerlink" title="后端"></a>后端</h3><ul>
-<li><p><strong>本地 MySQL 接入监控</strong></p>
-<ul>
-<li><p>安装 mysqld_exporter</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载安装包</span></span><br><span class="line">cd /<span class="keyword">data</span></span><br><span class="line">wget https://github.com/prometheus/mysqld_exporter/releases/download/v0.<span class="number">12.1</span>/mysqld_exporter-<span class="number">0.12</span>.<span class="number">1</span>.linux-amd64.tar.gz</span><br><span class="line">tar -xzf mysqld_exporter-<span class="number">0.12</span>.<span class="number">1</span>.linux-amd64.tar.gz</span><br><span class="line">cd mysqld_exporter-<span class="number">0.12</span>.<span class="number">1</span>.linux-amd64</span><br><span class="line"></span><br><span class="line"><span class="comment"># 编辑配置文件</span></span><br><span class="line">vi .my.cnf</span><br><span class="line">[client]</span><br><span class="line">user=hdm</span><br><span class="line">password=Hdm@<span class="number">123</span>!</span><br><span class="line">host=<span class="number">10.133</span>.<span class="number">0.51</span></span><br><span class="line">port=<span class="number">3306</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动</span></span><br><span class="line">./mysqld_exporter --config.my-cnf=/<span class="keyword">data</span>/mysqld_exporter-<span class="number">0.12</span>.<span class="number">1</span>.linux-amd64/.my.cnf &amp;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 检测</span></span><br><span class="line">ps -ef | grep mysqld_exporter</span><br><span class="line"></span><br><span class="line"><span class="comment"># 打开防火墙端口：9104</span></span><br><span class="line">firewall-cmd --zone=public --add-port=<span class="number">9104</span>/tcp</span><br><span class="line">firewall-cmd --reload  </span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试</span></span><br><span class="line"><span class="number">10.133</span>.<span class="number">0.51</span>:<span class="number">9104</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>注册 consul</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"># 注册</span><br><span class="line">PUT http://consul.qdct-lsb.haier.net/v1/agent/service/register</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;:&quot;mysql_10.133.0.51_3306&quot;,</span><br><span class="line">    &quot;name&quot;:&quot;mysql&quot;,</span><br><span class="line">    &quot;address&quot;:&quot;10.133.0.51&quot;,</span><br><span class="line">    &quot;port&quot;:9104,</span><br><span class="line">    &quot;tags&quot;:[</span><br><span class="line">        &quot;cluster=QD&quot;,</span><br><span class="line">        &quot;project=TDDS&quot;,</span><br><span class="line">        &quot;instance=10.133.0.51:3306&quot;,</span><br><span class="line">        &quot;host=10.133.0.51&quot;,</span><br><span class="line">        &quot;port=3306&quot;,</span><br><span class="line">        &quot;env=prd&quot;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 查看</span><br><span class="line">GET http://consul.qdct-lsb.haier.net/v1/catalog/service/mysql</span><br><span class="line"></span><br><span class="line"># 注销</span><br><span class="line">PUT http://consul.qdct-lsb.haier.net/v1/agent/service/deregister/mysql_10.133.0.51_3306</span><br><span class="line"></span><br><span class="line"># Prometheus</span><br><span class="line">http://10.138.16.192:9099/targets</span><br></pre></td></tr></table></figure>
-</li>
-</ul>
-</li>
-<li><p><strong>获取 CPU、内存、硬盘信息</strong></p>
-</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cat /proc/cpuinfo | grep <span class="string">"cores"</span> | uniq</span><br><span class="line">free -g</span><br><span class="line">fdisk -l | grep Disk</span><br></pre></td></tr></table></figure>
-
-<h2 id="打包部署"><a href="#打包部署" class="headerlink" title="打包部署"></a>打包部署</h2><ul>
-<li>提交代码</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 提交代码到dev分支</span></span><br><span class="line">git pull origin dev</span><br><span class="line">git add .</span><br><span class="line">git commit -m <span class="string">'database'</span></span><br><span class="line">git push origin dev</span><br><span class="line"></span><br><span class="line"><span class="comment"># 合入master分支</span></span><br><span class="line">git checkout master</span><br><span class="line">git merge dev</span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-03-19-175400.jpeg" alt></p>
-<ul>
-<li><a href="https://x.haier.net/" target="_blank" rel="noopener">前端打包</a></li>
-</ul>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-02-24-171928.jpg" alt></p>
-<ul>
-<li><a href="http://d.haier.net/" target="_blank" rel="noopener">前端部署</a></li>
-</ul>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-02-24-172804.jpg" alt></p>
-<ul>
-<li><p>后端打包（新建打包配置）</p>
-<ul>
-<li>配置名称：database</li>
-<li>代码仓库：<a href="https://git.haier.net/sre/dbm.git" target="_blank" rel="noopener">https://git.haier.net/sre/dbm.git</a></li>
-<li>镜像仓库：registry.haier.net</li>
-<li>分支名称：master</li>
-<li>构建工具：Maven</li>
-<li>Dockerfile：默认</li>
-</ul>
-</li>
-<li><p>后端部署</p>
-</li>
-</ul>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-02-24-173613.jpg" alt></p>
-<ul>
-<li>go 安装依赖</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">export GOPROXY=https://goproxy.cn</span><br><span class="line">go mod tidy</span><br><span class="line">go mod download</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>本地构建配置环境变量</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">DB_MYSQL=console:suMuCaSu1e@tcp(<span class="number">10.138</span>.<span class="number">228.243</span>:<span class="number">3306</span>)/console?parseTime=true&amp;loc=Local</span><br><span class="line">CAICLOUD_USER=admin</span><br><span class="line">CAICLOUD_PASSWORD=Pwd123456</span><br><span class="line">CAICLOUD_ADDRESS=<span class="number">10.135</span>.<span class="number">7.71</span>:<span class="number">6002</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>安装 swagger</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">go get -u github.com/swaggo/swag/cmd/swag</span><br><span class="line">go get -u github.com/swaggo/gin-swagger</span><br><span class="line">go get -u github.com/swaggo/gin-swagger/swaggerFiles</span><br><span class="line">swag init</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2660,7 +2551,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">163</span>
+                    <span class="site-state-item-count">165</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
