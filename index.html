@@ -625,7 +625,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2020-04-27 16:25:12" itemprop="dateModified" datetime="2020-04-27T16:25:12+08:00">2020-04-27</time>
+                <time title="修改时间：2020-04-27 17:57:04" itemprop="dateModified" datetime="2020-04-27T17:57:04+08:00">2020-04-27</time>
               
             
           </span>
@@ -748,7 +748,41 @@
 <h3 id="Dynamic-和-Compressed-行记录格式"><a href="#Dynamic-和-Compressed-行记录格式" class="headerlink" title="Dynamic 和 Compressed 行记录格式"></a>Dynamic 和 Compressed 行记录格式</h3><p>这两种行格式类似于 <code>COMPACT</code> 行格式，只不过在处理行溢出数据时有点儿分歧，它们不会在记录的真实数据处存储字符串的前 768 个字节，而是把所有的字节都存储到其他页面中，只在记录的真实数据处存储其他页面的地址。</p>
 <p>另外，<code>Compressed</code> 行格式会采用压缩算法对页面进行压缩。</p>
 <h3 id="行溢出"><a href="#行溢出" class="headerlink" title="行溢出"></a>行溢出</h3><p>一个页一般是 <code>16KB</code>，当记录中的数据太多，当前页放不下的时候，会把多余的数据存储到其他页中，这种现象称为 <code>行溢出</code>。</p>
-<h2 id="数据页结构"><a href="#数据页结构" class="headerlink" title="数据页结构"></a>数据页结构</h2>
+<h2 id="数据页结构"><a href="#数据页结构" class="headerlink" title="数据页结构"></a>数据页结构</h2><p>在页的 7 个组成部分中，我们自己存储的记录会按照我们指定的行格式存储到 <code>User Records</code> 部分。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-27-173500.png" alt></p>
+<p>表中记录的行格式示意图就是这样的：</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-27-173600.png" alt></p>
+<p>不论我们怎么对页中的记录做增删改操作，InnoDB 始终会维护一条记录的单链表，链表中的各个节点是按照主键值由小到大的顺序连接起来的。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-27-173900.png" alt></p>
+<p>小结：</p>
+<ul>
+<li><p>InnoDB 为了不同的目的而设计了不同类型的页，我们把用于存放记录的页叫做 <code>数据页</code>。</p>
+</li>
+<li><p>一个数据页可以被大致划分为 7 个部分，分别是</p>
+<ul>
+<li><code>File Header</code>：表示页的一些通用信息，占固定的 38 字节。</li>
+<li><code>Page Header</code>：表示数据页专有的一些信息，占固定的 56 个字节。</li>
+<li><code>Infimum + Supremum</code>：两个虚拟的伪记录，分别表示页中的最小和最大记录，占固定的 26 个字节。</li>
+<li><code>User Records</code>：真实存储我们插入的记录的部分，大小不固定。</li>
+<li><code>Free Space</code>：页中尚未使用的部分，大小不确定。</li>
+<li><code>Page Directory</code>：页中的某些记录相对位置，也就是各个槽在页面中的地址偏移量，大小不固定，插入的记录越多，这个部分占用的空间越多。</li>
+<li><code>File Trailer</code>：用于检验页是否完整的部分，占用固定的 8 个字节。</li>
+</ul>
+</li>
+<li><p>每个记录的头信息中都有一个 <code>next_record</code> 属性，从而使页中的所有记录串联成一个 <code>单链表</code>。</p>
+</li>
+<li><p><code>InnoDB</code> 会把页中的记录划分为若干个组，每个组的最后一个记录的地址偏移量作为一个 <code>槽</code>，存放在 <code>Page Directory</code> 中，所以在一个页中根据主键查找记录是非常快的，分为两步：</p>
+<ul>
+<li>通过二分法确定该记录所在的槽。</li>
+<li>通过记录的 <code>next_record</code> 属性遍历该槽所在的组中的各个记录。</li>
+</ul>
+</li>
+<li><p>每个数据页的 <code>File Header</code> 部分都有上一个和下一个页的编号，所以所有的数据页会组成一个 <code>双链表</code>。</p>
+</li>
+<li><p>为保证从内存中同步到磁盘的页的完整性，在页的首部和尾部都会存储页中数据的校验和和页面最后修改时对应的 <code>LSN</code> 值，如果首部和尾部的校验和和 <code>LSN</code> 值校验不成功的话，就说明同步过程出现了问题。</p>
+</li>
+</ul>
+
           
         
       
