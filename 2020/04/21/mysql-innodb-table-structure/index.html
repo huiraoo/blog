@@ -104,7 +104,9 @@
 <meta property="og:description" content="简介逻辑存储结构从 InnoDB 存储引擎的逻辑存储结构看，所有数据都被逻辑地存放在同一个空间中，称为表空间（tablespace）。表空间又由段（segment）、区（extent）、页（page）组成。  表空间表空间可以看作是 InnoDB 存储引擎逻辑结构的最高层，所有的数据都存放在表空间中。 共享表空间：ibdata1 undo log、插入缓冲索引页、系统事务信息、二次写缓冲（Doub">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-21-161800.png">
-<meta property="og:updated_time" content="2020-04-23T08:21:20.978Z">
+<meta property="og:image" content="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-27-155200.png">
+<meta property="og:image" content="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-27-155300.png">
+<meta property="og:updated_time" content="2020-04-27T08:25:12.327Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MySQL · InnoDB 表结构">
 <meta name="twitter:description" content="简介逻辑存储结构从 InnoDB 存储引擎的逻辑存储结构看，所有数据都被逻辑地存放在同一个空间中，称为表空间（tablespace）。表空间又由段（segment）、区（extent）、页（page）组成。  表空间表空间可以看作是 InnoDB 存储引擎逻辑结构的最高层，所有的数据都存放在表空间中。 共享表空间：ibdata1 undo log、插入缓冲索引页、系统事务信息、二次写缓冲（Doub">
@@ -414,7 +416,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2020-04-23 16:21:20" itemprop="dateModified" datetime="2020-04-23T16:21:20+08:00">2020-04-23</time>
+                <time title="修改时间：2020-04-27 16:25:12" itemprop="dateModified" datetime="2020-04-27T16:25:12+08:00">2020-04-27</time>
               
             
           </span>
@@ -500,7 +502,49 @@
 
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> 表名 (列的信息) ROW_FORMAT=行格式名称</span><br><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> 表名 ROW_FORMAT=行格式名称</span><br></pre></td></tr></table></figure>
 
-<h3 id="Compact-行记录格式"><a href="#Compact-行记录格式" class="headerlink" title="Compact 行记录格式"></a>Compact 行记录格式</h3><h3 id="Redundant-行记录格式"><a href="#Redundant-行记录格式" class="headerlink" title="Redundant 行记录格式"></a>Redundant 行记录格式</h3><h3 id="Compressed-行记录格式"><a href="#Compressed-行记录格式" class="headerlink" title="Compressed 行记录格式"></a>Compressed 行记录格式</h3><h3 id="Dynamic-行记录格式"><a href="#Dynamic-行记录格式" class="headerlink" title="Dynamic 行记录格式"></a>Dynamic 行记录格式</h3><h2 id="数据页结构"><a href="#数据页结构" class="headerlink" title="数据页结构"></a>数据页结构</h2>
+<h3 id="Compact-行记录格式"><a href="#Compact-行记录格式" class="headerlink" title="Compact 行记录格式"></a>Compact 行记录格式</h3><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-27-155200.png" alt></p>
+<p>在 <code>Compact</code> 行格式中，把所有变长字段的真实数据占用的字节长度都存放在记录的开头部位，从而形成一个变长字段长度列表，各变长字段数据占用的字节数按照列的顺序逆序存放。</p>
+<p>MySQL 会为每条记录默认添加一些列：</p>
+<table>
+<thead>
+<tr>
+<th>列名</th>
+<th>是否必须</th>
+<th>占用空间</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>row_id</td>
+<td>否</td>
+<td>6 字节</td>
+<td>行 ID，唯一标识一条记录</td>
+</tr>
+<tr>
+<td>transaction_id</td>
+<td>是</td>
+<td>6 字节</td>
+<td>事务 ID</td>
+</tr>
+<tr>
+<td>roll_pointer</td>
+<td>是</td>
+<td>7 字节</td>
+<td>回滚指针</td>
+</tr>
+</tbody></table>
+<p>InnoDB 表对主键的生成策略：</p>
+<ul>
+<li>优先使用用户自定义主键作为主键；</li>
+<li>如果用户没有定义主键，则选取一个 Unique 键作为主键；</li>
+<li>如果表中连 Unique 键都没有定义的话，则 InnoDB 会为表默认添加一个名为 row_id 的隐藏列作为主键。</li>
+</ul>
+<h3 id="Redundant-行记录格式"><a href="#Redundant-行记录格式" class="headerlink" title="Redundant 行记录格式"></a>Redundant 行记录格式</h3><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-27-155300.png" alt></p>
+<p>使用 <code>Redundant</code> 行格式的 <code>CHAR(M)</code> 类型的列是不会产生碎片的，<code>CHAR(M)</code> 占用的真实数据空间就是该字符集表示一个字符最多需要的字节数和 <code>M</code> 的乘积。在列的值允许为 <code>NULL</code> 的情况下，<code>gbk</code> 字符集表示一个字符最多需要<code>2</code> 个字节，那在该字符集下，<code>M</code> 的最大取值就是 <code>32766</code>（也就是：65532/2），也就是说最多能存储 <code>32766</code> 个字符；<code>utf8</code> 字符集表示一个字符最多需要 <code>3</code> 个字节，那在该字符集下，<code>M</code> 的最大取值就是 <code>21844</code>，就是说最多能存储 <code>21844</code>（也就是：65532/3）个字符。</p>
+<h3 id="Dynamic-和-Compressed-行记录格式"><a href="#Dynamic-和-Compressed-行记录格式" class="headerlink" title="Dynamic 和 Compressed 行记录格式"></a>Dynamic 和 Compressed 行记录格式</h3><p>这两种行格式类似于 <code>COMPACT</code> 行格式，只不过在处理行溢出数据时有点儿分歧，它们不会在记录的真实数据处存储字符串的前 768 个字节，而是把所有的字节都存储到其他页面中，只在记录的真实数据处存储其他页面的地址。</p>
+<p>另外，<code>Compressed</code> 行格式会采用压缩算法对页面进行压缩。</p>
+<h3 id="行溢出"><a href="#行溢出" class="headerlink" title="行溢出"></a>行溢出</h3><p>一个页一般是 <code>16KB</code>，当记录中的数据太多，当前页放不下的时候，会把多余的数据存储到其他页中，这种现象称为 <code>行溢出</code>。</p>
+<h2 id="数据页结构"><a href="#数据页结构" class="headerlink" title="数据页结构"></a>数据页结构</h2>
       
     </div>
 
@@ -773,7 +817,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#逻辑存储结构"><span class="nav-number">2.</span> <span class="nav-text">逻辑存储结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#表空间"><span class="nav-number">2.1.</span> <span class="nav-text">表空间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#段"><span class="nav-number">2.2.</span> <span class="nav-text">段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#区"><span class="nav-number">2.3.</span> <span class="nav-text">区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#页"><span class="nav-number">2.4.</span> <span class="nav-text">页</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#行"><span class="nav-number">2.5.</span> <span class="nav-text">行</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#行记录格式"><span class="nav-number">3.</span> <span class="nav-text">行记录格式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Compact-行记录格式"><span class="nav-number">3.1.</span> <span class="nav-text">Compact 行记录格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redundant-行记录格式"><span class="nav-number">3.2.</span> <span class="nav-text">Redundant 行记录格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Compressed-行记录格式"><span class="nav-number">3.3.</span> <span class="nav-text">Compressed 行记录格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dynamic-行记录格式"><span class="nav-number">3.4.</span> <span class="nav-text">Dynamic 行记录格式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据页结构"><span class="nav-number">4.</span> <span class="nav-text">数据页结构</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简介"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#逻辑存储结构"><span class="nav-number">2.</span> <span class="nav-text">逻辑存储结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#表空间"><span class="nav-number">2.1.</span> <span class="nav-text">表空间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#段"><span class="nav-number">2.2.</span> <span class="nav-text">段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#区"><span class="nav-number">2.3.</span> <span class="nav-text">区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#页"><span class="nav-number">2.4.</span> <span class="nav-text">页</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#行"><span class="nav-number">2.5.</span> <span class="nav-text">行</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#行记录格式"><span class="nav-number">3.</span> <span class="nav-text">行记录格式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Compact-行记录格式"><span class="nav-number">3.1.</span> <span class="nav-text">Compact 行记录格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redundant-行记录格式"><span class="nav-number">3.2.</span> <span class="nav-text">Redundant 行记录格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dynamic-和-Compressed-行记录格式"><span class="nav-number">3.3.</span> <span class="nav-text">Dynamic 和 Compressed 行记录格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#行溢出"><span class="nav-number">3.4.</span> <span class="nav-text">行溢出</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据页结构"><span class="nav-number">4.</span> <span class="nav-text">数据页结构</span></a></li></ol></div>
             
 
           </div>
