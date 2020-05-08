@@ -625,7 +625,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2020-04-28 08:57:15" itemprop="dateModified" datetime="2020-04-28T08:57:15+08:00">2020-04-28</time>
+                <time title="修改时间：2020-04-28 09:34:37" itemprop="dateModified" datetime="2020-04-28T09:34:37+08:00">2020-04-28</time>
               
             
           </span>
@@ -692,14 +692,16 @@
 <h3 id="页"><a href="#页" class="headerlink" title="页"></a>页</h3><p>页是 InnoDB 磁盘管理的最小单位。在 InnoDB 存储引擎中，默认每个页的大小为 <code>16KB</code>，常见的页类型有：</p>
 <ul>
 <li>数据页（B-tree Node）</li>
-<li>undo 页（undo Log Page）</li>
+<li>undo 页（Undo Log Page）</li>
 <li>系统页（System Page）</li>
-<li>事务数据页（Transaction system Page）</li>
+<li>事务数据页（Transaction System Page）</li>
 <li>插入缓冲位图页（Insert Buffer Bitmap）</li>
 <li>插入缓冲空闲列表页（Insert Buffer Free List）</li>
-<li>未压缩的二进制大对象页（Uncompressed BLOB Page）</li>
-<li>压缩的二进制大对象页（compressed BLOB Page）</li>
+<li>未压缩的二进制大对象页（Uncompressed Blob Page）</li>
+<li>压缩的二进制大对象页（compressed Blob Page）</li>
 </ul>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-26-152840.png" alt></p>
+<p>InnoDB 各个数据页可以组成一个 <code>双向链表</code>，而每个数据页中的记录会按照主键值从小到大的顺序组成一个 <code>单向链表</code>，每个数据页都会为存储在它里边儿的记录生成一个 <code>页目录</code>，在通过主键查找某条记录的时候可以在 <code>页目录</code> 中使用二分法快速定位到对应的槽，然后再遍历该槽对应分组中的记录即可快速找到指定的记录。</p>
 <h3 id="行"><a href="#行" class="headerlink" title="行"></a>行</h3><p>InnoDB 存储引擎是面向列（<code>row-oriented</code>）的，也就是说数据是按行进行存储的。</p>
 <h2 id="行记录格式"><a href="#行记录格式" class="headerlink" title="行记录格式"></a>行记录格式</h2><p>InnoDB 存储引擎提供了 4 种不同类型的行格式，分别是 <code>Compact</code>、<code>Redundant</code>、<code>Dynamic</code> 和 <code>Compressed</code> 行格式来存放行记录数据，通过 Row_format 属性可以查询到表使用的行记录结构类型。</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show table status like <span class="string">'employees'</span>\G</span><br><span class="line">*************************** <span class="number">1</span>. row ***************************</span><br><span class="line">           Name: employees</span><br><span class="line">         Engine: InnoDB</span><br><span class="line">        Version: <span class="number">10</span></span><br><span class="line">     Row_format: Dynamic</span><br><span class="line">           Rows: <span class="number">299556</span></span><br><span class="line"> Avg_row_length: <span class="number">50</span></span><br><span class="line">    Data_length: <span class="number">15220736</span></span><br><span class="line">Max_data_length: <span class="number">0</span></span><br><span class="line">   Index_length: <span class="number">0</span></span><br><span class="line">      Data_free: <span class="number">0</span></span><br><span class="line"> Auto_increment: NULL</span><br><span class="line">    Create_time: <span class="number">2020</span>-<span class="number">04</span>-<span class="number">16</span> <span class="number">11</span>:<span class="number">27</span>:<span class="number">41</span></span><br><span class="line">    Update_time: NULL</span><br><span class="line">     Check_time: NULL</span><br><span class="line">      Collation: utf8_general_ci</span><br><span class="line">       Checksum: NULL</span><br><span class="line"> Create_options: </span><br><span class="line">        Comment: </span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> set (<span class="number">0.01</span> sec)</span><br></pre></td></tr></table></figure>

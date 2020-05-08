@@ -75,14 +75,16 @@
 <h3 id="页"><a href="#页" class="headerlink" title="页"></a>页</h3><p>页是 InnoDB 磁盘管理的最小单位。在 InnoDB 存储引擎中，默认每个页的大小为 <code>16KB</code>，常见的页类型有：</p>
 <ul>
 <li>数据页（B-tree Node）</li>
-<li>undo 页（undo Log Page）</li>
+<li>undo 页（Undo Log Page）</li>
 <li>系统页（System Page）</li>
-<li>事务数据页（Transaction system Page）</li>
+<li>事务数据页（Transaction System Page）</li>
 <li>插入缓冲位图页（Insert Buffer Bitmap）</li>
 <li>插入缓冲空闲列表页（Insert Buffer Free List）</li>
-<li>未压缩的二进制大对象页（Uncompressed BLOB Page）</li>
-<li>压缩的二进制大对象页（compressed BLOB Page）</li>
+<li>未压缩的二进制大对象页（Uncompressed Blob Page）</li>
+<li>压缩的二进制大对象页（compressed Blob Page）</li>
 </ul>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-26-152840.png" alt></p>
+<p>InnoDB 各个数据页可以组成一个 <code>双向链表</code>，而每个数据页中的记录会按照主键值从小到大的顺序组成一个 <code>单向链表</code>，每个数据页都会为存储在它里边儿的记录生成一个 <code>页目录</code>，在通过主键查找某条记录的时候可以在 <code>页目录</code> 中使用二分法快速定位到对应的槽，然后再遍历该槽对应分组中的记录即可快速找到指定的记录。</p>
 <h3 id="行"><a href="#行" class="headerlink" title="行"></a>行</h3><p>InnoDB 存储引擎是面向列（<code>row-oriented</code>）的，也就是说数据是按行进行存储的。</p>
 <h2 id="行记录格式"><a href="#行记录格式" class="headerlink" title="行记录格式"></a>行记录格式</h2><p>InnoDB 存储引擎提供了 4 种不同类型的行格式，分别是 <code>Compact</code>、<code>Redundant</code>、<code>Dynamic</code> 和 <code>Compressed</code> 行格式来存放行记录数据，通过 Row_format 属性可以查询到表使用的行记录结构类型。</p>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">mysql&gt; show table status like <span class="string">'employees'</span>\G</span><br><span class="line">*************************** <span class="number">1</span>. row ***************************</span><br><span class="line">           Name: employees</span><br><span class="line">         Engine: InnoDB</span><br><span class="line">        Version: <span class="number">10</span></span><br><span class="line">     Row_format: Dynamic</span><br><span class="line">           Rows: <span class="number">299556</span></span><br><span class="line"> Avg_row_length: <span class="number">50</span></span><br><span class="line">    Data_length: <span class="number">15220736</span></span><br><span class="line">Max_data_length: <span class="number">0</span></span><br><span class="line">   Index_length: <span class="number">0</span></span><br><span class="line">      Data_free: <span class="number">0</span></span><br><span class="line"> Auto_increment: NULL</span><br><span class="line">    Create_time: <span class="number">2020</span>-<span class="number">04</span>-<span class="number">16</span> <span class="number">11</span>:<span class="number">27</span>:<span class="number">41</span></span><br><span class="line">    Update_time: NULL</span><br><span class="line">     Check_time: NULL</span><br><span class="line">      Collation: utf8_general_ci</span><br><span class="line">       Checksum: NULL</span><br><span class="line"> Create_options: </span><br><span class="line">        Comment: </span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> set (<span class="number">0.01</span> sec)</span><br></pre></td></tr></table></figure>
@@ -7253,6 +7255,19 @@
 <p><strong>技术方案</strong>：[<a href="http://www.jumpserver.org" target="_blank" rel="noopener"><strong>Jumpserver</strong></a>]</p>
 <h2 id="容灾"><a href="#容灾" class="headerlink" title="容灾"></a>容灾</h2><p><strong>背景</strong>：为解决本地机房发生重大灾难，数据不可恢复，特在红岛建立的灾备数据中心。</p>
 <p><strong>技术方案</strong>：[<strong><a href="https://huiraoo.github.io/blog/2019/09/04/mysql-disaster/">容灾</a></strong>]</p>
+<h2 id="数据库运维平台"><a href="#数据库运维平台" class="headerlink" title="数据库运维平台"></a>数据库运维平台</h2><p><strong>项目架构图</strong></p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-29-105800.jpg" alt></p>
+<ul>
+<li>nginx：负载均衡</li>
+<li>vue：前端开发框架</li>
+<li>webpack：打包部署</li>
+<li>rest api：为前端提供接口</li>
+<li>service：处理业务逻辑</li>
+<li>dao：操作 mysql 接口</li>
+<li>cache：操作 redis 接口</li>
+<li>mysql：数据库存储</li>
+<li>redis：缓存</li>
+</ul>
 ]]></content>
       <categories>
         <category>项目</category>
@@ -9951,14 +9966,83 @@
   <entry>
     <title>MySQL · 索引</title>
     <url>/blog/2019/08/21/mysql-index/</url>
-    <content><![CDATA[<p><a href="https://mp.weixin.qq.com/s/6L18n6iWP-SS63js1snjDQ" target="_blank" rel="noopener">浅谈MySQL索引与慢查询优化</a></p>
+    <content><![CDATA[<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><ul>
+<li>索引是什么？</li>
+<li>为什么选择用 B+ 树索引？</li>
+<li>聚集索引和非聚集索引的区别？</li>
+<li>为什么建议使用整型自增做主键？</li>
+</ul>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>索引</strong>：是帮助 MySQL 高效获取数据的排好序的数据结构。</p>
+<p>索引是应用程序设计和开发的一个重要方面，若索引太多，应用程序的性能可能会受到影响。而索引太少，对查询性能又会产生影响。需要找到一个合适的平衡点，这对应用程序的性能至关重要。</p>
+<p>InnoDB 存储引擎支持 3 种常见的索引：</p>
+<ul>
+<li>B+ 树索引</li>
+<li>全文索引</li>
+<li>哈希索引</li>
+</ul>
+<h2 id="InnoDB-存储引擎索引"><a href="#InnoDB-存储引擎索引" class="headerlink" title="InnoDB 存储引擎索引"></a>InnoDB 存储引擎索引</h2><h3 id="B-树索引"><a href="#B-树索引" class="headerlink" title="B+ 树索引"></a>B+ 树索引</h3><blockquote>
+<p><strong>注意</strong>：B+ 树中的 B 不是代表二叉（binary），而是代表平衡（balance），因为 B+ 树是从最早的平衡二叉树演化而来，但是 B+ 树不是一个二叉树。 </p>
+</blockquote>
+<p>B+ 树索引并不能找到一个给定键值的具体行，B+ 树索引能找到的只是被查找数据行所在的页，然后数据库通过把页读入到内存，再在内存中进行查找，最后得到要查找的数据。</p>
+<p>MyISAM：索引文件和数据文件是分离的，非聚集索引。</p>
+<p>InnoDB</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">// MyISAM存储引擎，存储在*.MYI</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql   <span class="number">10816</span> <span class="number">3</span>月  <span class="number">30</span> <span class="number">13</span>:<span class="number">52</span> user.frm</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql     <span class="number">616</span> <span class="number">3</span>月  <span class="number">30</span> <span class="number">13</span>:<span class="number">54</span> user.MYD</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql    <span class="number">4096</span> <span class="number">4</span>月  <span class="number">17</span> <span class="number">17</span>:<span class="number">32</span> user.MYI</span><br><span class="line"></span><br><span class="line">// InnoDB存储引擎，存储在*.ibd</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql    <span class="number">8838</span> <span class="number">3</span>月  <span class="number">30</span> <span class="number">13</span>:<span class="number">52</span> servers.frm</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql   <span class="number">98304</span> <span class="number">3</span>月  <span class="number">30</span> <span class="number">13</span>:<span class="number">52</span> servers.ibd</span><br></pre></td></tr></table></figure>
+
+<p>聚集索引：叶子节点包含了完整的数据记录。</p>
+<p>非聚集索引：索引文件和数据文件没有聚集在一起。</p>
+<p>主键索引</p>
+<p>二级索引</p>
+<h3 id="全文索引"><a href="#全文索引" class="headerlink" title="全文索引"></a>全文索引</h3><h3 id="哈希索引"><a href="#哈希索引" class="headerlink" title="哈希索引"></a>哈希索引</h3><p>数据库的索引一般在磁盘上，数据量大的情况可能无法一次装入内存，B+ 树的设计可以允许数据分批加载，同时树的高度较低，提高查询效率。</p>
+<h2 id="为什么-MySQL-选择用-B-树索引？"><a href="#为什么-MySQL-选择用-B-树索引？" class="headerlink" title="为什么 MySQL 选择用 B+ 树索引？"></a>为什么 MySQL 选择用 B+ 树索引？</h2><p>当数据在磁盘中时，磁盘 IO 会成为最大的性能瓶颈，设计的目标应该是尽量减少 IO 次数；而树的高度越高，增删改查所需要的 IO 次数也越多，会严重影响性能。树的查找性能取决于树的高度，让树尽量平衡，就是为了降低树的高度。</p>
+<h3 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h3><p><strong>二叉查找树</strong></p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-29-112200.png" alt></p>
+<ul>
+<li><p>对于树中的任意一个节点，左子树节点比根节点小，右子树节点比根节点大。</p>
+</li>
+<li><p>时间复杂度：O(logn)</p>
+</li>
+<li><p><strong>缺点</strong>：<strong>不平衡</strong>，极端情况如有序序列，二叉排序树退化成链表，时间复杂度变为 O(n)。</p>
+</li>
+</ul>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-29-112915.png" alt></p>
+<p><strong>平衡二叉树（AVL）</strong></p>
+<ul>
+<li>AVL 树是严格的平衡二叉树，所有节点的左右子树高度差不能超过 1。</li>
+<li>AVL 树查找、插入和删除在平均和最坏情况下都是 O(logn)。</li>
+<li><strong>缺点：旋转耗时</strong>，AVL 树在删除数据时效率很低，量级为 O(logn)。</li>
+</ul>
+<h3 id="红黑树"><a href="#红黑树" class="headerlink" title="红黑树"></a>红黑树</h3><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-29-141900.png" alt></p>
+<ul>
+<li>与 AVL 树相比，红黑树并不追求严格的平衡，而是大致的平衡。</li>
+<li>红黑树引入了颜色，当插入或删除数据时，只需要进行 O(1) 次数的旋转以及变色就能保证基本的平衡。</li>
+<li><strong>缺点：</strong>树的高度太高。</li>
+</ul>
+<h3 id="B-树"><a href="#B-树" class="headerlink" title="B 树"></a>B 树</h3><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-29-142200.png" alt></p>
+<p>B 树是一种多路搜索树，它的每个节点可以拥有多于两个孩子节点，M 路的 B 树最多能拥有 M 个孩子节点。</p>
+<ul>
+<li>不再是二叉查找，而是 <strong>M 叉</strong>查找，树的高度能够大大降低。</li>
+<li><strong>叶子节点，非叶子节点，都存储数据</strong>。</li>
+<li>中序遍历，可以获得所有节点。</li>
+</ul>
+<h3 id="B-树-1"><a href="#B-树-1" class="headerlink" title="B+ 树"></a>B+ 树</h3><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-29-142300.png" alt></p>
+<p>B+ 树是在 B 树的基础上进行改造：</p>
+<ul>
+<li>非叶子节点不再存储数据，<strong>数据只存储在同一层的叶子节点上</strong>。</li>
+<li><strong>叶子之间，增加了链表</strong>，获取所有节点，不再需要中序遍历。</li>
+<li><strong>优点</strong>：在查询多条数据或范围查询时，B 树可能要跨层访问，而 B+ 树数据都在叶子节点，不用跨层，同时由于有链表结构，只需要找到首尾，就能把所有数据取出来。</li>
+</ul>
+<p><strong>局部性原理</strong></p>
+<ul>
+<li><strong>磁盘预读</strong>：磁盘读写并不是按需读取，而是按页预读，一次会读一页的数据，每次加载更多的数据，如果未来要读取的数据就在这一页中，可以避免未来的磁盘 IO，提高效率（通常，一页数据是 4K）。</li>
+<li><strong>局部性原理</strong>：软件设计要尽量遵循“数据读取集中”与使用到一个数据，大概率会使用其附近的数据，这样磁盘预读能充分提高磁盘 IO。</li>
+</ul>
 ]]></content>
       <categories>
         <category>MySQL</category>
       </categories>
   </entry>
   <entry>
-    <title>MySQL · 锁机制</title>
+    <title>MySQL · 锁</title>
     <url>/blog/2019/08/21/mysql-lock/</url>
     <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>锁</strong>：是计算机协调多个进程或线程并发访问某一资源的机制。</p>
 <p><strong>MySQL锁机制</strong>：相对其他数据库而言，MySQL 的锁机制比较简单，其最显著的特点是不同的存储引擎支持不同的锁机制。MyISAM 和 MEMORY 存储引擎采用的是表级锁（table-level locking）；InnoDB 存储引擎既支持行级锁（row-level locking），也支持表级锁，但默认情况下是采用行级锁。</p>
