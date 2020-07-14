@@ -1,6 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Go · 如何快速学习一门编程语言？</title>
+    <url>/blog/2020/07/14/go-learning/</url>
+    <content><![CDATA[<h2 id="Go语言简介"><a href="#Go语言简介" class="headerlink" title="Go语言简介"></a>Go语言简介</h2><p><strong>最大特色</strong>：执行性能和开发效率的平衡。</p>
+<p><strong>核心特性：</strong></p>
+<ul>
+<li>高效的并发编程</li>
+<li>内存回收（gc）</li>
+<li>编译速度快</li>
+<li>函数多返回值</li>
+<li>语言交互性</li>
+<li>没有异常处理</li>
+</ul>
+<h2 id="Go命令及其执行原理"><a href="#Go命令及其执行原理" class="headerlink" title="Go命令及其执行原理"></a>Go命令及其执行原理</h2><p><strong>Go源码文件</strong></p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-07-14-154600.png" alt></p>
+<ul>
+<li><strong>go run</strong></li>
+</ul>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-07-14-154500.png" alt></p>
+<ul>
+<li><strong>go build</strong></li>
+</ul>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-07-14-154700.png" alt></p>
+<ul>
+<li><strong>go install</strong></li>
+</ul>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-07-14-154800.png" alt></p>
+<ul>
+<li><strong>go get</strong></li>
+</ul>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-07-14-154900.png" alt></p>
+]]></content>
+      <categories>
+        <category>Go</category>
+      </categories>
+  </entry>
+  <entry>
     <title>MySQL · 配置 Keepalived 实现双机热备</title>
     <url>/blog/2020/04/27/mysql-keepalived/</url>
     <content><![CDATA[<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://www.keepalived.org/" target="_blank" rel="noopener">Keepalived</a> 是集群管理中保证集群高可用的一个服务软件，其功能类似于 heartbeat，用来防止单点故障。</p>
@@ -693,6 +729,9 @@
 <h2 id="解决依赖"><a href="#解决依赖" class="headerlink" title="解决依赖"></a>解决依赖</h2><figure class="highlight go"><table><tr><td class="code"><pre><span class="line">export GOPROXY=https:<span class="comment">//goproxy.cn</span></span><br><span class="line"><span class="keyword">go</span> mod tidy</span><br><span class="line"><span class="keyword">go</span> mod download</span><br></pre></td></tr></table></figure>
 
 ]]></content>
+      <categories>
+        <category>Golang</category>
+      </categories>
   </entry>
   <entry>
     <title>数据库运维平台</title>
@@ -842,7 +881,7 @@
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 下载安装包</span></span><br><span class="line">cd /<span class="keyword">data</span></span><br><span class="line">wget https://github.com/prometheus/mysqld_exporter/releases/download/v0.<span class="number">12.1</span>/mysqld_exporter-<span class="number">0.12</span>.<span class="number">1</span>.linux-amd64.tar.gz</span><br><span class="line">tar -xzf mysqld_exporter-<span class="number">0.12</span>.<span class="number">1</span>.linux-amd64.tar.gz</span><br><span class="line">cd mysqld_exporter-<span class="number">0.12</span>.<span class="number">1</span>.linux-amd64</span><br><span class="line"></span><br><span class="line"><span class="comment"># 编辑配置文件</span></span><br><span class="line">vi .my.cnf</span><br><span class="line">[client]</span><br><span class="line">user=hdm</span><br><span class="line">password=Hdm@<span class="number">123</span>!</span><br><span class="line">host=<span class="number">10.133</span>.<span class="number">0.51</span></span><br><span class="line">port=<span class="number">3306</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动</span></span><br><span class="line">./mysqld_exporter --config.my-cnf=/<span class="keyword">data</span>/mysqld_exporter-<span class="number">0.12</span>.<span class="number">1</span>.linux-amd64/.my.cnf &amp;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 检测</span></span><br><span class="line">ps -ef | grep mysqld_exporter</span><br><span class="line"></span><br><span class="line"><span class="comment"># 打开防火墙端口：9104</span></span><br><span class="line">firewall-cmd --zone=public --add-port=<span class="number">9104</span>/tcp</span><br><span class="line">firewall-cmd --reload  </span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试</span></span><br><span class="line"><span class="number">10.133</span>.<span class="number">0.51</span>:<span class="number">9104</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>注册 consul</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 注册</span><br><span class="line">PUT http://consul.qdct-lsb.haier.net/v1/agent/service/register</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;:&quot;mysql_10.133.0.51_3306&quot;,</span><br><span class="line">    &quot;name&quot;:&quot;mysql&quot;,</span><br><span class="line">    &quot;address&quot;:&quot;10.133.0.51&quot;,</span><br><span class="line">    &quot;port&quot;:9104,</span><br><span class="line">    &quot;tags&quot;:[</span><br><span class="line">        &quot;cluster=QD&quot;,</span><br><span class="line">        &quot;project=TDDS&quot;,</span><br><span class="line">        &quot;instance=10.133.0.51:3306&quot;,</span><br><span class="line">        &quot;host=10.133.0.51&quot;,</span><br><span class="line">        &quot;port=3306&quot;,</span><br><span class="line">        &quot;env=prd&quot;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 查看</span><br><span class="line">GET http://consul.qdct-lsb.haier.net/v1/catalog/service/mysql</span><br><span class="line"></span><br><span class="line"># 注销</span><br><span class="line">PUT http://consul.qdct-lsb.haier.net/v1/agent/service/deregister/mysql_10.133.0.51_3306</span><br><span class="line"></span><br><span class="line"># Prometheus</span><br><span class="line">http://10.138.16.192:9099/targets</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 注册</span><br><span class="line">PUT http://10.138.16.192:8500/v1/agent/service/register</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;:&quot;mysql_10.133.0.51_3306&quot;,</span><br><span class="line">    &quot;name&quot;:&quot;mysql&quot;,</span><br><span class="line">    &quot;address&quot;:&quot;10.133.0.51&quot;,</span><br><span class="line">    &quot;port&quot;:9104,</span><br><span class="line">    &quot;tags&quot;:[</span><br><span class="line">        &quot;cluster=QD&quot;,</span><br><span class="line">        &quot;project=TDDS&quot;,</span><br><span class="line">        &quot;instance=10.133.0.51:3306&quot;,</span><br><span class="line">        &quot;host=10.133.0.51&quot;,</span><br><span class="line">        &quot;port=3306&quot;,</span><br><span class="line">        &quot;env=prd&quot;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 查看</span><br><span class="line">GET http://10.138.16.192:8500/v1/catalog/service/mysql</span><br><span class="line"></span><br><span class="line"># 注销</span><br><span class="line">PUT http://10.138.16.192:8500/v1/agent/service/deregister/mysql_10.133.0.51_3306</span><br><span class="line"></span><br><span class="line"># Prometheus</span><br><span class="line">http://10.138.16.192:9099/targets</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 </li>
@@ -1573,12 +1612,12 @@
 <p><a href="https://man.linuxde.net/" target="_blank" rel="noopener">Linux 命令大全</a></p>
 </blockquote>
 <h2 id="Shell-基础"><a href="#Shell-基础" class="headerlink" title="Shell 基础"></a>Shell 基础</h2><ul>
-<li><strong>#!</strong> 告诉系统其后路径所指定的程序即是解释此脚本文件的 Shell 程序</li>
+<li><strong>#!</strong> 是一个约定的标记，它告诉系统这个脚本需要什么解释器来执行</li>
 </ul>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment">#!/bin/bash</span></span><br><span class="line">echo <span class="string">"Hello World !"</span></span><br></pre></td></tr></table></figure>
 
 <ul>
-<li>字符串 <strong>‘’</strong> 和 <strong>“”</strong> 的区别：单引号里的任何字符都会原样输出，单引号字符串中的变量是无效的；双引号里可以有变量。</li>
+<li>字符串 <strong>‘’</strong> 和 <strong>“”</strong> 的区别：单引号里的任何字符都会原样输出，单引号字符串中的变量是无效的；双引号里可以有变量或者转义字符。</li>
 </ul>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">your_name=<span class="string">"test"</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用双引号拼接</span></span><br><span class="line">greeting=<span class="string">"hello, "</span><span class="variable">$your_name</span><span class="string">" !"</span></span><br><span class="line">greeting_1=<span class="string">"hello, $&#123;your_name&#125; !"</span></span><br><span class="line">echo <span class="variable">$greeting</span>  <span class="variable">$greeting_1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 使用单引号拼接</span></span><br><span class="line">greeting_2=<span class="string">'hello, '</span><span class="variable">$your_name</span><span class="string">' !'</span></span><br><span class="line">greeting_3=<span class="string">'hello, $&#123;your_name&#125; !'</span></span><br><span class="line">echo <span class="variable">$greeting_2</span>  <span class="variable">$greeting_3</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出结果</span></span><br><span class="line">hello, test ! hello, test !</span><br><span class="line">hello, test ! hello, $&#123;your_name&#125; !</span><br></pre></td></tr></table></figure>
 
@@ -1798,6 +1837,7 @@
 </blockquote>
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 将 stdout 和 stderr 合并后重定向到 file</span></span><br><span class="line">$ command &gt; file <span class="number">2</span>&gt;&amp;<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># /dev/null 是一个特殊的文件，将命令的输出重定向到它，会起到"禁止输出"的效果</span></span><br><span class="line">$ command &gt; /dev/null <span class="number">2</span>&gt;&amp;<span class="number">1</span></span><br></pre></td></tr></table></figure>
 
+<p>如果希望执行某个命令，但又不希望在屏幕上显示输出结果，那么可以将输出重定向到 <code>/dev/null</code>。</p>
 ]]></content>
       <categories>
         <category>Linux</category>
@@ -4774,6 +4814,8 @@
 <li>数据迁移</li>
 </ul>
 <p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-14-164137.jpg" alt></p>
+<h2 id="PostgreSQL-9"><a href="#PostgreSQL-9" class="headerlink" title="PostgreSQL 9"></a>PostgreSQL 9</h2><figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">yum install postgresql-server postgresql-contrib</span><br><span class="line">postgresql-setup initdb</span><br><span class="line"></span><br><span class="line">vi /var/lib/pgsql/<span class="keyword">data</span>/pg_hba.conf  <span class="comment">## host all all 0.0.0.0/0 md5</span></span><br><span class="line">vi /var/lib/pgsql/<span class="keyword">data</span>/postgresql.conf <span class="comment">## listen_addresses='*'</span></span><br><span class="line"></span><br><span class="line">systemctl start  postgresql</span><br><span class="line">systemctl enable postgresql</span><br><span class="line">systemctl status postgresql</span><br></pre></td></tr></table></figure>
+
 ]]></content>
       <categories>
         <category>PostgreSQL</category>
@@ -9997,12 +10039,9 @@
 <h3 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h3><p><strong>二叉查找树</strong></p>
 <p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-29-112200.png" alt></p>
 <ul>
-<li><p>对于树中的任意一个节点，左子树节点比根节点小，右子树节点比根节点大。</p>
-</li>
-<li><p>时间复杂度：O(logn)</p>
-</li>
-<li><p><strong>缺点</strong>：<strong>不平衡</strong>，极端情况如有序序列，二叉排序树退化成链表，时间复杂度变为 O(n)。</p>
-</li>
+<li>对于树中的任意一个节点，左子树节点比根节点小，右子树节点比根节点大。</li>
+<li>时间复杂度：O(logn)</li>
+<li><strong>缺点</strong>：<strong>不平衡</strong>，极端情况如有序序列，二叉排序树退化成链表，时间复杂度变为 O(n)。</li>
 </ul>
 <p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-29-112915.png" alt></p>
 <p><strong>平衡二叉树（AVL）</strong></p>
@@ -10031,12 +10070,17 @@
 <li><strong>叶子之间，增加了链表</strong>，获取所有节点，不再需要中序遍历。</li>
 <li><strong>优点</strong>：在查询多条数据或范围查询时，B 树可能要跨层访问，而 B+ 树数据都在叶子节点，不用跨层，同时由于有链表结构，只需要找到首尾，就能把所有数据取出来。</li>
 </ul>
-<p><strong>局部性原理</strong></p>
+<p><strong>局部性原理与磁盘预读</strong></p>
 <ul>
 <li><strong>磁盘预读</strong>：磁盘读写并不是按需读取，而是按页预读，一次会读一页的数据，每次加载更多的数据，如果未来要读取的数据就在这一页中，可以避免未来的磁盘 IO，提高效率（通常，一页数据是 4K）。</li>
 <li><strong>局部性原理</strong>：软件设计要尽量遵循“数据读取集中”与使用到一个数据，大概率会使用其附近的数据，这样磁盘预读能充分提高磁盘 IO。</li>
 </ul>
-]]></content>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>1)    二叉查找树 (BST)：解决了排序的基本问题，但是由于无法保证平衡，可能退化为链表。</p>
+<p>2)    平衡二叉树 (AVL)：通过旋转解决了平衡的问题，但是旋转操作效率太低。</p>
+<p>3)    红黑树：通过舍弃严格的平衡和引入红黑节点，解决了 AVL 旋转效率过低的问题，但是在磁盘等场景下，树仍然太高，IO 次数太多。</p>
+<p>4)    B 树：通过将二叉树改为多路平衡查找树，解决了树过高的问题。</p>
+<p>5)    B+ 树：在 B 树的基础上，将非叶节点改造为不存储数据的纯索引节点，进一步降低了树的高度，此外将叶节点使用指针连接成链表，范围查询更加高效。</p>
+<h2 id="MySQL-索引实现"><a href="#MySQL-索引实现" class="headerlink" title="MySQL 索引实现"></a>MySQL 索引实现</h2><h3 id="MyISAM"><a href="#MyISAM" class="headerlink" title="MyISAM"></a>MyISAM</h3><h3 id="InnoDB"><a href="#InnoDB" class="headerlink" title="InnoDB"></a>InnoDB</h3>]]></content>
       <categories>
         <category>MySQL</category>
       </categories>

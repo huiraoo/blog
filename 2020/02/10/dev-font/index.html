@@ -107,7 +107,7 @@
 <meta property="og:image" content="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-02-24-171928.jpg">
 <meta property="og:image" content="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-02-24-172804.jpg">
 <meta property="og:image" content="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-02-24-173613.jpg">
-<meta property="og:updated_time" content="2020-03-19T09:54:45.246Z">
+<meta property="og:updated_time" content="2020-07-06T06:37:58.774Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数据库运维平台">
 <meta name="twitter:description" content="项目简介DBM 是控制台一个数据库运维管理功能模块，包括管理、监控、告警等功能，目标是构建 MySQL 数据库自动化运维能力，支撑 PSI 全量数据库，实现自动化运维。 Gitlab | 测试地址 技术选型前端    技术 说明    Vue 前端框架   Vue-router 路由框架   Vuex 全局状态管理框架   Ant Design of Vue 前端 UI 框架   Axios 前端">
@@ -417,7 +417,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2020-03-19 17:54:45" itemprop="dateModified" datetime="2020-03-19T17:54:45+08:00">2020-03-19</time>
+                <time title="修改时间：2020-07-06 14:37:58" itemprop="dateModified" datetime="2020-07-06T14:37:58+08:00">2020-07-06</time>
               
             
           </span>
@@ -621,7 +621,7 @@
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 下载安装包</span></span><br><span class="line">cd /<span class="keyword">data</span></span><br><span class="line">wget https://github.com/prometheus/mysqld_exporter/releases/download/v0.<span class="number">12.1</span>/mysqld_exporter-<span class="number">0.12</span>.<span class="number">1</span>.linux-amd64.tar.gz</span><br><span class="line">tar -xzf mysqld_exporter-<span class="number">0.12</span>.<span class="number">1</span>.linux-amd64.tar.gz</span><br><span class="line">cd mysqld_exporter-<span class="number">0.12</span>.<span class="number">1</span>.linux-amd64</span><br><span class="line"></span><br><span class="line"><span class="comment"># 编辑配置文件</span></span><br><span class="line">vi .my.cnf</span><br><span class="line">[client]</span><br><span class="line">user=hdm</span><br><span class="line">password=Hdm@<span class="number">123</span>!</span><br><span class="line">host=<span class="number">10.133</span>.<span class="number">0.51</span></span><br><span class="line">port=<span class="number">3306</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动</span></span><br><span class="line">./mysqld_exporter --config.my-cnf=/<span class="keyword">data</span>/mysqld_exporter-<span class="number">0.12</span>.<span class="number">1</span>.linux-amd64/.my.cnf &amp;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 检测</span></span><br><span class="line">ps -ef | grep mysqld_exporter</span><br><span class="line"></span><br><span class="line"><span class="comment"># 打开防火墙端口：9104</span></span><br><span class="line">firewall-cmd --zone=public --add-port=<span class="number">9104</span>/tcp</span><br><span class="line">firewall-cmd --reload  </span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试</span></span><br><span class="line"><span class="number">10.133</span>.<span class="number">0.51</span>:<span class="number">9104</span></span><br></pre></td></tr></table></figure>
 </li>
 <li><p>注册 consul</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"># 注册</span><br><span class="line">PUT http://consul.qdct-lsb.haier.net/v1/agent/service/register</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;:&quot;mysql_10.133.0.51_3306&quot;,</span><br><span class="line">    &quot;name&quot;:&quot;mysql&quot;,</span><br><span class="line">    &quot;address&quot;:&quot;10.133.0.51&quot;,</span><br><span class="line">    &quot;port&quot;:9104,</span><br><span class="line">    &quot;tags&quot;:[</span><br><span class="line">        &quot;cluster=QD&quot;,</span><br><span class="line">        &quot;project=TDDS&quot;,</span><br><span class="line">        &quot;instance=10.133.0.51:3306&quot;,</span><br><span class="line">        &quot;host=10.133.0.51&quot;,</span><br><span class="line">        &quot;port=3306&quot;,</span><br><span class="line">        &quot;env=prd&quot;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 查看</span><br><span class="line">GET http://consul.qdct-lsb.haier.net/v1/catalog/service/mysql</span><br><span class="line"></span><br><span class="line"># 注销</span><br><span class="line">PUT http://consul.qdct-lsb.haier.net/v1/agent/service/deregister/mysql_10.133.0.51_3306</span><br><span class="line"></span><br><span class="line"># Prometheus</span><br><span class="line">http://10.138.16.192:9099/targets</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"># 注册</span><br><span class="line">PUT http://10.138.16.192:8500/v1/agent/service/register</span><br><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;:&quot;mysql_10.133.0.51_3306&quot;,</span><br><span class="line">    &quot;name&quot;:&quot;mysql&quot;,</span><br><span class="line">    &quot;address&quot;:&quot;10.133.0.51&quot;,</span><br><span class="line">    &quot;port&quot;:9104,</span><br><span class="line">    &quot;tags&quot;:[</span><br><span class="line">        &quot;cluster=QD&quot;,</span><br><span class="line">        &quot;project=TDDS&quot;,</span><br><span class="line">        &quot;instance=10.133.0.51:3306&quot;,</span><br><span class="line">        &quot;host=10.133.0.51&quot;,</span><br><span class="line">        &quot;port=3306&quot;,</span><br><span class="line">        &quot;env=prd&quot;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"># 查看</span><br><span class="line">GET http://10.138.16.192:8500/v1/catalog/service/mysql</span><br><span class="line"></span><br><span class="line"># 注销</span><br><span class="line">PUT http://10.138.16.192:8500/v1/agent/service/deregister/mysql_10.133.0.51_3306</span><br><span class="line"></span><br><span class="line"># Prometheus</span><br><span class="line">http://10.138.16.192:9099/targets</span><br></pre></td></tr></table></figure>
 </li>
 </ul>
 </li>
@@ -787,7 +787,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">165</span>
+                    <span class="site-state-item-count">166</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -838,7 +838,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">17</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">19</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
