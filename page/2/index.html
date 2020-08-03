@@ -352,6 +352,345 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2020/03/20/array/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2020/03/20/array/" class="post-title-link" itemprop="url">数组</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-03-20 11:00:20 / 修改时间：11:03:10" itemprop="dateCreated datePublished" datetime="2020-03-20T11:00:20+08:00">2020-03-20</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/数据结构/" itemprop="url" rel="index"><span itemprop="name">数据结构</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><p><strong>有限</strong>个相同数据类型的元素按顺序排列的集合为数组。</p>
+<p>数组的数据是<strong>连续</strong>的，<strong>有边界</strong>，其中的元素都有属于自己的索引值，即下标，通过这些下标就能定位到值。</p>
+<p>示例：将  <code>&quot;the&quot;,&quot;monster&quot;,&quot;is&quot;,&quot;coming&quot;</code> 四个字符串放到数组中，找数组的下标为 0 和 3 保存的字符串。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-03-20-093400.jpg" alt></p>
+<h2 id="Coding"><a href="#Coding" class="headerlink" title="Coding"></a>Coding</h2><ul>
+<li>实现一个支持动态扩容的数组</li>
+<li>实现一个大小固定的有序数组，支持动态增、删、查操作</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> array</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"errors"</span></span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* 1) 数组的插入、删除、按照下标随机访问操作；</span></span><br><span class="line"><span class="comment">* 2）数组中的数据是int类型的；</span></span><br><span class="line"><span class="comment">*</span></span><br><span class="line"><span class="comment">* Author: Rao</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">type</span> Array <span class="keyword">struct</span> &#123;</span><br><span class="line">	data []<span class="keyword">int</span></span><br><span class="line">	length <span class="keyword">uint</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 为数组初始化内存</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewArray</span><span class="params">(capacity <span class="keyword">uint</span>)</span> *<span class="title">Array</span></span>&#123;</span><br><span class="line">	<span class="keyword">if</span> capacity == <span class="number">0</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> &amp;Array&#123;</span><br><span class="line">		data:   <span class="built_in">make</span>([]<span class="keyword">int</span>, capacity, capacity),</span><br><span class="line">		length: <span class="number">0</span>,</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *Array)</span> <span class="title">Len</span><span class="params">()</span> <span class="title">uint</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> this.length</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 判断数组释放越界</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *Array)</span> <span class="title">isIndexOutOfRange</span><span class="params">(index <span class="keyword">uint</span>)</span> <span class="title">bool</span></span>&#123;</span><br><span class="line">	<span class="keyword">if</span> index &gt;= <span class="keyword">uint</span>(<span class="built_in">cap</span>(this.data)) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 通过索引查找数组，索引范围[0,n-1]</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *Array)</span> <span class="title">Find</span><span class="params">(index <span class="keyword">uint</span>)</span> <span class="params">(<span class="keyword">int</span>, error)</span></span>  &#123;</span><br><span class="line">	<span class="keyword">if</span> this.isIndexOutOfRange(index) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>, errors.New(<span class="string">"out of index range"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> this.data[index], <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 插入数值到索引index上</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *Array)</span> <span class="title">Insert</span><span class="params">(index <span class="keyword">uint</span>, value <span class="keyword">int</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> this.Len() == <span class="keyword">uint</span>(<span class="built_in">cap</span>(this.data)) &#123;</span><br><span class="line">		<span class="keyword">return</span> errors.New(<span class="string">"full array"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> index != this.length &amp;&amp; this.isIndexOutOfRange(index) &#123;</span><br><span class="line">		<span class="keyword">return</span> errors.New(<span class="string">"out of index range"</span>)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> i := this.length; i &gt; index; i-- &#123;</span><br><span class="line">		this.data[i] = this.data[i<span class="number">-1</span>]</span><br><span class="line">	&#125;</span><br><span class="line">	this.data[index] = value</span><br><span class="line">	this.length ++</span><br><span class="line">	<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *Array)</span> <span class="title">InsertToTail</span><span class="params">(value <span class="keyword">int</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> this.Insert(this.Len(), value)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 删除索引index上的值</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *Array)</span> <span class="title">Delete</span><span class="params">(index <span class="keyword">uint</span>)</span> <span class="params">(<span class="keyword">int</span>, error)</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> this.isIndexOutOfRange(index) &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>, errors.New(<span class="string">"out of index range"</span>)</span><br><span class="line">	&#125;</span><br><span class="line">	v := this.data[index]</span><br><span class="line">	<span class="keyword">for</span> i := index; i &lt; this.Len() - <span class="number">1</span>; i++ &#123;</span><br><span class="line">		this.data[i] = this.data[i+<span class="number">1</span>]</span><br><span class="line">	&#125;</span><br><span class="line">	this.length--</span><br><span class="line">	<span class="keyword">return</span> v, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this *Array)</span> <span class="title">Print</span><span class="params">()</span></span> &#123;</span><br><span class="line">	<span class="keyword">var</span> format <span class="keyword">string</span></span><br><span class="line">	<span class="keyword">for</span> i := <span class="keyword">uint</span>(<span class="number">0</span>); i &lt; this.Len(); i++ &#123;</span><br><span class="line">		format += fmt.Sprintf(<span class="string">"|%+v"</span>, this.data[i])</span><br><span class="line">	&#125;</span><br><span class="line">	fmt.Println(format)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> array</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"testing"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestInert</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">	capacity := <span class="number">10</span></span><br><span class="line">	arr := NewArray(<span class="keyword">uint</span>(capacity))</span><br><span class="line">	<span class="keyword">for</span> i :=<span class="number">0</span>; i &lt; capacity - <span class="number">2</span>; i++ &#123;</span><br><span class="line">		err := arr.Insert(<span class="keyword">uint</span>(i), i+<span class="number">1</span>)</span><br><span class="line">		<span class="keyword">if</span> <span class="literal">nil</span> != err &#123;</span><br><span class="line">			t.Fatal(err.Error())</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	arr.Print()</span><br><span class="line"></span><br><span class="line">	arr.Insert(<span class="keyword">uint</span>(<span class="number">6</span>), <span class="number">999</span>)</span><br><span class="line">	arr.Print()</span><br><span class="line"></span><br><span class="line">	arr.InsertToTail(<span class="number">666</span>)</span><br><span class="line">	arr.Print()</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestDelete</span><span class="params">(t *testing.T)</span></span>  &#123;</span><br><span class="line">	capacity := <span class="number">10</span></span><br><span class="line">	arr := NewArray(<span class="keyword">uint</span>(capacity))</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; capacity; i++ &#123;</span><br><span class="line">		err := arr.Insert(<span class="keyword">uint</span>(i), i+<span class="number">1</span>)</span><br><span class="line">		<span class="keyword">if</span> <span class="literal">nil</span> != err &#123;</span><br><span class="line">			t.Fatal(err.Error())</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	arr.Print()</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">9</span>; i &gt;= <span class="number">0</span>; i-- &#123;</span><br><span class="line">		_, err := arr.Delete(<span class="keyword">uint</span>(i))</span><br><span class="line">		<span class="keyword">if</span> <span class="literal">nil</span> != err &#123;</span><br><span class="line">			t.Fatal(err)</span><br><span class="line">		&#125;</span><br><span class="line">		arr.Print()</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">TestFind</span><span class="params">(t *testing.T)</span></span> &#123;</span><br><span class="line">	capacity := <span class="number">10</span></span><br><span class="line">	arr := NewArray(<span class="keyword">uint</span>(capacity))</span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">0</span>; i &lt; capacity; i++ &#123;</span><br><span class="line">		err := arr.Insert(<span class="keyword">uint</span>(i), i+<span class="number">1</span>)</span><br><span class="line">		<span class="keyword">if</span> <span class="literal">nil</span> != err &#123;</span><br><span class="line">			t.Fatal(err.Error())</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	arr.Print()</span><br><span class="line"></span><br><span class="line">	t.Log(arr.Find(<span class="number">0</span>))</span><br><span class="line">	t.Log(arr.Find(<span class="number">9</span>))</span><br><span class="line">	t.Log(arr.Find(<span class="number">11</span>))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2020/03/20/data-structure/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2020/03/20/data-structure/" class="post-title-link" itemprop="url">数据结构</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-03-20 09:18:53 / 修改时间：17:41:03" itemprop="dateCreated datePublished" datetime="2020-03-20T09:18:53+08:00">2020-03-20</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/其他/" itemprop="url" rel="index"><span itemprop="name">其他</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><p><strong>数据结构是计算机存储、组织数据的方式</strong>，包括数组、链表、栈、队列、二叉树、哈希表等。</p>
+<p><strong>算法是解决问题的方案，是为数据结构服务的</strong>，算法能对数据结构中的数据进行各种处理，比如查找数组中的数据，或对其进行排序等。</p>
+<blockquote>
+<p>数据结构 + 算法 = 程序 </p>
+</blockquote>
+<p><strong>数据结构和算法会对问题解决的质量和性能产生影响。</strong></p>
+<h2 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h2><ul>
+<li><a href="https://huiraoo.github.io/blog/2020/03/20/array/">数组</a></li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2020/03/19/session/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2102,761 +2441,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/12/24/java-project-mall/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/12/24/java-project-mall/" class="post-title-link" itemprop="url">Java · 项目 · mall</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-12-24 17:06:55" itemprop="dateCreated datePublished" datetime="2019-12-24T17:06:55+08:00">2019-12-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2020-01-20 15:10:51" itemprop="dateModified" datetime="2020-01-20T15:10:51+08:00">2020-01-20</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h1 id="后端"><a href="#后端" class="headerlink" title="后端"></a>后端</h1><h2 id="项目简介"><a href="#项目简介" class="headerlink" title="项目简介"></a>项目简介</h2><p>mall 项目是一套电商系统，包括前台商城系统及后台管理系统，基于 SpringBoot + MyBatis 实现。 前台商城系统包含首页门户、商品推荐、商品搜索、商品展示、购物车、订单流程、会员中心、客户服务、帮助中心等模块。 后台管理系统包含商品管理、订单管理、会员管理、促销管理、运营管理、内容管理、统计报表、财务管理、权限管理、设置等模块。</p>
-<blockquote>
-<p><a href="https://github.com/macrozheng/mall" target="_blank" rel="noopener">后端</a> | <a href="https://github.com/macrozheng/mall-admin-web" target="_blank" rel="noopener">前端</a> | <a href="https://github.com/macrozheng/mall-learning" target="_blank" rel="noopener">学习教程</a></p>
-</blockquote>
-<h2 id="项目演示"><a href="#项目演示" class="headerlink" title="项目演示"></a>项目演示</h2><ul>
-<li>后台项目演示：<a href="http://www.macrozheng.com/admin/index.html" target="_blank" rel="noopener">http://www.macrozheng.com/admin/index.html</a>    |  [admin/macro123]</li>
-<li>移动端项目演示：<a href="http://www.macrozheng.com/app/index.html" target="_blank" rel="noopener">http://www.macrozheng.com/app/index.html</a></li>
-</ul>
-<h2 id="技术选型"><a href="#技术选型" class="headerlink" title="技术选型"></a>技术选型</h2><p><strong>后端</strong></p>
-<table>
-<thead>
-<tr>
-<th>技术</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><a href="https://spring.io/projects/spring-boot/" target="_blank" rel="noopener">Spring Boot</a></td>
-<td>容器 + MVC 框架</td>
-</tr>
-<tr>
-<td><a href="https://spring.io/projects/spring-security" target="_blank" rel="noopener">Spring Security</a></td>
-<td>认证和授权框架</td>
-</tr>
-<tr>
-<td><a href="https://mybatis.org/mybatis-3/zh/index.html" target="_blank" rel="noopener">MyBatis</a></td>
-<td>ORM 框架</td>
-</tr>
-<tr>
-<td><a href="http://mybatis.org/generator/" target="_blank" rel="noopener">MyBatis Generator</a></td>
-<td>数据层代码生成</td>
-</tr>
-<tr>
-<td><a href="https://pagehelper.github.io/" target="_blank" rel="noopener">PageHelper</a></td>
-<td>MyBatis 物理分页插件</td>
-</tr>
-<tr>
-<td><a href="https://swagger.io/tools/swagger-ui/" target="_blank" rel="noopener">Swagger UI</a></td>
-<td>文档生产工具</td>
-</tr>
-<tr>
-<td><a href="https://www.elastic.co/cn/" target="_blank" rel="noopener">Elasticsearch</a></td>
-<td>搜索引擎</td>
-</tr>
-<tr>
-<td><a href="https://www.rabbitmq.com/" target="_blank" rel="noopener">RabbitMQ</a></td>
-<td>消息队列</td>
-</tr>
-<tr>
-<td><a href="https://redis.io/" target="_blank" rel="noopener">Redis</a></td>
-<td>分布式缓存</td>
-</tr>
-<tr>
-<td><a href="https://www.mongodb.com/" target="_blank" rel="noopener">MongoDB</a></td>
-<td>NoSQL 数据库</td>
-</tr>
-<tr>
-<td><a href="https://www.docker.com/" target="_blank" rel="noopener">Docker</a></td>
-<td>应用容器引擎</td>
-</tr>
-<tr>
-<td><a href="https://druid.apache.org/" target="_blank" rel="noopener">Druid</a></td>
-<td>数据库连接池</td>
-</tr>
-<tr>
-<td><a href="https://www.aliyun.com/product/oss" target="_blank" rel="noopener">OSS</a></td>
-<td>对象存储</td>
-</tr>
-<tr>
-<td><a href="https://jwt.io/" target="_blank" rel="noopener">JWT</a></td>
-<td>JWT 登录支持</td>
-</tr>
-<tr>
-<td><a href="https://projectlombok.org/" target="_blank" rel="noopener">Lombok</a></td>
-<td>简化对象封装工具</td>
-</tr>
-<tr>
-<td><a href="http://hibernate.org/validator/" target="_blank" rel="noopener">Hibernator-Validator</a></td>
-<td>验证框架</td>
-</tr>
-<tr>
-<td><a href="https://www.elastic.co/cn/products/logstash" target="_blank" rel="noopener">LogStash</a></td>
-<td>日志收集工具</td>
-</tr>
-<tr>
-<td><a href="https://www.elastic.co/cn/products/kibana" target="_blank" rel="noopener">Kibana</a></td>
-<td>为 Elasticsearch 设计的开源分析和可视化平台</td>
-</tr>
-</tbody></table>
-<p><strong>前端</strong></p>
-<table>
-<thead>
-<tr>
-<th>技术</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><a href="https://vuejs.org/" target="_blank" rel="noopener">Vue</a></td>
-<td>前端框架</td>
-</tr>
-<tr>
-<td><a href="https://router.vuejs.org/" target="_blank" rel="noopener">Vue-router</a></td>
-<td>路由框架</td>
-</tr>
-<tr>
-<td><a href="https://vuex.vuejs.org/" target="_blank" rel="noopener">Vuex</a></td>
-<td>全局状态管理框架</td>
-</tr>
-<tr>
-<td><a href="https://element.eleme.io/" target="_blank" rel="noopener">Element</a></td>
-<td>前端 UI 框架</td>
-</tr>
-<tr>
-<td><a href="https://github.com/axios/axios" target="_blank" rel="noopener">Axios</a></td>
-<td>前端 HTTP 框架</td>
-</tr>
-<tr>
-<td><a href="https://v-charts.js.org/" target="_blank" rel="noopener">v-charts</a></td>
-<td>基于 Echarts 的图表框架</td>
-</tr>
-<tr>
-<td><a href="https://github.com/js-cookie/js-cookie" target="_blank" rel="noopener">Js-cookie</a></td>
-<td>cookie 管理工具</td>
-</tr>
-<tr>
-<td><a href="https://github.com/rstacruz/nprogress" target="_blank" rel="noopener">nprogress</a></td>
-<td>进度条控件</td>
-</tr>
-<tr>
-<td><a href="https://github.com/PanJiaChen/vue-element-admin" target="_blank" rel="noopener">vue-element-admin</a></td>
-<td>项目脚手架参考</td>
-</tr>
-</tbody></table>
-<h2 id="功能概览"><a href="#功能概览" class="headerlink" title="功能概览"></a>功能概览</h2><ul>
-<li>商品模块<ul>
-<li>商品管理</li>
-<li>商品分类管理</li>
-<li>商品类型管理</li>
-<li>品牌管理</li>
-</ul>
-</li>
-<li>订单模块<ul>
-<li>订单管理</li>
-<li>订单设置</li>
-<li>退货申请处理</li>
-<li>退货原因设置</li>
-</ul>
-</li>
-<li>营销模块<ul>
-<li>秒杀活动管理</li>
-<li>优惠价管理</li>
-<li>品牌推荐管理</li>
-<li>新品推荐管理</li>
-<li>人气推荐管理</li>
-<li>专题推荐管理</li>
-<li>首页广告管理</li>
-</ul>
-</li>
-</ul>
-<h2 id="数据库表"><a href="#数据库表" class="headerlink" title="数据库表"></a>数据库表</h2><ul>
-<li><strong>cms_*</strong>：内容管理模块相关表</li>
-<li><strong>oms_*</strong>：订单管理模块相关表</li>
-<li><strong>pms_*</strong>：商品模块相关表</li>
-<li><strong>sms_*</strong>：营销模块相关表</li>
-<li><strong>ums_*</strong>：会员模块相关表</li>
-</ul>
-<h2 id="工具篇"><a href="#工具篇" class="headerlink" title="工具篇"></a>工具篇</h2><table>
-<thead>
-<tr>
-<th>工具</th>
-<th>说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><a href="https://www.jetbrains.com/idea/download" target="_blank" rel="noopener">IDEA</a></td>
-<td>开发 IDE</td>
-</tr>
-<tr>
-<td><a href="https://redisdesktop.com/download" target="_blank" rel="noopener">Redis Desktop</a></td>
-<td>Redis 客户端连接工具</td>
-</tr>
-<tr>
-<td><a href="https://robomongo.org/download" target="_blank" rel="noopener">Robomongo</a></td>
-<td>MongoDB 客户端连接工具</td>
-</tr>
-<tr>
-<td><a href="http://www.netsarang.com/download/software.html" target="_blank" rel="noopener">XShell</a></td>
-<td>Linux 远程连接工具</td>
-</tr>
-<tr>
-<td><a href="http://www.formysql.com/xiazai.html" target="_blank" rel="noopener">Navicat</a></td>
-<td>数据库连接工具</td>
-</tr>
-<tr>
-<td><a href="http://powerdesigner.de/" target="_blank" rel="noopener">Power Designer</a></td>
-<td>数据库设计工具</td>
-</tr>
-<tr>
-<td><a href="https://www.axure.com/" target="_blank" rel="noopener">Axure</a></td>
-<td>原型设计工具</td>
-</tr>
-<tr>
-<td><a href="https://www.xmind.cn/" target="_blank" rel="noopener">XMind</a></td>
-<td>思维导图设计工具</td>
-</tr>
-<tr>
-<td><a href="https://www.screentogif.com/" target="_blank" rel="noopener">ScreenToGif</a></td>
-<td>gif 录制工具</td>
-</tr>
-<tr>
-<td><a href="https://www.processon.com/" target="_blank" rel="noopener">ProcessOn</a></td>
-<td>流程图绘制工具</td>
-</tr>
-<tr>
-<td><a href="https://picpick.app/zh/" target="_blank" rel="noopener">PicPick</a></td>
-<td>图片处理工具</td>
-</tr>
-<tr>
-<td><a href="https://www.snipaste.com/" target="_blank" rel="noopener">Snipaste</a></td>
-<td>屏幕截图工具</td>
-</tr>
-</tbody></table>
-<h2 id="架构篇"><a href="#架构篇" class="headerlink" title="架构篇"></a>架构篇</h2><p><strong>系统微服务架构图</strong></p>
-<p><img src="https://github.com/macrozheng/mall/blob/master/document/resource/mall_micro_service_arch.jpg?raw=true" alt="mall_micro_service_arch.jpg"></p>
-<h2 id="业务篇"><a href="#业务篇" class="headerlink" title="业务篇"></a>业务篇</h2><p><img src="https://github.com/macrozheng/mall/blob/master/document/resource/mall_business_arch.png?raw=true" alt="mall_business_arch.png"></p>
-<h2 id="代码篇"><a href="#代码篇" class="headerlink" title="代码篇"></a>代码篇</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mall</span><br><span class="line">├── mall-common   -- 工具类及通用代码</span><br><span class="line">├── mall-mbg      -- MyBatis Generator 生成的数据库操作代码</span><br><span class="line">├── mall-security -- Spring Security 封装公用模块</span><br><span class="line">├── mall-admin    -- 后台商城管理系统接口</span><br><span class="line">├── mall-search   -- 基于 Elasticsearch 的商品搜索系统</span><br><span class="line">├── mall-portal   -- 前台商城系统接口</span><br><span class="line">└── mall-demo     -- 框架搭建时的测试代码</span><br></pre></td></tr></table></figure>
-
-<h1 id="前端"><a href="#前端" class="headerlink" title="前端"></a>前端</h1><h2 id="技术选型-1"><a href="#技术选型-1" class="headerlink" title="技术选型"></a>技术选型</h2><table>
-<thead>
-<tr>
-<th>技术</th>
-<th>说明</th>
-<th>官网</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Vue</td>
-<td>前端框架</td>
-<td><a href="https://vuejs.org/" target="_blank" rel="noopener">https://vuejs.org/</a></td>
-</tr>
-<tr>
-<td>Vue-router</td>
-<td>路由框架</td>
-<td><a href="https://router.vuejs.org/" target="_blank" rel="noopener">https://router.vuejs.org/</a></td>
-</tr>
-<tr>
-<td>Vuex</td>
-<td>全局状态管理框架</td>
-<td><a href="https://vuex.vuejs.org/" target="_blank" rel="noopener">https://vuex.vuejs.org/</a></td>
-</tr>
-<tr>
-<td>Element</td>
-<td>前端 UI 框架</td>
-<td><a href="https://element.eleme.io/" target="_blank" rel="noopener">https://element.eleme.io/</a></td>
-</tr>
-<tr>
-<td>Axios</td>
-<td>前端 HTTP 框架</td>
-<td><a href="https://github.com/axios/axios" target="_blank" rel="noopener">https://github.com/axios/axios</a></td>
-</tr>
-<tr>
-<td>v-charts</td>
-<td>基于 Echarts 的图表框架</td>
-<td><a href="https://v-charts.js.org/" target="_blank" rel="noopener">https://v-charts.js.org/</a></td>
-</tr>
-<tr>
-<td>Js-cookie</td>
-<td>cookie 管理工具</td>
-<td><a href="https://github.com/js-cookie/js-cookie" target="_blank" rel="noopener">https://github.com/js-cookie/js-cookie</a></td>
-</tr>
-<tr>
-<td>nprogress</td>
-<td>进度条控件</td>
-<td><a href="https://github.com/rstacruz/nprogress" target="_blank" rel="noopener">https://github.com/rstacruz/nprogress</a></td>
-</tr>
-<tr>
-<td>vue-element-admin</td>
-<td>项目脚手架参考</td>
-<td><a href="https://github.com/PanJiaChen/vue-element-admin" target="_blank" rel="noopener">https://github.com/PanJiaChen/vue-element-admin</a></td>
-</tr>
-</tbody></table>
-<h2 id="工程目录"><a href="#工程目录" class="headerlink" title="工程目录"></a>工程目录</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">src -- 源码目录</span><br><span class="line">├── api -- axios网络请求定义</span><br><span class="line">├── assets -- 静态图片资源文件</span><br><span class="line">├── components -- 通用组件封装</span><br><span class="line">├── icons -- svg矢量图片文件</span><br><span class="line">├── router -- vue-router路由配置</span><br><span class="line">├── store -- vuex的状态管理</span><br><span class="line">├── styles -- 全局css样式</span><br><span class="line">├── utils -- 工具类</span><br><span class="line">└── views -- 前端页面</span><br><span class="line">    ├── home -- 首页</span><br><span class="line">    ├── layout -- 通用页面加载框架</span><br><span class="line">    ├── login -- 登录页</span><br><span class="line">    ├── oms -- 订单模块页面</span><br><span class="line">    ├── pms -- 商品模块页面</span><br><span class="line">    └── sms -- 营销模块页面</span><br></pre></td></tr></table></figure>
-
-<h2 id="打包部署"><a href="#打包部署" class="headerlink" title="打包部署"></a>打包部署</h2><p><strong>前端项目部署：</strong></p>
-<p>1、下载前端代码 <a href="https://github.com/macrozheng/mall-admin-web" target="_blank" rel="noopener">mall-admin-web</a></p>
-<p>2、<a href="https://code.visualstudio.com/" target="_blank" rel="noopener">VS Code</a> 打开代码</p>
-<p>3、打开控制台，通过 <code>npm install</code> 命令安装相关依赖</p>
-<p>4、修改 <code>dev.env.js</code> 文件中 <code>BASE_API</code>，使用线上 API 进行访问，线上地址为：<a href="http://120.27.63.9:8080" target="_blank" rel="noopener">http://120.27.63.9:8080</a></p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">'use strict'</span></span><br><span class="line"><span class="keyword">const</span> merge = <span class="built_in">require</span>(<span class="string">'webpack-merge'</span>)</span><br><span class="line"><span class="keyword">const</span> prodEnv = <span class="built_in">require</span>(<span class="string">'./prod.env'</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">module</span>.exports = merge(prodEnv, &#123;</span><br><span class="line">  NODE_ENV: <span class="string">'"development"'</span>,</span><br><span class="line">  <span class="comment">// 后台API地址：BASE_API: '"http://10.133.0.53:8080"'</span></span><br><span class="line">  BASE_API: <span class="string">'"http://120.27.63.9:8080"'</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
-
-<p>5、通过 <code>npm run dev</code> 命令，启动 <code>mall-admin-web</code></p>
-<p>6、访问地址 <a href="http://localhost:8090/" target="_blank" rel="noopener">http://localhost:8090</a> 查看效果</p>
-<p><strong>后端项目部署</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 构建镜像</span></span><br><span class="line">docker build -t mall/mall-admin:<span class="number">1.0</span>-SNAPSHOT .</span><br><span class="line">docker build -t mall/mall-portal:<span class="number">1.0</span>-SNAPSHOT .</span><br><span class="line">docker build -t mall/mall-search:<span class="number">1.0</span>-SNAPSHOT .</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 删除镜像</span></span><br><span class="line">docker rmi registry.cn-qingdao.aliyuncs.com/raoo/images:v1.<span class="number">0.0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 拉取镜像</span></span><br><span class="line">docker pull registry.cn-qingdao.aliyuncs.com/raoo/images:v1.<span class="number">0.0</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动镜像</span></span><br><span class="line">docker run -p <span class="number">8080</span>:<span class="number">8080</span> --name mall-admin \</span><br><span class="line">--link mysql:db \</span><br><span class="line">-v /etc/localtime:/etc/localtime \</span><br><span class="line">-v /mydata/app/admin/logs:/var/logs \</span><br><span class="line">-d mall/mall-admin:<span class="number">1.0</span>-SNAPSHOT</span><br><span class="line"></span><br><span class="line"><span class="comment"># 移除容器</span></span><br><span class="line">docker rm xx</span><br></pre></td></tr></table></figure>
-
-<p><strong>常用命令</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">docker search java：在 Docker Hub（或阿里镜像）仓库中搜索关键字（如java）的镜像</span><br><span class="line">docker pull java:<span class="number">8</span>：从仓库中下载镜像，若要指定版本，则要在冒号后指定</span><br><span class="line">docker images：列出已经下载的镜像</span><br><span class="line">docker rmi java：删除本地镜像</span><br><span class="line">docker build：构建镜像</span><br><span class="line">docker tag <span class="number">0</span>ead9e3f95d6 mall/mall-admin:<span class="number">1.0</span>-SNAPSHOT：修改镜像</span><br></pre></td></tr></table></figure>
-
-<p><strong>Dockerfile</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">FROM java:<span class="number">8</span></span><br><span class="line">ADD /mall-search-<span class="number">1.0</span>-SNAPSHOT.jar //</span><br><span class="line">ENTRYPOINT [<span class="string">"java"</span>, <span class="string">"-jar"</span>, <span class="string">"-Dspring.profiles.active=prod"</span>,<span class="string">"/mall-search-1.0-SNAPSHOT.jar"</span>]</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/12/23/aliyun-practice-migration/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/12/23/aliyun-practice-migration/" class="post-title-link" itemprop="url">企业上云实践：数据库迁移方案</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-12-23 09:41:45" itemprop="dateCreated datePublished" datetime="2019-12-23T09:41:45+08:00">2019-12-23</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2020-01-09 17:51:49" itemprop="dateModified" datetime="2020-01-09T17:51:49+08:00">2020-01-09</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/阿里云/" itemprop="url" rel="index"><span itemprop="name">阿里云</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="一、背景"><a href="#一、背景" class="headerlink" title="一、背景"></a>一、背景</h2><p>对于众多企业来说，云的优势越来越明显，出于想使用成熟技术、减少运维成本、提升系统性能等方面的考虑，纷纷向“云”看齐。不过，在涉及到本地或云端的具体实施过程时，一个较为重要的问题就是数据的迁移。如何使用云服务商提供的迁移工具可以实现在自建应用不停服较长时间的情况下，平滑地完成自建数据库的迁移上云是一个首先需要解决的问题。</p>
-<h2 id="二、数据库迁移上云方案介绍"><a href="#二、数据库迁移上云方案介绍" class="headerlink" title="二、数据库迁移上云方案介绍"></a>二、数据库迁移上云方案介绍</h2><p><strong>以阿里云为例</strong>：主要使用 <a href="https://www.aliyun.com/product/dts" target="_blank" rel="noopener">DTS</a> 服务，实现本地 IDC 与阿里云 RDS 的数据迁移。</p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-24-093500.jpg" alt></p>
-<p>不通的迁移方案应对不同的场景：</p>
-<table>
-<thead>
-<tr>
-<th>场景</th>
-<th>迁移方案</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>本地 IDC 与阿里云机房，有专线</td>
-<td>通过专线迁移</td>
-</tr>
-<tr>
-<td>本地 IDC 与阿里云，无专线，但数据库可开通公网 IP</td>
-<td>通过公网 IP 迁移</td>
-</tr>
-<tr>
-<td>本地 IDC 与阿里云，无专线，且数据库不可开通公网 IP</td>
-<td>通过 ECS 自建数据库与本地自建数据库搭成主从，再通过阿里云内网迁移</td>
-</tr>
-<tr>
-<td>本地 IDC 与阿里云机房，有专线，但不是同一个主账号</td>
-<td>通过 RDS 中转迁移，参考 <a href="https://help.aliyun.com/document_detail/26652.html?spm=a2c4g.11186623.6.755.179629f7JLF39Y" target="_blank" rel="noopener">使用DTS跨阿里云账号迁移RDS数据</a></td>
-</tr>
-</tbody></table>
-<h2 id="三、数据库迁移基本原理"><a href="#三、数据库迁移基本原理" class="headerlink" title="三、数据库迁移基本原理"></a>三、数据库迁移基本原理</h2><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-07-165610.png" alt></p>
-<ul>
-<li>结构迁移：将源库中待迁移对象的结构迁移至目标库（例如表、视图、触发器、存储过程等）。</li>
-<li>全量数据迁移：将源库中存量数据，全部迁移到目标库中。</li>
-<li>增量数据迁移：将与源库保持实时同步的状态，使用增量迁移功能，可以将系统迁移过程中的应用停机时间降低到分钟级别。</li>
-</ul>
-<h2 id="四、准备与注意事项"><a href="#四、准备与注意事项" class="headerlink" title="四、准备与注意事项"></a>四、准备与注意事项</h2><p><strong>准备事项：</strong></p>
-<ul>
-<li><input checked disabled type="checkbox"> 已开通 <a href="https://www.aliyun.com/product/rds/mysql" target="_blank" rel="noopener">RDS</a> 服务</li>
-<li><input checked disabled type="checkbox"> 已开通 <a href="https://www.aliyun.com/product/dts" target="_blank" rel="noopener">DTS</a> 服务</li>
-<li><input checked disabled type="checkbox"> 源库网络可通，已创建账号，并连接测试通过</li>
-<li><input checked disabled type="checkbox"> 目标库，已创建账号，并连接测试通过</li>
-</ul>
-<p><strong>注意事项：</strong></p>
-<ul>
-<li><input checked disabled type="checkbox"> 由于执行业务切换操作需要停止数据库写入并暂停业务，请选择业务低峰期操作以降低影响。</li>
-<li><input checked disabled type="checkbox"> 由于源库区分大小写、目标库未区分大小写，会导致迁移失败，迁移前请将库名和表名全部改成小写。</li>
-<li><input checked disabled type="checkbox"> 不同版本迁移，会存在由于语法差异导致视图或者触发器结构迁移失败，可以先忽略错误。</li>
-<li><input checked disabled type="checkbox"> 增量迁移期间，不能执行 DDL 语句，否则会迁移中断。</li>
-</ul>
-<h2 id="五、操作实践：用户中心本地自建数据库迁移至阿里云RDS"><a href="#五、操作实践：用户中心本地自建数据库迁移至阿里云RDS" class="headerlink" title="五、操作实践：用户中心本地自建数据库迁移至阿里云RDS"></a>五、操作实践：用户中心本地自建数据库迁移至阿里云RDS</h2><p><strong>基本信息：</strong></p>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>源库信息</th>
-<th>目标库信息</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>数据库版本</strong></td>
-<td>MariaDB 10.1.19</td>
-<td>MySQL 5.7</td>
-</tr>
-<tr>
-<td><strong>机房区域</strong></td>
-<td>北京亦庄</td>
-<td>华为2（北京）</td>
-</tr>
-<tr>
-<td><strong>数据量</strong></td>
-<td>170 GB</td>
-<td>～</td>
-</tr>
-<tr>
-<td><strong>要求</strong></td>
-<td>1. 分钟级停服；2. 失败可回退。</td>
-<td>～</td>
-</tr>
-<tr>
-<td><strong>迁移方案</strong></td>
-<td>公网 IP + 结构 + 全量 + 增量</td>
-<td>～</td>
-</tr>
-</tbody></table>
-<p><strong>操作步骤：</strong></p>
-<p>1、进入 DTS 控制台，创建迁移任务</p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-24-091250.jpg" alt></p>
-<p>2、配置源库和目标库，并连接测试通过</p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-07-160100.jpg" alt></p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-07-160205.jpg" alt></p>
-<p>3、选择迁移类型和列表</p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-07-160805.jpg" alt></p>
-<p>4、预检查</p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-07-160944.jpg" alt></p>
-<p>5、启动迁移任务</p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-07-161113.jpg" alt></p>
-<p>6、实时跟踪迁移进度</p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-07-161444.jpg" alt></p>
-<p>7、将业务中断，禁止新的数据写入源数据库</p>
-<p>8、结束数据迁移任务</p>
-<p>观察迁移任务的进度为增量迁移，并显示为<strong>无延迟</strong>状态时，将源库停写几分钟，等待迁移任务的增量迁移再次进入无延迟状态后，手动结束迁移任务。</p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-08-112743.jpg" alt></p>
-<p>9、创建反向数据迁移任务并启动</p>
-<p>用于将目标库后续产生增量数据迁移回源数据库，此步骤创建的反向迁移任务的作用是为业务提供回退方案，业务恢复运行后，一旦出现异常可将业务切换至原有的数据库中。</p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-08-115244.jpg" alt></p>
-<p>⚠️ 警告：在配置反向数据迁移任务时，在设置<strong>迁移类型及列表</strong>环节仅需选择<strong>增量数据迁移</strong>。</p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-01-08-115344.jpg" alt></p>
-<p>​    </p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2905,7 +2489,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">166</span>
+                    <span class="site-state-item-count">168</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

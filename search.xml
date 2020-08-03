@@ -1,6 +1,189 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>SQL 审核</title>
+    <url>/blog/2020/08/03/sql-audit/</url>
+    <content><![CDATA[<h4 id="可选择方案"><a href="#可选择方案" class="headerlink" title="可选择方案"></a>可选择方案</h4><ul>
+<li>阿里云 DMS</li>
+<li><a href="https://github.com/XiaoMi/soar" target="_blank" rel="noopener">SOAR</a></li>
+<li><a href="https://www.infoq.cn/profile/C7FAC706B18376/publish" target="_blank" rel="noopener">拌鱼技术团队</a></li>
+</ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>智家迁移上云</title>
+    <url>/blog/2020/07/22/zhijia-migrate/</url>
+    <content><![CDATA[<h2 id="海知友"><a href="#海知友" class="headerlink" title="海知友"></a>海知友</h2><table>
+<thead>
+<tr>
+<th></th>
+<th>源信息</th>
+<th>目标信息</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>实例</strong></td>
+<td>10.159.44.168</td>
+<td>prd-paas-mysql-18</td>
+</tr>
+<tr>
+<td></td>
+<td>123.103.113.6</td>
+<td>rm-2ze4fd3f195vg25a3</td>
+</tr>
+<tr>
+<td><strong>端口</strong></td>
+<td>3306</td>
+<td>3306</td>
+</tr>
+<tr>
+<td><strong>账号</strong></td>
+<td>sre  /  xx</td>
+<td>rds  /  xx</td>
+</tr>
+<tr>
+<td><strong>迁移对象</strong></td>
+<td>vipcode、vipwechat</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>数据量</strong></td>
+<td>150GB / 43GB</td>
+<td></td>
+</tr>
+</tbody></table>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">select `t`.`id` AS `id`,`t`.`orderNo` AS `orderNo`,`t`.`createTime` AS `createTime`,`t`.`flowStatus` AS `flowStatus`,`t`.`mobile` AS `mobile`,`t`.`userId` AS `userId`,`t`.`userName` AS `userName`,`t`.`recognitionFlag` AS `recognitionFlag`,`t`.`recognitionCondition` AS `recognitionCondition`,`t`.`domainName` AS `domainName`,`t`.`appointType` AS `appointType`,`t`.`productType` AS `productType`,`t`.`userSource` AS `userSource`,`t`.`appointTime` AS `appointTime`,`t`.`productCategory` AS `productCategory`,`t`.`rightStatus` AS `rightStatus`,`t`.`buyMore` AS `buyMore`,`t`.`orderStartTime` AS `orderStartTime`,`t`.`oldfornewdbId` AS `oldfornewdbId`,`t`.`industry` AS `industry`,`t`.`buyIntention` AS `buyIntention`,`t`.`yearBrand` AS `yearBrand`,`t`.`hmcid` AS `hmcid`,`t`.`shopId` AS `shopId`,`t`.`mayEditCoupleOrderId` AS `mayEditCoupleOrderId`,`t`.`coupleSponsor` AS `coupleSponsor` from (select `a`.`id` AS `id`,`a`.`orderNo` AS `orderNo`,ifnull(`a`.`createTime`,`a`.`appointTime`) AS `createTime`,`a`.`flowStatus` AS `flowStatus`,`a`.`mobile` AS `mobile`,`a`.`userId` AS `userId`,`a`.`userName` AS `userName`,`a`.`recognitionFlag` AS `recognitionFlag`,`a`.`recognitionCondition` AS `recognitionCondition`,`a`.`domainName` AS `domainName`,`a`.`appointType` AS `appointType`,`a`.`productType` AS `productType`,`a`.`userSource` AS `userSource`,`a`.`appointTime` AS `appointTime`,`a`.`productCategory` AS `productCategory`,`a`.`rightStatus` AS `rightStatus`,0 AS `buyMore`,NULL AS `orderStartTime`,`a`.`oldfornewdbId` AS `oldfornewdbId`,`a`.`industry` AS `industry`,`c`.`buyIntention` AS `buyIntention`,`c`.`yearBrand` AS `yearBrand`,`a`.`hmcid` AS `hmcid`,NULL AS `shopId`,NULL AS `mayEditCoupleOrderId`,NULL AS `coupleSponsor` from (`vipcode`.`code_workflow` `a` left join `vipcode`.`code_oldfornewdb_count` `c` on(`a`.`oldfornewdbId` = `c`.`id`)) where `a`.`flowStatus` in (&apos;0&apos;,&apos;6&apos;,&apos;7&apos;,&apos;8&apos;) and `a`.`isDelete` = 0 union all select `a`.`id` AS `id`,`a`.`orderNo` AS `orderNo`,`b`.`createTime` AS `createTime`,`a`.`flowStatus` AS `flowStatus`,`a`.`mobile` AS `mobile`,`a`.`userId` AS `userId`,`a`.`userName` AS `userName`,`a`.`recognitionFlag` AS `recognitionFlag`,`a`.`recognitionCondition` AS `recognitionCondition`,`a`.`domainName` AS `domainName`,`a`.`appointType` AS `appointType`,`a`.`productType` AS `productType`,`a`.`userSource` AS `userSource`,`a`.`appointTime` AS `appointTime`,`a`.`productCategory` AS `productCategory`,`a`.`rightStatus` AS `rightStatus`,`b`.`buyMore` AS `buyMore`,`b`.`createTime` AS `orderStartTime`,`a`.`oldfornewdbId` AS `oldfornewdbId`,`a`.`industry` AS `industry`,NULL AS `buyIntention`,NULL AS `yearBrand`,`a`.`hmcid` AS `hmcid`,`b`.`shopId` AS `shopId`,`b`.`mayEditCoupleOrderId` AS `mayEditCoupleOrderId`,`b`.`coupleSponsor` AS `coupleSponsor` from (`vipcode`.`code_workflow` `a` join `vipcode`.`code_portalorder` `b`) where `a`.`id` = `b`.`workFlowId` and `b`.`status` = 1 and `b`.`buyMore` = 1 and `a`.`isDelete` = 0 group by `a`.`id`) `t` order by `t`.`createTime` desc</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">TABLE_SCHEMA: vipcode</span><br><span class="line">TABLE_NAME: listworkflow</span><br></pre></td></tr></table></figure>
+
+<h2 id="会员中心"><a href="#会员中心" class="headerlink" title="会员中心"></a>会员中心</h2><table>
+<thead>
+<tr>
+<th></th>
+<th>源信息</th>
+<th>目标信息</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>实例</strong></td>
+<td>10.159.36.193</td>
+<td>prd-paas-mysql-14</td>
+</tr>
+<tr>
+<td></td>
+<td>123.103.10.20</td>
+<td>rm-2zeb87aj0804q44fi</td>
+</tr>
+<tr>
+<td><strong>端口</strong></td>
+<td>3307</td>
+<td>3306</td>
+</tr>
+<tr>
+<td><strong>账号</strong></td>
+<td>sre  /  xx</td>
+<td>rds  /  xx</td>
+</tr>
+<tr>
+<td><strong>迁移对象</strong></td>
+<td>dbvipcenter</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>数据量</strong></td>
+<td>357GB</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>Functions：fn_getSplitSum</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">CREATE FUNCTION `dbvipcenter`.`fn_getSplitSum`(f_string varchar(100)) RETURNS int(11)</span><br><span class="line">BEGIN</span><br><span class="line">    DECLARE i int(11);</span><br><span class="line">    DECLARE total int(11);</span><br><span class="line">    DECLARE result int(11);</span><br><span class="line">    DECLARE resulttemp text;</span><br><span class="line">	  SET i=1;</span><br><span class="line">		SET result = 0;</span><br><span class="line">    set total = 1+(LENGTH(f_string)-LENGTH(replace(f_string,&apos;,&apos;,&apos;&apos;)));</span><br><span class="line"></span><br><span class="line">    IF(f_string is NULL or LENGTH(f_string)=0) THEN</span><br><span class="line">        RETURN 0;</span><br><span class="line">    ELSE</span><br><span class="line">        WHILE i&lt;=total DO</span><br><span class="line">                set resulttemp = reverse(substring_index(reverse(substring_index(f_string,&apos;,&apos;,i)),&apos;,&apos;,1));</span><br><span class="line">				set result = result + CAST(resulttemp as int);</span><br><span class="line">                set i = i+1;</span><br><span class="line">        END WHILE;</span><br><span class="line">    END IF;</span><br><span class="line">    RETURN result;</span><br><span class="line">END</span><br></pre></td></tr></table></figure>
+
+<p>Views：vip_order_right_info</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>源信息</th>
+<th>目标信息</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>实例</strong></td>
+<td>10.159.36.192</td>
+<td>prd-paas-mysql-16</td>
+</tr>
+<tr>
+<td></td>
+<td>123.103.113.99</td>
+<td>rm-2zehekw2nfux23a7b</td>
+</tr>
+<tr>
+<td><strong>端口</strong></td>
+<td>3306</td>
+<td>3306</td>
+</tr>
+<tr>
+<td><strong>账号</strong></td>
+<td>sre  /  xx</td>
+<td>rds  /  xx</td>
+</tr>
+<tr>
+<td><strong>迁移对象</strong></td>
+<td>dbvipcentertask</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>数据量</strong></td>
+<td>128GB</td>
+<td></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>源信息</th>
+<th>目标信息</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>实例</strong></td>
+<td>10.159.36.194</td>
+<td>prd-paas-mysql-16</td>
+</tr>
+<tr>
+<td></td>
+<td>123.103.113.102</td>
+<td>rm-2zehekw2nfux23a7b</td>
+</tr>
+<tr>
+<td><strong>端口</strong></td>
+<td>3308</td>
+<td>3306</td>
+</tr>
+<tr>
+<td><strong>账号</strong></td>
+<td>sre  /  xx</td>
+<td>rds  /  xx</td>
+</tr>
+<tr>
+<td><strong>迁移对象</strong></td>
+<td>dbvipcenterdata</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>数据量</strong></td>
+<td>54GB</td>
+<td></td>
+</tr>
+</tbody></table>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">报错：Specified key was too long; max key length is 767 bytes</span><br><span class="line">措施：启用 innodb_large_prefix</span><br><span class="line"></span><br><span class="line">show variables like &apos;binlog_format&apos;; </span><br><span class="line">show variables like &apos;binlog_row_image&apos;;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">SELECT table_schema, CONCAT(</span><br><span class="line">TRUNCATE(SUM(data_length)/1024/1024/1024,2),&apos;GB&apos;) AS data_size, CONCAT(</span><br><span class="line">TRUNCATE(SUM(index_length)/1024/1024/1024,2),&apos;GB&apos;) AS index_size</span><br><span class="line">FROM information_schema.tables</span><br><span class="line">GROUP BY table_schema</span><br><span class="line">ORDER BY SUM(data_length) DESC;</span><br></pre></td></tr></table></figure>
+
+]]></content>
+  </entry>
+  <entry>
     <title>Go · 如何快速学习一门编程语言？</title>
     <url>/blog/2020/07/14/go-learning/</url>
     <content><![CDATA[<h1 id="Day-1：环境搭建"><a href="#Day-1：环境搭建" class="headerlink" title="Day 1：环境搭建"></a>Day 1：环境搭建</h1><h2 id="Go-语言简介"><a href="#Go-语言简介" class="headerlink" title="Go 语言简介"></a>Go 语言简介</h2><ul>
@@ -203,6 +386,7 @@
 <figure class="highlight go"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 数组</span></span><br><span class="line">	arr := [<span class="number">5</span>]<span class="keyword">int</span>&#123;<span class="number">15</span>, <span class="number">23</span>, <span class="number">8</span>, <span class="number">10</span>, <span class="number">7</span>&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 遍历</span></span><br><span class="line">	<span class="keyword">for</span> _, value := <span class="keyword">range</span> arr &#123;</span><br><span class="line">		fmt.Println(value)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 冒泡排序</span></span><br><span class="line">	<span class="keyword">for</span> i := <span class="number">1</span>; i &lt; <span class="built_in">len</span>(arr); i++ &#123;</span><br><span class="line">		<span class="keyword">for</span> j := <span class="number">0</span>; j &lt; <span class="built_in">len</span>(arr)-i; j++ &#123;</span><br><span class="line">			<span class="keyword">if</span> arr[j] &gt; arr[j+<span class="number">1</span>] &#123;</span><br><span class="line">				arr[j], arr[j+<span class="number">1</span>] = arr[j+<span class="number">1</span>], arr[j]</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		fmt.Println(arr)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 运行结果</span></span><br><span class="line"><span class="number">15</span></span><br><span class="line"><span class="number">23</span></span><br><span class="line"><span class="number">8</span></span><br><span class="line"><span class="number">10</span></span><br><span class="line"><span class="number">7</span></span><br><span class="line">[<span class="number">15</span> <span class="number">8</span> <span class="number">10</span> <span class="number">7</span> <span class="number">23</span>]</span><br><span class="line">[<span class="number">8</span> <span class="number">10</span> <span class="number">7</span> <span class="number">15</span> <span class="number">23</span>]</span><br><span class="line">[<span class="number">8</span> <span class="number">7</span> <span class="number">10</span> <span class="number">15</span> <span class="number">23</span>]</span><br><span class="line">[<span class="number">7</span> <span class="number">8</span> <span class="number">10</span> <span class="number">15</span> <span class="number">23</span>]</span><br></pre></td></tr></table></figure>
 
 <h1 id="Day-3：复合数据类型"><a href="#Day-3：复合数据类型" class="headerlink" title="Day 3：复合数据类型"></a>Day 3：复合数据类型</h1><p>复合数据类型：array、slice、map、function、pointer、struct、interface、channel</p>
+<p>函数、指针、接口、错误处理</p>
 <p><strong>学习资料</strong></p>
 <ul>
 <li><a href="https://www.bilibili.com/video/BV1jJ411c7s3" target="_blank" rel="noopener">https://www.bilibili.com/video/BV1jJ411c7s3</a></li>

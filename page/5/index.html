@@ -352,6 +352,571 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/27/java-frame-jpa/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/11/27/java-frame-jpa/" class="post-title-link" itemprop="url">Java · 框架 · JPA</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-27 14:19:27" itemprop="dateCreated datePublished" datetime="2019-11-27T14:19:27+08:00">2019-11-27</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-28 09:03:11" itemprop="dateModified" datetime="2019-11-28T09:03:11+08:00">2019-11-28</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="ORM"><a href="#ORM" class="headerlink" title="ORM"></a>ORM</h2><p>简单说，ORM 就是通过实例对象的语法，完成关系型数据库的操作的技术，<strong>对象-关系映射（Object/Relational Mapping）</strong> 的缩写，ORM 的主要功能是把数据库映射成对象。</p>
+<ul>
+<li><p>数据库表（table）–&gt; 类（class）</p>
+</li>
+<li><p>记录（record，行数据）–&gt; 对象（object）</p>
+</li>
+<li><p>字段（field）–&gt; 对象的属性（attribute）</p>
+</li>
+</ul>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-27-142500.png" alt></p>
+<p><strong>示例</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 数据库写法</span></span><br><span class="line">SELECT id, first_name, last_name, phone, birth_date, sex FROM person WHERE id = <span class="number">10</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># ORM写法</span></span><br><span class="line">p = Person.get(<span class="number">10</span>);</span><br><span class="line">name = p.first_name;</span><br><span class="line">phone = p.phone</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<p>现在 Dao 持久层的解决方案中，大部分是采用 Spring Data JPA 或 <a href="https://mybatis.org/mybatis-3/zh/index.html" target="_blank" rel="noopener">MyBatis</a> 解决方案，并且传统企业多用前者，互联网企业多用后者。Spring Data JPA 是 Spring Data 在 JPA 和 ORM 框架之间抽象封装层，它不直接代替 ORM 框架，默认低层使用的 ORM 框架是 <a href="http://hibernate.org/" target="_blank" rel="noopener">Hibernate</a>。</p>
+<h2 id="JPA"><a href="#JPA" class="headerlink" title="JPA"></a>JPA</h2><p>Java Persistence API，可以通过注解或者 XML 描述<strong>对象-关系表</strong>之间的映射关系，并将实体对象持久化到数据库中，JPA 是一套 ORM 规范。</p>
+<p><strong><a href="https://spring.io/projects/spring-data-jpa#learn" target="_blank" rel="noopener">Spring Data JPA</a></strong>：是 Spring 提供的一套简化 JPA 开发的框架，按照约定好的方法命名规则写 dao 层接口，就可以在不写接口实现的情况下，实现对数据库的访问和操作，可以理解为 JPA 规范的再次封装抽象，底层还是使用了 Hibernate 的 JPA 技术实现。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-27-143900.jpg" alt></p>
+<p><strong>接口约定命名规则</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">Keyword</th>
+<th align="left">Sample</th>
+<th align="left">JPQL snippet</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><code>And</code></td>
+<td align="left"><code>findByLastnameAndFirstname</code></td>
+<td align="left"><code>… where x.lastname = ?1 and x.firstname = ?2</code></td>
+</tr>
+<tr>
+<td align="left"><code>Or</code></td>
+<td align="left"><code>findByLastnameOrFirstname</code></td>
+<td align="left"><code>… where x.lastname = ?1 or x.firstname = ?2</code></td>
+</tr>
+<tr>
+<td align="left"><code>Is</code>, <code>Equals</code></td>
+<td align="left"><code>findByFirstname</code>,<code>findByFirstnameEquals</code></td>
+<td align="left"><code>… where x.firstname = ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>Between</code></td>
+<td align="left"><code>findByStartDateBetween</code></td>
+<td align="left"><code>… where x.startDate between ?1 and ?2</code></td>
+</tr>
+<tr>
+<td align="left"><code>LessThan</code></td>
+<td align="left"><code>findByAgeLessThan</code></td>
+<td align="left"><code>… where x.age &lt; ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>LessThanEqual</code></td>
+<td align="left"><code>findByAgeLessThanEqual</code></td>
+<td align="left"><code>… where x.age &lt;= ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>GreaterThan</code></td>
+<td align="left"><code>findByAgeGreaterThan</code></td>
+<td align="left"><code>… where x.age &gt; ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>GreaterThanEqual</code></td>
+<td align="left"><code>findByAgeGreaterThanEqual</code></td>
+<td align="left"><code>… where x.age &gt;= ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>After</code></td>
+<td align="left"><code>findByStartDateAfter</code></td>
+<td align="left"><code>… where x.startDate &gt; ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>Before</code></td>
+<td align="left"><code>findByStartDateBefore</code></td>
+<td align="left"><code>… where x.startDate &lt; ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>IsNull</code>, <code>Null</code></td>
+<td align="left"><code>findByAge(Is)Null</code></td>
+<td align="left"><code>… where x.age is null</code></td>
+</tr>
+<tr>
+<td align="left"><code>IsNotNull</code>, <code>NotNull</code></td>
+<td align="left"><code>findByAge(Is)NotNull</code></td>
+<td align="left"><code>… where x.age not null</code></td>
+</tr>
+<tr>
+<td align="left"><code>Like</code></td>
+<td align="left"><code>findByFirstnameLike</code></td>
+<td align="left"><code>… where x.firstname like ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>NotLike</code></td>
+<td align="left"><code>findByFirstnameNotLike</code></td>
+<td align="left"><code>… where x.firstname not like ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>StartingWith</code></td>
+<td align="left"><code>findByFirstnameStartingWith</code></td>
+<td align="left"><code>… where x.firstname like ?%</code></td>
+</tr>
+<tr>
+<td align="left"><code>EndingWith</code></td>
+<td align="left"><code>findByFirstnameEndingWith</code></td>
+<td align="left"><code>… where x.firstname like %?</code></td>
+</tr>
+<tr>
+<td align="left"><code>Containing</code></td>
+<td align="left"><code>findByFirstnameContaining</code></td>
+<td align="left"><code>… where x.firstname like %?%</code></td>
+</tr>
+<tr>
+<td align="left"><code>OrderBy</code></td>
+<td align="left"><code>findByAgeOrderByLastnameDesc</code></td>
+<td align="left"><code>… where x.age = ?1 order by x.lastname desc</code></td>
+</tr>
+<tr>
+<td align="left"><code>Not</code></td>
+<td align="left"><code>findByLastnameNot</code></td>
+<td align="left"><code>… where x.lastname &lt;&gt; ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>In</code></td>
+<td align="left"><code>findByAgeIn(Collection ages)</code></td>
+<td align="left"><code>… where x.age in ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>NotIn</code></td>
+<td align="left"><code>findByAgeNotIn(Collection ages)</code></td>
+<td align="left"><code>… where x.age not in ?1</code></td>
+</tr>
+<tr>
+<td align="left"><code>True</code></td>
+<td align="left"><code>findByActiveTrue()</code></td>
+<td align="left"><code>… where x.active = true</code></td>
+</tr>
+<tr>
+<td align="left"><code>False</code></td>
+<td align="left"><code>findByActiveFalse()</code></td>
+<td align="left"><code>… where x.active = false</code></td>
+</tr>
+<tr>
+<td align="left"><code>IgnoreCase</code></td>
+<td align="left"><code>findByFirstnameIgnoreCase</code></td>
+<td align="left"><code>… where UPPER(x.firstame) = UPPER(?1)</code></td>
+</tr>
+</tbody></table>
+<p><strong>maven 坐标</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-data-jpa<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>yml 配置</strong></p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#配置数据源</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  datasource:</span></span><br><span class="line"><span class="attr">    druid:</span></span><br><span class="line"><span class="attr">      type:</span> <span class="string">com.alibaba.druid.pool.DruidDataSource</span></span><br><span class="line"><span class="attr">      driverClassName:</span> <span class="string">net.sf.log4jdbc.sql.jdbcapi.DriverSpy</span></span><br><span class="line"><span class="attr">      url:</span> <span class="attr">jdbc:log4jdbc:mysql://localhost:3306/yshop</span></span><br><span class="line"><span class="attr">      username:</span> <span class="string">root</span></span><br><span class="line"><span class="attr">      password:</span> <span class="string">root</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">#配置 Jpa</span></span><br><span class="line"><span class="attr">  jpa:</span></span><br><span class="line"><span class="attr">    hibernate:</span></span><br><span class="line">      <span class="comment"># 生产环境设置成 none，避免程序运行时自动更新数据库结构</span></span><br><span class="line"><span class="attr">      ddl-auto:</span> <span class="string">update</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="JPA-vs-MyBatis"><a href="#JPA-vs-MyBatis" class="headerlink" title="JPA vs MyBatis"></a>JPA vs MyBatis</h2><h3 id="Mybatis"><a href="#Mybatis" class="headerlink" title="Mybatis"></a>Mybatis</h3><p><strong>优点</strong>：</p>
+<ul>
+<li>SQL 语句可以自由控制，更灵活，性能更高</li>
+<li>SQL 与代码分离，易于阅读和维护</li>
+<li>提供 XML 标签，支持动态 SQL 语句</li>
+</ul>
+<p><strong>缺点</strong>：</p>
+<ul>
+<li>简单 CRUD 操作还得写 SQL 语句</li>
+<li>XML 中有大量的 SQL 需要维护</li>
+<li>MyBatis 自身功能有限，但支持 Plugin</li>
+</ul>
+<h3 id="JPA-1"><a href="#JPA-1" class="headerlink" title="JPA"></a>JPA</h3><p><strong>优点：</strong></p>
+<ul>
+<li>移植性比较好</li>
+<li>提供了很多 CRUD 方法，开发效率高</li>
+<li>对象化程度高</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>框架比较重，学习成本较高</li>
+<li>性能不好控制</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/26/java-project-yshop/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/11/26/java-project-yshop/" class="post-title-link" itemprop="url">Java · 项目 · yshop</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-26 14:32:59" itemprop="dateCreated datePublished" datetime="2019-11-26T14:32:59+08:00">2019-11-26</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-12-24 16:59:20" itemprop="dateModified" datetime="2019-12-24T16:59:20+08:00">2019-12-24</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><a href="https://gitee.com/guchengwuyue/yshopmall" target="_blank" rel="noopener"><strong>yshop</strong></a> 基于当前流行技术组合的前后端分离商城系统， 包含商城、拼团、砍价、 秒杀、优惠券、积分、分销等功能，适合企业或个人二次开发。</p>
+<ul>
+<li><strong>体验</strong>：<a href="https://yshop.dayouqiantu.cn/" target="_blank" rel="noopener">https://yshop.dayouqiantu.cn</a>  </li>
+<li><strong>登录</strong>：admin/123456</li>
+</ul>
+<h3 id="项目结构"><a href="#项目结构" class="headerlink" title="项目结构"></a>项目结构</h3><ul>
+<li>yshop-api：公众号 API 模块（H5）</li>
+<li>yshop-mp：微信相关模块</li>
+<li>yshop-common：公共模块</li>
+<li>yshop-system：商城系统模块</li>
+<li>yshop-logging：日志模块</li>
+<li>yshop-tools：第三方工具模块</li>
+<li>yshop-generator：代码生成模块</li>
+</ul>
+<h3 id="后端技术"><a href="#后端技术" class="headerlink" title="后端技术"></a>后端技术</h3><ul>
+<li><a href="https://spring.io/projects/spring-boot/" target="_blank" rel="noopener">Spring Boot</a></li>
+<li><a href="https://mybatis.org/mybatis-3/zh/index.html" target="_blank" rel="noopener">MyBatis</a>、<a href="https://mp.baomidou.com/" target="_blank" rel="noopener">MyBatis-Plus</a></li>
+<li><a href="https://spring.io/projects/spring-security" target="_blank" rel="noopener">Spring Security</a></li>
+<li><a href="https://spring.io/projects/spring-data-jpa" target="_blank" rel="noopener">JPA</a></li>
+<li><a href="https://github.com/alibaba/druid" target="_blank" rel="noopener">Druid</a></li>
+<li><a href="https://github.com/qos-ch/slf4j" target="_blank" rel="noopener">Slf4j</a></li>
+<li><a href="https://github.com/alibaba/fastjson" target="_blank" rel="noopener">fastjson</a></li>
+<li><a href="https://github.com/lcobucci/jwt" target="_blank" rel="noopener">JWT</a></li>
+<li><a href="https://redis.io/" target="_blank" rel="noopener">Redis</a></li>
+<li><a href="http://www.quartz-scheduler.org/" target="_blank" rel="noopener">Quartz</a></li>
+<li><a href="https://www.mysql.com/" target="_blank" rel="noopener">MySQL</a></li>
+<li><a href="https://swagger.io/" target="_blank" rel="noopener">Swagger</a></li>
+<li><a href="https://github.com/Wechat-Group/WxJava" target="_blank" rel="noopener">WxJava</a></li>
+<li><a href="https://projectlombok.org/" target="_blank" rel="noopener">Lombok</a></li>
+<li><a href="https://www.hutool.cn/" target="_blank" rel="noopener">Hutool</a></li>
+<li><a href="https://mapstruct.org/" target="_blank" rel="noopener">Mapstruct</a></li>
+</ul>
+<h3 id="前端技术"><a href="#前端技术" class="headerlink" title="前端技术"></a>前端技术</h3><ul>
+<li><a href="https://cn.vuejs.org/" target="_blank" rel="noopener">Vue</a> </li>
+<li><a href="https://element.eleme.cn/#/zh-CN" target="_blank" rel="noopener">Element</a></li>
+</ul>
+<h3 id="商城功能"><a href="#商城功能" class="headerlink" title="商城功能"></a>商城功能</h3><ul>
+<li>商品模块：商品添加、规格设置，商品上下架等</li>
+<li>订单模块：下单、购物车、支付，发货、收货、评价、退款等</li>
+<li>营销模块：积分、优惠券、分销、砍价、拼团、秒杀(、到店核销等</li>
+<li>微信模块：自定义菜单、自动回复、微信授权、图文管理、模板消息推送</li>
+<li>配置模块：各种配置</li>
+<li>用户模块：登陆、注册、会员卡等</li>
+<li>其他等</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/26/ilearning/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2717,333 +3282,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/15/think-direction/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/11/15/think-direction/" class="post-title-link" itemprop="url">低空掠过，精确制导</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-11-15 17:09:35 / 修改时间：17:15:24" itemprop="dateCreated datePublished" datetime="2019-11-15T17:09:35+08:00">2019-11-15</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/杂谈/" itemprop="url" rel="index"><span itemprop="name">杂谈</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p><a href="https://baike.baidu.com/item/%E8%92%8B%E5%87%A1/21973556?fr=aladdin" target="_blank" rel="noopener">蒋凡 </a>谈职场进化历程，总结的八字经验：低空掠过，精确制导</p>
-<p><strong>低空掠过</strong>：对于和目标关联不大，客观上却必须做的事情，一定要以最小的代价和精力耗费量完成，不需要优秀。</p>
-<p><strong>精确制导</strong>：对于既定目标，就要精确锁定，排除干扰全力以赴，直到目标达成。比如编程，要钻研的很深，这是成长的敲门砖！</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/15/liunx-service/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/11/15/liunx-service/" class="post-title-link" itemprop="url">CentOS 6 与 CentOS 7 启停服务</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-11-15 10:43:24 / 修改时间：16:23:52" itemprop="dateCreated datePublished" datetime="2019-11-15T10:43:24+08:00">2019-11-15</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="CentOS-6"><a href="#CentOS-6" class="headerlink" title="CentOS 6"></a>CentOS 6</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 设置服务自启动</span></span><br><span class="line">chkconfig --add mysqld          <span class="comment"># 添加服务</span></span><br><span class="line">chkconfig mysqld on             <span class="comment"># 开机自启服务</span></span><br><span class="line">chkconfig mysqld off            <span class="comment"># 关闭开机自启</span></span><br><span class="line">chkconfig --list | grep mysqld  <span class="comment"># 查看</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看状态、启动、停止、重启</span></span><br><span class="line">service mysqld status/start/stop/restart</span><br></pre></td></tr></table></figure>
-
-<h2 id="CentOS-7"><a href="#CentOS-7" class="headerlink" title="CentOS 7"></a>CentOS 7</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">systemctl enable mysqld.service  <span class="comment"># 开机自启服务</span></span><br><span class="line">systemctl disable mysqld.service <span class="comment"># 关闭开机自启</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看状态、启动、停止、重启</span></span><br><span class="line">systemctl status/start/stop/restart mysqld.service</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3092,7 +3330,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">166</span>
+                    <span class="site-state-item-count">168</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

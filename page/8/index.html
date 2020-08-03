@@ -352,6 +352,467 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/30/mysql-view/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/30/mysql-view/" class="post-title-link" itemprop="url">MySQL · 视图</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-30 16:37:35" itemprop="dateCreated datePublished" datetime="2019-10-30T16:37:35+08:00">2019-10-30</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-12-10 17:45:57" itemprop="dateModified" datetime="2019-12-10T17:45:57+08:00">2019-12-10</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>视图</strong>是虚拟的表，与包含数据的表不一样，视图只包含使用时动态检索数据的查询 <code>SQL</code>。一般情况下，应该将视图用于检索（<code>SELETE</code>），而不用于更新（<code>INSRTE</code>、<code>UPDATE</code>、<code>DELETE</code>）。</p>
+<p>视图具有表结构文件，但不存在数据文件。</p>
+<p><strong>优点</strong></p>
+<ul>
+<li>简化，隐藏复杂的 <code>SQL</code> ，简化复杂 <code>SQL</code> 的数据处理，还可以重新格式化数据</li>
+<li>安全，保护数据，可以给用户授予表的特定部分的访问权限而不是整个表的访问权限</li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li>性能相对较差</li>
+</ul>
+<blockquote>
+<p>性能问题：因为视图不包含数据，所以每次使用视图时，都必须处理查询执行时所需的任何一个检索。如果你用多个联结和过滤创建了复杂的视图或者嵌套了视图，就会发现性能下降得很厉害，主要原因是<strong>不能建立索引</strong>。</p>
+</blockquote>
+<h2 id="权限"><a href="#权限" class="headerlink" title="权限"></a>权限</h2><ul>
+<li><code>CREATE VIEW</code>：创建视图</li>
+<li><code>SHOW VIEW</code>：查看视图</li>
+</ul>
+<h2 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h2><h3 id="创建视图"><a href="#创建视图" class="headerlink" title="创建视图"></a>创建视图</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> [ALGORITHM = &#123;<span class="keyword">MERGE</span> | TEMPTABLE | UNDEFINED&#125;]</span><br><span class="line"><span class="keyword">VIEW</span> [database_name].[view_name] </span><br><span class="line"><span class="keyword">AS</span> [<span class="keyword">SELECT</span> <span class="keyword">statement</span>]</span><br></pre></td></tr></table></figure>
+
+<p>MySQL 有三种视图策略, 分别是 <code>MERGE</code>， <code>TEMPTABLE</code>， <code>UNDEFINED</code></p>
+<ul>
+<li><code>MERGE</code>，先将输入的查询语句和视图的声明语句进行合并，然后执行合并后的语句并返回。</li>
+<li><code>TEMPTABLE</code>，先基于视图的声明创建一张 <code>temporary table</code>，当输入查询语句时会直接查询这张 <code>temporary table</code>，<code>TEMPTABLE</code> 的效率要比 <code>MERGE</code> 低。</li>
+<li><code>UNDEFINED</code>，如果创建视图的时候不指定策略，默认使用此策略。<code>UNDEFINED</code> 会自动选择使用上述两种策略中的一个，优先选择 <code>MERGE</code> 策略，无法使用则转为 <code>TEMPTABLE</code> 策略。</li>
+</ul>
+<h3 id="显示视图"><a href="#显示视图" class="headerlink" title="显示视图"></a>显示视图</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查询单个视图</span></span><br><span class="line"><span class="keyword">show</span> <span class="keyword">create</span> <span class="keyword">view</span> view_name;</span><br><span class="line"></span><br><span class="line">mysql&gt; show create view cosmo_zzwk_2048.yangjisaomiao_view\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">                View: yangjisaomiao_view</span><br><span class="line">         <span class="keyword">Create</span> <span class="keyword">View</span>: <span class="keyword">CREATE</span> ALGORITHM=UNDEFINED DEFINER=<span class="string">`wms`</span>@<span class="string">`%`</span> <span class="keyword">SQL</span> <span class="keyword">SECURITY</span> DEFINER <span class="keyword">VIEW</span> <span class="string">`cosmo_zzwk_2048`</span>.<span class="string">`yangjisaomiao_view`</span> <span class="keyword">AS</span> <span class="keyword">select</span> <span class="keyword">distinct</span> <span class="string">`a`</span>.<span class="string">`ORDER_NO`</span> <span class="keyword">AS</span> <span class="string">`order_id`</span>,<span class="string">`a`</span>.<span class="string">`OUT_CODE`</span> <span class="keyword">AS</span> <span class="string">`sm_id`</span>,<span class="string">`a`</span>.<span class="string">`BARCODE`</span> <span class="keyword">AS</span> <span class="string">`sern`</span>,<span class="string">`a`</span>.<span class="string">`SCAN_TIME`</span> <span class="keyword">AS</span> <span class="string">`scandate`</span>,<span class="string">`a`</span>.<span class="string">`SCANED_BY`</span> <span class="keyword">AS</span> <span class="string">`scanuser`</span>,<span class="string">'10.138.228.165'</span> <span class="keyword">AS</span> <span class="string">`database_ip`</span>,<span class="string">'90J0'</span> <span class="keyword">AS</span> <span class="string">`SAP_Plant`</span>,<span class="string">'黄岛智慧厨电'</span> <span class="keyword">AS</span> <span class="string">`sap_description`</span> <span class="keyword">from</span> <span class="string">`cosmo_zzwk_2048`</span>.<span class="string">`ods_pro_yj_sn`</span> <span class="string">`a`</span> <span class="keyword">where</span> (<span class="string">`a`</span>.<span class="string">`SCAN_TIME`</span> &gt;= (<span class="keyword">curdate</span>() - <span class="built_in">interval</span> <span class="number">30</span> <span class="keyword">day</span>))</span><br><span class="line">character_set_client: utf8</span><br><span class="line">collation_connection: utf8_general_ci</span><br><span class="line"><span class="number">1</span> <span class="keyword">row</span> <span class="keyword">in</span> <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询所有视图</span></span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> information_schema.views;</span><br></pre></td></tr></table></figure>
+
+<h3 id="删除视图"><a href="#删除视图" class="headerlink" title="删除视图"></a>删除视图</h3><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">drop</span> <span class="keyword">view</span> view_name;</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/30/mysql-tuning-wms/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/30/mysql-tuning-wms/" class="post-title-link" itemprop="url">MySQL · 调优案例 · WMS</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-30 14:41:42" itemprop="dateCreated datePublished" datetime="2019-10-30T14:41:42+08:00">2019-10-30</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-15 16:50:09" itemprop="dateModified" datetime="2019-11-15T16:50:09+08:00">2019-11-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="实例信息"><a href="#实例信息" class="headerlink" title="实例信息"></a>实例信息</h2><table>
+<thead>
+<tr>
+<th>实例</th>
+<th>角色</th>
+<th>版本</th>
+<th>业务库</th>
+<th>数据量</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>10.138.98.20:3306</td>
+<td>Master</td>
+<td>5.7.23</td>
+<td>cosmo_base  (5)</td>
+<td>82.68G</td>
+</tr>
+<tr>
+<td>10.138.98.21:3306</td>
+<td>Slave</td>
+<td>5.7.23</td>
+<td>….</td>
+<td>….</td>
+</tr>
+<tr>
+<td><strong>10.138.228.40:3306</strong></td>
+<td>Master</td>
+<td>5.6.39</td>
+<td>cosmo_wms_xx  (23)</td>
+<td>139.5G</td>
+</tr>
+<tr>
+<td>10.138.228.41:3306</td>
+<td>Slave</td>
+<td>5.6.39</td>
+<td>….</td>
+<td>….</td>
+</tr>
+<tr>
+<td>10.138.228.43:3306</td>
+<td>Master</td>
+<td>5.6.39</td>
+<td>cosmo_wms_xx  (23)</td>
+<td>….</td>
+</tr>
+<tr>
+<td>10.138.42.94:3306</td>
+<td>Master</td>
+<td>10.1.21</td>
+<td>cosmo_wms_xx  (9)</td>
+<td>….</td>
+</tr>
+<tr>
+<td><strong>10.138.232.165:3306</strong></td>
+<td>Master</td>
+<td>5.6.39</td>
+<td>cosmo_xx_xx  (30)</td>
+<td>155.9G</td>
+</tr>
+<tr>
+<td>10.138.232.164:3306</td>
+<td>Slave</td>
+<td>5.6.39</td>
+<td>….</td>
+<td>….</td>
+</tr>
+<tr>
+<td>10.138.232.166:3306</td>
+<td>Slave</td>
+<td>5.6.39</td>
+<td>….</td>
+<td>….</td>
+</tr>
+<tr>
+<td><strong>10.133.7.31:3306</strong></td>
+<td>Master</td>
+<td>5.7.23</td>
+<td>epg_xx  (19)</td>
+<td>66.6G</td>
+</tr>
+</tbody></table>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 10.138.98.20:3306按库大小排序</span></span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line">| table_schema       | data_size | index_size |</span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line">| cosmo_base         | <span class="number">45.28</span>GB   | <span class="number">37.38</span>GB    |</span><br><span class="line">| cosmo_wms          | <span class="number">0.17</span>GB    | <span class="number">0.03</span>GB     |</span><br><span class="line">| xwsy               | <span class="number">0.09</span>GB    | <span class="number">0.03</span>GB     |</span><br><span class="line">| cosmo_epg_5001     | <span class="number">0.02</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| xwsytest           | <span class="number">0.01</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line"><span class="number">9</span> rows <span class="keyword">in</span> set, <span class="number">28</span> warnings (<span class="number">0.30</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 10.138.228.40:3306按库大小排序</span></span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line">| table_schema       | data_size | index_size |</span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line">| cosmo_wms_1006     | <span class="number">17.48</span>GB   | <span class="number">4.73</span>GB     |</span><br><span class="line">| cosmo_wms_1011     | <span class="number">17.00</span>GB   | <span class="number">6.16</span>GB     |</span><br><span class="line">| cosmo_wms_1007     | <span class="number">11.75</span>GB   | <span class="number">7.36</span>GB     |</span><br><span class="line">| cosmo_wms_1013     | <span class="number">9.78</span>GB    | <span class="number">4.60</span>GB     |</span><br><span class="line">| cosmo_wms_1009     | <span class="number">7.82</span>GB    | <span class="number">4.17</span>GB     |</span><br><span class="line">| cosmo_wms_1010     | <span class="number">6.52</span>GB    | <span class="number">3.48</span>GB     |</span><br><span class="line">| cosmo_wms_1012     | <span class="number">5.24</span>GB    | <span class="number">4.32</span>GB     |</span><br><span class="line">| cosmo_wms_1018     | <span class="number">3.39</span>GB    | <span class="number">0.88</span>GB     |</span><br><span class="line">| cosmo_wms_1019     | <span class="number">3.31</span>GB    | <span class="number">0.66</span>GB     |</span><br><span class="line">| cosmo_wms_2012     | <span class="number">2.77</span>GB    | <span class="number">0.61</span>GB     |</span><br><span class="line">| cosmo_wms_2015     | <span class="number">2.45</span>GB    | <span class="number">0.46</span>GB     |</span><br><span class="line">| cosmo_wms_1008     | <span class="number">1.68</span>GB    | <span class="number">1.46</span>GB     |</span><br><span class="line">| cosmo_wms_1015     | <span class="number">1.48</span>GB    | <span class="number">0.68</span>GB     |</span><br><span class="line">| cosmo_wms_2008     | <span class="number">1.31</span>GB    | <span class="number">0.29</span>GB     |</span><br><span class="line">| cosmo_wms_2009     | <span class="number">1.23</span>GB    | <span class="number">0.21</span>GB     |</span><br><span class="line">| cosmo_wms_2005     | <span class="number">1.12</span>GB    | <span class="number">0.23</span>GB     |</span><br><span class="line">| cosmo_wms_2007     | <span class="number">1.04</span>GB    | <span class="number">0.22</span>GB     |</span><br><span class="line">| cosmo_wms_2010     | <span class="number">0.87</span>GB    | <span class="number">0.18</span>GB     |</span><br><span class="line">| cosmo_wms_2065     | <span class="number">0.76</span>GB    | <span class="number">0.30</span>GB     |</span><br><span class="line">| SPC_COM            | <span class="number">0.48</span>GB    | <span class="number">0.29</span>GB     |</span><br><span class="line">| cosmo_wms_2006     | <span class="number">0.27</span>GB    | <span class="number">0.05</span>GB     |</span><br><span class="line">| cosmo_wms_2066     | <span class="number">0.04</span>GB    | <span class="number">0.05</span>GB     |</span><br><span class="line">| cosmo_wms_3001     | <span class="number">0.02</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line"><span class="number">27</span> rows <span class="keyword">in</span> set (<span class="number">3.19</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 10.138.228.43:3306按库大小排序</span></span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line">| table_schema       | data_size | index_size |</span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line">| cosmo_wms_1031     | <span class="number">13.06</span>GB   | <span class="number">4.44</span>GB     |</span><br><span class="line">| cosmo_wms_1026     | <span class="number">9.78</span>GB    | <span class="number">4.22</span>GB     |</span><br><span class="line">| cosmo_wms_1022     | <span class="number">5.39</span>GB    | <span class="number">3.57</span>GB     |</span><br><span class="line">| cosmo_wms_2019     | <span class="number">5.34</span>GB    | <span class="number">1.68</span>GB     |</span><br><span class="line">| cosmo_wms_1028     | <span class="number">4.92</span>GB    | <span class="number">2.38</span>GB     |</span><br><span class="line">| cosmo_wms_1029     | <span class="number">4.20</span>GB    | <span class="number">2.09</span>GB     |</span><br><span class="line">| cosmo_wms_1025     | <span class="number">3.83</span>GB    | <span class="number">2.95</span>GB     |</span><br><span class="line">| cosmo_wms_1032     | <span class="number">3.67</span>GB    | <span class="number">1.95</span>GB     |</span><br><span class="line">| cosmo_wms_1030     | <span class="number">2.96</span>GB    | <span class="number">2.00</span>GB     |</span><br><span class="line">| cosmo_wms_2025     | <span class="number">2.79</span>GB    | <span class="number">0.49</span>GB     |</span><br><span class="line">| cosmo_wms_2026     | <span class="number">2.52</span>GB    | <span class="number">0.36</span>GB     |</span><br><span class="line">| cosmo_wms_1027     | <span class="number">2.47</span>GB    | <span class="number">1.01</span>GB     |</span><br><span class="line">| cosmo_wms_2018     | <span class="number">1.96</span>GB    | <span class="number">0.52</span>GB     |</span><br><span class="line">| cosmo_wms_1024     | <span class="number">1.57</span>GB    | <span class="number">1.30</span>GB     |</span><br><span class="line">| cosmo_wms_2023     | <span class="number">1.02</span>GB    | <span class="number">0.26</span>GB     |</span><br><span class="line">| cosmo_wms_2020     | <span class="number">0.78</span>GB    | <span class="number">0.19</span>GB     |</span><br><span class="line">| cosmo_wms_2022     | <span class="number">0.77</span>GB    | <span class="number">0.18</span>GB     |</span><br><span class="line">| cosmo_wms_2021     | <span class="number">0.44</span>GB    | <span class="number">0.17</span>GB     |</span><br><span class="line">| cosmo_wms_1023     | <span class="number">0.27</span>GB    | <span class="number">0.09</span>GB     |</span><br><span class="line">| cosmo_wms_2024     | <span class="number">0.26</span>GB    | <span class="number">0.12</span>GB     |</span><br><span class="line">| cosmo_wms_2027     | <span class="number">0.14</span>GB    | <span class="number">0.08</span>GB     |</span><br><span class="line">| cosmo_wms          | <span class="number">0.12</span>GB    | <span class="number">0.07</span>GB     |</span><br><span class="line">| cosmo_wms_2028     | <span class="number">0.02</span>GB    | <span class="number">0.03</span>GB     |</span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line"><span class="number">27</span> rows <span class="keyword">in</span> set (<span class="number">3.19</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 10.138.42.94:3306按库大小排序</span></span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line">| table_schema       | data_size | index_size |</span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line">| cosmo_wms_uniall   | <span class="number">8.21</span>GB    | <span class="number">1.36</span>GB     |</span><br><span class="line">| cosmo_wms          | <span class="number">6.10</span>GB    | <span class="number">4.27</span>GB     |</span><br><span class="line">| cosmo_wms_1002     | <span class="number">4.12</span>GB    | <span class="number">3.46</span>GB     |</span><br><span class="line">| cosmo_base         | <span class="number">3.20</span>GB    | <span class="number">1.57</span>GB     |</span><br><span class="line">| cosmo_wms_1005     | <span class="number">1.51</span>GB    | <span class="number">1.03</span>GB     |</span><br><span class="line">| cosmo_wms_test     | <span class="number">0.75</span>GB    | <span class="number">1.00</span>GB     |</span><br><span class="line">| cosmo_wms_testn    | <span class="number">0.48</span>GB    | <span class="number">0.31</span>GB     |</span><br><span class="line">| cosmo_wms_2001     | <span class="number">0.39</span>GB    | <span class="number">0.10</span>GB     |</span><br><span class="line">| cosmo_wms_2002     | <span class="number">0.14</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line"><span class="number">13</span> rows <span class="keyword">in</span> set, <span class="number">1</span> warning (<span class="number">0.63</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 10.138.232.165:3306按库大小排序</span></span><br><span class="line">+------------------------+-----------+------------+</span><br><span class="line">| table_schema           | data_size | index_size |</span><br><span class="line">+------------------------+-----------+------------+</span><br><span class="line">| cosmo_zzkt_1046        | <span class="number">30.88</span>GB   | <span class="number">1.80</span>GB     |</span><br><span class="line">| cosmo_hdgt_1003        | <span class="number">25.19</span>GB   | <span class="number">3.87</span>GB     |</span><br><span class="line">| cosmo_fsgt_1045        | <span class="number">23.05</span>GB   | <span class="number">0.87</span>GB     |</span><br><span class="line">| cosmo_hdzk             | <span class="number">20.03</span>GB   | <span class="number">0.69</span>GB     |</span><br><span class="line">| cosmo_xyyj             | <span class="number">18.18</span>GB   | <span class="number">3.63</span>GB     |</span><br><span class="line">| cosmo_jndr_1017        | <span class="number">5.58</span>GB    | <span class="number">3.21</span>GB     |</span><br><span class="line">| cosmo_zysj             | <span class="number">2.39</span>GB    | <span class="number">1.73</span>GB     |</span><br><span class="line">| cosmo_szjsj_1049       | <span class="number">1.87</span>GB    | <span class="number">0.85</span>GB     |</span><br><span class="line">| cosmo_tjbl_1021        | <span class="number">1.45</span>GB    | <span class="number">0.81</span>GB     |</span><br><span class="line">| cosmo_szjsj_1048       | <span class="number">1.35</span>GB    | <span class="number">0.61</span>GB     |</span><br><span class="line">| cosmo_jzzjc_2064       | <span class="number">1.01</span>GB    | <span class="number">0.28</span>GB     |</span><br><span class="line">| cosmo_zddr_1057        | <span class="number">1.00</span>GB    | <span class="number">0.12</span>GB     |</span><br><span class="line">| cosmo_lycd_1014        | <span class="number">0.92</span>GB    | <span class="number">0.05</span>GB     |</span><br><span class="line">| cosmo_wms              | <span class="number">0.78</span>GB    | <span class="number">0.52</span>GB     |</span><br><span class="line">| cosmo_wms_penghai      | <span class="number">0.52</span>GB    | <span class="number">0.47</span>GB     |</span><br><span class="line">| cosmo_zzktwk_ruig_2053 | <span class="number">0.49</span>GB    | <span class="number">0.17</span>GB     |</span><br><span class="line">| cosmo_zzktwk_2054      | <span class="number">0.16</span>GB    | <span class="number">0.07</span>GB     |</span><br><span class="line">| cosmo_fsgtwk_2047      | <span class="number">0.14</span>GB    | <span class="number">0.05</span>GB     |</span><br><span class="line">| cosmo_zzwk_2048        | <span class="number">0.12</span>GB    | <span class="number">0.05</span>GB     |</span><br><span class="line">| cosmo_plat             | <span class="number">0.12</span>GB    | <span class="number">0.06</span>GB     |</span><br><span class="line">| cosmo_jzkg_2056        | <span class="number">0.11</span>GB    | <span class="number">0.05</span>GB     |</span><br><span class="line">| cosmo_zysjwk_jad       | <span class="number">0.09</span>GB    | <span class="number">0.05</span>GB     |</span><br><span class="line">| cosmo_zysjwk_2085      | <span class="number">0.04</span>GB    | <span class="number">0.01</span>GB     |</span><br><span class="line">| cosmo_qddz_1055        | <span class="number">0.03</span>GB    | <span class="number">0.02</span>GB     |</span><br><span class="line">| cosmo_zysjwk_bw        | <span class="number">0.02</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| cosmo_xyyjwk           | <span class="number">0.02</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| cosmo_eng_1414         | <span class="number">0.01</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| cosmo_penghai_1215     | <span class="number">0.01</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| cosmo_zdbx_1058        | <span class="number">0.00</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| cosmo_plat_penghai     | <span class="number">0.00</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">+------------------------+-----------+------------+</span><br><span class="line"><span class="number">33</span> rows <span class="keyword">in</span> set, <span class="number">20</span> warnings (<span class="number">6.91</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 10.133.7.31:3306按库大小排序</span></span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line">| table_schema       | data_size | index_size |</span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line">| cosmo_epg_5001     | <span class="number">9.37</span>GB    | <span class="number">4.27</span>GB     |</span><br><span class="line">| cosmo_cqjm_5006    | <span class="number">7.32</span>GB    | <span class="number">3.72</span>GB     |</span><br><span class="line">| epg_hdme_5004      | <span class="number">6.64</span>GB    | <span class="number">3.31</span>GB     |</span><br><span class="line">| epg_hdzn_5015      | <span class="number">5.85</span>GB    | <span class="number">3.56</span>GB     |</span><br><span class="line">| epg_hfsj_5007      | <span class="number">5.44</span>GB    | <span class="number">2.64</span>GB     |</span><br><span class="line">| epg_jzbp_5002      | <span class="number">4.44</span>GB    | <span class="number">1.65</span>GB     |</span><br><span class="line">| cosmo_dljm_5005    | <span class="number">3.24</span>GB    | <span class="number">1.08</span>GB     |</span><br><span class="line">| epg_jnjm_5003      | <span class="number">2.63</span>GB    | <span class="number">0.64</span>GB     |</span><br><span class="line">| cosmo_wms          | <span class="number">0.30</span>GB    | <span class="number">0.13</span>GB     |</span><br><span class="line">| cosmo_plat         | <span class="number">0.16</span>GB    | <span class="number">0.07</span>GB     |</span><br><span class="line">| epg_tjwk_2095      | <span class="number">0.01</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| epg_whzn_5012      | <span class="number">0.00</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| epg_cqzn_5009      | <span class="number">0.00</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| epg_hfzn_5013      | <span class="number">0.00</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| epg_qdzn_5016      | <span class="number">0.00</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| epg_sdbp_5011      | <span class="number">0.00</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| epg_whdk_5014      | <span class="number">0.00</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| epg_zzzn_5010      | <span class="number">0.00</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">| epg_sddz_5008      | <span class="number">0.00</span>GB    | <span class="number">0.00</span>GB     |</span><br><span class="line">+--------------------+-----------+------------+</span><br><span class="line"><span class="number">23</span> rows <span class="keyword">in</span> set (<span class="number">0.90</span> sec)</span><br></pre></td></tr></table></figure>
+
+<h2 id="架构"><a href="#架构" class="headerlink" title="架构"></a>架构</h2><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">wms:</span></span><br><span class="line"><span class="attr">  datasource:</span></span><br><span class="line"><span class="attr">    initialSize:</span> <span class="number">50</span></span><br><span class="line"><span class="attr">    maxActive:</span> <span class="number">400</span></span><br><span class="line"><span class="attr">    maxIdle:</span> <span class="number">50</span></span><br><span class="line"><span class="attr">    minIdle:</span> <span class="number">50</span></span><br><span class="line"><span class="attr">    maxWait:</span> <span class="number">10000</span></span><br><span class="line"><span class="attr">    ds1:</span></span><br><span class="line"><span class="attr">      driver:</span> <span class="string">com.mysql.jdbc.Driver</span></span><br><span class="line"><span class="attr">      url:</span> <span class="attr">jdbc:mysql://10.138.228.165:3306?juseUnicode=true&amp;characterEncoding=utf-8</span></span><br><span class="line"><span class="attr">      username:</span> <span class="string">wms</span></span><br><span class="line"><span class="attr">      password:</span> <span class="string">xx</span></span><br><span class="line"><span class="attr">    ds2:</span></span><br><span class="line"><span class="attr">      driver:</span> <span class="string">com.mysql.jdbc.Driver</span></span><br><span class="line"><span class="attr">      url:</span> <span class="attr">jdbc:mysql://10.133.7.31:3306?useUnicode=true&amp;characterEncoding=utf-8</span></span><br><span class="line"><span class="attr">      username:</span> <span class="string">cosmowms_epg</span></span><br><span class="line"><span class="attr">      password:</span> <span class="string">xx</span></span><br><span class="line"><span class="attr">    ds3:</span></span><br><span class="line"><span class="attr">      driver:</span> <span class="string">com.mysql.jdbc.Driver</span></span><br><span class="line"><span class="attr">      url:</span> <span class="attr">jdbc:mysql://10.138.228.165:3306/cosmo_hdzk?useUnicode=true&amp;characterEncoding=utf-8</span></span><br><span class="line"><span class="attr">      username:</span> <span class="string">wms</span></span><br><span class="line"><span class="attr">      password:</span> <span class="string">xx</span></span><br><span class="line"><span class="attr">    ds4:</span></span><br><span class="line"><span class="attr">      driver:</span> <span class="string">com.mysql.jdbc.Driver</span></span><br><span class="line"><span class="attr">      url:</span> <span class="attr">jdbc:mysql://10.138.228.165:3306/cosmo_hdzkwk?useUnicode=true&amp;characterEncoding=utf-8</span></span><br><span class="line"><span class="attr">      username:</span> <span class="string">wms</span></span><br><span class="line"><span class="attr">      password:</span> <span class="string">xx</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="存在的问题"><a href="#存在的问题" class="headerlink" title="存在的问题"></a>存在的问题</h2><ul>
+<li>大量使用视图</li>
+</ul>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-30-161930.png" alt></p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/29/java/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2075,411 +2536,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/mysql-tuning-join/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/24/mysql-tuning-join/" class="post-title-link" itemprop="url">MySQL · 调优案例 · JOIN</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-24 14:58:54" itemprop="dateCreated datePublished" datetime="2019-10-24T14:58:54+08:00">2019-10-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-15 16:49:50" itemprop="dateModified" datetime="2019-11-15T16:49:50+08:00">2019-11-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="JOIN"><a href="#JOIN" class="headerlink" title="JOIN"></a>JOIN</h2><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-13-175000.jpg" alt></p>
-<h3 id="INNER-JOIN（内连接）"><a href="#INNER-JOIN（内连接）" class="headerlink" title="INNER JOIN（内连接）"></a>INNER JOIN（内连接）</h3><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-13-175100.gif" alt></p>
-<h3 id="LEFT-JOIN（左连接）"><a href="#LEFT-JOIN（左连接）" class="headerlink" title="LEFT JOIN（左连接）"></a>LEFT JOIN（左连接）</h3><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-13-175200.gif" alt></p>
-<h3 id="RIGHT-JOIN（右连接）"><a href="#RIGHT-JOIN（右连接）" class="headerlink" title="RIGHT JOIN（右连接）"></a>RIGHT JOIN（右连接）</h3><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-13-175300.gif" alt></p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/mysql-primarykey/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/24/mysql-primarykey/" class="post-title-link" itemprop="url">MySQL · 主键</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-24 11:30:44" itemprop="dateCreated datePublished" datetime="2019-10-24T11:30:44+08:00">2019-10-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-12-10 10:48:45" itemprop="dateModified" datetime="2019-12-10T10:48:45+08:00">2019-12-10</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p><strong>问题：</strong></p>
-<p>有一张表，里面有 <code>id</code> 自增主键，当 <code>insert</code> 了 17 条记录之后，删除了第 15 16 17 条记录，再把 MySQL 重启，再 <code>insert</code> 一条记录，这条记录的 <code>id</code> 是 18 还是 15 ？</p>
-<p><strong>答案：</strong></p>
-<p><strong>MySQL 8.0 之前</strong></p>
-<ul>
-<li>如果是 <code>MyISAM</code> 表，数据库重启后，<code>id</code> 值为 18</li>
-<li>如果是 <code>InnoDB</code> 表，数据库重启后，<code>id</code> 值为 15</li>
-</ul>
-<p><strong>MySQL 8.0 开始</strong></p>
-<ul>
-<li>如果是 <code>MyISAM</code> 表，数据库重启后，<code>id</code> 值为 18</li>
-<li>如果是 <code>InnoDB</code> 表，数据库重启后，<code>id</code> 值为 18</li>
-</ul>
-<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>不同存储引擎自增主键实现机制不同，同一存储引擎不通版本实现机制不同。</p>
-<p><strong>MyISAM</strong>：自增主键的最大 <code>id</code> 记录在数据文件里，重启后不会消失。</p>
-<p><strong>InnoDB</strong></p>
-<ul>
-<li><code>MySQL 5.7 及之前版本</code>，自增主键最大 <code>id</code> 保存在内存里，重启数据库或者是对表进行 <code>optimize</code> 操作，都会导致最大 <code>id</code> 丢失，重启后将 <code>max(id)+1</code> 作为这个表当前的自增值。</li>
-<li><code>MySQL 8.0 版本</code>，自增主键最大 <code>id</code> 记录在了 <code>redo log</code> 中，重启后依靠 <code>redo log</code> 恢复重启之前的值。</li>
-</ul>
-<p><strong>测试</strong></p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from employees_innodb;</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">| id | name       | address            | age | gmt_create          | gmt_modified        |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">|  1 | xujinliang | 山东省青岛市       |  32 | 2019-09-24 17:13:00 | 2019-09-24 17:13:00 |</span><br><span class="line">|  2 | maofang    | 山东省青岛市       |  32 | 2019-09-24 17:32:00 | 2019-09-24 17:40:49 |</span><br><span class="line">|  3 | raohui     | 陕西省西安市       |  29 | 2019-09-24 17:39:28 | 2019-09-24 17:39:28 |</span><br><span class="line">|  4 | yangnan    | NULL               |  22 | 2019-09-24 17:39:52 | 2019-09-24 17:39:52 |</span><br><span class="line">|  5 | yuzhiqiang | 山东省青岛市       |  29 | 2019-10-24 10:39:53 | 2019-10-24 10:39:53 |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">5 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除id为5的记录，重启MySQL服务，再次插入id变成5（max(id)+1）</span></span><br><span class="line">mysql&gt; <span class="keyword">select</span> * <span class="keyword">from</span> employees;</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">| id | name       | address            | age | gmt_create          | gmt_modified        |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">|  1 | xujinliang | 山东省青岛市       |  32 | 2019-09-24 17:13:00 | 2019-09-24 17:13:00 |</span><br><span class="line">|  2 | maofang    | 山东省青岛市       |  32 | 2019-09-24 17:32:00 | 2019-09-24 17:40:49 |</span><br><span class="line">|  3 | raohui     | 陕西省西安市       |  29 | 2019-09-24 17:39:28 | 2019-09-24 17:39:28 |</span><br><span class="line">|  4 | yangnan    | NULL               |  22 | 2019-09-24 17:39:52 | 2019-09-24 17:39:52 |</span><br><span class="line">|  5 | liu        | 山东省烟台市       |  22 | 2019-10-24 11:03:14 | 2019-10-24 11:03:14 |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">6 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; <span class="keyword">select</span> * <span class="keyword">from</span> employees_myisam;</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">| id | name       | address            | age | gmt_create          | gmt_modified        |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">|  1 | xujinliang | 山东省青岛市       |  32 | 2019-09-24 17:13:00 | 2019-09-24 17:13:00 |</span><br><span class="line">|  2 | maofang    | 山东省青岛市       |  32 | 2019-09-24 17:32:00 | 2019-09-24 17:40:49 |</span><br><span class="line">|  3 | raohui     | 陕西省西安市       |  29 | 2019-09-24 17:39:28 | 2019-09-24 17:39:28 |</span><br><span class="line">|  4 | yangnan    | NULL               |  22 | 2019-09-24 17:39:52 | 2019-09-24 17:39:52 |</span><br><span class="line">|  5 | yuzhiqiang | 山东省青岛市       |  29 | 2019-10-24 10:39:53 | 2019-10-24 10:39:53 |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">5 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除id为5的记录，重启MySQL服务，再次插入id变成6</span></span><br><span class="line">mysql&gt; <span class="keyword">select</span> * <span class="keyword">from</span> employees_myisam;</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">| id | name       | address            | age | gmt_create          | gmt_modified        |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">|  1 | xujinliang | 山东省青岛市       |  32 | 2019-09-24 17:13:00 | 2019-09-24 17:13:00 |</span><br><span class="line">|  2 | maofang    | 山东省青岛市       |  32 | 2019-09-24 17:32:00 | 2019-09-24 17:40:49 |</span><br><span class="line">|  3 | raohui     | 陕西省西安市       |  29 | 2019-09-24 17:39:28 | 2019-09-24 17:39:28 |</span><br><span class="line">|  4 | yangnan    | NULL               |  22 | 2019-09-24 17:39:52 | 2019-09-24 17:39:52 |</span><br><span class="line">|  6 | yuzhiqiang | 山东省青岛市       |  29 | 2019-10-24 10:58:32 | 2019-10-24 10:58:32 |</span><br><span class="line">+<span class="comment">----+------------+--------------------+-----+---------------------+---------------------+</span></span><br><span class="line">5 rows in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-
-<h2 id="主键的选择"><a href="#主键的选择" class="headerlink" title="主键的选择"></a>主键的选择</h2><p>①  从性能和存储空间方面考量，自增主键往往是更好的选择：</p>
-<ul>
-<li><strong>存储空间少</strong>，自增主键一般用整型做主键，则二级索引叶子节点只要 4 个字节；而如果使用业务字段做主键，比如字符串类型的身份证号，每个二级索引的叶子节点得占用约 20 个字节。</li>
-<li><strong>性能好</strong>，插入数据时，自增主键能保证有序插入，避免了页分裂。</li>
-</ul>
-<p>②  自增 <code>id</code> 是整型字段，推荐使用 <code>unsigned int</code> 类型来定义增长主键，可以存储 42 亿数据。</p>
-<table>
-<thead>
-<tr>
-<th align="left">类型</th>
-<th align="left">大小</th>
-<th align="left">范围（有符号）</th>
-<th align="left">范围（无符号）</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">int</td>
-<td align="left">4 byte</td>
-<td align="left">(-2147483648, 2147483647)</td>
-<td align="left">(0, 4294967295)</td>
-</tr>
-<tr>
-<td align="left">bigint</td>
-<td align="left">8 byte</td>
-<td align="left">(-9223372036854775808, 9223372036854775807)</td>
-<td align="left">(0, 18446744073709551615)</td>
-</tr>
-</tbody></table>
-<p>③  自增 <code>id</code> 是增长的，但不一定连续，造成自增 <code>id</code> 不连续的情况可能有：</p>
-<ul>
-<li>唯一键冲突</li>
-<li>事务回滚</li>
-<li><code>insert ... select</code> 语句批量申请自增 <code>id</code></li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2528,7 +2584,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">166</span>
+                    <span class="site-state-item-count">168</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
