@@ -352,6 +352,245 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/26/mysql-innodb/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/26/mysql-innodb/" class="post-title-link" itemprop="url">MySQL · InnoDB</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-26 14:32:13" itemprop="dateCreated datePublished" datetime="2019-09-26T14:32:13+08:00">2019-09-26</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-04-21 15:04:37" itemprop="dateModified" datetime="2020-04-21T15:04:37+08:00">2020-04-21</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>InnoDB 是事务安全的 MySQL 存储引擎，通常来说，InnoDB 存储引擎是 OLTP 应用中核心表的首选存储引擎。被包括在 MySQL 数据库所有二进制发行版本中，从 MySQL 5.5 版本开始是默认的表存储引擎，其特点是行锁设计、支持 MVCC、支持外键、提供一致性非锁定读。</p>
+<h2 id="InnoDB-体系架构"><a href="#InnoDB-体系架构" class="headerlink" title="InnoDB 体系架构"></a>InnoDB 体系架构</h2><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-03-22-151000.png" alt></p>
+<h3 id="后台线程"><a href="#后台线程" class="headerlink" title="后台线程"></a>后台线程</h3><p>主要作用是负责刷新内存池中的数据，保证缓冲池中的内存缓存是最近的数据。此外将已修改的数据文件刷新到磁盘文件，同时保证在数据库发生异常的情况下 InnoDB 能恢复到正常运行状态。</p>
+<ul>
+<li><p><strong>Master Thread</strong></p>
+<p>最核心的后台线程，主要负责将缓冲池中的数据异步刷新到磁盘，保证数据的一致性，包括：脏页的刷新、合并插入缓冲（Insert Buffer）、Undo 页的回收等。</p>
+</li>
+<li><p><strong>IO Thread</strong></p>
+<p>在 InnoDB 存储引擎中大量使用了 AIO（Async IO）来处理写 IO 请求，这样可以极大提高数据库的性能。而 IO Thread 的工作主要是负责这些 IO 请求的回调处理。共有四个线程：insert buffer thread、log thread、read thread、write thread。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">*************************** <span class="number">1</span>. row ***************************</span><br><span class="line">  Type: InnoDB</span><br><span class="line">  Name: </span><br><span class="line">Status: </span><br><span class="line">=====================================</span><br><span class="line"><span class="number">2020</span>-<span class="number">03</span>-<span class="number">22</span> <span class="number">13</span>:<span class="number">39</span>:<span class="number">29</span> <span class="number">0</span>x7f1f6e651700 INNODB MONITOR OUTPUT</span><br><span class="line">=====================================</span><br><span class="line">Per second averages calculated from the last <span class="number">17</span> seconds</span><br><span class="line">...</span><br><span class="line">--------</span><br><span class="line">FILE I/O</span><br><span class="line">--------</span><br><span class="line">I/O thread <span class="number">0</span> state: waiting <span class="keyword">for</span> completed aio requests (insert buffer thread)</span><br><span class="line">I/O thread <span class="number">1</span> state: waiting <span class="keyword">for</span> completed aio requests (log thread)</span><br><span class="line">I/O thread <span class="number">2</span> state: waiting <span class="keyword">for</span> completed aio requests (read thread)</span><br><span class="line">I/O thread <span class="number">3</span> state: waiting <span class="keyword">for</span> completed aio requests (read thread)</span><br><span class="line">I/O thread <span class="number">4</span> state: waiting <span class="keyword">for</span> completed aio requests (read thread)</span><br><span class="line">I/O thread <span class="number">5</span> state: waiting <span class="keyword">for</span> completed aio requests (read thread)</span><br><span class="line">I/O thread <span class="number">6</span> state: waiting <span class="keyword">for</span> completed aio requests (write thread)</span><br><span class="line">I/O thread <span class="number">7</span> state: waiting <span class="keyword">for</span> completed aio requests (write thread)</span><br><span class="line">I/O thread <span class="number">8</span> state: waiting <span class="keyword">for</span> completed aio requests (write thread)</span><br><span class="line">I/O thread <span class="number">9</span> state: waiting <span class="keyword">for</span> completed aio requests (write thread)</span><br><span class="line">Pending normal aio reads: [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>] , aio writes: [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>] ,</span><br><span class="line"> ibuf aio reads:, log i/o<span class="string">'s:, sync i/o'</span>s:</span><br><span class="line">Pending flushes (fsync) log: <span class="number">0</span>; buffer pool: <span class="number">0</span></span><br><span class="line"><span class="number">4407465</span> OS file reads, <span class="number">16740662</span> OS file writes, <span class="number">580038</span> OS fsyncs</span><br><span class="line"><span class="number">0.00</span> reads/s, <span class="number">0</span> avg bytes/read, <span class="number">0.00</span> writes/s, <span class="number">0.00</span> fsyncs/s</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Purge Thread</strong></p>
+<p>事务被提交后，其所使用的 undolog 可能不再需要，因此需要 Purge Thread 来回收已经使用并分配的 undo 页。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like 'innodb_purge_threads';</span><br><span class="line">+<span class="comment">----------------------+-------+</span></span><br><span class="line">| Variable_name        | Value |</span><br><span class="line">+<span class="comment">----------------------+-------+</span></span><br><span class="line">| innodb_purge_threads | 4     |</span><br><span class="line">+<span class="comment">----------------------+-------+</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Page Cleaner Thread</strong></p>
+<p>其作用是将之前版本中脏页的刷新操作都放入到单独的线程中完成，进一步提高 InnoDB 存储引擎的性能。</p>
+</li>
+</ul>
+<h3 id="内存"><a href="#内存" class="headerlink" title="内存"></a>内存</h3><p>包括：缓冲池、Change 缓冲区、自适应哈希索引、Log 缓冲区。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-03-22-085500.png" alt></p>
+<p><strong>缓冲池（Buffer Pool）</strong></p>
+<p>InnoDB 存储引擎是基于磁盘存储的，并将其中的记录按照页的方式进行管理。在数据库系统中，由于 CPU 速度和磁盘速度之间的鸿沟，基于磁盘的数据库系统通常使用缓冲池技术来提高数据库的整体性能。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-03-22-141000.jpeg" alt></p>
+<p>缓冲池简单来说就是一块内存区域，通过内存的速度来弥补磁盘速度较慢对数据库性能的影响。</p>
+<p>1）在数据库中进行读取的操作，首先将从磁盘读到的页存放在缓冲池中，下一次再读取相同的页时，首先判断该页是否在缓冲池中，若存在，称该页在缓冲池中被命中，直接读取该页，否则，读取磁盘上的页；</p>
+<p>2）在数据中修改页的操作，首先修改在缓冲池中的页，然后再以一定的频率刷新到磁盘上，需要注意的是，页从缓冲池刷新回磁盘的操作并不是在每次页发生更新时触发，而是通过一种称为 CheckPoint 的机制刷新回磁盘。这也是为了提高数据库的整体性能。</p>
+<p>对于 InnoDB 存储引擎而言，缓冲池的配置通过 innodb_buffer_pool_size 来设置，其大小直接影响着数据库的整体性能。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &apos;innodb_buffer_pool_size&apos;;</span><br><span class="line">+-------------------------+------------+</span><br><span class="line">| Variable_name           | Value      |</span><br><span class="line">+-------------------------+------------+</span><br><span class="line">| innodb_buffer_pool_size | 5368709120 |</span><br><span class="line">+-------------------------+------------+</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是，缓冲池不只是缓存索引页和数据页，还包括：undo 页、插入缓冲、自适应哈希索引、锁信息、数据字典信息等。</p>
+<p>另外，InnoDB 支持通过参数 innodb_buffer_pool_instances 配置多个缓冲池实例，好处是减少数据库内部的资源竞争，增加数据库的并发处理能力。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &apos;innodb_buffer_pool_instances&apos;;</span><br><span class="line">+------------------------------+-------+</span><br><span class="line">| Variable_name                | Value |</span><br><span class="line">+------------------------------+-------+</span><br><span class="line">| innodb_buffer_pool_instances | 4     |</span><br><span class="line">+------------------------------+-------+</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line">----------------------</span><br><span class="line">INDIVIDUAL BUFFER POOL INFO</span><br><span class="line">----------------------</span><br><span class="line">---BUFFER POOL <span class="number">0</span></span><br><span class="line">Buffer pool size   <span class="number">81910</span></span><br><span class="line">Free buffers       <span class="number">1025</span></span><br><span class="line">Database pages     <span class="number">76901</span></span><br><span class="line">Old database pages <span class="number">28367</span></span><br><span class="line">Modified db pages  <span class="number">0</span></span><br><span class="line">Pending reads      <span class="number">0</span></span><br><span class="line">Pending writes: LRU <span class="number">0</span>, flush list <span class="number">0</span>, single page <span class="number">0</span></span><br><span class="line">Pages made young <span class="number">4517686</span>, not young <span class="number">110552906</span></span><br><span class="line"><span class="number">0.00</span> youngs/s, <span class="number">0.00</span> non-youngs/s</span><br><span class="line">Pages read <span class="number">1130723</span>, created <span class="number">2329581</span>, written <span class="number">4062902</span></span><br><span class="line"><span class="number">0.00</span> reads/s, <span class="number">0.00</span> creates/s, <span class="number">0.00</span> writes/s</span><br><span class="line">No buffer pool page gets since the last printout</span><br><span class="line">Pages read ahead <span class="number">0.00</span>/s, evicted without access <span class="number">0.00</span>/s, Random read ahead <span class="number">0.00</span>/s</span><br><span class="line">LRU len: <span class="number">76901</span>, unzip_LRU len: <span class="number">0</span></span><br><span class="line">I/O sum[<span class="number">0</span>]:cur[<span class="number">0</span>], unzip sum[<span class="number">0</span>]:cur[<span class="number">0</span>]</span><br><span class="line">---BUFFER POOL <span class="number">1</span></span><br><span class="line">Buffer pool size   <span class="number">81920</span></span><br><span class="line">Free buffers       <span class="number">1024</span></span><br><span class="line">Database pages     <span class="number">76926</span></span><br><span class="line">Old database pages <span class="number">28376</span></span><br><span class="line">Modified db pages  <span class="number">0</span></span><br><span class="line">Pending reads      <span class="number">0</span></span><br><span class="line">Pending writes: LRU <span class="number">0</span>, flush list <span class="number">0</span>, single page <span class="number">0</span></span><br><span class="line">Pages made young <span class="number">4518861</span>, not young <span class="number">130929511</span></span><br><span class="line"><span class="number">0.00</span> youngs/s, <span class="number">0.00</span> non-youngs/s</span><br><span class="line">Pages read <span class="number">1144688</span>, created <span class="number">2335934</span>, written <span class="number">4047366</span></span><br><span class="line"><span class="number">0.00</span> reads/s, <span class="number">0.00</span> creates/s, <span class="number">0.00</span> writes/s</span><br><span class="line">No buffer pool page gets since the last printout</span><br><span class="line">Pages read ahead <span class="number">0.00</span>/s, evicted without access <span class="number">0.00</span>/s, Random read ahead <span class="number">0.00</span>/s</span><br><span class="line">LRU len: <span class="number">76926</span>, unzip_LRU len: <span class="number">0</span></span><br><span class="line">I/O sum[<span class="number">0</span>]:cur[<span class="number">0</span>], unzip sum[<span class="number">0</span>]:cur[<span class="number">0</span>]</span><br><span class="line">---BUFFER POOL <span class="number">2</span></span><br><span class="line">Buffer pool size   <span class="number">81910</span></span><br><span class="line">Free buffers       <span class="number">1024</span></span><br><span class="line">Database pages     <span class="number">76935</span></span><br><span class="line">Old database pages <span class="number">28379</span></span><br><span class="line">Modified db pages  <span class="number">0</span></span><br><span class="line">Pending reads      <span class="number">0</span></span><br><span class="line">Pending writes: LRU <span class="number">0</span>, flush list <span class="number">0</span>, single page <span class="number">0</span></span><br><span class="line">Pages made young <span class="number">4466965</span>, not young <span class="number">100959189</span></span><br><span class="line"><span class="number">0.00</span> youngs/s, <span class="number">0.00</span> non-youngs/s</span><br><span class="line">Pages read <span class="number">1003115</span>, created <span class="number">2300998</span>, written <span class="number">4047005</span></span><br><span class="line"><span class="number">0.00</span> reads/s, <span class="number">0.00</span> creates/s, <span class="number">0.00</span> writes/s</span><br><span class="line">No buffer pool page gets since the last printout</span><br><span class="line">Pages read ahead <span class="number">0.00</span>/s, evicted without access <span class="number">0.00</span>/s, Random read ahead <span class="number">0.00</span>/s</span><br><span class="line">LRU len: <span class="number">76935</span>, unzip_LRU len: <span class="number">0</span></span><br><span class="line">I/O sum[<span class="number">0</span>]:cur[<span class="number">0</span>], unzip sum[<span class="number">0</span>]:cur[<span class="number">0</span>]</span><br><span class="line">---BUFFER POOL <span class="number">3</span></span><br><span class="line">Buffer pool size   <span class="number">81920</span></span><br><span class="line">Free buffers       <span class="number">1024</span></span><br><span class="line">Database pages     <span class="number">76941</span></span><br><span class="line">Old database pages <span class="number">28382</span></span><br><span class="line">Modified db pages  <span class="number">0</span></span><br><span class="line">Pending reads      <span class="number">0</span></span><br><span class="line">Pending writes: LRU <span class="number">0</span>, flush list <span class="number">0</span>, single page <span class="number">0</span></span><br><span class="line">Pages made young <span class="number">4496335</span>, not young <span class="number">103531776</span></span><br><span class="line"><span class="number">0.00</span> youngs/s, <span class="number">0.00</span> non-youngs/s</span><br><span class="line">Pages read <span class="number">1128907</span>, created <span class="number">2334835</span>, written <span class="number">4138684</span></span><br><span class="line"><span class="number">0.00</span> reads/s, <span class="number">0.00</span> creates/s, <span class="number">0.00</span> writes/s</span><br><span class="line">No buffer pool page gets since the last printout</span><br><span class="line">Pages read ahead <span class="number">0.00</span>/s, evicted without access <span class="number">0.00</span>/s, Random read ahead <span class="number">0.00</span>/s</span><br><span class="line">LRU len: <span class="number">76941</span>, unzip_LRU len: <span class="number">0</span></span><br><span class="line">I/O sum[<span class="number">0</span>]:cur[<span class="number">0</span>], unzip sum[<span class="number">0</span>]:cur[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
+
+<p><strong>LRU</strong> </p>
+<p>通常来说，数据库中的缓冲池是通过 LRU（Latest Recent Used，最近最少使用）算法进行管理。即最频繁使用的页在 LRU 列表的最前端，而最少使用的页在 LRU 列表的尾端。当缓冲池不能存放新读取到的页时，将首先释放 LRU 列表尾端的页。</p>
+<p>InnoDB 存储引擎中，缓冲池中页的大小默认为 16KB，稍有不同的是 InnoDB 存储引擎对传统的 LRU 算法做了一些优化，在 LRU 列表中还加入了 Midpoint 位置，新读取到的页，虽然是最新访问的页，但并不是直接放入到 LRU 列表的首部，而是放入到 Midpoint 位置。默认配置下，该位置在 LRU 列表长度的 5/8 处。Midpoint 位置可由 innodb_old_blocks_pct 控制。可以理解为 New Sublist 中的页都是最为活跃的热点数据。参数 innodb_old_blocks_time 用于表示页读取到 Midpoint 位置后需要等待多久才会被加入到 LRU 列表的热端。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &apos;innodb_old_blocks%&apos;;</span><br><span class="line">+------------------------+-------+</span><br><span class="line">| Variable_name          | Value |</span><br><span class="line">+------------------------+-------+</span><br><span class="line">| innodb_old_blocks_pct  | 37    |</span><br><span class="line">| innodb_old_blocks_time | 1000  |</span><br><span class="line">+------------------------+-------+</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-03-22-100700.png" alt></p>
+<p>通常情况下，Buffer pool hit rate 不应该小于 95%，如果发生用户需要排查释放由于全表扫描引起 LRU 列表被污染的问题。</p>
+<p><strong>Change Buffer</strong></p>
+<p>在 LRU 列表中的页被修改后，称该页为脏页（dirty page），即缓冲池中的页和磁盘上的页的数据产生了不一致。这时数据库会通过 CheckPoint 机制将脏页刷新回磁盘，而 Flush 列表中的页即为脏页列表。需要注意的是，脏页既存在于 LRU 列表中，也存在于 Flush 列表中。LRU 列表用来管理缓冲池中页的可用性，Flush 列表用来管理将页刷新回磁盘，二者互不影响。</p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-03-22-101000.png" alt></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">----------------------</span><br><span class="line">BUFFER POOL AND MEMORY</span><br><span class="line">----------------------</span><br><span class="line">Total large memory allocated <span class="number">2198863872</span></span><br><span class="line">Dictionary memory allocated <span class="number">776332</span></span><br><span class="line">Buffer pool size   <span class="number">131072</span></span><br><span class="line">Free buffers       <span class="number">124908</span></span><br><span class="line">Database pages     <span class="number">5720</span></span><br><span class="line">Old database pages <span class="number">2071</span></span><br><span class="line">Modified db pages  <span class="number">910</span></span><br><span class="line">Pending reads <span class="number">0</span></span><br><span class="line">Pending writes: LRU <span class="number">0</span>, flush list <span class="number">0</span>, single page <span class="number">0</span></span><br><span class="line">Pages made young <span class="number">4</span>, not young <span class="number">0</span></span><br><span class="line"><span class="number">0.10</span> youngs/s, <span class="number">0.00</span> non-youngs/s</span><br><span class="line">Pages read <span class="number">197</span>, created <span class="number">5523</span>, written <span class="number">5060</span></span><br><span class="line"><span class="number">0.00</span> reads/s, <span class="number">190.89</span> creates/s, <span class="number">244.94</span> writes/s</span><br><span class="line">Buffer pool hit rate <span class="number">1000</span> / <span class="number">1000</span>, young-making rate <span class="number">0</span> / <span class="number">1000</span> not</span><br><span class="line"><span class="number">0</span> / <span class="number">1000</span></span><br><span class="line">Pages read ahead <span class="number">0.00</span>/s, evicted without access <span class="number">0.00</span>/s, Random read</span><br><span class="line">ahead <span class="number">0.00</span>/s</span><br><span class="line">LRU len: <span class="number">5720</span>, unzip_LRU len: <span class="number">0</span></span><br><span class="line">I/O sum[<span class="number">0</span>]:cur[<span class="number">0</span>], unzip sum[<span class="number">0</span>]:cur[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SELECT (SELECT COUNT(*) FROM INFORMATION_SCHEMA.INNODB_BUFFER_PAGE</span><br><span class="line">       WHERE PAGE_TYPE LIKE &apos;IBUF%&apos;) AS change_buffer_pages, </span><br><span class="line">       (SELECT COUNT(*) FROM INFORMATION_SCHEMA.INNODB_BUFFER_PAGE) AS total_pages,</span><br><span class="line">       (SELECT ((change_buffer_pages/total_pages)*100)) </span><br><span class="line">       AS change_buffer_page_percentage;</span><br><span class="line">+---------------------+-------------+-------------------------------+</span><br><span class="line">| change_buffer_pages | total_pages | change_buffer_page_percentage |</span><br><span class="line">+---------------------+-------------+-------------------------------+</span><br><span class="line">|                  25 |        8192 |                        0.3052 |</span><br><span class="line">+---------------------+-------------+-------------------------------+</span><br></pre></td></tr></table></figure>
+
+<p><strong>Redo Log Buffer</strong></p>
+<p>InnoDB 存储引擎首先将重做日志信息放入到这个缓冲区，然后再按一定的频率将其刷新到重做日志文件。该值可由 innodb_log_buffer_size 控制。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &apos;innodb_log_buffer_size&apos;;</span><br><span class="line">+------------------------+----------+</span><br><span class="line">| Variable_name          | Value    |</span><br><span class="line">+------------------------+----------+</span><br><span class="line">| innodb_log_buffer_size | 16777216 |</span><br><span class="line">+------------------------+----------+</span><br></pre></td></tr></table></figure>
+
+<p>重做日志在下面三种情况下会将重做日志缓冲内容刷新到外部磁盘的重做日志文件中：</p>
+<ul>
+<li>Master Thread 每一秒将重做日志缓冲刷新到重做日志文件；</li>
+<li>每个事务提交时会将重做日志缓冲刷新到重做日志文件；</li>
+<li>当重做日志缓冲池剩余空间小于 1/2 时，重做日志缓冲刷新到重做日志文件；</li>
+</ul>
+<h2 id="InnoDB-关键特性"><a href="#InnoDB-关键特性" class="headerlink" title="InnoDB 关键特性"></a>InnoDB 关键特性</h2><ul>
+<li>插入缓冲（Insert Buffer）</li>
+<li>两次写（Double Write）</li>
+<li>自适应哈希索引（Adaptive Hash Index）</li>
+<li>异步 IO（Async IO）</li>
+<li>刷新临近页（Flush Neighbor Page）</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/25/mysql-character/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2500,250 +2739,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/21/mysql-index/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/08/21/mysql-index/" class="post-title-link" itemprop="url">MySQL · 索引</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-08-21 16:34:04" itemprop="dateCreated datePublished" datetime="2019-08-21T16:34:04+08:00">2019-08-21</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2020-05-08 10:19:48" itemprop="dateModified" datetime="2020-05-08T10:19:48+08:00">2020-05-08</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><ul>
-<li>索引是什么？</li>
-<li>为什么选择用 B+ 树索引？</li>
-<li>聚集索引和非聚集索引的区别？</li>
-<li>为什么建议使用整型自增做主键？</li>
-</ul>
-<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>索引</strong>：是帮助 MySQL 高效获取数据的排好序的数据结构。</p>
-<p>索引是应用程序设计和开发的一个重要方面，若索引太多，应用程序的性能可能会受到影响。而索引太少，对查询性能又会产生影响。需要找到一个合适的平衡点，这对应用程序的性能至关重要。</p>
-<p>InnoDB 存储引擎支持 3 种常见的索引：</p>
-<ul>
-<li>B+ 树索引</li>
-<li>全文索引</li>
-<li>哈希索引</li>
-</ul>
-<h2 id="InnoDB-存储引擎索引"><a href="#InnoDB-存储引擎索引" class="headerlink" title="InnoDB 存储引擎索引"></a>InnoDB 存储引擎索引</h2><h3 id="B-树索引"><a href="#B-树索引" class="headerlink" title="B+ 树索引"></a>B+ 树索引</h3><blockquote>
-<p><strong>注意</strong>：B+ 树中的 B 不是代表二叉（binary），而是代表平衡（balance），因为 B+ 树是从最早的平衡二叉树演化而来，但是 B+ 树不是一个二叉树。 </p>
-</blockquote>
-<p>B+ 树索引并不能找到一个给定键值的具体行，B+ 树索引能找到的只是被查找数据行所在的页，然后数据库通过把页读入到内存，再在内存中进行查找，最后得到要查找的数据。</p>
-<p>MyISAM：索引文件和数据文件是分离的，非聚集索引。</p>
-<p>InnoDB</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// MyISAM存储引擎，存储在*.MYI</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql   <span class="number">10816</span> <span class="number">3</span>月  <span class="number">30</span> <span class="number">13</span>:<span class="number">52</span> user.frm</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql     <span class="number">616</span> <span class="number">3</span>月  <span class="number">30</span> <span class="number">13</span>:<span class="number">54</span> user.MYD</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql    <span class="number">4096</span> <span class="number">4</span>月  <span class="number">17</span> <span class="number">17</span>:<span class="number">32</span> user.MYI</span><br><span class="line"></span><br><span class="line">// InnoDB存储引擎，存储在*.ibd</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql    <span class="number">8838</span> <span class="number">3</span>月  <span class="number">30</span> <span class="number">13</span>:<span class="number">52</span> servers.frm</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql   <span class="number">98304</span> <span class="number">3</span>月  <span class="number">30</span> <span class="number">13</span>:<span class="number">52</span> servers.ibd</span><br></pre></td></tr></table></figure>
-
-<p>聚集索引：叶子节点包含了完整的数据记录。</p>
-<p>非聚集索引：索引文件和数据文件没有聚集在一起。</p>
-<p>主键索引</p>
-<p>二级索引</p>
-<h3 id="全文索引"><a href="#全文索引" class="headerlink" title="全文索引"></a>全文索引</h3><h3 id="哈希索引"><a href="#哈希索引" class="headerlink" title="哈希索引"></a>哈希索引</h3><p>数据库的索引一般在磁盘上，数据量大的情况可能无法一次装入内存，B+ 树的设计可以允许数据分批加载，同时树的高度较低，提高查询效率。</p>
-<h2 id="为什么-MySQL-选择用-B-树索引？"><a href="#为什么-MySQL-选择用-B-树索引？" class="headerlink" title="为什么 MySQL 选择用 B+ 树索引？"></a>为什么 MySQL 选择用 B+ 树索引？</h2><p>当数据在磁盘中时，磁盘 IO 会成为最大的性能瓶颈，设计的目标应该是尽量减少 IO 次数；而树的高度越高，增删改查所需要的 IO 次数也越多，会严重影响性能。树的查找性能取决于树的高度，让树尽量平衡，就是为了降低树的高度。</p>
-<h3 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h3><p><strong>二叉查找树</strong></p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-29-112200.png" alt></p>
-<ul>
-<li>对于树中的任意一个节点，左子树节点比根节点小，右子树节点比根节点大。</li>
-<li>时间复杂度：O(logn)</li>
-<li><strong>缺点</strong>：<strong>不平衡</strong>，极端情况如有序序列，二叉排序树退化成链表，时间复杂度变为 O(n)。</li>
-</ul>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-29-112915.png" alt></p>
-<p><strong>平衡二叉树（AVL）</strong></p>
-<ul>
-<li>AVL 树是严格的平衡二叉树，所有节点的左右子树高度差不能超过 1。</li>
-<li>AVL 树查找、插入和删除在平均和最坏情况下都是 O(logn)。</li>
-<li><strong>缺点：旋转耗时</strong>，AVL 树在删除数据时效率很低，量级为 O(logn)。</li>
-</ul>
-<h3 id="红黑树"><a href="#红黑树" class="headerlink" title="红黑树"></a>红黑树</h3><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-29-141900.png" alt></p>
-<ul>
-<li>与 AVL 树相比，红黑树并不追求严格的平衡，而是大致的平衡。</li>
-<li>红黑树引入了颜色，当插入或删除数据时，只需要进行 O(1) 次数的旋转以及变色就能保证基本的平衡。</li>
-<li><strong>缺点：</strong>树的高度太高。</li>
-</ul>
-<h3 id="B-树"><a href="#B-树" class="headerlink" title="B 树"></a>B 树</h3><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-29-142200.png" alt></p>
-<p>B 树是一种多路搜索树，它的每个节点可以拥有多于两个孩子节点，M 路的 B 树最多能拥有 M 个孩子节点。</p>
-<ul>
-<li>不再是二叉查找，而是 <strong>M 叉</strong>查找，树的高度能够大大降低。</li>
-<li><strong>叶子节点，非叶子节点，都存储数据</strong>。</li>
-<li>中序遍历，可以获得所有节点。</li>
-</ul>
-<h3 id="B-树-1"><a href="#B-树-1" class="headerlink" title="B+ 树"></a>B+ 树</h3><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-29-142300.png" alt></p>
-<p>B+ 树是在 B 树的基础上进行改造：</p>
-<ul>
-<li>非叶子节点不再存储数据，<strong>数据只存储在同一层的叶子节点上</strong>。</li>
-<li><strong>叶子之间，增加了链表</strong>，获取所有节点，不再需要中序遍历。</li>
-<li><strong>优点</strong>：在查询多条数据或范围查询时，B 树可能要跨层访问，而 B+ 树数据都在叶子节点，不用跨层，同时由于有链表结构，只需要找到首尾，就能把所有数据取出来。</li>
-</ul>
-<p><strong>局部性原理与磁盘预读</strong></p>
-<ul>
-<li><strong>磁盘预读</strong>：磁盘读写并不是按需读取，而是按页预读，一次会读一页的数据，每次加载更多的数据，如果未来要读取的数据就在这一页中，可以避免未来的磁盘 IO，提高效率（通常，一页数据是 4K）。</li>
-<li><strong>局部性原理</strong>：软件设计要尽量遵循“数据读取集中”与使用到一个数据，大概率会使用其附近的数据，这样磁盘预读能充分提高磁盘 IO。</li>
-</ul>
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>1)    二叉查找树 (BST)：解决了排序的基本问题，但是由于无法保证平衡，可能退化为链表。</p>
-<p>2)    平衡二叉树 (AVL)：通过旋转解决了平衡的问题，但是旋转操作效率太低。</p>
-<p>3)    红黑树：通过舍弃严格的平衡和引入红黑节点，解决了 AVL 旋转效率过低的问题，但是在磁盘等场景下，树仍然太高，IO 次数太多。</p>
-<p>4)    B 树：通过将二叉树改为多路平衡查找树，解决了树过高的问题。</p>
-<p>5)    B+ 树：在 B 树的基础上，将非叶节点改造为不存储数据的纯索引节点，进一步降低了树的高度，此外将叶节点使用指针连接成链表，范围查询更加高效。</p>
-<h2 id="MySQL-索引实现"><a href="#MySQL-索引实现" class="headerlink" title="MySQL 索引实现"></a>MySQL 索引实现</h2><h3 id="MyISAM"><a href="#MyISAM" class="headerlink" title="MyISAM"></a>MyISAM</h3><h3 id="InnoDB"><a href="#InnoDB" class="headerlink" title="InnoDB"></a>InnoDB</h3>
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2792,7 +2787,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">168</span>
+                    <span class="site-state-item-count">169</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

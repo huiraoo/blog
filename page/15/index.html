@@ -352,6 +352,250 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/21/mysql-index/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/08/21/mysql-index/" class="post-title-link" itemprop="url">MySQL · 索引</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-21 16:34:04" itemprop="dateCreated datePublished" datetime="2019-08-21T16:34:04+08:00">2019-08-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-05-08 10:19:48" itemprop="dateModified" datetime="2020-05-08T10:19:48+08:00">2020-05-08</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><ul>
+<li>索引是什么？</li>
+<li>为什么选择用 B+ 树索引？</li>
+<li>聚集索引和非聚集索引的区别？</li>
+<li>为什么建议使用整型自增做主键？</li>
+</ul>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><strong>索引</strong>：是帮助 MySQL 高效获取数据的排好序的数据结构。</p>
+<p>索引是应用程序设计和开发的一个重要方面，若索引太多，应用程序的性能可能会受到影响。而索引太少，对查询性能又会产生影响。需要找到一个合适的平衡点，这对应用程序的性能至关重要。</p>
+<p>InnoDB 存储引擎支持 3 种常见的索引：</p>
+<ul>
+<li>B+ 树索引</li>
+<li>全文索引</li>
+<li>哈希索引</li>
+</ul>
+<h2 id="InnoDB-存储引擎索引"><a href="#InnoDB-存储引擎索引" class="headerlink" title="InnoDB 存储引擎索引"></a>InnoDB 存储引擎索引</h2><h3 id="B-树索引"><a href="#B-树索引" class="headerlink" title="B+ 树索引"></a>B+ 树索引</h3><blockquote>
+<p><strong>注意</strong>：B+ 树中的 B 不是代表二叉（binary），而是代表平衡（balance），因为 B+ 树是从最早的平衡二叉树演化而来，但是 B+ 树不是一个二叉树。 </p>
+</blockquote>
+<p>B+ 树索引并不能找到一个给定键值的具体行，B+ 树索引能找到的只是被查找数据行所在的页，然后数据库通过把页读入到内存，再在内存中进行查找，最后得到要查找的数据。</p>
+<p>MyISAM：索引文件和数据文件是分离的，非聚集索引。</p>
+<p>InnoDB</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// MyISAM存储引擎，存储在*.MYI</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql   <span class="number">10816</span> <span class="number">3</span>月  <span class="number">30</span> <span class="number">13</span>:<span class="number">52</span> user.frm</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql     <span class="number">616</span> <span class="number">3</span>月  <span class="number">30</span> <span class="number">13</span>:<span class="number">54</span> user.MYD</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql    <span class="number">4096</span> <span class="number">4</span>月  <span class="number">17</span> <span class="number">17</span>:<span class="number">32</span> user.MYI</span><br><span class="line"></span><br><span class="line">// InnoDB存储引擎，存储在*.ibd</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql    <span class="number">8838</span> <span class="number">3</span>月  <span class="number">30</span> <span class="number">13</span>:<span class="number">52</span> servers.frm</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql   <span class="number">98304</span> <span class="number">3</span>月  <span class="number">30</span> <span class="number">13</span>:<span class="number">52</span> servers.ibd</span><br></pre></td></tr></table></figure>
+
+<p>聚集索引：叶子节点包含了完整的数据记录。</p>
+<p>非聚集索引：索引文件和数据文件没有聚集在一起。</p>
+<p>主键索引</p>
+<p>二级索引</p>
+<h3 id="全文索引"><a href="#全文索引" class="headerlink" title="全文索引"></a>全文索引</h3><h3 id="哈希索引"><a href="#哈希索引" class="headerlink" title="哈希索引"></a>哈希索引</h3><p>数据库的索引一般在磁盘上，数据量大的情况可能无法一次装入内存，B+ 树的设计可以允许数据分批加载，同时树的高度较低，提高查询效率。</p>
+<h2 id="为什么-MySQL-选择用-B-树索引？"><a href="#为什么-MySQL-选择用-B-树索引？" class="headerlink" title="为什么 MySQL 选择用 B+ 树索引？"></a>为什么 MySQL 选择用 B+ 树索引？</h2><p>当数据在磁盘中时，磁盘 IO 会成为最大的性能瓶颈，设计的目标应该是尽量减少 IO 次数；而树的高度越高，增删改查所需要的 IO 次数也越多，会严重影响性能。树的查找性能取决于树的高度，让树尽量平衡，就是为了降低树的高度。</p>
+<h3 id="二叉树"><a href="#二叉树" class="headerlink" title="二叉树"></a>二叉树</h3><p><strong>二叉查找树</strong></p>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-29-112200.png" alt></p>
+<ul>
+<li>对于树中的任意一个节点，左子树节点比根节点小，右子树节点比根节点大。</li>
+<li>时间复杂度：O(logn)</li>
+<li><strong>缺点</strong>：<strong>不平衡</strong>，极端情况如有序序列，二叉排序树退化成链表，时间复杂度变为 O(n)。</li>
+</ul>
+<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-29-112915.png" alt></p>
+<p><strong>平衡二叉树（AVL）</strong></p>
+<ul>
+<li>AVL 树是严格的平衡二叉树，所有节点的左右子树高度差不能超过 1。</li>
+<li>AVL 树查找、插入和删除在平均和最坏情况下都是 O(logn)。</li>
+<li><strong>缺点：旋转耗时</strong>，AVL 树在删除数据时效率很低，量级为 O(logn)。</li>
+</ul>
+<h3 id="红黑树"><a href="#红黑树" class="headerlink" title="红黑树"></a>红黑树</h3><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-29-141900.png" alt></p>
+<ul>
+<li>与 AVL 树相比，红黑树并不追求严格的平衡，而是大致的平衡。</li>
+<li>红黑树引入了颜色，当插入或删除数据时，只需要进行 O(1) 次数的旋转以及变色就能保证基本的平衡。</li>
+<li><strong>缺点：</strong>树的高度太高。</li>
+</ul>
+<h3 id="B-树"><a href="#B-树" class="headerlink" title="B 树"></a>B 树</h3><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-29-142200.png" alt></p>
+<p>B 树是一种多路搜索树，它的每个节点可以拥有多于两个孩子节点，M 路的 B 树最多能拥有 M 个孩子节点。</p>
+<ul>
+<li>不再是二叉查找，而是 <strong>M 叉</strong>查找，树的高度能够大大降低。</li>
+<li><strong>叶子节点，非叶子节点，都存储数据</strong>。</li>
+<li>中序遍历，可以获得所有节点。</li>
+</ul>
+<h3 id="B-树-1"><a href="#B-树-1" class="headerlink" title="B+ 树"></a>B+ 树</h3><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-29-142300.png" alt></p>
+<p>B+ 树是在 B 树的基础上进行改造：</p>
+<ul>
+<li>非叶子节点不再存储数据，<strong>数据只存储在同一层的叶子节点上</strong>。</li>
+<li><strong>叶子之间，增加了链表</strong>，获取所有节点，不再需要中序遍历。</li>
+<li><strong>优点</strong>：在查询多条数据或范围查询时，B 树可能要跨层访问，而 B+ 树数据都在叶子节点，不用跨层，同时由于有链表结构，只需要找到首尾，就能把所有数据取出来。</li>
+</ul>
+<p><strong>局部性原理与磁盘预读</strong></p>
+<ul>
+<li><strong>磁盘预读</strong>：磁盘读写并不是按需读取，而是按页预读，一次会读一页的数据，每次加载更多的数据，如果未来要读取的数据就在这一页中，可以避免未来的磁盘 IO，提高效率（通常，一页数据是 4K）。</li>
+<li><strong>局部性原理</strong>：软件设计要尽量遵循“数据读取集中”与使用到一个数据，大概率会使用其附近的数据，这样磁盘预读能充分提高磁盘 IO。</li>
+</ul>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>1)    二叉查找树 (BST)：解决了排序的基本问题，但是由于无法保证平衡，可能退化为链表。</p>
+<p>2)    平衡二叉树 (AVL)：通过旋转解决了平衡的问题，但是旋转操作效率太低。</p>
+<p>3)    红黑树：通过舍弃严格的平衡和引入红黑节点，解决了 AVL 旋转效率过低的问题，但是在磁盘等场景下，树仍然太高，IO 次数太多。</p>
+<p>4)    B 树：通过将二叉树改为多路平衡查找树，解决了树过高的问题。</p>
+<p>5)    B+ 树：在 B 树的基础上，将非叶节点改造为不存储数据的纯索引节点，进一步降低了树的高度，此外将叶节点使用指针连接成链表，范围查询更加高效。</p>
+<h2 id="MySQL-索引实现"><a href="#MySQL-索引实现" class="headerlink" title="MySQL 索引实现"></a>MySQL 索引实现</h2><h3 id="MyISAM"><a href="#MyISAM" class="headerlink" title="MyISAM"></a>MyISAM</h3><h3 id="InnoDB"><a href="#InnoDB" class="headerlink" title="InnoDB"></a>InnoDB</h3>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/21/mysql-lock/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2712,323 +2956,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/23/mysql-rules/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/23/mysql-rules/" class="post-title-link" itemprop="url">MySQL · 开发规范</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-23 13:58:36" itemprop="dateCreated datePublished" datetime="2019-07-23T13:58:36+08:00">2019-07-23</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2020-03-24 10:48:02" itemprop="dateModified" datetime="2020-03-24T10:48:02+08:00">2020-03-24</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="库表规范"><a href="#库表规范" class="headerlink" title="库表规范"></a>库表规范</h2><ul>
-<li><p>存储引擎必须使用 <code>InnoDB</code></p>
-</li>
-<li><p>库名、表名、字段名必须用小写，采用下划线分隔</p>
-</li>
-<li><p>表字符集默认使用 <code>utf8</code>，必要时候使用 <code>utf8mb4</code></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 通用，无乱码风险，汉字<span class="number">3</span>字节，英文<span class="number">1</span>字节</span><br><span class="line">② utf8mb4是utf8的超集，存储<span class="number">4</span>字节，例如：表情符号时使用它</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>禁止使用存储过程、视图、触发器、事件</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 对数据库性能影响较大，能让站点层和服务层干的事情，不要交到数据库层</span><br><span class="line">② 难以调试和扩展，更没有移植性</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>禁止在数据库中存储大文件</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 例如照片，可以将大文件存储在对象存储系统，数据库中存储路径</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>禁止使用 <code>text</code>、<code>blob</code> 类型</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 会浪费更多的磁盘和内存空间，非必要的大量的大字段查询会淘汰掉热数据，导致内存命中率急剧降低，影响数据库性能</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>根据业务区分使用 <code>tinyint</code>（1 byte）、<code>smallint</code>（2 byte）、<code>int</code>（4 byte）、<code>bigint</code>（8 byte）</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 合适的字符存储长度，不但节约数据库表空间，节约索引存储，更重要的是提升检索速度</span><br><span class="line">② 整数类型指定显示宽度，例如：int(M)对大多数应用是没有意义的，他不会限制值的合法范围，对于存储和计算来说，int(<span class="number">1</span>)和int(<span class="number">20</span>)是相同的</span><br></pre></td></tr></table></figure>
-
-<table>
-<thead>
-<tr>
-<th>对象</th>
-<th>年龄区间</th>
-<th>类型</th>
-<th>范围</th>
-<th>字节</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>人</td>
-<td>150岁之内</td>
-<td>unsigned tinyint</td>
-<td>0～255</td>
-<td>1</td>
-</tr>
-<tr>
-<td>龟</td>
-<td>数百岁</td>
-<td>unsigned smallint</td>
-<td>0～65535</td>
-<td>2</td>
-</tr>
-<tr>
-<td>恐龙化石</td>
-<td>数千万岁</td>
-<td>unsigned int</td>
-<td>0～4294967295</td>
-<td>4</td>
-</tr>
-<tr>
-<td>太阳</td>
-<td>约50亿年</td>
-<td>unsigned bigint</td>
-<td>0～2^64-1</td>
-<td>8</td>
-</tr>
-</tbody></table>
-</li>
-<li><p>根据业务区分使用 <code>char</code>、<code>varchar</code></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 字段长度固定，或者长度近似的业务场景，适合使用char，能够减少碎片，查询性能高</span><br><span class="line">② 字段长度相差较大，或者更新较少的业务场景，适合使用varchar，节省磁盘空间</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>根据业务区分使用 <code>datetime</code>、<code>timestamp</code></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 前者占用<span class="number">8</span>个字节，后者占用<span class="number">4</span>个字节，存储年使用YEAR，存储日期使用DATE，存储时间使用datetime</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>小数类型使用 <code>decimal</code>，禁止使用 <code>float</code> 和 <code>double</code></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① float和double在存储的时候，存在精度损失的问题，很可能在值的比较时，得到不正确的结果</span><br><span class="line">② decimal(M,D)，如果M&gt;D，占用字节M+<span class="number">2</span>，否则为D+<span class="number">2</span>，M是数字最大位数，D是小数点右侧数字个数</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>表必须有主键，推荐使用 <code>unsigned</code> 整数为主键</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 删除无主键的表，如果是row模式的主从架构，从库会挂住</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>创建是否概念字段，必须使用 <code>is_xxx</code> 的方式命名，数据类型是 <code>unsigned tinyint</code>（ 1表示是，0表示否）</p>
-</li>
-<li><p>表必备三字段：<code>id</code>，<code>gmt_create</code>，<code>gmt_modified</code></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① id必为主键，类型为unsigned bigint，单表时自增，步长为<span class="number">1</span></span><br><span class="line">② gmt_create, gmt_modified类型均为datetime，前者现在时表示主动创建，后者过去分词表示被动更新</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>字段定义必须为 <code>NOT NULL</code> ，并设默认值</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① NULL列使用索引，会影响优化器选择执行计划，很难优化</span><br><span class="line">② NULL只能采用IS NULL或者IS NOT NULL，而在使用=、!=、<span class="keyword">in</span>、not <span class="keyword">in</span>时有大坑</span><br><span class="line">③ 数值默认值设置为<span class="number">0</span>，字符串默认值设置为<span class="string">''</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 <code>unsigned int</code> 存储 <code>IPv4</code>，不要用 <code>char(15)</code></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 节省存储空间，char(<span class="number">15</span>)占据<span class="number">16</span>个字节，unsigned int只需要<span class="number">4</span>个字节</span><br><span class="line">② int型在逻辑运算上，比char速度快</span><br><span class="line">③ ip和数字转换，函数算法：inet_aton()和inet_ntoa()</span><br><span class="line"></span><br><span class="line">mysql&gt; select inet_aton(<span class="string">'192.168.1.200'</span>);</span><br><span class="line">+----------------------------+</span><br><span class="line">| inet_aton(<span class="string">'192.168.1.200'</span>) |</span><br><span class="line">+----------------------------+</span><br><span class="line">|                 <span class="number">3232235976</span> |</span><br><span class="line">+----------------------------+</span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select inet_ntoa(<span class="string">'3232235976'</span>);</span><br><span class="line">+-------------------------+</span><br><span class="line">| inet_ntoa(<span class="string">'3232235976'</span>) |</span><br><span class="line">+-------------------------+</span><br><span class="line">| <span class="number">192.168</span>.<span class="number">1.200</span>           |</span><br><span class="line">+-------------------------+</span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>使用 <code>varchar(20)</code> 存储手机号，不要使用整数</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 牵扯到国家代号，可能出现+/-/()等字符，例如+<span class="number">86</span></span><br><span class="line">② 手机号不会用来做数学运算</span><br><span class="line">③ varchar可以模糊查询，例如：like <span class="string">'138%'</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p>控制单表数据量，单表数据控制在<strong>千万级</strong></p>
-</li>
-<li><p>测试、开发、线上数据库环境必须隔离</p>
-</li>
-<li><p>数据表、数据字段要有中文注释</p>
-</li>
-</ul>
-<h2 id="SQL规范"><a href="#SQL规范" class="headerlink" title="SQL规范"></a>SQL规范</h2><ul>
-<li><p>禁止使用 <code>select *</code>，只获取必要字段</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① select*会增加cpu/io/内存/带宽的消耗</span><br><span class="line">② 指定字段能有效利用索引覆盖</span><br><span class="line">③ 指定字段查询，在表结构变更时，能保证对应用程序无影响</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>禁止在 <code>where</code> 条件列使用函数或者表达式</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 导致不能命中索引，全表扫描</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>禁止负向查询，以及 <code>%</code> 开头的模糊查询</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 负向查询条件：NOT、!=、&lt;&gt;、!&lt;、!&gt;、NOT <span class="keyword">IN</span>、NOT LIKE等，会导致全表扫描</span><br><span class="line">② %开头的模糊查询，会导致全表扫描</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>不得使用外键与级联，一切外键概念必须在应用层解决</p>
-</li>
-<li><p><code>count(*)</code> 会统计值为 <code>null</code> 的行，而 <code>count(列名)</code> 不会统计此列为 <code>null</code> 值的行</p>
-</li>
-<li><p>数据订正（<code>delete</code>、<code>update</code> 操作）时，要先 <code>select</code>，避免出现误删除，确认无误才能执行更新语句</p>
-</li>
-<li><p>推荐使用 <code>truncate</code>，速度比 <code>delete</code> 快，且使用的系统和事务日志资源少</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① truncate table在功能上与不带where子句的delete语句相同</span><br><span class="line">② truncate无事务且不触发trigger，有可能造成事故</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>避免 <code>in</code> 操作，若实在避免不了，需要仔细评估 <code>in</code> 后边的集合元素数量，控制在 <code>1000</code> 个之内</p>
-</li>
-<li><p>推荐 <code>or</code> 改写为 <code>union</code></p>
-</li>
-</ul>
-<h2 id="索引规范"><a href="#索引规范" class="headerlink" title="索引规范"></a>索引规范</h2><ul>
-<li><p>唯一索引使用 <code>uniq_[字段名]</code> 来命名，非唯一索引使用 <code>idx_[字段名]</code> 来命名</p>
-</li>
-<li><p>单张表索引数量建议控制在 <code>5</code> 个以内</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 高并发业务，太多索引会影响写性能</span><br><span class="line">② 生成执行计划时，如果索引太多，会降低性能，并可能导致MySQL选择不到最优索引</span><br><span class="line">③ 异常复杂的查询需求，可以选择ES等更为适合的方式存储</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>超过三个表禁止 <code>join</code>，需要 <code>join</code> 的字段，数据类型必须绝对一致，多表关联查询时，确保被关联的字段需要有索引</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 踩过因为join字段类型不一致，而导致全表扫描的坑</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>禁止在更新十分频繁，区分度不高的字段建立索引</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 更新会变更B+树，更新频繁的字段建立索引会大大降低数据库性能</span><br><span class="line">② 区分度：count(distinct left(列名, 索引长度))/count(*)</span><br><span class="line">③ 性别不适合建索引</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>理解组合索引最左前缀原则，避免重复建索引，如果建了 <code>(a,b,c)</code>，相当于建了 <code>(a)</code>，<code>(a,b)</code>，<code>(a,b,c)</code></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① 示例：where a=? and b=? order by c; 索引：a_b_c</span><br><span class="line">② 存在非等号和等号混合判断条件时，在建索引时把等号条件的列前置。如：where a&gt;? and b=? 那么即使a的区分度更高，也必须把b放在索引的最前列</span><br></pre></td></tr></table></figure>
-</li>
-<li><p>避免因字段类型不同造成的隐式转换，导致索引失效</p>
-</li>
-<li><p>SQL性能优化的目标：至少要达到 <code>range</code> 级别，要求是 <code>ref</code> 级别，如果可以是 <code>consts</code> 最好</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">解读：</span><br><span class="line">① consts单表中最多只有一个匹配行（主键或者唯一索引），在优化阶段即可读取到数据</span><br><span class="line">② ref指的是使用普通的索引（normal index）</span><br><span class="line">③ range对索引进行范围检索</span><br></pre></td></tr></table></figure>
-
-</li>
-</ul>
-<blockquote>
-<p><strong>参考</strong></p>
-</blockquote>
-<p>《<a href="https://mp.weixin.qq.com/s/YfCORbcCX1hymXBCrZbAZg" target="_blank" rel="noopener"><strong>58到家 · MySQL军规</strong></a>》</p>
-<p>《<a href="https://www.cntofu.com/book/78/p3c-gitbook/" target="_blank" rel="noopener"><strong>阿里巴巴 · Java开发手册</strong></a>》</p>
-<p>​    </p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3077,7 +3004,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">168</span>
+                    <span class="site-state-item-count">169</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

@@ -352,6 +352,187 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2020/08/05/mysql-ibtmp1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2020/08/05/mysql-ibtmp1/" class="post-title-link" itemprop="url">MySQL · 故障处理 · ibtmp1 文件过大</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-08-05 14:48:56 / 修改时间：14:58:02" itemprop="dateCreated datePublished" datetime="2020-08-05T14:48:56+08:00">2020-08-05</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><p> ibtmp1 文件过大，大小 142G，磁盘即将占满</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">5.4</span>M Aug <span class="number">19</span>  <span class="number">2019</span> ib_buffer_pool</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">1.0</span>G Aug  <span class="number">5</span> <span class="number">14</span>:<span class="number">32</span> ibdata1</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">1.0</span>G Aug  <span class="number">5</span> <span class="number">14</span>:<span class="number">32</span> ib_logfile0</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">1.0</span>G Aug  <span class="number">5</span> <span class="number">14</span>:<span class="number">32</span> ib_logfile1</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">142</span>G Aug  <span class="number">5</span> <span class="number">14</span>:<span class="number">05</span> ibtmp1</span><br></pre></td></tr></table></figure>
+
+<h3 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h3><p><code>ibtmp1</code> 是非压缩的 <code>innodb</code> 临时表的独立表空间，通过<code>innodb_temp_data_file_path</code> 参数指定文件的路径，文件名和大小，默认配置为 <code>ibtmp1:12M:autoextend</code>，也就是说在支持大文件的系统这个文件大小是可以无限增长的。</p>
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><ul>
+<li><p>修改 <code>my.cnf</code> 配置文件</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">innodb_temp_data_file_path</span> <span class="string">=</span> <span class="attr">ibtmp1:12M:autoextend:max:5G</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>设置 <code>innodb_fast_shutdown</code> 参数</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">SET</span> <span class="string">GLOBAL</span> <span class="string">innodb_fast_shutdown</span> <span class="string">=</span> <span class="number">0</span><span class="string">;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>关闭 <code>mysql</code> 服务</p>
+</li>
+<li><p>删除 <code>ibtmp1</code> 文件（重启自动删除）</p>
+</li>
+<li><p>启动 <code>mysql</code> 服务</p>
+</li>
+</ul>
+<blockquote>
+<p>注意：为了避免以后再出现类似的情况，一定要在限制临时表空间的最大值，如 innodb_temp_data_file_path = ibtmp1:12M:autoextend:max:5G</p>
+</blockquote>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2020/08/03/sql-audit/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2693,180 +2874,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2020/03/21/mysql-structure/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2020/03/21/mysql-structure/" class="post-title-link" itemprop="url">MySQL · 体系结构</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2020-03-21 10:32:48 / 修改时间：11:00:17" itemprop="dateCreated datePublished" datetime="2020-03-21T10:32:48+08:00">2020-03-21</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="MySQL-体系结构"><a href="#MySQL-体系结构" class="headerlink" title="MySQL 体系结构"></a>MySQL 体系结构</h2><p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134135.png" alt></p>
-<p>MySQL 逻辑系统架构分为 3 层:</p>
-<ul>
-<li>连接层：处理连接、用户鉴权、安全管理。</li>
-<li>SQL 层：<ul>
-<li>SQL 接口：接收 SQL 命令，返回查询结果。</li>
-<li>解析器：解析查询语句，最终生成语法树。</li>
-<li>优化器：对查询语句进行优化，包括选择合适的索引，选择最优的执行计划。</li>
-<li>缓存：如果查询缓存中有命中的查询结果，则查询语句就可以从缓存中取数据，无须再通过解析和执行。</li>
-</ul>
-</li>
-<li>存储引擎层：<strong>插件式的表存储引擎</strong>，例如：InnoDB、MyISAM、Memory、Archive 等。</li>
-</ul>
-<p>MySQL 数据库区别于其他数据库最重要的一个特点就是其插件式的表存储引擎，这样的好处是，每个存储引擎都有各自的特点，能够根据具体的应用建立不同的存储引擎表。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2915,7 +2922,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">168</span>
+                    <span class="site-state-item-count">169</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

@@ -1,6 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>MySQL · 故障处理 · ibtmp1 文件过大</title>
+    <url>/blog/2020/08/05/mysql-ibtmp1/</url>
+    <content><![CDATA[<h3 id="问题描述"><a href="#问题描述" class="headerlink" title="问题描述"></a>问题描述</h3><p> ibtmp1 文件过大，大小 142G，磁盘即将占满</p>
+<figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">5.4</span>M Aug <span class="number">19</span>  <span class="number">2019</span> ib_buffer_pool</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">1.0</span>G Aug  <span class="number">5</span> <span class="number">14</span>:<span class="number">32</span> ibdata1</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">1.0</span>G Aug  <span class="number">5</span> <span class="number">14</span>:<span class="number">32</span> ib_logfile0</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">1.0</span>G Aug  <span class="number">5</span> <span class="number">14</span>:<span class="number">32</span> ib_logfile1</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">142</span>G Aug  <span class="number">5</span> <span class="number">14</span>:<span class="number">05</span> ibtmp1</span><br></pre></td></tr></table></figure>
+
+<h3 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h3><p><code>ibtmp1</code> 是非压缩的 <code>innodb</code> 临时表的独立表空间，通过<code>innodb_temp_data_file_path</code> 参数指定文件的路径，文件名和大小，默认配置为 <code>ibtmp1:12M:autoextend</code>，也就是说在支持大文件的系统这个文件大小是可以无限增长的。</p>
+<h3 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h3><ul>
+<li><p>修改 <code>my.cnf</code> 配置文件</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">innodb_temp_data_file_path</span> <span class="string">=</span> <span class="attr">ibtmp1:12M:autoextend:max:5G</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>设置 <code>innodb_fast_shutdown</code> 参数</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">SET</span> <span class="string">GLOBAL</span> <span class="string">innodb_fast_shutdown</span> <span class="string">=</span> <span class="number">0</span><span class="string">;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>关闭 <code>mysql</code> 服务</p>
+</li>
+<li><p>删除 <code>ibtmp1</code> 文件（重启自动删除）</p>
+</li>
+<li><p>启动 <code>mysql</code> 服务</p>
+</li>
+</ul>
+<blockquote>
+<p>注意：为了避免以后再出现类似的情况，一定要在限制临时表空间的最大值，如 innodb_temp_data_file_path = ibtmp1:12M:autoextend:max:5G</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>MySQL</category>
+      </categories>
+  </entry>
+  <entry>
     <title>SQL 审核</title>
     <url>/blog/2020/08/03/sql-audit/</url>
     <content><![CDATA[<h4 id="可选择方案"><a href="#可选择方案" class="headerlink" title="可选择方案"></a>可选择方案</h4><ul>
@@ -12116,7 +12145,7 @@
 </ul>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 杀掉ID为1的线程, 关闭连接</span><br><span class="line">kill id; </span><br><span class="line"></span><br><span class="line"># 查询出时间大于10的线程, 复制查询结果，批量执行</span><br><span class="line">select concat(&apos;kill &apos;, id, &apos;;&apos;) from information_schema.processlist where time &gt; 10;</span><br></pre></td></tr></table></figure>
 
-<h2 id="备份失败"><a href="#备份失败" class="headerlink" title="备份失败"></a>备份失败</h2><h3 id="现象描述"><a href="#现象描述" class="headerlink" title="现象描述"></a>现象描述</h3><p>据备份供应商反映，昨天晚上 22:00 <code>XX系统</code>，从库备份失败，使用的备份工具是 <code>mysqldump</code>，请求协助定位备份失败原因。</p>
+<h2 id="备份夯住"><a href="#备份夯住" class="headerlink" title="备份夯住"></a>备份夯住</h2><h3 id="现象描述"><a href="#现象描述" class="headerlink" title="现象描述"></a>现象描述</h3><p>据备份供应商反映，昨天晚上 22:00 <code>XX系统</code>，从库备份失败，使用的备份工具是 <code>mysqldump</code>，请求协助定位备份失败原因。</p>
 <h3 id="原因分析-1"><a href="#原因分析-1" class="headerlink" title="原因分析"></a>原因分析</h3><p>（1）检查从库两个线程 <code>Slave_IO_Running</code> 和 <code>Slave_SQL_Running</code> 均是 <strong>Yes</strong>，说明主从复制链路正常，但是 <code>Seconds_Behind_Master</code> 不断增大，且主从数据延迟有不断扩大的趋势。</p>
 <figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** 1. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting for master to send event</span><br><span class="line">                  Master_Host: 10.133.0.51</span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: 3306</span><br><span class="line">                Connect_Retry: 60</span><br><span class="line">              Master_Log_File: mysql-binlog.000232</span><br><span class="line">          Read_Master_Log_Pos: 3108253</span><br><span class="line">               Relay_Log_File: relay-log.000004</span><br><span class="line">                Relay_Log_Pos: 169851605</span><br><span class="line">        Relay_Master_Log_File: mysql-binlog.000229</span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">              Replicate_Do_DB: </span><br><span class="line">          Replicate_Ignore_DB: </span><br><span class="line">           Replicate_Do_Table: </span><br><span class="line">       Replicate_Ignore_Table: </span><br><span class="line">      Replicate_Wild_Do_Table: </span><br><span class="line">  Replicate_Wild_Ignore_Table: </span><br><span class="line">                   Last_Errno: 0</span><br><span class="line">                   Last_Error: </span><br><span class="line">                 Skip_Counter: 0</span><br><span class="line">          Exec_Master_Log_Pos: 169851386</span><br><span class="line">              Relay_Log_Space: 3270427001</span><br><span class="line">              Until_Condition: None</span><br><span class="line">               Until_Log_File: </span><br><span class="line">                Until_Log_Pos: 0</span><br><span class="line">           Master_SSL_Allowed: No</span><br><span class="line">           Master_SSL_CA_File: </span><br><span class="line">           Master_SSL_CA_Path: </span><br><span class="line">              Master_SSL_Cert: </span><br><span class="line">            Master_SSL_Cipher: </span><br><span class="line">               Master_SSL_Key: </span><br><span class="line">        Seconds_Behind_Master: 42302</span><br><span class="line">Master_SSL_Verify_Server_Cert: No</span><br><span class="line">              ....</span><br><span class="line">       </span><br><span class="line">1 row in <span class="keyword">set</span> (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
 
