@@ -352,6 +352,347 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/27/mysql-privilege/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/08/27/mysql-privilege/" class="post-title-link" itemprop="url">MySQL · 用户权限</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-08-27 17:45:40" itemprop="dateCreated datePublished" datetime="2019-08-27T17:45:40+08:00">2019-08-27</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-07 15:24:23" itemprop="dateModified" datetime="2019-11-07T15:24:23+08:00">2019-11-07</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <table>
+<thead>
+<tr>
+<th>Privilege</th>
+<th>Grant Table Column</th>
+<th>Context</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_all" target="_blank" rel="noopener"><code>ALL PRIVILEGES</code></a></td>
+<td>Synonym for “all privileges”</td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_alter" target="_blank" rel="noopener"><code>ALTER</code></a></td>
+<td><code>Alter_priv</code></td>
+<td>Tables</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_alter-routine" target="_blank" rel="noopener"><code>ALTER ROUTINE</code></a></td>
+<td><code>Alter_routine_priv</code></td>
+<td>Stored routines</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_create" target="_blank" rel="noopener"><code>CREATE</code></a></td>
+<td><code>Create_priv</code></td>
+<td>Databases, tables, or indexes</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_create-routine" target="_blank" rel="noopener"><code>CREATE ROUTINE</code></a></td>
+<td><code>Create_routine_priv</code></td>
+<td>Stored routines</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_create-tablespace" target="_blank" rel="noopener"><code>CREATE TABLESPACE</code></a></td>
+<td><code>Create_tablespace_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_create-temporary-tables" target="_blank" rel="noopener"><code>CREATE TEMPORARY TABLES</code></a></td>
+<td><code>Create_tmp_table_priv</code></td>
+<td>Tables</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_create-user" target="_blank" rel="noopener"><code>CREATE USER</code></a></td>
+<td><code>Create_user_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_create-view" target="_blank" rel="noopener"><code>CREATE VIEW</code></a></td>
+<td><code>Create_view_priv</code></td>
+<td>Views</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_delete" target="_blank" rel="noopener"><code>DELETE</code></a></td>
+<td><code>Delete_priv</code></td>
+<td>Tables</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_drop" target="_blank" rel="noopener"><code>DROP</code></a></td>
+<td><code>Drop_priv</code></td>
+<td>Databases, tables, or views</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_event" target="_blank" rel="noopener"><code>EVENT</code></a></td>
+<td><code>Event_priv</code></td>
+<td>Databases</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_execute" target="_blank" rel="noopener"><code>EXECUTE</code></a></td>
+<td><code>Execute_priv</code></td>
+<td>Stored routines</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_file" target="_blank" rel="noopener"><code>FILE</code></a></td>
+<td><code>File_priv</code></td>
+<td>File access on server host</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_grant-option" target="_blank" rel="noopener"><code>GRANT OPTION</code></a></td>
+<td><code>Grant_priv</code></td>
+<td>Databases, tables, or stored routines</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_index" target="_blank" rel="noopener"><code>INDEX</code></a></td>
+<td><code>Index_priv</code></td>
+<td>Tables</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_insert" target="_blank" rel="noopener"><code>INSERT</code></a></td>
+<td><code>Insert_priv</code></td>
+<td>Tables or columns</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_lock-tables" target="_blank" rel="noopener"><code>LOCK TABLES</code></a></td>
+<td><code>Lock_tables_priv</code></td>
+<td>Databases</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_process" target="_blank" rel="noopener"><code>PROCESS</code></a></td>
+<td><code>Process_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_proxy" target="_blank" rel="noopener"><code>PROXY</code></a></td>
+<td>See <code>proxies_priv</code> table</td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_references" target="_blank" rel="noopener"><code>REFERENCES</code></a></td>
+<td><code>References_priv</code></td>
+<td>Databases or tables</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_reload" target="_blank" rel="noopener"><code>RELOAD</code></a></td>
+<td><code>Reload_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_replication-client" target="_blank" rel="noopener"><code>REPLICATION CLIENT</code></a></td>
+<td><code>Repl_client_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_replication-slave" target="_blank" rel="noopener"><code>REPLICATION SLAVE</code></a></td>
+<td><code>Repl_slave_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_select" target="_blank" rel="noopener"><code>SELECT</code></a></td>
+<td><code>Select_priv</code></td>
+<td>Tables or columns</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_show-databases" target="_blank" rel="noopener"><code>SHOW DATABASES</code></a></td>
+<td><code>Show_db_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_show-view" target="_blank" rel="noopener"><code>SHOW VIEW</code></a></td>
+<td><code>Show_view_priv</code></td>
+<td>Views</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_shutdown" target="_blank" rel="noopener"><code>SHUTDOWN</code></a></td>
+<td><code>Shutdown_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_super" target="_blank" rel="noopener"><code>SUPER</code></a></td>
+<td><code>Super_priv</code></td>
+<td>Server administration</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_trigger" target="_blank" rel="noopener"><code>TRIGGER</code></a></td>
+<td><code>Trigger_priv</code></td>
+<td>Tables</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_update" target="_blank" rel="noopener"><code>UPDATE</code></a></td>
+<td><code>Update_priv</code></td>
+<td>Tables or columns</td>
+</tr>
+<tr>
+<td><a href="https://dev.mysql.com/doc/refman/5.7/en/privileges-provided.html#priv_usage" target="_blank" rel="noopener"><code>USAGE</code></a></td>
+<td>Synonym for “no privileges”</td>
+<td>Server administration</td>
+</tr>
+</tbody></table>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/21/mysql-index/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1982,7 +2323,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-12-10 17:41:34" itemprop="dateModified" datetime="2019-12-10T17:41:34+08:00">2019-12-10</time>
+                <time title="修改时间：2020-08-12 13:43:12" itemprop="dateModified" datetime="2020-08-12T13:43:12+08:00">2020-08-12</time>
               
             
           </span>
@@ -2036,19 +2377,20 @@
       
         
           
-            <h2 id="历史"><a href="#历史" class="headerlink" title="历史"></a>历史</h2><ul>
-<li>1979年，Monty Widenius 写了最初的版本</li>
+            <h2 id="全球数据库排行"><a href="#全球数据库排行" class="headerlink" title="全球数据库排行"></a>全球数据库排行</h2><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-08-12-112020.jpg" alt></p>
+<h2 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h2><h3 id="发展历史"><a href="#发展历史" class="headerlink" title="发展历史"></a>发展历史</h3><ul>
+<li>1979年，Monty 写了最初的版本</li>
 <li>1996年，发布 1.0 版本</li>
-<li>1995-2000年，MySQL AB 成立</li>
+<li>1999年，MySQL AB 在瑞典正式宣布成立</li>
 <li>2000年4月，集成 MyISAM 和 Replication</li>
-<li>2001年，Heikki Tuuri 向 MySQL 建议集成 InnoDB</li>
+<li>2003年，MySQL4.0 发布，正式集成 InnoDB</li>
 <li>2005年，发布 5.0 版本（提供了视图、存储过程等功能）</li>
-<li><strong>2008年，MySQL AB 被 Sun 收购，出价 10 亿美元</strong></li>
-<li><strong>2009年，推出 5.1 版本，同年 4 月，Oracle 收购 Sun</strong></li>
-<li>2010年12月，推出 5.5 GA 版本，InnoDB 改为默认存储引擎</li>
-<li>2013年2月，推出 5.6 GA 版本</li>
-<li>2015年10月，推出 5.7 GA 版本</li>
-<li>2018年5月，推出 8.0 GA 版本</li>
+<li>2006年，MySQL 被 Sun 收购，出价 10 亿美元</li>
+<li>2009年，Oracle 公司收购 Sun，将 MySQL 纳入囊中</li>
+<li>2010年12月，发布 5.5 正式版本，InnoDB 改为默认存储引擎</li>
+<li>2013年2月，发布 5.6 正式版本</li>
+<li>2015年10月，发布 5.7 正式版本</li>
+<li>2018年5月，发布 8.0 正式版本</li>
 </ul>
 <h3 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h3><p><strong>优点</strong></p>
 <ul>
@@ -2063,292 +2405,43 @@
 <li>备份和恢复方案还是比较复杂，需要依赖外部组件</li>
 <li>缺少分库分表解决方案</li>
 </ul>
-<h3 id="分支"><a href="#分支" class="headerlink" title="分支"></a>分支</h3><ul>
-<li>MySQL 社区版</li>
-<li>Percona</li>
-<li>MariaDB</li>
-<li>MySQL 企业版</li>
+<h3 id="行业应用"><a href="#行业应用" class="headerlink" title="行业应用"></a>行业应用</h3><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-08-12-132400.png" alt></p>
+<h3 id="主流分支"><a href="#主流分支" class="headerlink" title="主流分支"></a>主流分支</h3><ul>
+<li><a href="https://www.mysql.com/" target="_blank" rel="noopener">MySQL</a></li>
+<li><a href="https://www.percona.com/" target="_blank" rel="noopener">Percona</a></li>
+<li><a href="https://mariadb.org/" target="_blank" rel="noopener">MariaDB</a></li>
 </ul>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>MySQL Standard Edition</th>
-<th>MySQL Enterprise Edition</th>
-<th>MySQL Cluster CGE</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><a href="https://www.mysql.com/cn/support/" target="_blank" rel="noopener"><strong>Oracle Premier Support</strong></a></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>24x7 Support</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Unlimited Support Incidents</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Knowledge Base</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Maintenance Releases</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/support/consultative.html" target="_blank" rel="noopener">MySQL Consultative Support</a></td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Features</strong></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/database/" target="_blank" rel="noopener">MySQL Database Server</a></td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/document_store.html" target="_blank" rel="noopener">MySQL Document Store</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/connector/" target="_blank" rel="noopener">MySQL Connectors</a></td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://dev.mysql.com/doc/refman/5.7/en/replication.html" target="_blank" rel="noopener">MySQL Replication</a></td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/router.html" target="_blank" rel="noopener">MySQL Router</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://dev.mysql.com/doc/refman/5.7/en/partitioning.html" target="_blank" rel="noopener">MySQL Partitioning</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Workbench</strong></td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Storage Engine: MyISAM</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Storage Engine: InnoDB</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Storage Engine: NDB</td>
-<td></td>
-<td></td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Enterprise Monitor</strong></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>MySQL Enterprise Dashboard</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>MySQL Enterprise Advisors</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>MySQL Query Analyzer</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>MySQL Replication Monitor</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Enterprise Backup</strong></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Hot backup for InnoDB</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Full, Incremental, Partial, Optimistic Backups</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Full, Partial, Selective, Hot Selective restore</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Encryption and Compression</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Point-In-Time-Recovery</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Enterprise Security</strong></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/security.html" target="_blank" rel="noopener">MySQL Enterprise Authentication</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/tde.html" target="_blank" rel="noopener">MySQL Enterprise TDE</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/encryption.html" target="_blank" rel="noopener">MySQL Enterprise Encryption</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/masking.html" target="_blank" rel="noopener">MySQL Enterprise Masking</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/firewall.html" target="_blank" rel="noopener">MySQL Enterprise Firewall</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/enterprise/audit.html" target="_blank" rel="noopener">MySQL Enterprise Audit</a></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Enterprise Scalability</strong></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Thread Pool</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Enterprise High-Availability</strong></td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>MySQL Group Replication</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>MySQL InnoDB Cluster</td>
-<td></td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>MySQL Cluster Manager</strong></td>
-<td></td>
-<td></td>
-<td>√</td>
-</tr>
-<tr>
-<td>Configuration &amp; Provisioning</td>
-<td></td>
-<td></td>
-<td>√</td>
-</tr>
-<tr>
-<td>Automatic Scaling</td>
-<td></td>
-<td></td>
-<td>√</td>
-</tr>
-<tr>
-<td>Management &amp; Monitoring</td>
-<td></td>
-<td></td>
-<td>√</td>
-</tr>
-<tr>
-<td><a href="https://www.mysql.com/cn/products/cluster/" target="_blank" rel="noopener">MySQL Cluster Geo-Replication</a></td>
-<td></td>
-<td></td>
-<td>√</td>
-</tr>
-</tbody></table>
+<h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><ul>
+<li><p><strong>数据库</strong>：就是一个存储结构化数据的仓库。物理操作系统文件或其他形式文件类型的集合，通常来说存在与文件系统之上。</p>
+</li>
+<li><p><strong>关系型数据库</strong>：是创建在<strong>关系模型</strong>基础上的数据库，典型代表有：MySQL、Oracle、Microsoft SQL Server、PostgreSQL 等。</p>
+</li>
+<li><p><strong>非关系型数据库（NoSQL）</strong>：对不同于传统的关系数据库的数据库管理系统的统称。与关系数据库最大的不同点是不使用SQL作为查询语言。 典型代表有：Redis、MongoDB 等。</p>
+</li>
+<li><p><strong>实例</strong>：MySQL 数据库由后台线程以及一个共享内存区组成。数据库实例才是真正用于操作数据库文件的。MySQL 数据库实例在系统上的表现就是一个进程。</p>
+</li>
+<li><p><strong>库</strong>：本质是一个文件夹。</p>
+</li>
+<li><p><strong>表</strong>：本质就是一个文件。</p>
+</li>
+<li><p><strong>记录</strong>：相当于文件中的一行。</p>
+</li>
+<li><p><strong>存储引擎</strong>：可以理解成文件系统，存储引擎的对象就是表。</p>
+</li>
+<li><p><strong>OLAP</strong>：On-Line Transaction Processing，联机事务处理。</p>
+</li>
+<li><p><strong>OLTP</strong>：On-Line Analytical Processing，联机分析处理。</p>
+</li>
+</ul>
+<h2 id="学习资料"><a href="#学习资料" class="headerlink" title="学习资料"></a>学习资料</h2><ul>
+<li><a href="https://db-engines.com/en/ranking" target="_blank" rel="noopener">DB-Engines</a></li>
+<li><a href="http://mysql.taobao.org/monthly/" target="_blank" rel="noopener">数据库内核月报</a></li>
+<li><a href="https://juejin.im/book/6844733769996304392" target="_blank" rel="noopener">MySQL 是怎样运行的：从根儿上理解 MySQL</a></li>
+<li><a href="https://time.geekbang.org/column/intro/100020801" target="_blank" rel="noopener">MySQL实战45讲</a></li>
+<li><a href="https://book.douban.com/subject/3354490/" target="_blank" rel="noopener">《MySQL 必知必会》</a></li>
+<li><a href="https://book.douban.com/subject/24708143/" target="_blank" rel="noopener">《MySQL技术内幕 · InnoDB 存储引擎》</a></li>
+<li><a href="https://book.douban.com/subject/23008813/" target="_blank" rel="noopener">《高性能MySQL》</a></li>
+</ul>
 
           
         
@@ -2680,282 +2773,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/24/mysql-backup/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/24/mysql-backup/" class="post-title-link" itemprop="url">MySQL · 备份与恢复</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-24 10:00:24" itemprop="dateCreated datePublished" datetime="2019-07-24T10:00:24+08:00">2019-07-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2020-04-19 09:59:51" itemprop="dateModified" datetime="2020-04-19T09:59:51+08:00">2020-04-19</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>根据备份方法不同：</p>
-<ul>
-<li>热备：数据库运行过程中直接备份，对正在运行的数据库操作没有任何的影响。</li>
-<li>冷备：备份操作是在数据库停止的情况下，这种备份最为简单，只需要复制相关的数据库物理文件即可。</li>
-<li>温备：数据库运行过程中直接备份，但是会对当前数据库操作有所影响。</li>
-</ul>
-<p>根据备份后文件的内容不同：</p>
-<ul>
-<li>逻辑备份：是指备份出的文件内容是可读的，一般内容是 SQL 语句，如 mysqldump。</li>
-<li>物理备份：是指复制数据库的物理文件，如 xtrabackup。</li>
-</ul>
-<p>根据备份数据库内容不同：</p>
-<ul>
-<li>全量备份：是指对数据库进行一个完整的备份。</li>
-<li>增量备份：是指在上次完全备份的基础上，对于更改的数据进行备份。</li>
-<li>日志备份：是指对二进制日志的备份，通过它可以完成 point-in-time 的恢复工作。</li>
-</ul>
-<h2 id="冷备"><a href="#冷备" class="headerlink" title="冷备"></a>冷备</h2><p><strong>备份内容</strong>：共享表空间文件 <code>.frm</code>、独立表空间文件 <code>.ibd</code>、重做日志文件、配置文件 <code>my.cnf</code>。</p>
-<p><strong>优缺点</strong>：</p>
-<ul>
-<li>优点：备份恢复简单、速度快。</li>
-<li>缺点：备份的文件通常比逻辑文件大很多，且需要停机，不适于用于生产环境。</li>
-</ul>
-<h2 id="逻辑备份"><a href="#逻辑备份" class="headerlink" title="逻辑备份"></a>逻辑备份</h2><h3 id="mysqldump"><a href="#mysqldump" class="headerlink" title="mysqldump"></a>mysqldump</h3><p><strong>语法</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Usage: mysqldump [OPTIONS] database [tables] &gt; [backupfile.sql]</span><br><span class="line">       mysqldump [OPTIONS] --databases [OPTIONS] DB1 [DB2 DB3...] &gt; [backupfile.sql]</span><br><span class="line">       mysqldump [OPTIONS] --all-databases [OPTIONS] &gt; [backupfile.sql]</span><br></pre></td></tr></table></figure>
-
-<p><strong>参数</strong></p>
-<ul>
-<li><p>–single-transaction：在备份之前，先执行 start transaction 命令，以此来获得备份的一致性，当前该参数只对 InnoDB 存储引擎有效。当启用此参数时，确保没有任何 DDL 语句执行，因为一致性读并不能隔离 DDL 操作。</p>
-</li>
-<li><p>–lock-tables (-l)：在备份中，依次锁住每个库下所有表，一般用于 MyISAM 存储引擎，当备份时只对数据库进行读取操作，不过备份依然可以保证一致性。对于 InnoDB 存储引擎，不需要使用该参数。</p>
-</li>
-<li><p>–lock-all-tables (-x)：在备份中，对所有库的所有表上锁。</p>
-</li>
-<li><p>–no-data (-d)：不备份数据。</p>
-</li>
-<li><p>–extended-insert (-e)：使用全新多行 insert 语法，默认开启。</p>
-</li>
-<li><p>–master-data [=value]：通过该参数产生的备份转存文件主要用来建立一个 replication。</p>
-<ul>
-<li><p>1：转存文件中记录 change master 语句。</p>
-</li>
-<li><p>2：转存文件中 change master 语句被注释。</p>
-</li>
-</ul>
-</li>
-<li><p>–flush-logs：开始备份之前刷新日志。</p>
-</li>
-<li><p>–events (-E)：备份事件。</p>
-</li>
-<li><p>–routines (-R)：备份存储过程和函数。</p>
-</li>
-<li><p>–triggers：备份触发器，该选项默认启用。</p>
-</li>
-<li><p>–where=’where_condition’ (-w ‘where_condition’)：导出给定条件的数据。</p>
-</li>
-</ul>
-<p><strong>实践</strong></p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 备份所有库</span></span><br><span class="line">mysqldump --user=sre --password=<span class="string">'xx'</span> --all-databases &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份指定库</span></span><br><span class="line">mysqldump -u&lt;user&gt; -p&lt;password&gt; --databases school hospital &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份指定表</span></span><br><span class="line">mysqldump --user=sre --password=<span class="string">'xx'</span> school table_name &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导出表结构，无数据</span></span><br><span class="line">mysqldump --user=sre --password=<span class="string">'xx'</span> --all--database --no-data &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份存储过程</span></span><br><span class="line">mysqldump --user=sre --password=<span class="string">'xx'</span> --single-transaction --master-data=<span class="number">2</span> -n -d -t -R user &gt; dump.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份InnoDB</span></span><br><span class="line">mysqldump --socket=mysql.sock --user=user --password=pass --single-transaction --flush-logs --master-data=<span class="number">2</span> --all-databases --routines --events &gt; dump.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份Myisam</span></span><br><span class="line">mysqldump --socket=mysql.sock --user=user --password=pass --lock-all-tables --flush-logs --master-data=<span class="number">2</span> --all-databases --routines --events &gt; dump.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 按条件备份</span></span><br><span class="line">mysqldump -usre -p<span class="string">'xx'</span> -t user uc_event_logs_bak --where=<span class="string">"id &gt; 46005503"</span> &gt; uc_event_logs_bak2.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 后台执行任务</span></span><br><span class="line">nohup mysql -usre -p<span class="string">'xx'</span> user &lt; uc_event_logs_bak2.sql <span class="number">2</span>&gt; myout.file &amp;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>注意：默认是会备份视图。</p>
-</blockquote>
-<h3 id="select…into-outfile"><a href="#select…into-outfile" class="headerlink" title="select…into outfile"></a>select…into outfile</h3><p><strong>作用</strong>：也是一种逻辑备份的方法，更准确的说是导出一张表中的数据。</p>
-<p><strong>语法</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">select [column1],[column2]...</span><br><span class="line">into outfile <span class="string">'file_name'</span></span><br><span class="line">from table where...</span><br><span class="line"></span><br><span class="line">FIELDS TERMINATED BY 用来对字段值之间进行分割，</span><br><span class="line">FIELDS [OPTIONALLY] ENCLOSED BY 用来对字段值进行包裹</span><br><span class="line">FIELDS  LINES TERMINATED BY  用来对每行结束指定换行符</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>注意：file_name 文件所在路径权限必须是 mysql:mysql。</p>
-</blockquote>
-<p><strong>实践</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">// departments表数据</span><br><span class="line">mysql&gt; select * from departments;</span><br><span class="line">+---------+--------------------+</span><br><span class="line">| dept_no | dept_name          |</span><br><span class="line">+---------+--------------------+</span><br><span class="line">| d009    | Customer Service   |</span><br><span class="line">| d005    | Development        |</span><br><span class="line">| d002    | Finance            |</span><br><span class="line">| d003    | Human Resources    |</span><br><span class="line">| d001    | Marketing          |</span><br><span class="line">| d004    | Production         |</span><br><span class="line">| d006    | Quality Management |</span><br><span class="line">| d008    | Research           |</span><br><span class="line">| d007    | Sales              |</span><br><span class="line">+---------+--------------------+</span><br><span class="line"></span><br><span class="line">// 导出为文件</span><br><span class="line">select * from departments into outfile <span class="string">'/data/mysql/department.sql'</span>;</span><br><span class="line"></span><br><span class="line">// 查看导出数据</span><br><span class="line">[root@db mysql]<span class="comment"># cat department.sql </span></span><br><span class="line">d009	Customer Service</span><br><span class="line">d005	Development</span><br><span class="line">d002	Finance</span><br><span class="line">d003	Human Resources</span><br><span class="line">d001	Marketing</span><br><span class="line">d004	Production</span><br><span class="line">d006	Quality Management</span><br><span class="line">d008	Research</span><br><span class="line">d007	Sales</span><br></pre></td></tr></table></figure>
-
-<p><strong>注意</strong>：使用该命令导出文件可能会报错：”The MySQL server is running with the –secure-file-priv option so it cannot execute this statement “，原因是 secure_file_priv 为 NULL，需要设置目录。</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SHOW VARIABLES LIKE <span class="string">"secure_file_priv"</span>;</span><br><span class="line">+------------------+--------------+</span><br><span class="line">| Variable_name    | Value        |</span><br><span class="line">+------------------+--------------+</span><br><span class="line">| secure_file_priv | /<span class="keyword">data</span>/mysql/ |</span><br><span class="line">+------------------+--------------+</span><br></pre></td></tr></table></figure>
-
-<h3 id="逻辑备份恢复"><a href="#逻辑备份恢复" class="headerlink" title="逻辑备份恢复"></a>逻辑备份恢复</h3><p>有三种方式：</p>
-<ul>
-<li>mysql</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -p<span class="string">'xx'</span> &lt; backup.sql</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>source</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; source /<span class="keyword">data</span>/mysql/backup.sql</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>load data infile</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from departments;</span><br><span class="line">Empty set (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; load <span class="keyword">data</span> infile <span class="string">'/data/mysql/department.sql'</span> into table departments;</span><br><span class="line">Query OK, <span class="number">9</span> rows affected (<span class="number">0.01</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select * from departments;</span><br><span class="line">+---------+--------------------+</span><br><span class="line">| dept_no | dept_name          |</span><br><span class="line">+---------+--------------------+</span><br><span class="line">| d009    | Customer Service   |</span><br><span class="line">| d005    | Development        |</span><br><span class="line">| d002    | Finance            |</span><br><span class="line">| d003    | Human Resources    |</span><br><span class="line">| d001    | Marketing          |</span><br><span class="line">| d004    | Production         |</span><br><span class="line">| d006    | Quality Management |</span><br><span class="line">| d008    | Research           |</span><br><span class="line">| d007    | Sales              |</span><br><span class="line">+---------+--------------------+</span><br></pre></td></tr></table></figure>
-
-<h2 id="二进制日志备份与恢复"><a href="#二进制日志备份与恢复" class="headerlink" title="二进制日志备份与恢复"></a>二进制日志备份与恢复</h2><p><strong>作用</strong>：二进制日志非常关键，用户可以通过它完成 point-in-time 的恢复工作。对于 InnoDB 存储引擎，推荐的二进制日志的服务器配置应该是：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[mysqld]</span></span><br><span class="line"><span class="string">log-bin</span> <span class="string">=</span> <span class="string">mysql-bin</span></span><br><span class="line"><span class="string">sync_binlog</span> <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">innodb_support_xa</span> <span class="string">=</span> <span class="number">1</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>备份</strong>：在备份二进制日志之前，可以通过 FLUSH LOGS 命令生成一个新的二进制日志文件，然后后备份之前的二进制日志。</p>
-<p><strong>恢复</strong>：二进制日志的恢复主要通过工具 <a href="https://huiraoo.github.io/blog/2019/11/07/mysql-tool-mysqlbinlog/">mysqlbinlog</a> 实现。例如：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// 恢复单个文件</span><br><span class="line">mysqlbinlog mysql-bin.<span class="number">000001</span> | mysql -uroot -p test </span><br><span class="line"></span><br><span class="line">// 恢复多个文件</span><br><span class="line">mysqlbinlog mysql-bin.[<span class="number">0</span>-<span class="number">10</span>]* | mysql -uroot -p test</span><br><span class="line"></span><br><span class="line">// 也可以先导出sql文件，再使用source导入，好处是可以对导出的文件进行修改</span><br><span class="line">mysqlbinlog mysql-bin.<span class="number">000001</span> &gt; /tmp/backup.sql</span><br><span class="line">mysql -uroot -p -e <span class="string">"source /tmp/backup.sql"</span></span><br><span class="line"></span><br><span class="line">// 也可以通过--start-position和--stop-position指定某个位置进行恢复</span><br><span class="line">// 也可以通过--start-datetime和--stop-datetime指定某个时间点进行恢复</span><br></pre></td></tr></table></figure>
-
-<h2 id="热备"><a href="#热备" class="headerlink" title="热备"></a>热备</h2><p><a href="https://huiraoo.github.io/blog/2019/06/18/mysql-xtrabackup/">XtraBackup</a></p>
-<h2 id="快照备份"><a href="#快照备份" class="headerlink" title="快照备份"></a>快照备份</h2><p>MySQL 数据库本身并不支持快照功能，因此快照备份是指通过文件系统支持的快照功能对数据库进行备份。备份的前提是将所有数据库文件放在同一个文件分区中，然后对该分区进行快照操作。支持快照功能的文件系统和设备包括 GUN/Linux 的逻辑管理器 LVM。</p>
-<p>LVM 是 Linux 系统下对磁盘分区进行管理的一种机制，LVM 在硬盘和分区之上建立一个逻辑层，来提高磁盘分区管理的灵活性。LVM 使用了写时复制（Copy-on-write）技术来创建快照，当创建一个快照时，仅复制原始卷中数据的元数据（meta data），并不会有数据的物理操作，因此快照的创建过程非常快。</p>
-<p>使用 LVM 快照备份 InnoDB 存储引擎表非常简单，只要把与 InnoDB 存储引擎相关的文件如共享表空间、独立表空间、重做日志文件等放在同一个逻辑卷中，然后对这个逻辑卷做快照备份即可。在对 InnoDB 存储引擎文件做快照时，数据库无须关闭，即可以进行在线备份。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>任何时候都需要做好远程异地备份，也就是容灾的防范。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3004,7 +2821,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">169</span>
+                    <span class="site-state-item-count">170</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

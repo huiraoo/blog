@@ -352,6 +352,289 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/31/mysql-tuning-mes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/31/mysql-tuning-mes/" class="post-title-link" itemprop="url">MySQL · 调优案例 · MES</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-31 09:46:50" itemprop="dateCreated datePublished" datetime="2019-10-31T09:46:50+08:00">2019-10-31</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-15 16:50:03" itemprop="dateModified" datetime="2019-11-15T16:50:03+08:00">2019-11-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="数据归档"><a href="#数据归档" class="headerlink" title="数据归档"></a>数据归档</h2><h3 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h3><table>
+<thead>
+<tr>
+<th>工厂号</th>
+<th>工厂名</th>
+<th>月结结束时间</th>
+<th>数据库地址</th>
+<th>端口</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1026</td>
+<td>合肥波轮</td>
+<td>2019/10/31 11:00</td>
+<td>192.168.175.11</td>
+<td>3306</td>
+</tr>
+<tr>
+<td>1022</td>
+<td>合肥空调</td>
+<td>2019/10/31 12:00</td>
+<td>10.142.201.254</td>
+<td>3306</td>
+</tr>
+</tbody></table>
+<h3 id="策略"><a href="#策略" class="headerlink" title="策略"></a>策略</h3><p>订单日期是 3 个月以前，且订单状态是已完成</p>
+<table>
+<thead>
+<tr>
+<th>表</th>
+<th>说明</th>
+<th>关联字段</th>
+<th>总数据量</th>
+<th>归档数据量</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>base_production_order_t</td>
+<td>订单表</td>
+<td>Code</td>
+<td>17627</td>
+<td>5174</td>
+</tr>
+<tr>
+<td>bns_pm_operation</td>
+<td>条码表</td>
+<td>WorkUser_MOrderCode</td>
+<td>2656496</td>
+<td>1530802</td>
+</tr>
+<tr>
+<td>bns_pm_scanhistory_month</td>
+<td>扫描记录表</td>
+<td>Code</td>
+<td>7392827</td>
+<td>4370623</td>
+</tr>
+<tr>
+<td>bns_qm_processtest</td>
+<td>过程检验表</td>
+<td>Code</td>
+<td>7562577</td>
+<td>4508488</td>
+</tr>
+<tr>
+<td>bns_pm_prodprocess</td>
+<td>工位过站记录表</td>
+<td>Order_Code</td>
+<td>….</td>
+<td>….</td>
+</tr>
+<tr>
+<td>bns_pm_barcodecode</td>
+<td>物料绑定表</td>
+<td>….</td>
+<td>6614117</td>
+<td>3967682</td>
+</tr>
+</tbody></table>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> base_production_order_t <span class="keyword">where</span> EST &lt; <span class="keyword">now</span>()-<span class="built_in">interval</span> <span class="number">3</span> <span class="keyword">month</span> <span class="keyword">and</span> OrderStatus = <span class="string">'2'</span>;</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> bns_pm_barcodecode <span class="keyword">where</span> scan_time &lt; <span class="keyword">now</span>()-<span class="built_in">interval</span> <span class="number">3</span> <span class="keyword">month</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h3><h4 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h4><ul>
+<li><a href="https://huiraoo.github.io/blog/2019/07/05/mysql-toolkit/">安装 Percona Toolkit</a></li>
+<li>创建归档表</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 归档表的表结构与原表一致，命名统一采用原表名_archive的格式</span></span><br><span class="line">bns_pm_operation_archive</span><br><span class="line">bns_pm_scanhistory_month_archive</span><br><span class="line">bns_qm_processtest_archive</span><br><span class="line">bns_pm_prodprocess_archive</span><br><span class="line">bns_pm_barcodecode_archive</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>开始归档</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 归档命令</span></span><br><span class="line">nohup pt-archiver --source h=xx,P=<span class="number">3306</span>,u=sre,p=<span class="string">'xx'</span>,D=<span class="string">'xx'</span>,t=bns_pm_barcodecode --charset=utf8 --dest  h=xx,P=<span class="number">3306</span>,u=sre,p=<span class="string">'xx'</span>,D=<span class="string">'xx'</span>,t=bns_pm_barcodecode_archive --where <span class="string">"scan_time &lt; now()-interval 3 month"</span> --limit <span class="number">1000</span> --commit-each --bulk-insert --no-version-check &gt; myout.file <span class="number">2</span>&gt;&amp;<span class="number">1</span> &amp;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>实时查看进度</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> information_schema;</span><br><span class="line"><span class="keyword">select</span> table_name,table_rows <span class="keyword">from</span> <span class="keyword">tables</span> <span class="keyword">where</span> TABLE_SCHEMA = <span class="string">'xx'</span> <span class="keyword">and</span> table_name=<span class="string">'xx'</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="bns-pm-barcodecode"><a href="#bns-pm-barcodecode" class="headerlink" title="bns_pm_barcodecode"></a>bns_pm_barcodecode</h4><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开始归档</span></span><br><span class="line">nohup pt-archiver --source h=<span class="number">192.168</span>.<span class="number">175.11</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'sre@@p$i'</span>,D=<span class="string">'cosmo_im_1026'</span>,t=bns_pm_barcodecode --charset=utf8 --dest  h=<span class="number">192.168</span>.<span class="number">175.11</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'sre@@p$i'</span>,D=<span class="string">'cosmo_im_1026'</span>,t=bns_pm_barcodecode_archive --where <span class="string">"scan_time &lt; now()-interval 3 month"</span> --limit <span class="number">1000</span> --commit-each --bulk-insert --no-version-check &gt; myout.file <span class="number">2</span>&gt;&amp;<span class="number">1</span> &amp;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看归档进度</span></span><br><span class="line">use information_schema;</span><br><span class="line">select table_name,table_rows from tables where TABLE_SCHEMA = <span class="string">'cosmo_im_1026'</span> and table_name=<span class="string">'bns_pm_barcodecode_archive'</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="bns-pm-operation"><a href="#bns-pm-operation" class="headerlink" title="bns_pm_operation"></a>bns_pm_operation</h4><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开始归档</span></span><br><span class="line">nohup pt-archiver --source h=<span class="number">192.168</span>.<span class="number">175.11</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'sre@@p$i'</span>,D=<span class="string">'cosmo_im_1026'</span>,t=bns_pm_operation --charset=utf8 --dest  h=<span class="number">192.168</span>.<span class="number">175.11</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'sre@@p$i'</span>,D=<span class="string">'cosmo_im_1026'</span>,t=bns_pm_operation_archive --where <span class="string">"WorkUser_MOrderCode IN (select Code from base_production_order_t where EST &lt; now()-interval 3 month and OrderStatus = '2')"</span> --limit <span class="number">1000</span> --commit-each --bulk-insert --no-version-check &gt; myout1.file <span class="number">2</span>&gt;&amp;<span class="number">1</span> &amp;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看归档进度</span></span><br><span class="line">use information_schema;</span><br><span class="line">select table_name,table_rows from tables where TABLE_SCHEMA = <span class="string">'cosmo_im_1026'</span> and table_name=<span class="string">'bns_pm_operation_archive'</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="bns-pm-scanhistory-month"><a href="#bns-pm-scanhistory-month" class="headerlink" title="bns_pm_scanhistory_month"></a>bns_pm_scanhistory_month</h4><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开始归档</span></span><br><span class="line">nohup pt-archiver --source h=<span class="number">192.168</span>.<span class="number">175.11</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'sre@@p$i'</span>,D=<span class="string">'cosmo_im_1026'</span>,t=bns_pm_scanhistory_month --charset=utf8 --dest  h=<span class="number">192.168</span>.<span class="number">175.11</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'sre@@p$i'</span>,D=<span class="string">'cosmo_im_1026'</span>,t=bns_pm_scanhistory_month_archive --where <span class="string">"Code IN (select Code from base_production_order_t where EST &lt; now()-interval 3 month and OrderStatus = '2')"</span> --limit <span class="number">1000</span> --commit-each --bulk-insert --no-version-check &gt; myout2.file <span class="number">2</span>&gt;&amp;<span class="number">1</span> &amp;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看归档进度</span></span><br><span class="line">use information_schema;</span><br><span class="line">select table_name,table_rows from tables where TABLE_SCHEMA = <span class="string">'cosmo_im_1026'</span> and table_name=<span class="string">'bns_pm_scanhistory_month_archive'</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="bns-qm-processtest"><a href="#bns-qm-processtest" class="headerlink" title="bns_qm_processtest"></a>bns_qm_processtest</h4><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开始归档</span></span><br><span class="line">nohup pt-archiver --source h=<span class="number">192.168</span>.<span class="number">175.11</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'sre@@p$i'</span>,D=<span class="string">'cosmo_im_1026'</span>,t=bns_qm_processtest --charset=utf8 --dest  h=<span class="number">192.168</span>.<span class="number">175.11</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'sre@@p$i'</span>,D=<span class="string">'cosmo_im_1026'</span>,t=bns_qm_processtest_archive --where <span class="string">"Code IN (select Code from base_production_order_t where EST &lt; now()-interval 3 month and OrderStatus = '2')"</span> --limit <span class="number">1000</span> --commit-each --bulk-insert --no-version-check &gt; myout3.file <span class="number">2</span>&gt;&amp;<span class="number">1</span> &amp;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看归档进度</span></span><br><span class="line">use information_schema;</span><br><span class="line">select table_name,table_rows from tables where TABLE_SCHEMA = <span class="string">'cosmo_im_1026'</span> and table_name=<span class="string">'bns_qm_processtest_archive'</span>;</span><br></pre></td></tr></table></figure>
+
+<h4 id="bns-pm-prodprocess"><a href="#bns-pm-prodprocess" class="headerlink" title="bns_pm_prodprocess"></a>bns_pm_prodprocess</h4><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 开始归档</span></span><br><span class="line">nohup pt-archiver --source h=<span class="number">192.168</span>.<span class="number">175.11</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'sre@@p$i'</span>,D=<span class="string">'cosmo_im_1026'</span>,t=bns_pm_prodprocess --charset=utf8 --dest  h=<span class="number">192.168</span>.<span class="number">175.11</span>,P=<span class="number">3306</span>,u=sre,p=<span class="string">'sre@@p$i'</span>,D=<span class="string">'cosmo_im_1026'</span>,t=bns_pm_prodprocess_archive --where <span class="string">"Order_Code IN (select Code from base_production_order_t where EST &lt; now()-interval 3 month and OrderStatus = '2')"</span> --limit <span class="number">1000</span> --commit-each --bulk-insert --no-version-check &gt; myout4.file <span class="number">2</span>&gt;&amp;<span class="number">1</span> &amp;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看归档进度</span></span><br><span class="line">use information_schema;</span><br><span class="line">select table_name,table_rows from tables where TABLE_SCHEMA = <span class="string">'cosmo_im_1026'</span> and table_name=<span class="string">'bns_pm_prodprocess_archive'</span>;</span><br></pre></td></tr></table></figure>
+
+<h3 id="设置自动归档"><a href="#设置自动归档" class="headerlink" title="设置自动归档"></a>设置自动归档</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 存储过程</span></span><br><span class="line">DELIMITER $$ </span><br><span class="line"></span><br><span class="line">DROP PROCEDURE <span class="keyword">IF</span> EXISTS sp_archive$$ </span><br><span class="line">CREATE PROCEDURE sp_archive()</span><br><span class="line"><span class="keyword">BEGIN</span> 	</span><br><span class="line">	INSERT INTO bns_pm_barcodecode_archive SELECT * FROM bns_pm_barcodecode WHERE </span><br><span class="line">	scan_time &lt; now() - interval <span class="number">3</span> month;</span><br><span class="line">	DELETE FROM bns_pm_barcodecode WHERE scan_time &lt; now() - interval <span class="number">3</span> month;</span><br><span class="line"><span class="keyword">END</span> $$</span><br><span class="line"></span><br><span class="line">DELIMITER ;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 事件</span></span><br><span class="line">CREATE EVENT Event_Archive_Daily</span><br><span class="line">ON SCHEDULE EVERY <span class="number">1</span> DAY STARTS <span class="string">'2019-11-01 02:00:00'</span></span><br><span class="line">ON COMPLETION PRESERVE</span><br><span class="line">ENABLE</span><br><span class="line"><span class="keyword">DO</span> call sp_archive();</span><br></pre></td></tr></table></figure>
+
+<h2 id="慢-SQL-优化"><a href="#慢-SQL-优化" class="headerlink" title="慢 SQL 优化"></a>慢 SQL 优化</h2><p><strong>工厂</strong>：黄岛滚筒</p>
+<p><strong>数据库</strong>：10.180.129.24:3306</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 慢SQL1</span></span><br><span class="line"><span class="keyword">UPDATE</span> bns_pm_operation a</span><br><span class="line"><span class="keyword">SET</span> a.T_WMS_1 = <span class="string">'1'</span></span><br><span class="line"><span class="keyword">WHERE</span> a.Create_Date &lt; <span class="string">'2019-04-01'</span></span><br><span class="line"><span class="keyword">AND</span> a.T_WMS_1 = <span class="string">'0'</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 慢SQL2</span></span><br><span class="line"><span class="keyword">SELECT</span> ZYH</span><br><span class="line"><span class="keyword">FROM</span> t_mes_scan</span><br><span class="line"><span class="keyword">WHERE</span> PPLACE = <span class="string">'一线总装箱体上线'</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> REALDATE <span class="keyword">DESC</span></span><br><span class="line"><span class="keyword">LIMIT</span> <span class="number">0</span>, <span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 视图</span></span><br><span class="line"><span class="keyword">SELECT</span></span><br><span class="line">	t.ID <span class="keyword">AS</span> N_ID,</span><br><span class="line">	<span class="keyword">ifnull</span>( t.WorkUser_RandomBarCode, t.WorkUser_BarCode ) <span class="keyword">AS</span> SERN,</span><br><span class="line">	t.WorkUser_MOrderCode <span class="keyword">AS</span> ORDER_ID,</span><br><span class="line">	t.Work_OperationOutMainItemCode <span class="keyword">AS</span> ZYH,</span><br><span class="line">	t.WorkUser_RightMostItemName <span class="keyword">AS</span> XH_ID,</span><br><span class="line">	t.WorkUser_LineName <span class="keyword">AS</span> LINENAME,</span><br><span class="line">	t3.Work_Cell_Desc <span class="keyword">AS</span> PPLACE,</span><br><span class="line">	t2.ScanTime <span class="keyword">AS</span> REALDATE,</span><br><span class="line">	t2.User_Code <span class="keyword">AS</span> YG_ID,</span><br><span class="line">	t2.Create_Date <span class="keyword">AS</span> CREATEDATE,</span><br><span class="line">	t4.Team_Code <span class="keyword">AS</span> Team_Code,</span><br><span class="line">	t4.Team_Desc <span class="keyword">AS</span> Team_Desc,</span><br><span class="line">	t5.Shift_Code <span class="keyword">AS</span> Shift_Code,</span><br><span class="line">	t5.Shift_Desc <span class="keyword">AS</span> Shift_Desc </span><br><span class="line"><span class="keyword">FROM</span> bns_pm_operation t </span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> bns_pm_scanhistory_month t2 <span class="keyword">ON</span> t.WorkUser_BarCode = t2.WorkUser_BarCode</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> pm_work_cells_t t3 <span class="keyword">ON</span> t2.Work_Cell_Code = t3.Work_Cell_Code </span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> base_team_t t4 <span class="keyword">ON</span> t2.Team_Code = t4.Team_Code</span><br><span class="line"><span class="keyword">LEFT</span> <span class="keyword">JOIN</span> base_shifts_t t5 <span class="keyword">ON</span> t2.Shift_Code = t5.Shift_Code </span><br><span class="line"><span class="keyword">WHERE</span> t2.Type = <span class="number">0</span></span><br><span class="line"><span class="keyword">ORDER</span> <span class="keyword">BY</span> t2.ScanTime</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/31/mysql-procedure/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2282,227 +2565,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/25/mysql-config-innodb-flush-log-at-trx-commit/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/25/mysql-config-innodb-flush-log-at-trx-commit/" class="post-title-link" itemprop="url">MySQL · 配置参数 · innodb_flush_log_at_trx_commit</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-25 09:33:42" itemprop="dateCreated datePublished" datetime="2019-10-25T09:33:42+08:00">2019-10-25</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-15 16:28:46" itemprop="dateModified" datetime="2019-11-15T16:28:46+08:00">2019-11-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="参数说明"><a href="#参数说明" class="headerlink" title="参数说明"></a>参数说明</h2><p><a href="https://dev.mysql.com/doc/refman/5.7/en/innodb-parameters.html#sysvar_innodb_flush_log_at_trx_commit" target="_blank" rel="noopener"><strong>innodb_flush_log_at_trx_commit</strong></a>：控制 <code>ib_logfile</code> 日志（记录 <code>redo log</code>  <code>undo log</code> 信息）的刷新方式。</p>
-<table>
-<thead>
-<tr>
-<th>Property</th>
-<th>Value</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><strong>Command-Line Format</strong></td>
-<td><code>--innodb-flush-log-at-trx-commit=#</code></td>
-</tr>
-<tr>
-<td><strong>System Variable</strong></td>
-<td><code>innodb_flush_log_at_trx_commit</code></td>
-</tr>
-<tr>
-<td><strong>Scope</strong></td>
-<td>Global</td>
-</tr>
-<tr>
-<td><strong>Dynamic</strong></td>
-<td>Yes</td>
-</tr>
-<tr>
-<td><strong>Type</strong></td>
-<td>Enumeration</td>
-</tr>
-<tr>
-<td><strong>Default Value</strong></td>
-<td><code>1</code></td>
-</tr>
-<tr>
-<td><strong>Valid Values</strong></td>
-<td><code>0</code> <code>1</code> <code>2</code></td>
-</tr>
-</tbody></table>
-<ul>
-<li><strong>innodb_flush_log_at_trx_commit = 0</strong>，表示每隔 1 秒把 <code>log buffer</code> 刷到 <code>log file</code> 中去，并且同时调用文件系统的 <code>flush</code> 操作将缓存刷新到磁盘上去。也就是说一秒之前的日志都保存在日志缓冲区，也就是内存上，在<strong>mysqld 进程崩溃</strong>的情况下，可能丢失 1 秒的事务数据。</li>
-<li><strong>innodb_flush_log_at_trx_commit = 1</strong>，表示在每次事务提交后，会把 <code>log buffer</code> 刷到 <code>log file</code> 中去，并且调用文件系统的 <code>flush</code> 操作将缓存刷新到磁盘上去。</li>
-<li><strong>innodb_flush_log_at_trx_commit = 2</strong>，表示在每次事务提交后，会把 <code>log buffer</code> 刷到 <code>log file</code> 中去，但并不会立即刷写到磁盘。只有在<strong>数据库所在的主机操作系统损坏或者突然掉电</strong>的情况下，可能丢失 1 秒的事务数据。</li>
-</ul>
-<h2 id="设置"><a href="#设置" class="headerlink" title="设置"></a>设置</h2><ul>
-<li><strong>性能</strong>：0 &gt; 2 &gt; 1</li>
-<li><strong>安全</strong>：1 &gt; 2 &gt;0</li>
-<li><strong>推荐</strong>：区分业务场景进行设置</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 支付场景：innodb_flush_log_at_trx_commit = 1</span></span><br><span class="line"><span class="comment"># 其他场景：innodb_flush_log_at_trx_commit = 2</span></span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2551,7 +2613,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">169</span>
+                    <span class="site-state-item-count">170</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

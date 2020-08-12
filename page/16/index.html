@@ -352,6 +352,282 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/24/mysql-backup/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/07/24/mysql-backup/" class="post-title-link" itemprop="url">MySQL · 备份与恢复</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-24 10:00:24" itemprop="dateCreated datePublished" datetime="2019-07-24T10:00:24+08:00">2019-07-24</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-04-19 09:59:51" itemprop="dateModified" datetime="2020-04-19T09:59:51+08:00">2020-04-19</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>根据备份方法不同：</p>
+<ul>
+<li>热备：数据库运行过程中直接备份，对正在运行的数据库操作没有任何的影响。</li>
+<li>冷备：备份操作是在数据库停止的情况下，这种备份最为简单，只需要复制相关的数据库物理文件即可。</li>
+<li>温备：数据库运行过程中直接备份，但是会对当前数据库操作有所影响。</li>
+</ul>
+<p>根据备份后文件的内容不同：</p>
+<ul>
+<li>逻辑备份：是指备份出的文件内容是可读的，一般内容是 SQL 语句，如 mysqldump。</li>
+<li>物理备份：是指复制数据库的物理文件，如 xtrabackup。</li>
+</ul>
+<p>根据备份数据库内容不同：</p>
+<ul>
+<li>全量备份：是指对数据库进行一个完整的备份。</li>
+<li>增量备份：是指在上次完全备份的基础上，对于更改的数据进行备份。</li>
+<li>日志备份：是指对二进制日志的备份，通过它可以完成 point-in-time 的恢复工作。</li>
+</ul>
+<h2 id="冷备"><a href="#冷备" class="headerlink" title="冷备"></a>冷备</h2><p><strong>备份内容</strong>：共享表空间文件 <code>.frm</code>、独立表空间文件 <code>.ibd</code>、重做日志文件、配置文件 <code>my.cnf</code>。</p>
+<p><strong>优缺点</strong>：</p>
+<ul>
+<li>优点：备份恢复简单、速度快。</li>
+<li>缺点：备份的文件通常比逻辑文件大很多，且需要停机，不适于用于生产环境。</li>
+</ul>
+<h2 id="逻辑备份"><a href="#逻辑备份" class="headerlink" title="逻辑备份"></a>逻辑备份</h2><h3 id="mysqldump"><a href="#mysqldump" class="headerlink" title="mysqldump"></a>mysqldump</h3><p><strong>语法</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Usage: mysqldump [OPTIONS] database [tables] &gt; [backupfile.sql]</span><br><span class="line">       mysqldump [OPTIONS] --databases [OPTIONS] DB1 [DB2 DB3...] &gt; [backupfile.sql]</span><br><span class="line">       mysqldump [OPTIONS] --all-databases [OPTIONS] &gt; [backupfile.sql]</span><br></pre></td></tr></table></figure>
+
+<p><strong>参数</strong></p>
+<ul>
+<li><p>–single-transaction：在备份之前，先执行 start transaction 命令，以此来获得备份的一致性，当前该参数只对 InnoDB 存储引擎有效。当启用此参数时，确保没有任何 DDL 语句执行，因为一致性读并不能隔离 DDL 操作。</p>
+</li>
+<li><p>–lock-tables (-l)：在备份中，依次锁住每个库下所有表，一般用于 MyISAM 存储引擎，当备份时只对数据库进行读取操作，不过备份依然可以保证一致性。对于 InnoDB 存储引擎，不需要使用该参数。</p>
+</li>
+<li><p>–lock-all-tables (-x)：在备份中，对所有库的所有表上锁。</p>
+</li>
+<li><p>–no-data (-d)：不备份数据。</p>
+</li>
+<li><p>–extended-insert (-e)：使用全新多行 insert 语法，默认开启。</p>
+</li>
+<li><p>–master-data [=value]：通过该参数产生的备份转存文件主要用来建立一个 replication。</p>
+<ul>
+<li><p>1：转存文件中记录 change master 语句。</p>
+</li>
+<li><p>2：转存文件中 change master 语句被注释。</p>
+</li>
+</ul>
+</li>
+<li><p>–flush-logs：开始备份之前刷新日志。</p>
+</li>
+<li><p>–events (-E)：备份事件。</p>
+</li>
+<li><p>–routines (-R)：备份存储过程和函数。</p>
+</li>
+<li><p>–triggers：备份触发器，该选项默认启用。</p>
+</li>
+<li><p>–where=’where_condition’ (-w ‘where_condition’)：导出给定条件的数据。</p>
+</li>
+</ul>
+<p><strong>实践</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 备份所有库</span></span><br><span class="line">mysqldump --user=sre --password=<span class="string">'xx'</span> --all-databases &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份指定库</span></span><br><span class="line">mysqldump -u&lt;user&gt; -p&lt;password&gt; --databases school hospital &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份指定表</span></span><br><span class="line">mysqldump --user=sre --password=<span class="string">'xx'</span> school table_name &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导出表结构，无数据</span></span><br><span class="line">mysqldump --user=sre --password=<span class="string">'xx'</span> --all--database --no-data &gt; backup.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份存储过程</span></span><br><span class="line">mysqldump --user=sre --password=<span class="string">'xx'</span> --single-transaction --master-data=<span class="number">2</span> -n -d -t -R user &gt; dump.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份InnoDB</span></span><br><span class="line">mysqldump --socket=mysql.sock --user=user --password=pass --single-transaction --flush-logs --master-data=<span class="number">2</span> --all-databases --routines --events &gt; dump.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份Myisam</span></span><br><span class="line">mysqldump --socket=mysql.sock --user=user --password=pass --lock-all-tables --flush-logs --master-data=<span class="number">2</span> --all-databases --routines --events &gt; dump.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 按条件备份</span></span><br><span class="line">mysqldump -usre -p<span class="string">'xx'</span> -t user uc_event_logs_bak --where=<span class="string">"id &gt; 46005503"</span> &gt; uc_event_logs_bak2.sql</span><br><span class="line"></span><br><span class="line"><span class="comment"># 后台执行任务</span></span><br><span class="line">nohup mysql -usre -p<span class="string">'xx'</span> user &lt; uc_event_logs_bak2.sql <span class="number">2</span>&gt; myout.file &amp;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：默认是会备份视图。</p>
+</blockquote>
+<h3 id="select…into-outfile"><a href="#select…into-outfile" class="headerlink" title="select…into outfile"></a>select…into outfile</h3><p><strong>作用</strong>：也是一种逻辑备份的方法，更准确的说是导出一张表中的数据。</p>
+<p><strong>语法</strong>：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">select [column1],[column2]...</span><br><span class="line">into outfile <span class="string">'file_name'</span></span><br><span class="line">from table where...</span><br><span class="line"></span><br><span class="line">FIELDS TERMINATED BY 用来对字段值之间进行分割，</span><br><span class="line">FIELDS [OPTIONALLY] ENCLOSED BY 用来对字段值进行包裹</span><br><span class="line">FIELDS  LINES TERMINATED BY  用来对每行结束指定换行符</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意：file_name 文件所在路径权限必须是 mysql:mysql。</p>
+</blockquote>
+<p><strong>实践</strong>：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">// departments表数据</span><br><span class="line">mysql&gt; select * from departments;</span><br><span class="line">+---------+--------------------+</span><br><span class="line">| dept_no | dept_name          |</span><br><span class="line">+---------+--------------------+</span><br><span class="line">| d009    | Customer Service   |</span><br><span class="line">| d005    | Development        |</span><br><span class="line">| d002    | Finance            |</span><br><span class="line">| d003    | Human Resources    |</span><br><span class="line">| d001    | Marketing          |</span><br><span class="line">| d004    | Production         |</span><br><span class="line">| d006    | Quality Management |</span><br><span class="line">| d008    | Research           |</span><br><span class="line">| d007    | Sales              |</span><br><span class="line">+---------+--------------------+</span><br><span class="line"></span><br><span class="line">// 导出为文件</span><br><span class="line">select * from departments into outfile <span class="string">'/data/mysql/department.sql'</span>;</span><br><span class="line"></span><br><span class="line">// 查看导出数据</span><br><span class="line">[root@db mysql]<span class="comment"># cat department.sql </span></span><br><span class="line">d009	Customer Service</span><br><span class="line">d005	Development</span><br><span class="line">d002	Finance</span><br><span class="line">d003	Human Resources</span><br><span class="line">d001	Marketing</span><br><span class="line">d004	Production</span><br><span class="line">d006	Quality Management</span><br><span class="line">d008	Research</span><br><span class="line">d007	Sales</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意</strong>：使用该命令导出文件可能会报错：”The MySQL server is running with the –secure-file-priv option so it cannot execute this statement “，原因是 secure_file_priv 为 NULL，需要设置目录。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SHOW VARIABLES LIKE <span class="string">"secure_file_priv"</span>;</span><br><span class="line">+------------------+--------------+</span><br><span class="line">| Variable_name    | Value        |</span><br><span class="line">+------------------+--------------+</span><br><span class="line">| secure_file_priv | /<span class="keyword">data</span>/mysql/ |</span><br><span class="line">+------------------+--------------+</span><br></pre></td></tr></table></figure>
+
+<h3 id="逻辑备份恢复"><a href="#逻辑备份恢复" class="headerlink" title="逻辑备份恢复"></a>逻辑备份恢复</h3><p>有三种方式：</p>
+<ul>
+<li>mysql</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -p<span class="string">'xx'</span> &lt; backup.sql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>source</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; source /<span class="keyword">data</span>/mysql/backup.sql</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>load data infile</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from departments;</span><br><span class="line">Empty set (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; load <span class="keyword">data</span> infile <span class="string">'/data/mysql/department.sql'</span> into table departments;</span><br><span class="line">Query OK, <span class="number">9</span> rows affected (<span class="number">0.01</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select * from departments;</span><br><span class="line">+---------+--------------------+</span><br><span class="line">| dept_no | dept_name          |</span><br><span class="line">+---------+--------------------+</span><br><span class="line">| d009    | Customer Service   |</span><br><span class="line">| d005    | Development        |</span><br><span class="line">| d002    | Finance            |</span><br><span class="line">| d003    | Human Resources    |</span><br><span class="line">| d001    | Marketing          |</span><br><span class="line">| d004    | Production         |</span><br><span class="line">| d006    | Quality Management |</span><br><span class="line">| d008    | Research           |</span><br><span class="line">| d007    | Sales              |</span><br><span class="line">+---------+--------------------+</span><br></pre></td></tr></table></figure>
+
+<h2 id="二进制日志备份与恢复"><a href="#二进制日志备份与恢复" class="headerlink" title="二进制日志备份与恢复"></a>二进制日志备份与恢复</h2><p><strong>作用</strong>：二进制日志非常关键，用户可以通过它完成 point-in-time 的恢复工作。对于 InnoDB 存储引擎，推荐的二进制日志的服务器配置应该是：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[mysqld]</span></span><br><span class="line"><span class="string">log-bin</span> <span class="string">=</span> <span class="string">mysql-bin</span></span><br><span class="line"><span class="string">sync_binlog</span> <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">innodb_support_xa</span> <span class="string">=</span> <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>备份</strong>：在备份二进制日志之前，可以通过 FLUSH LOGS 命令生成一个新的二进制日志文件，然后后备份之前的二进制日志。</p>
+<p><strong>恢复</strong>：二进制日志的恢复主要通过工具 <a href="https://huiraoo.github.io/blog/2019/11/07/mysql-tool-mysqlbinlog/">mysqlbinlog</a> 实现。例如：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// 恢复单个文件</span><br><span class="line">mysqlbinlog mysql-bin.<span class="number">000001</span> | mysql -uroot -p test </span><br><span class="line"></span><br><span class="line">// 恢复多个文件</span><br><span class="line">mysqlbinlog mysql-bin.[<span class="number">0</span>-<span class="number">10</span>]* | mysql -uroot -p test</span><br><span class="line"></span><br><span class="line">// 也可以先导出sql文件，再使用source导入，好处是可以对导出的文件进行修改</span><br><span class="line">mysqlbinlog mysql-bin.<span class="number">000001</span> &gt; /tmp/backup.sql</span><br><span class="line">mysql -uroot -p -e <span class="string">"source /tmp/backup.sql"</span></span><br><span class="line"></span><br><span class="line">// 也可以通过--start-position和--stop-position指定某个位置进行恢复</span><br><span class="line">// 也可以通过--start-datetime和--stop-datetime指定某个时间点进行恢复</span><br></pre></td></tr></table></figure>
+
+<h2 id="热备"><a href="#热备" class="headerlink" title="热备"></a>热备</h2><p><a href="https://huiraoo.github.io/blog/2019/06/18/mysql-xtrabackup/">XtraBackup</a></p>
+<h2 id="快照备份"><a href="#快照备份" class="headerlink" title="快照备份"></a>快照备份</h2><p>MySQL 数据库本身并不支持快照功能，因此快照备份是指通过文件系统支持的快照功能对数据库进行备份。备份的前提是将所有数据库文件放在同一个文件分区中，然后对该分区进行快照操作。支持快照功能的文件系统和设备包括 GUN/Linux 的逻辑管理器 LVM。</p>
+<p>LVM 是 Linux 系统下对磁盘分区进行管理的一种机制，LVM 在硬盘和分区之上建立一个逻辑层，来提高磁盘分区管理的灵活性。LVM 使用了写时复制（Copy-on-write）技术来创建快照，当创建一个快照时，仅复制原始卷中数据的元数据（meta data），并不会有数据的物理操作，因此快照的创建过程非常快。</p>
+<p>使用 LVM 快照备份 InnoDB 存储引擎表非常简单，只要把与 InnoDB 存储引擎相关的文件如共享表空间、独立表空间、重做日志文件等放在同一个逻辑卷中，然后对这个逻辑卷做快照备份即可。在对 InnoDB 存储引擎文件做快照时，数据库无须关闭，即可以进行在线备份。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>任何时候都需要做好远程异地备份，也就是容灾的防范。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/23/mysql-rules/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2538,7 +2814,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/blog/2019/07/12/mysql-cookbook/" class="post-title-link" itemprop="url">MySQL · 知识体系</a>
+                <a href="/blog/2019/07/12/mysql-cookbook/" class="post-title-link" itemprop="url">MySQL · 知识体系养成计划</a>
               
             
           </h1>
@@ -2580,7 +2856,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2020-03-21 11:03:43" itemprop="dateModified" datetime="2020-03-21T11:03:43+08:00">2020-03-21</time>
+                <time title="修改时间：2020-08-10 11:11:47" itemprop="dateModified" datetime="2020-08-10T11:11:47+08:00">2020-08-10</time>
               
             
           </span>
@@ -2635,238 +2911,15 @@
         
           
             <p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-03-21-100900.jpeg" alt></p>
-<ul>
-<li><p><a href="https://huiraoo.github.io/blog/2019/07/17/mysql-install/">MySQL · 安装</a></p>
-</li>
-<li><p><a href="https://huiraoo.github.io/blog/2019/11/06/mysql-connection/">MySQL · 连接</a></p>
-</li>
-<li><p><a href="https://huiraoo.github.io/blog/2020/03/21/mysql-structure/">MySQL · 体系结构</a></p>
-</li>
+<h2 id="入门篇"><a href="#入门篇" class="headerlink" title="入门篇"></a>入门篇</h2><ul>
+<li>MySQL · 发展历程</li>
+<li><a href="https://huiraoo.github.io/blog/2019/07/17/mysql-install/">MySQL · 安装</a></li>
+<li><a href="https://huiraoo.github.io/blog/2019/11/06/mysql-connection/">MySQL · 连接</a></li>
+<li><a href="https://huiraoo.github.io/blog/2020/03/21/mysql-structure/">MySQL · 体系结构</a></li>
+<li>MySQL · 文件</li>
+<li>MySQL · 权限</li>
 </ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/12/db-evolution/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/12/db-evolution/" class="post-title-link" itemprop="url">国产数据库的演进历史</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-12 14:02:39" itemprop="dateCreated datePublished" datetime="2019-07-12T14:02:39+08:00">2019-07-12</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-15 16:18:48" itemprop="dateModified" datetime="2019-11-15T16:18:48+08:00">2019-11-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/数据库/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="1949-1979"><a href="#1949-1979" class="headerlink" title="1949-1979"></a><strong>1949-1979</strong></h2><ul>
-<li>1956年，周恩来总理亲自领导了“科学技术发展十二年规划”，标志着我国计算机事业的开始。</li>
-</ul>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134141.jpg" alt="中国仿制前苏联大型机"></p>
-<ul>
-<li>随后十年动乱，中国计算机和数据库的研究基本停滞成为空白。</li>
-<li>70年代末，关系型数据库的概念刚刚兴起，1975年微软成立，1977年 Oracle 成立（70年代是美国的黄金年代）。OLTP 联机交易处理也称为面向交易的处理过程让数据库变得重要起来，也就是说计算机不但承担的是结果的纯计算，现在要实时承担交易过程和结果记录。</li>
-</ul>
-<h2 id="1979-1989"><a href="#1979-1989" class="headerlink" title="1979-1989"></a><strong>1979-1989</strong></h2><ul>
-<li><p>1977年，中国人民大学萨师煊教授和王珊教授编著《数据库系统概论》，并召开数据库年会。</p>
-</li>
-<li><p>80年代，中美正式建交，中国信息技术建设开始和世界开始接轨。自动化还没上马，信息化更是难寻踪迹，在数据库的研发和投入上，靠的是零星的科研力量和资金。这个时期，产、学、研是三条平行线。</p>
-</li>
-</ul>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134142.jpg" alt="主流关系型数据库家谱图"></p>
-<h2 id="1989-1999"><a href="#1989-1999" class="headerlink" title="1989-1999"></a><strong>1989-1999</strong></h2><ul>
-<li>80年代以研究所和大学为主的国家投入，那么在90年代产出这样几家国产数据库公司</li>
-</ul>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134143.png" alt="90年代863研究计划"></p>
-<h2 id="1999-2009"><a href="#1999-2009" class="headerlink" title="1999-2009"></a><strong>1999-2009</strong></h2><p>90年代，改革开放掀起的热潮，开始了外资和中国市场合作的黄金十年，外资在我国空前发展阶段，Oracle 和 DB2 横扫市场所有产品。在中国数据库公司刚刚成立想开发产品追赶 Oracle 的时候，市场的需求已经迸发出来，国产产品接不住，所以市场就是 Oracle 的天下了。这样出现了死循环：</p>
-<ul>
-<li>产品初期需要不断的试错和验证的机会。</li>
-<li>客户没有时间和办法陪着试错和成长。</li>
-<li>没有客户，生态就更差，更没有办法进行产品的投入和迭代。</li>
-</ul>
-<h2 id="2009-2019"><a href="#2009-2019" class="headerlink" title="2009-2019"></a>2009-2019</h2><p>互联网崛起的这十年，国内数据库厂商：</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134144.png" alt="db"></p>
-<p><strong>去IOE</strong>：IBM 小型机、Oracle 数据库、EMC 存储设备</p>
-<p><strong>取代品</strong>：X86 服务器、MySQL 数据库、分布式存储</p>
-<blockquote>
-<p>IBM大型机：IBM Z系列，目前市场无性能相当替代品，国家民生、银行电信等关键核心业务</p>
-</blockquote>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134144.jpg" alt="big"></p>
-<blockquote>
-<p>小型机：UNIX 服务器，IBM 的 POWER 处理器 + AIX 操作系统，RAS（Reliability， Availability，Serviceability 高可靠性、高可用性、高服务性）特性。解决方案从处理器到平台、操作系统、中间件，再到应用软件，都出于自家门下。好处就是各层次之间能有一个较好的优化和配合，让用户在从采购到部署、再到应用和维护的过程中无需自己太过操心。反过来说，这种模式使得用户容易被厂商锁定，后续IT系统采购、维护和应用，全部处于被垄断后的弱势地位，采购后的维护和更新也只能被动接受。</p>
-</blockquote>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134145.png" alt="small"></p>
-<blockquote>
-<p>x86 服务器：成本低、易扩展、易维护更新</p>
-</blockquote>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134145.jpg" alt="x86"></p>
-<ul>
-<li>ARM 架构：广泛适用于移动端，优点是低功耗。</li>
-<li>x86 架构：广泛用于 PC 端，便宜、易扩展、易集成第三方软件。</li>
-</ul>
-<p><strong>中国 IT 信息技术的崛起</strong></p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134146.jpg" alt="it信息技术"></p>
-<p><strong>国内工业级应用软件发展</strong></p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134148.jpg" alt="it信息技术"></p>
-<p><strong>服务器演进</strong></p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-08-28-134149.jpg" alt="服务器"></p>
-
+<h2 id="基础篇"><a href="#基础篇" class="headerlink" title="基础篇"></a>基础篇</h2><h2 id="进阶篇"><a href="#进阶篇" class="headerlink" title="进阶篇"></a>进阶篇</h2>
           
         
       
@@ -2955,7 +3008,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">169</span>
+                    <span class="site-state-item-count">170</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
