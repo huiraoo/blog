@@ -7,6 +7,22 @@
 
 <figure class="highlight powershell"><table><tr><td class="code"><pre><span class="line">sudo: java: command not found</span><br><span class="line">yum install -y java</span><br></pre></td></tr></table></figure>
 
+<h2 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h2><h4 id="逻辑备份"><a href="#逻辑备份" class="headerlink" title="逻辑备份"></a>逻辑备份</h4><p><strong>报错信息</strong></p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">异常信息：</span> <span class="bullet">-1</span></span><br><span class="line"><span class="string">java.lang.IllegalStateException:</span> <span class="string">The</span> <span class="string">RecordSplit</span> <span class="number">5</span> <span class="string">must</span> <span class="string">be</span> <span class="string">in</span> <span class="string">FAILED</span> <span class="string">or</span> <span class="string">SUCCESS</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>原因分析</strong></p>
+<p>怀疑是备份的时候有 DDL 操作</p>
+<p><strong>解决办法</strong></p>
+<p>重启备份任务</p>
+<h4 id="物理备份"><a href="#物理备份" class="headerlink" title="物理备份"></a>物理备份</h4><p><strong>报错信息</strong></p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">异常信息：</span> <span class="number">999999</span></span><br><span class="line"><span class="string">DBS-999999,</span> <span class="string">message</span> <span class="string">:Unable</span> <span class="string">to</span> <span class="string">find</span> <span class="string">'completed OK!'</span> <span class="string">at</span> <span class="string">the</span> <span class="string">end</span> <span class="string">of</span> <span class="string">the</span> <span class="attr">file:</span> <span class="string">/usr/local/aliyun/dbs_agent/dbbackup/2020-08-06/1ib0xmr67jbl0_dbbackup.log,</span> <span class="attr">msg:</span> <span class="number">200807</span> <span class="number">02</span><span class="string">:51:07</span> <span class="string">[04]</span> <span class="string">...done</span> <span class="attr">Error:</span> <span class="string">failed</span> <span class="string">to</span> <span class="string">execute</span> <span class="string">query</span> <span class="string">SET</span> <span class="string">SESSION</span> <span class="string">lock_wait_timeout=31536000:</span> <span class="string">MySQL</span> <span class="string">server</span> <span class="string">has</span> <span class="string">gone</span> <span class="string">away</span> <span class="string">.</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>原因分析</strong></p>
+<p>怀疑是 MySQL 连接超时导致的，MySQL 连接超时是由两个参数控制的 interactive_timeout、wait_timeout，它的意思是某个 MySQL 长连接很久没有新的请求发起，达到了 server 端的 timeout，被 server 强行关闭。此后再通过这个 connection 发起查询的时候，就会报错 server has gone away。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">MySQL [(none)]&gt; show variables like &apos;%timeout%&apos;;</span><br><span class="line">+-----------------------------+----------+</span><br><span class="line">| Variable_name               | Value    |</span><br><span class="line">+-----------------------------+----------+</span><br><span class="line">| connect_timeout             | 10       |</span><br><span class="line">| delayed_insert_timeout      | 300      |</span><br><span class="line">| innodb_flush_log_at_timeout | 1        |</span><br><span class="line">| innodb_lock_wait_timeout    | 50       |</span><br><span class="line">| innodb_rollback_on_timeout  | OFF      |</span><br><span class="line">| interactive_timeout         | 300      |</span><br><span class="line">| lock_wait_timeout           | 31536000 |</span><br><span class="line">| net_read_timeout            | 30       |</span><br><span class="line">| net_write_timeout           | 60       |</span><br><span class="line">| rpl_stop_slave_timeout      | 31536000 |</span><br><span class="line">| slave_net_timeout           | 3600     |</span><br><span class="line">| wait_timeout                | 300      |</span><br><span class="line">+-----------------------------+----------+</span><br></pre></td></tr></table></figure>
+
+<p><strong>解决办法</strong></p>
+<p>将 interactive_timeout、wait_timeout 都调成默认值 28800</p>
 ]]></content>
       <categories>
         <category>阿里云</category>
@@ -10889,6 +10905,10 @@
 </li>
 <li><p><strong>OLTP</strong>：On-Line Analytical Processing，联机分析处理。</p>
 </li>
+<li><p><strong>DML</strong>：数据操作语言，主要是用来对数据进行一些操作，如 SELECT、UPDATE、INSERT、DELETE 等。</p>
+</li>
+<li><p><strong>DDL</strong>：数据定义语言，主要是用在定义或改变表的结构，如 CTEATE、ALTER、DROP、TRUNCATE 等。</p>
+</li>
 </ul>
 <h2 id="学习资料"><a href="#学习资料" class="headerlink" title="学习资料"></a>学习资料</h2><ul>
 <li><a href="https://db-engines.com/en/ranking" target="_blank" rel="noopener">DB-Engines</a></li>
@@ -12080,7 +12100,7 @@
 <li>OLTP（Online Transaction Processing，在线事务处理）：多用在日常事务处理应用中。一般用户操作的并发量大、复杂的查询较少。OLTP 是 IO 密集型操作，需要将更多注意力放在提高 IO 的配置上。</li>
 <li>OLAP（Online Analytical Processing，在线分析处理）：多用在数据库仓库、集市中，一般需要执行复杂的 SQL 语句进行查询。复杂的查询如排序、连接、比较等非常消耗 CPU，需要将注意力放在提高 CPU 的配置上。</li>
 </ul>
-<p>MySQL 可以从四个方面进行优化：</p>
+<p>MySQL 优化思路：</p>
 <ul>
 <li>优化成本：硬件配置  &gt;  架构优化  &gt;  MySQL 配置参数  &gt;  表结构与索引</li>
 <li>优化效果：表结构与索引  &gt;  MySQL 配置参数  &gt;  架构优化  &gt;  硬件配置</li>
