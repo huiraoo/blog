@@ -352,6 +352,235 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/12/10/mysql-replication-delay/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/12/10/mysql-replication-delay/" class="post-title-link" itemprop="url">MySQL · 主从复制延迟</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-12-10 15:58:05 / 修改时间：16:49:06" itemprop="dateCreated datePublished" datetime="2019-12-10T15:58:05+08:00">2019-12-10</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="判断"><a href="#判断" class="headerlink" title="判断"></a>判断</h2><p>Seconds_Behind_Master 值不为 0，单位是 s。</p>
+<h2 id="风险"><a href="#风险" class="headerlink" title="风险"></a>风险</h2><ul>
+<li>从库复制夯住，会导致备份失败（flush tables with read lock 900s 超时）</li>
+<li>以从库为基准进行的备份，数据不是最新的有延迟</li>
+<li>异常情况下，主从 HA 无法切换，HA 需要检查数据的一致性，延迟时主备不一致</li>
+</ul>
+<h2 id="原因"><a href="#原因" class="headerlink" title="原因"></a>原因</h2><p>最根本原因是主库是多线程读写，从库读取主库的 binlog 的线程只有一个，常见的场景如下：</p>
+<ul>
+<li>无主键、无索引或索引区分度不高</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">show</span> <span class="keyword">slave</span> <span class="keyword">status</span>;</span><br><span class="line"><span class="keyword">show</span> <span class="keyword">open</span> <span class="keyword">tables</span> <span class="keyword">where</span> In_use=<span class="number">1</span>;</span><br><span class="line">desc table;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>主库上有大事务，导致从库延时</li>
+<li>主库写入频繁，从库压力跟不上导致延时</li>
+<li>大量 myisam 表，在备份时导致 slave 延迟</li>
+</ul>
+<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><ul>
+<li>为夯住的表添加主键或者索引</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 找到表区分度比较高的几个字段</span></span><br><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> xx;</span><br><span class="line"><span class="keyword">select</span> <span class="keyword">count</span>(*) <span class="keyword">from</span> (<span class="keyword">select</span> <span class="keyword">distinct</span> xx <span class="keyword">from</span> xxx) t;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 添加主键</span></span><br><span class="line"><span class="keyword">stop</span> <span class="keyword">slave</span>;</span><br><span class="line"><span class="keyword">set</span> sql_log_bin=<span class="number">0</span>;</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> xx <span class="keyword">add</span> <span class="keyword">key</span> xx(xx);</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> <span class="string">'xxxx'</span> <span class="keyword">add</span> <span class="keyword">id</span> <span class="built_in">int</span>(<span class="number">10</span>) <span class="keyword">unsigned</span> primary <span class="keyword">key</span> AUTO_INCREMENT;</span><br><span class="line"><span class="keyword">start</span> <span class="keyword">slave</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>调整数据库中 IO 相关参数</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select @@innodb_flush_log_at_trx_commit;</span><br><span class="line">+----------------------------------+</span><br><span class="line">| @@innodb_flush_log_at_trx_commit |</span><br><span class="line">+----------------------------------+</span><br><span class="line">|                                <span class="number">0</span> |</span><br><span class="line">+----------------------------------+</span><br><span class="line"></span><br><span class="line">mysql&gt; select @@sync_binlog;</span><br><span class="line">+---------------+</span><br><span class="line">| @@sync_binlog |</span><br><span class="line">+---------------+</span><br><span class="line">|             <span class="number">0</span> |</span><br><span class="line">+---------------+</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>修改表存储引擎为 InnoDB</li>
+</ul>
+<h2 id="案例-1"><a href="#案例-1" class="headerlink" title="案例 1"></a>案例 1</h2><p><strong>现象</strong>：从库两个线程 <code>Slave_IO_Running</code> 和 <code>Slave_SQL_Running</code> 均是 <strong>Yes</strong>，主从复制链路正常，但是 <code>Seconds_Behind_Master</code> 不断增大，且主从数据延迟有不断扩大的趋势。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** <span class="number">1</span>. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting <span class="keyword">for</span> master to send event</span><br><span class="line">                  Master_Host: <span class="number">10.133</span>.<span class="number">0.51</span></span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: <span class="number">3306</span></span><br><span class="line">                Connect_Retry: <span class="number">60</span></span><br><span class="line">              Master_Log_File: mysql-binlog.<span class="number">000232</span></span><br><span class="line">          Read_Master_Log_Pos: <span class="number">3108253</span></span><br><span class="line">               Relay_Log_File: relay-log.<span class="number">000004</span></span><br><span class="line">                Relay_Log_Pos: <span class="number">169851605</span></span><br><span class="line">        Relay_Master_Log_File: mysql-binlog.<span class="number">000229</span></span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">              ....</span><br><span class="line">        Seconds_Behind_Master: <span class="number">42302</span></span><br><span class="line">Master_SSL_Verify_Server_Cert: No</span><br><span class="line">              ....</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查当前数据库线程状态，未发现有明显异常</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show processlist;</span><br><span class="line">+-------+-------------+-------------------+--------------------+---------+--------+----------------------------------+--------------------------------+</span><br><span class="line">| Id    | User        | Host              | db                 | Command | Time   | State                            | Info                           |</span><br><span class="line">+-------+-------------+-------------------+--------------------+---------+--------+----------------------------------+--------------------------------+</span><br><span class="line">|     <span class="number">1</span> | system user |                   | NULL               | Connect | <span class="number">172777</span> | Waiting <span class="keyword">for</span> master to send event | NULL                           |</span><br><span class="line">|     <span class="number">2</span> | system user |                   | NULL               | Connect | <span class="number">678456</span> | Reading event from the relay log | NULL                           |</span><br><span class="line">|  <span class="number">4345</span> | cvbak       | localhost         | NULL               | Query   | <span class="number">130546</span> | Waiting <span class="keyword">for</span> table flush          | FLUSH /*!<span class="number">40101</span> LOCAL */ TABLES |</span><br><span class="line">| <span class="number">17662</span> | root        | localhost         | NULL               | Query   |      <span class="number">0</span> | starting                         | show processlist               |</span><br><span class="line">| <span class="number">17671</span> | hdm         | <span class="number">10.133</span>.<span class="number">0.52</span>:<span class="number">37170</span> | information_schema | Sleep   |      <span class="number">1</span> |                                  | NULL                           |</span><br><span class="line">+-------+-------------+-------------------+--------------------+---------+--------+----------------------------------+--------------------------------+</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查当前正在使用的表：<code>show open tables where In_use=1;</code> 发现有一张表一直处于 <code>In_use</code> 状态。</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show open tables where In_use=<span class="number">1</span>;</span><br><span class="line">+----------+---------------------------+--------+-------------+</span><br><span class="line">| Database | Table                     | In_use | Name_locked |</span><br><span class="line">+----------+---------------------------+--------+-------------+</span><br><span class="line">| tdmetl   | odsepg_zrfc_zco_zzfymx_sw |      <span class="number">1</span> |           <span class="number">0</span> |</span><br><span class="line">+----------+---------------------------+--------+-------------+</span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>根据 <code>Relay_Log_Pos</code> 解析 <code>relay-log.000004</code>，查看当时正在执行的操作是 <code>Delete_rows</code>，操作的表是 <code>tdmetl</code>.<code>odsepg_zrfc_zco_zzfymx_sw</code>。</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysqlbinlog -vv --base64-output=decode-rows relay-log.<span class="number">000004</span> --start-position=<span class="number">169851605</span> | more</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># at 169851605</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169851451 CRC32 0x6683bf99 	Anonymous_GTID	last_committed=1831	sequence_number=1832	rbr_</span></span><br><span class="line"><span class="string">only=yes</span></span><br><span class="line"><span class="string">/*!50718</span> <span class="string">SET</span> <span class="string">TRANSACTION</span> <span class="string">ISOLATION</span> <span class="string">LEVEL</span> <span class="string">READ</span> <span class="string">COMMITTED*//*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@SESSION.GTID_NEXT=</span> <span class="string">'ANONYMOUS'</span><span class="string">/*!*/;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># at 169851670</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169851525 CRC32 0x9d910e5d 	Query	thread_id=1254417	exec_time=0	error_code=0</span></span><br><span class="line"><span class="string">SET</span> <span class="string">TIMESTAMP=1563393778/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.pseudo_thread_id=1254417/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.foreign_key_checks=1,</span> <span class="string">@@session.sql_auto_is_null=0,</span> <span class="string">@@session.unique_checks=1,</span> <span class="string">@@session.autocommit=1/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.sql_mode=1436549128/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.auto_increment_increment=1,</span> <span class="string">@@session.auto_increment_offset=1/*!*/;</span></span><br><span class="line"><span class="string">/*!\C</span> <span class="string">utf8</span> <span class="string">*//*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.character_set_client=33,@@session.collation_connection=33,@@session.collation_server=33/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.lc_time_names=0/*!*/;</span></span><br><span class="line"><span class="string">SET</span> <span class="string">@@session.collation_database=DEFAULT/*!*/;</span></span><br><span class="line"><span class="string">BEGIN</span></span><br><span class="line"><span class="string">/*!*/;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># at 169851744</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169851626 CRC32 0x6b8bbd2d 	Table_map: `tdmetl`.`odsepg_zrfc_zco_zzfymx_sw` mapped to number 170</span></span><br><span class="line"><span class="number">018</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># at 169851845</span></span><br><span class="line"><span class="comment">#190718  4:02:58 server id 3306100  end_log_pos 169859832 CRC32 0x338e105a 	Delete_rows: table id 170018</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>检查表结构，发现该表数据量很大且无主键。由此基本确定其问题根本原因：<strong>对无主键的表进行删除或者更新，导致从库夯住</strong>。该表数据量：77961221条。</li>
+</ul>
+<p><img src="http://ww2.sinaimg.cn/large/006y8mN6ly1g6873jkiw5j30yf0gigpp.jpg" alt="image-20190822092437992"></p>
+<p><strong>解决方法</strong></p>
+<ul>
+<li>表添加自增主键。</li>
+</ul>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ALTER</span> <span class="keyword">TABLE</span> <span class="string">'xxxx'</span> <span class="keyword">ADD</span> <span class="keyword">id</span> <span class="built_in">int</span> <span class="keyword">UNSIGNED</span> primary <span class="keyword">key</span> AUTO_INCREMENT;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>大表删除使用 <code>truncate</code> 命令。</li>
+</ul>
+<h2 id="案例-2"><a href="#案例-2" class="headerlink" title="案例 2"></a>案例 2</h2><p><strong>原因分析</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; mysql&gt; show slave status\G</span><br><span class="line">*************************** <span class="number">1</span>. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting <span class="keyword">for</span> master to send event</span><br><span class="line">                  Master_Host: <span class="number">10.133</span>.<span class="number">7.5</span></span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: <span class="number">3306</span></span><br><span class="line">                Connect_Retry: <span class="number">10</span></span><br><span class="line">              Master_Log_File: mysql-bin.<span class="number">000279</span></span><br><span class="line">          Read_Master_Log_Pos: <span class="number">663610631</span></span><br><span class="line">               Relay_Log_File: mysqld-relay-bin.<span class="number">000007</span></span><br><span class="line">                Relay_Log_Pos: <span class="number">139799382</span></span><br><span class="line">        Relay_Master_Log_File: mysql-bin.<span class="number">000273</span></span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">                            ....</span><br><span class="line">        Seconds_Behind_Master: <span class="number">475123</span></span><br><span class="line">        </span><br><span class="line">mysql&gt; show open tables where In_use=<span class="number">1</span>; </span><br><span class="line">+----------+-------------------+--------+-------------+</span><br><span class="line">| Database | Table             | In_use | Name_locked |</span><br><span class="line">+----------+-------------------+--------+-------------+</span><br><span class="line">| hce      | dim_r_cei_general |      <span class="number">1</span> |           <span class="number">0</span> |</span><br><span class="line">+----------+-------------------+--------+-------------+</span><br><span class="line"></span><br><span class="line">mysql&gt; desc dim_r_cei_general;</span><br><span class="line">+---------------------+------------------+------+-----+-------------------+----------------+</span><br><span class="line">| Field               | Type             | Null | Key | Default           | Extra          |</span><br><span class="line">+---------------------+------------------+------+-----+-------------------+----------------+</span><br><span class="line">| MATERIAL_CODE       | varchar(<span class="number">30</span>)      | YES  |     | NULL              |                |</span><br><span class="line">| MATERIAL_DESCRITION | varchar(<span class="number">383</span>)     | YES  |     | NULL              |                |</span><br><span class="line">| PA_DATE_ACTUAL      | varchar(<span class="number">30</span>)      | YES  |     | NULL              |                |</span><br><span class="line">| HR_INDEX            | varchar(<span class="number">30</span>)      | YES  |     | NULL              |                |</span><br><span class="line">| SALE_CHAR           | varchar(<span class="number">100</span>)     | YES  |     | NULL              |                |</span><br><span class="line">| CREATE_DATE         | datetime         | YES  |     | CURRENT_TIMESTAMP |                |</span><br><span class="line">| id                  | int(<span class="number">10</span>) unsigned | NO   | PRI | NULL              | auto_increment |</span><br><span class="line">+---------------------+------------------+------+-----+-------------------+----------------+</span><br></pre></td></tr></table></figure>
+
+<p><strong>解决方法</strong></p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like <span class="string">'sync_binlog'</span>;</span><br><span class="line">+---------------+-------+</span><br><span class="line">| Variable_name | Value |</span><br><span class="line">+---------------+-------+</span><br><span class="line">| sync_binlog   | <span class="number">0</span>     |</span><br><span class="line">+---------------+-------+</span><br><span class="line"><span class="number">1</span> row <span class="keyword">in</span> set (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; show variables like <span class="string">'innodb_flush_log_at_trx_commit'</span>;</span><br><span class="line">+--------------------------------+-------+</span><br><span class="line">| Variable_name                  | Value |</span><br><span class="line">+--------------------------------+-------+</span><br><span class="line">| innodb_flush_log_at_trx_commit | <span class="number">0</span>     |</span><br><span class="line">+--------------------------------+-------+</span><br><span class="line"></span><br><span class="line">mysql&gt; select count(*) from dim_r_cei_general;</span><br><span class="line">+----------+</span><br><span class="line">| count(*) |</span><br><span class="line">+----------+</span><br><span class="line">|  <span class="number">1933121</span> |</span><br><span class="line">+----------+</span><br><span class="line"></span><br><span class="line">mysql&gt; select count(*) from (select distinct MATERIAL_CODE from dim_r_cei_general) t;</span><br><span class="line">+----------+</span><br><span class="line">| count(*) |</span><br><span class="line">+----------+</span><br><span class="line">|  <span class="number">1933111</span> |</span><br><span class="line">+----------+</span><br><span class="line"></span><br><span class="line">mysql&gt; stop slave;</span><br><span class="line">mysql&gt; set sql_log_bin=<span class="number">0</span>;</span><br><span class="line">mysql&gt; alter table dim_r_cei_general add key index_MATERIAL_CODE(MATERIAL_CODE);</span><br><span class="line">mysql&gt; start slave;</span><br><span class="line"></span><br><span class="line">mysql&gt; show slave status\G</span><br><span class="line">*************************** <span class="number">1</span>. row ***************************</span><br><span class="line">               Slave_IO_State: Waiting <span class="keyword">for</span> master to send event</span><br><span class="line">                  Master_Host: <span class="number">10.133</span>.<span class="number">7.5</span></span><br><span class="line">                  Master_User: repl</span><br><span class="line">                  Master_Port: <span class="number">3306</span></span><br><span class="line">                Connect_Retry: <span class="number">10</span></span><br><span class="line">              Master_Log_File: mysql-bin.<span class="number">000279</span></span><br><span class="line">          Read_Master_Log_Pos: <span class="number">663999593</span></span><br><span class="line">               Relay_Log_File: mysqld-relay-bin.<span class="number">000010</span></span><br><span class="line">                Relay_Log_Pos: <span class="number">336125628</span></span><br><span class="line">        Relay_Master_Log_File: mysql-bin.<span class="number">000274</span></span><br><span class="line">             Slave_IO_Running: Yes</span><br><span class="line">            Slave_SQL_Running: Yes</span><br><span class="line">                            ....</span><br><span class="line">        Seconds_Behind_Master: <span class="number">462357</span></span><br></pre></td></tr></table></figure>
+
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/12/10/mysql-datatype/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2311,317 +2540,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/11/28/java-frame-spring-boot/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/11/28/java-frame-spring-boot/" class="post-title-link" itemprop="url">Java · 框架 · Spring Boot</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-11-28 15:23:19" itemprop="dateCreated datePublished" datetime="2019-11-28T15:23:19+08:00">2019-11-28</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-12-11 22:51:16" itemprop="dateModified" datetime="2019-12-11T22:51:16+08:00">2019-12-11</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="Sping-Boot-入门"><a href="#Sping-Boot-入门" class="headerlink" title="Sping Boot 入门"></a>Sping Boot 入门</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>简化 Spring 应用开发的框架，对整个 Spring 技术栈的一个大整合，J2EE 一站式解决方案，思想约定大于配置。</p>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-11-28-154500.jpeg" alt></p>
-<h3 id="创建"><a href="#创建" class="headerlink" title="创建"></a>创建</h3><p><a href="https://start.spring.io/" target="_blank" rel="noopener">Spring Initializr</a></p>
-<h3 id="打包"><a href="#打包" class="headerlink" title="打包"></a>打包</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 该插件可以将应用打包成一个可执行的jar包 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">build</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">plugins</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-maven-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">plugins</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">build</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[INFO] Building jar: /Users/raohui/Code/springboot-demo/target/springboot-demo-<span class="number">0.0</span>.<span class="number">1</span>-SNAPSHOT.jar</span><br></pre></td></tr></table></figure>
-
-<h3 id="部署"><a href="#部署" class="headerlink" title="部署"></a>部署</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">$ java -jar springboot-demo-<span class="number">0.0</span>.<span class="number">1</span>-SNAPSHOT.jar </span><br><span class="line"></span><br><span class="line">  .   ____          _            __ _ _</span><br><span class="line"> /\\ / ___<span class="string">'_ __ _ _(_)_ __  __ _ \ \ \ \</span></span><br><span class="line"><span class="string">( ( )\___ | '</span>_ | <span class="string">'_| | '</span>_ \/ _` | \ \ \ \</span><br><span class="line"> \\/  ___)| |_)| | | | | || (_| |  ) ) ) )</span><br><span class="line">  <span class="string">'  |____| .__|_| |_|_| |_\__, | / / / /</span></span><br><span class="line"><span class="string"> =========|_|==============|___/=/_/_/_/</span></span><br><span class="line"><span class="string"> :: Spring Boot ::        (v2.2.1.RELEASE)</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">2019-11-28 16:19:15.628  INFO 79863 --- [           main] com.rao.springboot.demo.RunApplication   : Starting RunApplication v0.0.1-SNAPSHOT on raohuideMacBook-Pro.local with PID 79863 (/Users/raohui/Code/springboot-demo/target/springboot-demo-0.0.1-SNAPSHOT.jar started by raohui in /Users/raohui/Code/springboot-demo/target)</span></span><br><span class="line"><span class="string">2019-11-28 16:19:15.630  INFO 79863 --- [           main] com.rao.springboot.demo.RunApplication   : No active profile set, falling back to default profiles: default</span></span><br><span class="line"><span class="string">2019-11-28 16:19:16.292  INFO 79863 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)</span></span><br><span class="line"><span class="string">2019-11-28 16:19:16.299  INFO 79863 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]</span></span><br><span class="line"><span class="string">2019-11-28 16:19:16.300  INFO 79863 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.27]</span></span><br><span class="line"><span class="string">2019-11-28 16:19:16.343  INFO 79863 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext</span></span><br><span class="line"><span class="string">2019-11-28 16:19:16.343  INFO 79863 --- [           main] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 682 ms</span></span><br><span class="line"><span class="string">2019-11-28 16:19:16.466  INFO 79863 --- [           main] o.s.s.concurrent.ThreadPoolTaskExecutor  : Initializing ExecutorService '</span>applicationTaskExecutor<span class="string">'</span></span><br><span class="line"><span class="string">2019-11-28 16:19:16.579  INFO 79863 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path '</span><span class="string">'</span></span><br><span class="line"><span class="string">2019-11-28 16:19:16.582  INFO 79863 --- [           main] com.rao.springboot.demo.RunApplication   : Started RunApplication in 6.228 seconds (JVM running for 6.543)</span></span><br><span class="line"><span class="string">2019-11-28 16:19:34.770  INFO 79863 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet '</span>dispatcherServlet<span class="string">'</span></span><br><span class="line"><span class="string">2019-11-28 16:19:34.770  INFO 79863 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet '</span>dispatcherServlet<span class="string">'</span></span><br><span class="line"><span class="string">2019-11-28 16:19:34.774  INFO 79863 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 4 ms</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>pom 父项目</strong>：真正管理 Spring Boot 应用里面的所有依赖版本</li>
-</ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">parent</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.2.1.RELEASE<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">relativePath</span>/&gt;</span> </span><br><span class="line"><span class="tag">&lt;/<span class="name">parent</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><strong>场景启动器</strong>：<a href="https://docs.spring.io/spring-boot/docs/2.1.10.RELEASE/reference/html/using-boot-build-systems.html#using-boot-starter" target="_blank" rel="noopener">Starter</a></li>
-</ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!-- web模块正常运行所依赖的组件 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- Spring Boot进行单元测试的模块 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-test<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">scope</span>&gt;</span>test<span class="tag">&lt;/<span class="name">scope</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RunApplication</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">      SpringApplication.run(RunApplication.class, args);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>@<strong>SpringBootApplication</strong>：这个注解说明该类是 Spring Boot 应用的主配置类，Spring Boot 就应该运行这个类的 main 方法来启动应用。</li>
-</ul>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target</span>(ElementType.TYPE)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Inherited</span></span><br><span class="line"><span class="meta">@SpringBootConfiguration</span></span><br><span class="line"><span class="meta">@EnableAutoConfiguration</span></span><br><span class="line"><span class="meta">@ComponentScan</span>(excludeFilters = &#123; <span class="meta">@Filter</span>(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),</span><br><span class="line">      <span class="meta">@Filter</span>(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class) &#125;)</span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> SpringBootApplication &#123;</span><br><span class="line">  </span><br><span class="line"><span class="meta">@Target</span>(ElementType.TYPE)</span><br><span class="line"><span class="meta">@Retention</span>(RetentionPolicy.RUNTIME)</span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> SpringBootConfiguration</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li><p>@<strong>SpringBootConfiguration</strong>：Spring Boot 的配置类，@Configuration 配置类上来标注这个注解。</p>
-</li>
-<li><p>@<strong>EnableAutoConfiguration</strong>：注解 Spring Boot 开启自动配置功能，有了自动配置类，就免去了我们手动编写配置注入功能组件等工作。</p>
-</li>
-</ul>
-<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>Spring Boot 在启动的时候从类路径下的 <code>META-INF/spring-factories</code> 获取 EnableAutoConfiguration 指定的值，将这些值作为自动配置类导入到容器中，自动配置类就生效，帮我们进行自动配置工作，<strong>spring-boot-autoconfigure-2.2.1.RELEASE.jar</strong>。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping</span>(<span class="string">"api"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DeptController</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> DeptService deptService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> DataScope dataScope;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String ENTITY_NAME = <span class="string">"dept"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Log</span>(<span class="string">"查询部门"</span>)</span><br><span class="line">    <span class="meta">@GetMapping</span>(value = <span class="string">"/dept"</span>)</span><br><span class="line">    <span class="meta">@PreAuthorize</span>(<span class="string">"hasAnyRole('ADMIN','USER_ALL','USER_SELECT','DEPT_ALL','DEPT_SELECT')"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">public</span> ResponseEntity <span class="title">getDepts</span><span class="params">(DeptQueryCriteria criteria)</span></span>&#123;</span><br><span class="line">        <span class="comment">// 数据权限</span></span><br><span class="line">        criteria.setIds(dataScope.getDeptIds());</span><br><span class="line">        List&lt;DeptDTO&gt; deptDTOS = deptService.queryAll(criteria);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ResponseEntity(deptService.buildTree(deptDTOS),HttpStatus.OK);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>@<strong>RestController</strong>：这个类所有方法返回的数据直接写给浏览器，如果是对象转为 json 数据。</p>
-<h2 id="Spring-Boot-配置"><a href="#Spring-Boot-配置" class="headerlink" title="Spring Boot 配置"></a>Spring Boot 配置</h2><p><strong>全局配置文件</strong></p>
-<p>可以对一些默认配置值进行修改，配置文件存放在 <code>/src/main/resources</code> 目录或者类路径 <code>/config</code> 下。</p>
-<ul>
-<li>application.properties</li>
-<li>application.yml</li>
-</ul>
-<p>Yaml：以数据为中心，比 json、xml 更适合做配置文件</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">server:</span></span><br><span class="line"><span class="attr">  port:</span> <span class="number">8081</span></span><br></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.rao.springboot.demo.domain;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.context.properties.ConfigurationProperties;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Component;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.Date;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> Rao Hui</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019-11-29 11:12</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@ConfigurationProperties</span>(prefix = <span class="string">"person"</span>)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line">    <span class="keyword">private</span> Boolean boss;</span><br><span class="line">    <span class="keyword">private</span> Date birth;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Map&lt;String,Object&gt; maps;</span><br><span class="line">    <span class="keyword">private</span> List&lt;String&gt; lists;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Dog dog;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>@<strong>Data</strong>：<a href="https://projectlombok.org/" target="_blank" rel="noopener">Lombok</a> 提供，加了 @Data 注解的类，编译后会自动给我们加上下列方法：</p>
-<ul>
-<li>所有属性的 get() 和 set()</li>
-<li>toString()</li>
-<li>hashCode()</li>
-</ul>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.projectlombok<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>lombok<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.18.10<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>@<strong>Component</strong>：把普通 POJO 实例化到 Spring 容器中，相当于配置文件中的 <code>&lt;bean id=&quot;&quot; class=&quot;&quot;/&gt;</code></p>
-<p>@<strong>ConfigurationProperties</strong>(prefix = “person”)：默认从全局配置文件获取值，此注解将类属性和配置文件中相关配置进行绑定，一一映射。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.rao.springboot.demo.domain;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> Rao Hui</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019-11-29 11:12</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Dog</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line">    <span class="keyword">private</span> String colour;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><strong>application.yml</strong></p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">person:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">rao</span></span><br><span class="line"><span class="attr">  age:</span> <span class="number">29</span></span><br><span class="line"><span class="attr">  boss:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">  birth:</span> <span class="number">2019</span><span class="string">/01/01</span></span><br><span class="line"><span class="attr">  maps:</span> <span class="string">&#123;height:</span> <span class="number">173</span><span class="string">cm,weight:</span> <span class="number">62</span><span class="string">kg&#125;</span></span><br><span class="line"><span class="attr">  lists:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">lisi</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">zhangsan</span></span><br><span class="line"><span class="attr">  dog:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">小狗</span></span><br><span class="line"><span class="attr">    age:</span> <span class="number">12</span></span><br><span class="line"><span class="attr">    colour:</span> <span class="string">blue</span></span><br></pre></td></tr></table></figure>
-
-<p>@Value 与 @ConfigurationProperties 对比：</p>
-<ul>
-<li>只是在某个业务逻辑中需要获取一下配置文件中的某项值，使用 @Value</li>
-<li>专门编写 JavaBean 来和配置文件映射，使用 @ConfigurationProperties</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>@ConfigurationProperties</th>
-<th>@Value</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>功能</td>
-<td>批量注入配置文件中的属性</td>
-<td>一个个指定</td>
-</tr>
-<tr>
-<td>松散绑定</td>
-<td>支持</td>
-<td>不支持</td>
-</tr>
-<tr>
-<td>SePL</td>
-<td>不支持</td>
-<td>支持</td>
-</tr>
-<tr>
-<td>JSR303 数据校验</td>
-<td>支持</td>
-<td>不支持</td>
-</tr>
-<tr>
-<td>复杂类型封装</td>
-<td>支持</td>
-<td>不支持</td>
-</tr>
-</tbody></table>
-<p><strong>测试类</strong></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.rao.springboot.demo;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.rao.springboot.demo.domain.Person;</span><br><span class="line"><span class="keyword">import</span> org.junit.jupiter.api.Test;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.test.context.SpringBootTest;</span><br><span class="line"></span><br><span class="line"><span class="meta">@SpringBootTest</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RunApplicationTests</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">   <span class="meta">@Autowired</span></span><br><span class="line">   Person person;</span><br><span class="line"></span><br><span class="line">   <span class="meta">@Test</span></span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">contextLoads</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      System.out.println(person.toString());</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Person(name=rao, age=<span class="number">29</span>, boss=false, birth=Tue Jan <span class="number">01</span> <span class="number">00</span>:<span class="number">00</span>:<span class="number">00</span> CST <span class="number">2019</span>, maps=&#123;height=<span class="number">173</span>cm, weight=<span class="number">62</span>kg&#125;, lists=[lisi, zhangsan], dog=Dog(name=小狗, age=<span class="number">12</span>, colour=blue))</span><br></pre></td></tr></table></figure>
-
-<p>@<strong>Autowired</strong>：</p>
-<p>@<strong>PropertySource</strong>(value = “classpath:person.properties”)：可以加载指定位置的配置文件。</p>
-<p>@<strong>ImportResource</strong>：导入 Spring 的配置文件，让配置文件里面的内容生效。</p>
-<p>Spring Boot 推荐给容器中添加组件的方式：使用 @Configuration @Bean 的配置类替代配置文件给容器添加组件，容器中默认组件名就是方法名。</p>
-<p>配置文件占位符：${}</p>
-<h3 id="Profile"><a href="#Profile" class="headerlink" title="Profile"></a>Profile</h3><p><strong>目的</strong>：Spring 针对不同环境提供不同配置功能的支持，可以通过激活、指定参数等方式快速切换环境。</p>
-<ul>
-<li><p><strong>多 profile 文件形式</strong>：application-{profile}.properties/yml</p>
-</li>
-<li><p><strong>yml 支持多文档块方式</strong>：—</p>
-</li>
-<li><p><strong>激活指定 profile</strong>：配置文件 spring.profiles.active=dev，或者命令行 –spring.profiles.active=dev，或者虚拟机参数指定。</p>
-</li>
-</ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">person:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">rao</span></span><br><span class="line"><span class="attr">  age:</span> <span class="number">29</span></span><br><span class="line"><span class="attr">  boss:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">  birth:</span> <span class="number">2019</span><span class="string">/01/01</span></span><br><span class="line"><span class="attr">  maps:</span> <span class="string">&#123;height:</span> <span class="number">173</span><span class="string">cm,weight:</span> <span class="number">62</span><span class="string">kg&#125;</span></span><br><span class="line"><span class="attr">  lists:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">lisi</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">zhangsan</span></span><br><span class="line"><span class="attr">  dog:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">小狗</span></span><br><span class="line"><span class="attr">    age:</span> <span class="number">12</span></span><br><span class="line"><span class="attr">    colour:</span> <span class="string">blue</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  profiles:</span></span><br><span class="line"><span class="attr">    active:</span> <span class="string">prod</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  profiles:</span> <span class="string">dev</span></span><br><span class="line"><span class="attr">person:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">hui</span></span><br><span class="line"><span class="attr">  age:</span> <span class="number">29</span></span><br><span class="line"><span class="attr">  boss:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">  birth:</span> <span class="number">2019</span><span class="string">/01/01</span></span><br><span class="line"><span class="attr">  maps:</span> <span class="string">&#123;height:</span> <span class="number">173</span><span class="string">cm,weight:</span> <span class="number">62</span><span class="string">kg&#125;</span></span><br><span class="line"><span class="attr">  lists:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">lisi</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">zhangsan</span></span><br><span class="line"><span class="attr">  dog:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">小狗</span></span><br><span class="line"><span class="attr">    age:</span> <span class="number">12</span></span><br><span class="line"><span class="attr">    colour:</span> <span class="string">blue</span></span><br><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line"><span class="attr">  profiles:</span> <span class="string">prod</span></span><br><span class="line"><span class="attr">person:</span></span><br><span class="line"><span class="attr">  name:</span> <span class="string">yu</span></span><br><span class="line"><span class="attr">  age:</span> <span class="number">29</span></span><br><span class="line"><span class="attr">  boss:</span> <span class="literal">false</span></span><br><span class="line"><span class="attr">  birth:</span> <span class="number">2019</span><span class="string">/01/01</span></span><br><span class="line"><span class="attr">  maps:</span> <span class="string">&#123;height:</span> <span class="number">173</span><span class="string">cm,weight:</span> <span class="number">62</span><span class="string">kg&#125;</span></span><br><span class="line"><span class="attr">  lists:</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">lisi</span></span><br><span class="line"><span class="bullet">    -</span> <span class="string">zhangsan</span></span><br><span class="line"><span class="attr">  dog:</span></span><br><span class="line"><span class="attr">    name:</span> <span class="string">小狗</span></span><br><span class="line"><span class="attr">    age:</span> <span class="number">12</span></span><br><span class="line"><span class="attr">    colour:</span> <span class="string">blue</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>配置文件加载位置</strong>：优先级由高到低，优先级高会覆盖优先级低的配置，全部加载互补配置。</p>
-<ul>
-<li>-file:./config/</li>
-<li>-file:./</li>
-<li>-classpath:/config/</li>
-<li>-classpath:/</li>
-</ul>
-<h2 id="Spring-Boot-日志"><a href="#Spring-Boot-日志" class="headerlink" title="Spring Boot 日志"></a>Spring Boot 日志</h2><p>Spring Boot：<strong>slf4j</strong>  +  log4j/log4j2/<strong>logback</strong></p>
-<p><img src="http://www.slf4j.org/images/concrete-bindings.png" alt></p>
-<p>每一个日志的实现都有自己的配置文件，使用 slf4j 之后，配置文件还是做成日志实现框架自己本身的配置文件。</p>
-<p>Spring Boot 能自动适配所有的日志，而且底层使用 <strong>slf4j + logback</strong> 的方式记录日志，引入其他框架的时候，只需要把这个框架依赖的日志框架排除掉。</p>
-<h2 id="Spring-Boot-与-Web-开发"><a href="#Spring-Boot-与-Web-开发" class="headerlink" title="Spring Boot 与 Web 开发"></a>Spring Boot 与 Web 开发</h2><p>模板引擎  thymeleaf</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/blog/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/blog/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/17/">17</a><a class="extend next" rel="next" href="/blog/page/5/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/blog/page/3/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/blog/">1</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/blog/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/blog/page/18/">18</a><a class="extend next" rel="next" href="/blog/page/5/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -2665,7 +2588,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">170</span>
+                    <span class="site-state-item-count">171</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
