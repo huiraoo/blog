@@ -352,6 +352,257 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2020/08/20/blog-service/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2020/08/20/blog-service/" class="post-title-link" itemprop="url">HTTP应用：写一个完整的博客后端</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-08-20 14:30:52" itemprop="dateCreated datePublished" datetime="2020-08-20T14:30:52+08:00">2020-08-20</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-08-24 14:13:53" itemprop="dateModified" datetime="2020-08-24T14:13:53+08:00">2020-08-24</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Go/" itemprop="url" rel="index"><span itemprop="name">Go</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="快速启动"><a href="#快速启动" class="headerlink" title="快速启动"></a>快速启动</h2><ul>
+<li><strong>初始化项目 &amp; 安装 gin</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">go mod init github.com/go-programming-tour-book/blog-service</span><br><span class="line">go get -u github.com/gin-gonic/gin@v1.<span class="number">6.3</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"github.com/gin-gonic/gin"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">	r := gin.Default()</span><br><span class="line">	r.GET(<span class="string">"/ping"</span>, <span class="function"><span class="keyword">func</span><span class="params">(c *gin.Context)</span></span> &#123;</span><br><span class="line">		c.JSON(<span class="number">200</span>, gin.H&#123;<span class="string">"message"</span>: <span class="string">"pong"</span>&#125;)</span><br><span class="line">	&#125;)</span><br><span class="line">	r.Run()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>验证</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ curl http://<span class="number">127.0</span>.<span class="number">0.1</span>:<span class="number">8080</span>/ping</span><br><span class="line">&#123;<span class="string">"message"</span>:<span class="string">"pong"</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="后端技术"><a href="#后端技术" class="headerlink" title="后端技术"></a>后端技术</h2><table>
+<thead>
+<tr>
+<th>技术</th>
+<th>版本</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/gin-gonic/gin" target="_blank" rel="noopener">gin</a></td>
+<td>v1.6.3</td>
+<td>web 框架</td>
+</tr>
+<tr>
+<td><a href="https://github.com/spf13/viper" target="_blank" rel="noopener">viper</a></td>
+<td>v1.7.1</td>
+<td>配置文件解析库</td>
+</tr>
+<tr>
+<td><a href="https://github.com/go-gorm/gorm" target="_blank" rel="noopener">gorm</a></td>
+<td>v1.9.16</td>
+<td>ORM 框架</td>
+</tr>
+</tbody></table>
+<h2 id="项目设计"><a href="#项目设计" class="headerlink" title="项目设计"></a>项目设计</h2><h3 id="目录结构"><a href="#目录结构" class="headerlink" title="目录结构"></a>目录结构</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">.</span></span><br><span class="line"><span class="string">├──</span> <span class="string">config</span></span><br><span class="line"><span class="string">├──</span> <span class="string">docs</span></span><br><span class="line"><span class="string">├──</span> <span class="string">global</span></span><br><span class="line"><span class="string">├──</span> <span class="string">internal</span></span><br><span class="line"><span class="string">│</span>   <span class="string">├──</span> <span class="string">dao</span></span><br><span class="line"><span class="string">│</span>   <span class="string">├──</span> <span class="string">middleware</span></span><br><span class="line"><span class="string">│</span>   <span class="string">├──</span> <span class="string">model</span></span><br><span class="line"><span class="string">│</span>   <span class="string">├──</span> <span class="string">routers</span></span><br><span class="line"><span class="string">│</span>   <span class="string">└──</span> <span class="string">service</span></span><br><span class="line"><span class="string">├──</span> <span class="string">main.go</span></span><br><span class="line"><span class="string">├──</span> <span class="string">pkg</span></span><br><span class="line"><span class="string">├──</span> <span class="string">scripts</span></span><br><span class="line"><span class="string">├──</span> <span class="string">storage</span></span><br><span class="line"><span class="string">├──</span> <span class="string">third_party</span></span><br><span class="line"><span class="string">└──</span> <span class="string">go.mod</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE `blog_tag` (</span><br><span class="line">  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `name` varchar(100) DEFAULT &apos;&apos; COMMENT &apos;标签名称&apos;,</span><br><span class="line">  `state` tinyint(3) unsigned DEFAULT &apos;1&apos; COMMENT &apos;状态 0为禁用、1为启用&apos;,</span><br><span class="line">  `created_on` int(10) unsigned DEFAULT &apos;0&apos; COMMENT &apos;创建时间&apos;,</span><br><span class="line">  `created_by` varchar(100) DEFAULT &apos;&apos; COMMENT &apos;创建人&apos;,</span><br><span class="line">  `modified_on` int(10) unsigned DEFAULT &apos;0&apos; COMMENT &apos;修改时间&apos;,</span><br><span class="line">  `modified_by` varchar(100) DEFAULT &apos;&apos; COMMENT &apos;修改人&apos;,</span><br><span class="line">  `deleted_on` int(10) unsigned DEFAULT &apos;0&apos; COMMENT &apos;删除时间&apos;,</span><br><span class="line">  `is_del` tinyint(3) DEFAULT &apos;0&apos; COMMENT &apos;是否删除，0为未删除，1为已删除&apos;,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COMMENT=&apos;文章标签管理&apos;</span><br><span class="line"></span><br><span class="line">CREATE TABLE `blog_article` (</span><br><span class="line">  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,</span><br><span class="line">  `title` varchar(100) DEFAULT &apos;&apos; COMMENT &apos;文章标题&apos;,</span><br><span class="line">  `desc` varchar(255) DEFAULT &apos;&apos; COMMENT &apos;文章简述&apos;,</span><br><span class="line">  `content` longtext COMMENT &apos;文章内容&apos;,</span><br><span class="line">  `cover_image_url` varchar(255) DEFAULT &apos;&apos; COMMENT &apos;封面图片地址&apos;,</span><br><span class="line">  `state` tinyint(3) unsigned DEFAULT &apos;1&apos; COMMENT &apos;状态 0 为禁用、1 为启用&apos;,</span><br><span class="line">  `created_on` int(11) DEFAULT NULL COMMENT &apos;创建时间&apos;,</span><br><span class="line">  `created_by` varchar(100) DEFAULT &apos;&apos; COMMENT &apos;创建人&apos;,</span><br><span class="line">  `modified_on` int(10) unsigned DEFAULT &apos;0&apos; COMMENT &apos;修改时间&apos;,</span><br><span class="line">  `modified_by` varchar(255) DEFAULT &apos;&apos; COMMENT &apos;修改人&apos;,</span><br><span class="line">  `deleted_on` int(10) unsigned DEFAULT &apos;0&apos; COMMENT &apos;删除时间&apos;,</span><br><span class="line">  `is_del` tinyint(3) unsigned DEFAULT &apos;0&apos; COMMENT &apos;是否删除，0为未删除，1为已删除&apos;,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT=&apos;文章管理&apos;</span><br><span class="line"></span><br><span class="line">CREATE TABLE `blog_article_tag` (</span><br><span class="line">  `id` int(10) NOT NULL,</span><br><span class="line">  `article_id` int(11) NOT NULL COMMENT &apos;文章ID&apos;,</span><br><span class="line">  `tag_id` int(10) unsigned NOT NULL DEFAULT &apos;0&apos; COMMENT &apos;标签ID&apos;,</span><br><span class="line">  `created_on` int(10) unsigned DEFAULT &apos;0&apos; COMMENT &apos;创建时间&apos;,</span><br><span class="line">  `created_by` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT &apos;&apos; COMMENT &apos;创建人&apos;,</span><br><span class="line">  `modified_on` int(10) unsigned DEFAULT &apos;0&apos; COMMENT &apos;修改时间&apos;,</span><br><span class="line">  `modified_by` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT &apos;&apos; COMMENT &apos;修改人&apos;,</span><br><span class="line">  `deleted_on` int(10) unsigned DEFAULT &apos;0&apos; COMMENT &apos;删除时间&apos;,</span><br><span class="line">  `is_del` tinyint(3) unsigned DEFAULT &apos;0&apos; COMMENT &apos;是否删除，0为未删除，1为已删除&apos;,</span><br><span class="line">  PRIMARY KEY (`id`)</span><br><span class="line">) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci</span><br></pre></td></tr></table></figure>
+
+<h3 id="model"><a href="#model" class="headerlink" title="model"></a>model</h3><p><strong>model.go</strong></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> model</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Model <span class="keyword">struct</span> &#123;</span><br><span class="line">	ID         <span class="keyword">uint32</span> <span class="string">`gorm:"primary_key" json:"id"`</span></span><br><span class="line">	CreatedBy  <span class="keyword">string</span> <span class="string">`json:"created_by"`</span></span><br><span class="line">	ModifiedBy <span class="keyword">string</span> <span class="string">`json:"modified_by"`</span></span><br><span class="line">	CreatedOn  <span class="keyword">uint32</span> <span class="string">`json:"created_on"`</span></span><br><span class="line">	ModifiedOn <span class="keyword">uint32</span> <span class="string">`json:"modified_on"`</span></span><br><span class="line">	DeletedOn  <span class="keyword">uint32</span> <span class="string">`json:"deleted_on"`</span></span><br><span class="line">	IsDel      <span class="keyword">uint8</span>  <span class="string">`json:"is_del"`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>tag.go</strong></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> model</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Tag <span class="keyword">struct</span> &#123;</span><br><span class="line">	*Model</span><br><span class="line">	Name  <span class="keyword">string</span> <span class="string">`json:"name"`</span></span><br><span class="line">	State <span class="keyword">uint8</span>  <span class="string">`json:"state"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t Tag)</span> <span class="title">TableName</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="string">"blog_tag"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>article.go</strong></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> model</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Article <span class="keyword">struct</span> &#123;</span><br><span class="line">	*Model</span><br><span class="line">	Title         <span class="keyword">string</span> <span class="string">`json:"title"`</span></span><br><span class="line">	Desc          <span class="keyword">string</span> <span class="string">`json:"desc"`</span></span><br><span class="line">	Content       <span class="keyword">string</span> <span class="string">`json:"content"`</span></span><br><span class="line">	CoverImageUrl <span class="keyword">string</span> <span class="string">`json:"cover_image_url"`</span></span><br><span class="line">	State         <span class="keyword">uint8</span>  <span class="string">`json:"state"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(a Article)</span> <span class="title">TableName</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="string">"blog_article"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>article_tag.go</strong></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> model</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> ArticleTag <span class="keyword">struct</span> &#123;</span><br><span class="line">	*Model</span><br><span class="line">	TagID     <span class="keyword">uint32</span> <span class="string">`json:"tag_id"`</span></span><br><span class="line">	ArticleID <span class="keyword">uint32</span> <span class="string">`json:"article_id"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(a ArticleTag)</span> <span class="title">TableName</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> <span class="string">"blog_article_tag"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="接口设计"><a href="#接口设计" class="headerlink" title="接口设计"></a>接口设计</h3><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> routers</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"github.com/gin-gonic/gin"</span></span><br><span class="line">	<span class="string">"github.com/go-programming-tour-book/blog-service/internal/routers/api/v1"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewRouter</span><span class="params">()</span> *<span class="title">gin</span>.<span class="title">Engine</span></span> &#123;</span><br><span class="line">	r := gin.New()</span><br><span class="line">	r.Use(gin.Logger())</span><br><span class="line">	r.Use(gin.Recovery())</span><br><span class="line"></span><br><span class="line">	article := v1.NewArticle()</span><br><span class="line">	tag := v1.NewTag()</span><br><span class="line"></span><br><span class="line">	v1 := r.Group(<span class="string">"/api/v1"</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="comment">//标签管理</span></span><br><span class="line">		v1.POST(<span class="string">"/tags"</span>, tag.Create)</span><br><span class="line">		v1.GET(<span class="string">"/tags"</span>, tag.List)</span><br><span class="line">		v1.PUT(<span class="string">"/tags/:id"</span>, tag.Update)</span><br><span class="line">		v1.DELETE(<span class="string">"/tags/:id"</span>, tag.Delete)</span><br><span class="line">		v1.PATCH(<span class="string">"/tags/:id/state"</span>, tag.Update)</span><br><span class="line"></span><br><span class="line">		<span class="comment">//文章管理</span></span><br><span class="line">		v1.POST(<span class="string">"/articles"</span>, article.Create)</span><br><span class="line">		v1.GET(<span class="string">"/articles"</span>, article.List)</span><br><span class="line">		v1.GET(<span class="string">"/articles/:id"</span>, article.Get)</span><br><span class="line">		v1.PUT(<span class="string">"/articles/:id"</span>, article.Update)</span><br><span class="line">		v1.DELETE(<span class="string">"/articles/:id"</span>, article.Delete)</span><br><span class="line">		v1.PATCH(<span class="string">"/articles/:id/state"</span>, article.Update)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> r</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> v1</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"github.com/gin-gonic/gin"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Article <span class="keyword">struct</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewArticle</span><span class="params">()</span> <span class="title">Article</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> Article&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(a Article)</span> <span class="title">Get</span><span class="params">(c *gin.Context)</span></span>  &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(a Article)</span> <span class="title">List</span><span class="params">(c *gin.Context)</span></span>  &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(a Article)</span> <span class="title">Create</span><span class="params">(c *gin.Context)</span></span>  &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(a Article)</span> <span class="title">Update</span><span class="params">(c *gin.Context)</span></span>  &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(a Article)</span> <span class="title">Delete</span><span class="params">(c *gin.Context)</span></span>  &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> v1</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"github.com/gin-gonic/gin"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Tag <span class="keyword">struct</span> &#123;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewTag</span><span class="params">()</span> <span class="title">Tag</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> Tag&#123;&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t Tag)</span> <span class="title">Get</span><span class="params">(c *gin.Context)</span></span>  &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t Tag)</span> <span class="title">List</span><span class="params">(c *gin.Context)</span></span>  &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t Tag)</span> <span class="title">Create</span><span class="params">(c *gin.Context)</span></span>  &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t Tag)</span> <span class="title">Update</span><span class="params">(c *gin.Context)</span></span>  &#123;&#125;</span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t Tag)</span> <span class="title">Delete</span><span class="params">(c *gin.Context)</span></span>  &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="公共组件"><a href="#公共组件" class="headerlink" title="公共组件"></a>公共组件</h3><ul>
+<li>错误码标准化</li>
+</ul>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> (</span><br><span class="line">	Success                   = NewError(<span class="number">0</span>, <span class="string">"成功"</span>)</span><br><span class="line">	ServerError               = NewError(<span class="number">100000</span>, <span class="string">"内部服务器错误"</span>)</span><br><span class="line">	InvalidParams             = NewError(<span class="number">100001</span>, <span class="string">"入参错误"</span>)</span><br><span class="line">	NotFound                  = NewError(<span class="number">100002</span>, <span class="string">"找不大"</span>)</span><br><span class="line">	UnauthorizedAuthNotExist  = NewError(<span class="number">100003</span>, <span class="string">"鉴权失败，找不到对应的 AppKey 和 AppSecret"</span>)</span><br><span class="line">	UnauthorizedTokenError    = NewError(<span class="number">100004</span>, <span class="string">"鉴权失败，Token 错误"</span>)</span><br><span class="line">	UnauthorizedTokenTimeout  = NewError(<span class="number">100005</span>, <span class="string">"鉴权失败，Token 超时"</span>)</span><br><span class="line">	UnauthorizedTokenGenerate = NewError(<span class="number">100006</span>, <span class="string">"鉴权失败，Token 生成失败"</span>)</span><br><span class="line">	TooManyRequests           = NewError(<span class="number">100007</span>, <span class="string">"请求过多"</span>)</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> errcode</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">	<span class="string">"fmt"</span></span><br><span class="line">	<span class="string">"net/http"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 错误的响应结果</span></span><br><span class="line"><span class="keyword">type</span> Error <span class="keyword">struct</span> &#123;</span><br><span class="line">	code    <span class="keyword">int</span>      <span class="string">`json:"code"`</span></span><br><span class="line">	msg     <span class="keyword">string</span>   <span class="string">`json:"msg"`</span></span><br><span class="line">	details []<span class="keyword">string</span> <span class="string">`json:"details"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 全局错误码的存储载体</span></span><br><span class="line"><span class="keyword">var</span> codes = <span class="keyword">map</span>[<span class="keyword">int</span>]<span class="keyword">string</span>&#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewError</span><span class="params">(code <span class="keyword">int</span>, msg <span class="keyword">string</span>)</span> *<span class="title">Error</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> _, ok := codes[code]; ok &#123;</span><br><span class="line">		<span class="built_in">panic</span>(fmt.Sprintf(<span class="string">"错误码 %d 已经存在，请更换一个"</span>, code))</span><br><span class="line">	&#125;</span><br><span class="line">	codes[code] = msg</span><br><span class="line">	<span class="keyword">return</span> &amp;Error&#123;code: code, msg: msg&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(e *Error)</span> <span class="title">Error</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> fmt.Sprintf(<span class="string">"错误码：%d，错误信息：%s"</span>, e.code, e.msg)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(e *Error)</span> <span class="title">Code</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> e.code</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(e *Error)</span> <span class="title">Msg</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> e.msg</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(e *Error)</span> <span class="title">Msgf</span><span class="params">(args []<span class="keyword">interface</span>&#123;&#125;)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> fmt.Sprintf(e.msg, args...)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(e *Error)</span> <span class="title">Details</span><span class="params">()</span> []<span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> e.details</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(e *Error)</span> <span class="title">WithDetails</span><span class="params">(details ...<span class="keyword">string</span>)</span> *<span class="title">Error</span></span> &#123;</span><br><span class="line">	newError := *e</span><br><span class="line">	newError.details = []<span class="keyword">string</span>&#123;&#125;</span><br><span class="line">	<span class="keyword">for</span> _, d := <span class="keyword">range</span> details &#123;</span><br><span class="line">		newError.details = <span class="built_in">append</span>(newError.details, d)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> &amp;newError</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 针对一些特定错误码进行状态码的转换</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(e *Error)</span> <span class="title">StatusCode</span><span class="params">()</span> <span class="title">int</span></span> &#123;</span><br><span class="line">	<span class="keyword">switch</span> e.Code() &#123;</span><br><span class="line">	<span class="keyword">case</span> Success.Code():</span><br><span class="line">		<span class="keyword">return</span> http.StatusOK</span><br><span class="line">	<span class="keyword">case</span> ServerError.Code():</span><br><span class="line">		<span class="keyword">return</span> http.StatusInternalServerError</span><br><span class="line">	<span class="keyword">case</span> InvalidParams.Code():</span><br><span class="line">		<span class="keyword">return</span> http.StatusBadRequest</span><br><span class="line">	<span class="keyword">case</span> UnauthorizedAuthNotExist.Code():</span><br><span class="line">		<span class="keyword">fallthrough</span></span><br><span class="line">	<span class="keyword">case</span> UnauthorizedTokenError.Code():</span><br><span class="line">		<span class="keyword">fallthrough</span></span><br><span class="line">	<span class="keyword">case</span> UnauthorizedTokenGenerate.Code():</span><br><span class="line">		<span class="keyword">fallthrough</span></span><br><span class="line">	<span class="keyword">case</span> UnauthorizedTokenTimeout.Code():</span><br><span class="line">		<span class="keyword">return</span> http.StatusUnauthorized</span><br><span class="line">	<span class="keyword">case</span> TooManyRequests.Code():</span><br><span class="line">		<span class="keyword">return</span> http.StatusTooManyRequests</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> http.StatusInternalServerError</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>配置管理</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export GOPROXY=https://goproxy.cn</span><br><span class="line">go get -u github.com/spf13/viper@v1.<span class="number">4.0</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>数据库连接</li>
+<li>日志写入</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">export GOPROXY=https://goproxy.cn</span><br><span class="line">go get -u gopkg.in/natefinch/lumberjack.v2</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>响应处理</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2020/08/19/ilearning-console/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -397,12 +648,24 @@
                 
               
 
-              <time title="创建时间：2020-08-19 08:57:54 / 修改时间：09:46:46" itemprop="dateCreated datePublished" datetime="2020-08-19T08:57:54+08:00">2020-08-19</time>
+              <time title="创建时间：2020-08-19 08:57:54" itemprop="dateCreated datePublished" datetime="2020-08-19T08:57:54+08:00">2020-08-19</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-08-24 13:49:56" itemprop="dateModified" datetime="2020-08-24T13:49:56+08:00">2020-08-24</time>
               
             
           </span>
@@ -456,7 +719,93 @@
       
         
           
-            <h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><ul>
+            <h2 id="系统简介"><a href="#系统简介" class="headerlink" title="系统简介"></a>系统简介</h2><p>技术架构平台，提供系统全链路可用性监控和告警，服务器、应用、数据库等资源管理，应用打包部署，服务全生命周期管理及治理，是支撑 PSI 软件开发一站式平台，核心目标是让系统开发运维更便捷高效。</p>
+<h2 id="功能概览"><a href="#功能概览" class="headerlink" title="功能概览"></a>功能概览</h2><ul>
+<li><p><strong>概览</strong>：近24小时可用性拨测、PV/UV、告警概览、资源概览、容器云资源概览、公告、FAQ</p>
+</li>
+<li><p><strong>监控</strong></p>
+<ul>
+<li>监控面板</li>
+<li>云拨测</li>
+<li>站点统计</li>
+</ul>
+</li>
+<li><p><strong>告警</strong></p>
+<ul>
+<li>当前告警</li>
+<li>自定义事件</li>
+<li>告警规则</li>
+<li>通知组</li>
+<li>告警备案</li>
+<li>历史告警</li>
+</ul>
+</li>
+<li><p><strong>应用分区</strong></p>
+</li>
+<li><p><strong>应用</strong></p>
+<ul>
+<li>全部应用</li>
+<li>无状态后端应用：容器云部署、服务器部署</li>
+<li>无状态前端应用：容器云部署、服务器部署</li>
+<li>定时任务</li>
+</ul>
+</li>
+<li><p><strong>持续集成</strong>：打包</p>
+</li>
+<li><p><strong>链路追踪</strong></p>
+<ul>
+<li>追踪</li>
+<li>仪表盘</li>
+<li>拓扑图</li>
+<li>接入</li>
+<li>统计</li>
+</ul>
+</li>
+<li><p><strong>数据库</strong></p>
+<ul>
+<li>阿里云 RDS</li>
+<li>自建 MySQL</li>
+<li>Redis</li>
+</ul>
+</li>
+<li><p><strong>日志服务</strong></p>
+<ul>
+<li>日志搜索</li>
+<li>日志下载</li>
+</ul>
+</li>
+<li><p><strong>容器镜像</strong></p>
+<ul>
+<li>私有镜像</li>
+<li>公有镜像</li>
+</ul>
+</li>
+<li><p><strong>服务器</strong></p>
+</li>
+<li><p><strong>阿里云费用</strong>：账单明细</p>
+</li>
+<li><p><strong>设置</strong></p>
+<ul>
+<li>项目配置</li>
+<li>用户组</li>
+<li>操作日志</li>
+<li>个人设置</li>
+</ul>
+</li>
+<li><p><strong>工单</strong></p>
+</li>
+<li><p><strong>文档</strong></p>
+</li>
+</ul>
+<h2 id="数据库表"><a href="#数据库表" class="headerlink" title="数据库表"></a>数据库表</h2><ul>
+<li>console_db_mysql：自建 MySQL 基本信息表</li>
+<li>console_db_mysql_backup：自建 MySQL 备份信息表</li>
+<li>console_db_rds：阿里云 RDS 基本信息表</li>
+</ul>
+<h2 id="相关组件"><a href="#相关组件" class="headerlink" title="相关组件"></a>相关组件</h2><p><a href="https://hellosean1025.github.io/yapi/" target="_blank" rel="noopener">YAPI</a>：可视化 API 接口管理平台</p>
+<p><a href="https://github.com/getsentry/sentry" target="_blank" rel="noopener">Sentry</a>：前端错误监控系统</p>
+<p><a href="http://skywalking.apache.org/" target="_blank" rel="noopener">SkyWalking</a>：APM (应用性能管理) 工具，包括指标监控、分布式追踪、分布式系统性能诊断等功能。<a href="http://122.112.182.72:8080/" target="_blank" rel="noopener">demo</a></p>
+<h2 id="前期准备"><a href="#前期准备" class="headerlink" title="前期准备"></a>前期准备</h2><ul>
 <li><strong>IDE：</strong><ul>
 <li><a href="https://www.jetbrains.com/go/" target="_blank" rel="noopener">Goland</a>，<a href="https://zhile.io/2018/08/17/jetbrains-license-server-crack.html" target="_blank" rel="noopener">激活方法</a></li>
 <li><a href="https://code.visualstudio.com/" target="_blank" rel="noopener">Visual Studio Code</a></li>
@@ -475,41 +824,84 @@
 </ul>
 </li>
 </ul>
-<h2 id="项目下载和运行"><a href="#项目下载和运行" class="headerlink" title="项目下载和运行"></a>项目下载和运行</h2><p><strong>UI</strong></p>
+<h2 id="项目下载和运行"><a href="#项目下载和运行" class="headerlink" title="项目下载和运行"></a>项目下载和运行</h2><ul>
+<li><strong>UI</strong></li>
+</ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"># clone代码</span><br><span class="line">git clone https://git.haier.net/console/ui.git</span><br><span class="line">cd ui</span><br><span class="line"></span><br><span class="line"># 安装依赖</span><br><span class="line">npm install --registry=http://10.138.16.188:4873</span><br><span class="line"></span><br><span class="line"># 开发模式运行</span><br><span class="line">npm run serve</span><br></pre></td></tr></table></figure>
 
-<p><strong>CMDB</strong></p>
+<ul>
+<li><strong>CMDB</strong></li>
+</ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># 环境变量</span><br><span class="line">DB_MYSQL=console:suMuCaSu1e@tcp(10.138.228.243:3306)/console?parseTime=true&amp;loc=Local;COMPASS_USER=admin;COMPASS_PASSWORD=Pwd123456;COMPASS_ADDRESS=10.135.7.71:6002</span><br></pre></td></tr></table></figure>
 
 <h2 id="技术选型"><a href="#技术选型" class="headerlink" title="技术选型"></a>技术选型</h2><p><strong>前端技术</strong></p>
 <table>
 <thead>
 <tr>
-<th align="left"><a href="https://vuejs.org/" target="_blank" rel="noopener">Vue</a></th>
-<th align="left">前端框架</th>
+<th align="left">技术</th>
+<th>版本</th>
+<th align="left">说明</th>
 </tr>
 </thead>
 <tbody><tr>
+<td align="left"><a href="https://vuejs.org/" target="_blank" rel="noopener">Vue</a></td>
+<td>2.5.22</td>
+<td align="left">前端框架</td>
+</tr>
+<tr>
 <td align="left"><a href="https://router.vuejs.org/" target="_blank" rel="noopener">Vue-router</a></td>
+<td>3.0.1</td>
 <td align="left">路由框架</td>
 </tr>
 <tr>
 <td align="left"><a href="https://vuex.vuejs.org/" target="_blank" rel="noopener">Vuex</a></td>
+<td>3.1.0</td>
 <td align="left">全局状态管理框架</td>
 </tr>
 <tr>
 <td align="left"><a href="https://www.antdv.com/docs/vue/introduce-cn/" target="_blank" rel="noopener">Ant Design of Vue</a></td>
+<td>1.5.3</td>
 <td align="left">前端 UI 框架</td>
 </tr>
 <tr>
 <td align="left"><a href="https://github.com/axios/axios" target="_blank" rel="noopener">Axios</a></td>
+<td>0.19.0</td>
 <td align="left">前端 HTTP 框架</td>
 </tr>
 <tr>
 <td align="left"><a href="https://viserjs.gitee.io/demoHome.html" target="_blank" rel="noopener">Viser</a></td>
+<td>2.3.3</td>
 <td align="left">前端图表框架</td>
 </tr>
 </tbody></table>
+<p><strong>后端技术</strong></p>
+<table>
+<thead>
+<tr>
+<th>技术</th>
+<th>版本</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/gin-gonic/gin" target="_blank" rel="noopener">gin</a></td>
+<td>v1.5.0</td>
+<td>HTTP Web 开发框架</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+<h2 id="代码结构"><a href="#代码结构" class="headerlink" title="代码结构"></a>代码结构</h2><p><strong>aliyun-adaptor</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── client                          // 阿里云各服务sdk客户端</span><br><span class="line">│   └── aliyun_client.go</span><br><span class="line">├── cmd                             // main函数入口</span><br><span class="line">│   └── main.go</span><br><span class="line">├── conf                            // yaml配置文件及解析</span><br><span class="line">│   ├── config.go</span><br><span class="line">│   ├── config.yml</span><br><span class="line">│   └── config_test.go</span><br><span class="line">├── db                              // 数据库连接池</span><br><span class="line">│   ├── errors.go</span><br><span class="line">│   └── init.go</span><br><span class="line">├── docs                            // swagger文档</span><br><span class="line">│   ├── docs.go</span><br><span class="line">│   ├── swagger.json</span><br><span class="line">│   └── swagger.yaml</span><br><span class="line">├── models                          // 数据结构</span><br><span class="line">│   ├── account.go</span><br><span class="line">│   ├── account_manager.go</span><br><span class="line">│   ├── aliyun.go</span><br><span class="line">│   ├── database.go</span><br><span class="line">│   ├── excel.go</span><br><span class="line">│   └── resp.go</span><br><span class="line">├── pkg                             // 业务逻辑</span><br><span class="line">│   ├── aliyun_account</span><br><span class="line">│   │   ├── account</span><br><span class="line">│   │   │   ├── account_db.go</span><br><span class="line">│   │   │   └── account_db_test.go</span><br><span class="line">│   │   ├── account_manager</span><br><span class="line">│   │   │   ├── excel.go</span><br><span class="line">│   │   │   ├── manager.go</span><br><span class="line">│   │   │   ├── manager_db.go</span><br><span class="line">│   │   │   └── manager_test.go</span><br><span class="line">│   │   ├── account_sync</span><br><span class="line">│   │   │   ├── account_sync.go</span><br><span class="line">│   │   │   └── aliyun_sdk.go</span><br><span class="line">│   │   ├── account_test.go</span><br><span class="line">│   │   └── excel</span><br><span class="line">│   │       ├── excel.go</span><br><span class="line">│   │       ├── excel_db.go</span><br><span class="line">│   │       ├── excel_sync.go</span><br><span class="line">│   │       └── oss_client.go</span><br><span class="line">│   ├── aliyun_mysql               // 自建MySQL</span><br><span class="line">│   │   ├── mysql.go</span><br><span class="line">│   │   └── mysql_test.go</span><br><span class="line">│   ├── aliyun_rds                 // 阿里云RDS</span><br><span class="line">│   │   ├── rds.go</span><br><span class="line">│   │   └── rds_test.go</span><br><span class="line">│   ├── aliyun_redis               // Redis</span><br><span class="line">│   │   ├── prometheustool.go</span><br><span class="line">│   │   ├── redis.go</span><br><span class="line">│   │   └── redis_test.go</span><br><span class="line">│   ├── cmdb                      </span><br><span class="line">│   │   ├── cmdb_client.go</span><br><span class="line">│   │   └── cmdb_test.go</span><br><span class="line">│   ├── compass                   // 容器云</span><br><span class="line">│   │   ├── compass.go</span><br><span class="line">│   │   ├── compass_db.go</span><br><span class="line">│   │   └── compass_test.go</span><br><span class="line">│   └── mail                      // 邮件</span><br><span class="line">│       ├── email.go</span><br><span class="line">│       ├── excel.go</span><br><span class="line">│       ├── mail_db.go</span><br><span class="line">│       ├── sendmail.go</span><br><span class="line">│       ├── sendmail_test.go</span><br><span class="line">│       ├── template.go</span><br><span class="line">│       └── templates</span><br><span class="line">│           └── template.html</span><br><span class="line">├── router                       // 路由</span><br><span class="line">│   ├── api</span><br><span class="line">│   │   └── v1</span><br><span class="line">│   │       ├── account.go</span><br><span class="line">│   │       ├── account_manager.go</span><br><span class="line">│   │       ├── mysql.go</span><br><span class="line">│   │       ├── rds.go</span><br><span class="line">│   │       ├── redis.go</span><br><span class="line">│   │       └── v1.go</span><br><span class="line">│   ├── app</span><br><span class="line">│   │   └── gin.go</span><br><span class="line">│   └── router.go</span><br><span class="line">└── task                        // 定时任务</span><br><span class="line">    ├── account_data</span><br><span class="line">    │   └── main.go</span><br><span class="line">    └── create_excel</span><br><span class="line">        └── main.go</span><br><span class="line">├── Dockerfile                  // 构建镜像的文本文件，文本内容包含了一条条构建镜像所需的指令和说明</span><br><span class="line">├── Dockerfile.account_data     // 构建定时账单数据的镜像文件</span><br><span class="line">├── Dockerfile.create_excel     // 构建excel的镜像文件</span><br><span class="line">└── go.mod                      // 包管理工具</span><br></pre></td></tr></table></figure>
+
 <h2 id="学习资料"><a href="#学习资料" class="headerlink" title="学习资料"></a>学习资料</h2><ul>
 <li><a href="https://www.bilibili.com/video/BV1jJ411c7s3?p=1" target="_blank" rel="noopener">go 基础教程</a></li>
 <li><a href="https://eddycjy.gitbook.io/golang/" target="_blank" rel="noopener">go 进阶教程</a></li>
@@ -632,7 +1024,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2020-08-19 08:55:27" itemprop="dateModified" datetime="2020-08-19T08:55:27+08:00">2020-08-19</time>
+                <time title="修改时间：2020-09-01 18:04:29" itemprop="dateModified" datetime="2020-09-01T18:04:29+08:00">2020-09-01</time>
               
             
           </span>
@@ -687,30 +1079,64 @@
         
           
             <h2 id="DBS-简介"><a href="#DBS-简介" class="headerlink" title="DBS 简介"></a>DBS 简介</h2><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-08-19-085300.png" alt></p>
-<h2 id="安装备份网关"><a href="#安装备份网关" class="headerlink" title="安装备份网关"></a>安装备份网关</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -O aliyunDBSAgentInstaller.jar https://aliyun-dbs-cn-qingdao.oss-cn-qingdao.aliyuncs.com/installer/<span class="number">0.0</span>.<span class="number">83</span>/aliyunDBSAgentInstaller-<span class="number">0.0</span>.<span class="number">83</span>.jar &amp;&amp; sudo java -Dregion=cn-qingdao -jar aliyunDBSAgentInstaller.jar</span><br></pre></td></tr></table></figure>
+<h2 id="安装备份网关"><a href="#安装备份网关" class="headerlink" title="安装备份网关"></a>安装备份网关</h2><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 检查java环境</span></span><br><span class="line">java -version</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装网关</span></span><br><span class="line">cd /opt</span><br><span class="line">wget -O aliyunDBSAgentInstaller.jar https://aliyun-dbs-cn-qingdao.oss-cn-qingdao.aliyuncs.com/installer/<span class="number">0.0</span>.<span class="number">83</span>/aliyunDBSAgentInstaller-<span class="number">0.0</span>.<span class="number">83</span>.jar &amp;&amp; sudo java -Dregion=cn-qingdao -jar aliyunDBSAgentInstaller.jar</span><br><span class="line"></span><br><span class="line"><span class="comment"># 创建备份账号</span></span><br><span class="line">GRANT all privileges on *.* to <span class="string">'backup'</span><span class="string">@'%' identified by 'Backup@123!';</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 设置超时参数</span></span><br><span class="line"><span class="string">set global wait_timeout=28800;</span></span><br><span class="line"><span class="string">set global interactive_timeout=28800;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string"># 修改jvm内存</span></span><br><span class="line"><span class="string">/usr/local/aliyun/dbs_agent/bin/aliyun-dbs-agent.sh</span></span><br><span class="line"><span class="string">JVM_FLAGS="-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError "</span></span><br><span class="line"><span class="string">./aliyun-dbs-agent.sh restart</span></span><br></pre></td></tr></table></figure>
 
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo: java: command not found</span><br><span class="line">yum install -y java</span><br></pre></td></tr></table></figure>
 
-<h2 id="备份过程中遇到的问题"><a href="#备份过程中遇到的问题" class="headerlink" title="备份过程中遇到的问题"></a>备份过程中遇到的问题</h2><h4 id="逻辑备份"><a href="#逻辑备份" class="headerlink" title="逻辑备份"></a>逻辑备份</h4><p><strong>报错信息</strong></p>
+<h2 id="备份过程中遇到的问题"><a href="#备份过程中遇到的问题" class="headerlink" title="备份过程中遇到的问题"></a>备份过程中遇到的问题</h2><h4 id="逻辑备份"><a href="#逻辑备份" class="headerlink" title="逻辑备份"></a>逻辑备份</h4><ul>
+<li><strong>报错信息</strong></li>
+</ul>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">异常信息：</span> <span class="bullet">-1</span></span><br><span class="line"><span class="string">java.lang.IllegalStateException:</span> <span class="string">The</span> <span class="string">RecordSplit</span> <span class="number">5</span> <span class="string">must</span> <span class="string">be</span> <span class="string">in</span> <span class="string">FAILED</span> <span class="string">or</span> <span class="string">SUCCESS</span></span><br></pre></td></tr></table></figure>
 
-<p><strong>原因分析</strong></p>
-<p>数据库表损坏</p>
+<ul>
+<li><strong>原因分析</strong>：数据库表损坏</li>
+</ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java.sql.SQLException: Table &apos;base_scan_record_t&apos; is marked as crashed and should be repaired</span><br></pre></td></tr></table></figure>
 
-<p><strong>解决办法</strong></p>
-<p>检查并修复表</p>
+<ul>
+<li><strong>解决办法</strong>：检查并修复表</li>
+</ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; check table base_scan_record_t;</span><br><span class="line">+----------------------------------+-------+----------+----------+</span><br><span class="line">| Table                            | Op    | Msg_type | Msg_text |</span><br><span class="line">+----------------------------------+-------+----------+----------+</span><br><span class="line">| cosmo_im_1008.base_scan_record_t | check | status   | OK       |</span><br><span class="line">+----------------------------------+-------+----------+----------+</span><br><span class="line"></span><br><span class="line">repair table base_scan_record_t</span><br></pre></td></tr></table></figure>
 
-<h4 id="物理备份"><a href="#物理备份" class="headerlink" title="物理备份"></a>物理备份</h4><p><strong>报错信息</strong></p>
+<h4 id="物理备份"><a href="#物理备份" class="headerlink" title="物理备份"></a>物理备份</h4><ul>
+<li><strong>报错信息</strong></li>
+</ul>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">异常信息：</span> <span class="number">999999</span></span><br><span class="line"><span class="string">DBS-999999,</span> <span class="string">message</span> <span class="string">:Unable</span> <span class="string">to</span> <span class="string">find</span> <span class="string">'completed OK!'</span> <span class="string">at</span> <span class="string">the</span> <span class="string">end</span> <span class="string">of</span> <span class="string">the</span> <span class="attr">file:</span> <span class="string">/usr/local/aliyun/dbs_agent/dbbackup/2020-08-06/1ib0xmr67jbl0_dbbackup.log,</span> <span class="attr">msg:</span> <span class="number">200807</span> <span class="number">02</span><span class="string">:51:07</span> <span class="string">[04]</span> <span class="string">...done</span> <span class="attr">Error:</span> <span class="string">failed</span> <span class="string">to</span> <span class="string">execute</span> <span class="string">query</span> <span class="string">SET</span> <span class="string">SESSION</span> <span class="string">lock_wait_timeout=31536000:</span> <span class="string">MySQL</span> <span class="string">server</span> <span class="string">has</span> <span class="string">gone</span> <span class="string">away</span> <span class="string">.</span></span><br></pre></td></tr></table></figure>
 
-<p><strong>原因分析</strong></p>
-<p>怀疑是 MySQL 连接超时导致的，MySQL 连接超时是由两个参数控制的 <code>interactive_timeout</code>、<code>wait_timeout</code>，它的意思是某个 MySQL 长连接很久没有新的请求发起，达到了 server 端的 timeout，被 server 强行关闭。此后再通过这个 connection 发起查询的时候，就会报错 server has gone away。</p>
+<ul>
+<li><strong>原因分析</strong>：怀疑是 MySQL 连接超时导致的，MySQL 连接超时是由两个参数控制的<code>interactive_timeout</code>、<code>wait_timeout</code>，它的意思是某个 MySQL 长连接很久没有新的请求发起，达到了 server 端的 timeout，被 server 强行关闭。此后再通过这个 connection 发起查询的时候，就会报错 server has gone away。</li>
+</ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">MySQL [(none)]&gt; show variables like &apos;%timeout%&apos;;</span><br><span class="line">+-----------------------------+----------+</span><br><span class="line">| Variable_name               | Value    |</span><br><span class="line">+-----------------------------+----------+</span><br><span class="line">| connect_timeout             | 10       |</span><br><span class="line">| delayed_insert_timeout      | 300      |</span><br><span class="line">| innodb_flush_log_at_timeout | 1        |</span><br><span class="line">| innodb_lock_wait_timeout    | 50       |</span><br><span class="line">| innodb_rollback_on_timeout  | OFF      |</span><br><span class="line">| interactive_timeout         | 300      |</span><br><span class="line">| lock_wait_timeout           | 31536000 |</span><br><span class="line">| net_read_timeout            | 30       |</span><br><span class="line">| net_write_timeout           | 60       |</span><br><span class="line">| rpl_stop_slave_timeout      | 31536000 |</span><br><span class="line">| slave_net_timeout           | 3600     |</span><br><span class="line">| wait_timeout                | 300      |</span><br><span class="line">+-----------------------------+----------+</span><br></pre></td></tr></table></figure>
 
-<p><strong>解决办法</strong></p>
-<p>将 <code>interactive_timeout</code>、<code>wait_timeout</code> 都调成默认值 28800</p>
+<ul>
+<li><p><strong>解决办法</strong>：将 <code>interactive_timeout</code>、<code>wait_timeout</code> 都调成默认值 <code>28800</code></p>
+</li>
+<li><p><strong>异常报错：</strong></p>
+</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">999999</span>: DBS-<span class="number">999999</span>, message :Upload files to oss: urumz5gygew1/full/vbt0gyzeqh4k failed, msg: Java heap space.</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>解决办法：</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/aliyun/dbs_agent/bin</span><br><span class="line">./aliyun-dbs-agent.sh stop/start</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>增量日志备份：</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">提醒：<span class="number">999999</span></span><br><span class="line">DBS-<span class="number">999999</span>, message :Upload files to oss: t4ygmdbe494h/continuous/<span class="number">1</span>jetth0q6x1kp/<span class="number">3</span>.trn.inc failed, msg: Could not read desire <span class="keyword">data</span> len, dataLength: <span class="number">6750208</span>.</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>安装备份网关失败：</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2020</span>-<span class="number">08</span>-<span class="number">26</span> <span class="number">15</span>:<span class="number">28</span>:<span class="number">15</span> ERROR Ping:<span class="number">19</span> - hostname dbs.cn-hangzhou.aliyuncs.com telnet error: dbs.cn-hangzhou.aliyuncs.com</span><br><span class="line"><span class="number">2020</span>-<span class="number">08</span>-<span class="number">26</span> <span class="number">15</span>:<span class="number">28</span>:<span class="number">15</span> ERROR Ping:<span class="number">19</span> - hostname dbs-inner.cn-qingdao.aliyuncs.com telnet error: dbs-inner.cn-qingdao.aliyuncs.com</span><br><span class="line"><span class="number">2020</span>-<span class="number">08</span>-<span class="number">26</span> <span class="number">15</span>:<span class="number">28</span>:<span class="number">15</span> ERROR POPTransporter:<span class="number">187</span> - add endpoint to default profile failed</span><br><span class="line">com.aliyuncs.exceptions.ClientException: Network is down?</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@cosmoim-d-cqbl logs]<span class="comment"># cat /etc/resolv.conf</span></span><br><span class="line">nameserver <span class="number">10.138</span>.<span class="number">92.77</span></span><br><span class="line">nameserver <span class="number">10.138</span>.<span class="number">92.76</span></span><br><span class="line">nameserver <span class="number">192.168</span>.<span class="number">100.1</span></span><br><span class="line">nameserver <span class="number">192.168</span>.<span class="number">100.2</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum provides <span class="string">'*/applydeltarpm'</span>  </span><br><span class="line">yum install deltarpm -y</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">yum provides <span class="string">'*/applydeltarpm'</span>  </span><br><span class="line">yum install deltarpm -y</span><br><span class="line"></span><br><span class="line">yum clean all</span><br><span class="line">rm -rf /var/cache/yum/*</span><br><span class="line">yum clean metadata</span><br><span class="line"></span><br><span class="line">yum clean</span><br><span class="line">yum clean all</span><br><span class="line">yum clean all</span><br><span class="line">yum makecache</span><br><span class="line">yum install -y java</span><br><span class="line">yum install java-<span class="number">1.8</span>.<span class="number">0</span>-openjdk -y</span><br><span class="line">yum install java-<span class="number">1.8</span>.<span class="number">0</span>-openjdk-devel -y</span><br></pre></td></tr></table></figure>
+
 
           
         
@@ -2535,191 +2961,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2020/04/17/mysql-ha/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2020/04/17/mysql-ha/" class="post-title-link" itemprop="url">MySQL · 高可用方案</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2020-04-17 15:02:50 / 修改时间：17:21:14" itemprop="dateCreated datePublished" datetime="2020-04-17T15:02:50+08:00">2020-04-17</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><ul>
-<li><p>可用性</p>
-<ul>
-<li>运行中断时间</li>
-<li>平均故障时间</li>
-<li>平均恢复时间</li>
-</ul>
-</li>
-<li><p>容量/性能</p>
-</li>
-<li><p>冗余度</p>
-</li>
-<li><p>故障容忍度</p>
-</li>
-<li><p>灾难恢复</p>
-</li>
-</ul>
-<p>需要的手段</p>
-<ul>
-<li>运维管理</li>
-<li>故障检测和处理</li>
-<li>可扩展性</li>
-<li>数据一致性保证</li>
-<li>提高在线运维能力</li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2768,7 +3009,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">171</span>
+                    <span class="site-state-item-count">172</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

@@ -352,6 +352,199 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/09/04/mysql-disaster/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/09/04/mysql-disaster/" class="post-title-link" itemprop="url">MySQL · 容灾</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-04 16:16:31" itemprop="dateCreated datePublished" datetime="2019-09-04T16:16:31+08:00">2019-09-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-15 16:33:54" itemprop="dateModified" datetime="2019-11-15T16:33:54+08:00">2019-11-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>数据是企业的生命线，<code>PSI</code> 线上系统数据基本都存储在青岛本地机房，缺少异地容灾能力，当出现机房级灾难场景下（如：地震、海啸、火灾等），业务连续性受到极大的影响，损失不可估量。如下图所示，目前 <code>PSI</code> 已具备前两类故障场景的覆盖能力，需要构建覆盖第三类故障场景能力，全方位保障业务数据安全，有备无患。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-135300.png" alt></p>
+<h2 id="目标"><a href="#目标" class="headerlink" title="目标"></a>目标</h2><ul>
+<li>保证极端场景下业务数据可恢复</li>
+<li><code>RPO</code> &lt; 2 小时，<code>RTO</code> &lt; 24 小时</li>
+</ul>
+<h2 id="方案"><a href="#方案" class="headerlink" title="方案"></a>方案</h2><p><strong>设计方案</strong>：如下图所示，重要系统生产数据（青岛本地机房：电信机房、联通机房、移动机房…）同步至红岛灾备数据中心，特别重要系统数据压缩存储上传至阿里云 <code>OSS</code>。</p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-135600.png" alt></p>
+<p><strong>实施方案</strong>：从库实例再搭建一个从实例形成级联结构，对数据进行实时同步，主要为避免增加主库负载。</p>
+<p><strong>实例拓扑：</strong></p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-140100.png" alt></p>
+<p><strong>系统监控：</strong></p>
+<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-09-25-140200.png" alt></p>
+<ul>
+<li><p>主实例：<code>TDDS_M</code></p>
+</li>
+<li><p>从实例：<code>TDDS_S</code></p>
+</li>
+<li><p>灾备实例：<code>TDDS_D</code></p>
+</li>
+</ul>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/08/28/docker/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2471,247 +2664,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/07/25/mysql-guide/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/07/25/mysql-guide/" class="post-title-link" itemprop="url">MySQL · 简介</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-25 10:23:48" itemprop="dateCreated datePublished" datetime="2019-07-25T10:23:48+08:00">2019-07-25</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2020-08-13 10:36:22" itemprop="dateModified" datetime="2020-08-13T10:36:22+08:00">2020-08-13</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="全球数据库排行"><a href="#全球数据库排行" class="headerlink" title="全球数据库排行"></a>全球数据库排行</h2><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-08-12-112020.jpg" alt></p>
-<h2 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h2><h3 id="发展历史"><a href="#发展历史" class="headerlink" title="发展历史"></a>发展历史</h3><ul>
-<li>1979年，Monty 写了最初的版本</li>
-<li>1996年，发布 1.0 版本</li>
-<li>1999年，MySQL AB 在瑞典正式宣布成立</li>
-<li>2000年4月，集成 MyISAM 和 Replication</li>
-<li>2003年，MySQL4.0 发布，正式集成 InnoDB</li>
-<li>2005年，发布 5.0 版本（提供了视图、存储过程等功能）</li>
-<li>2006年，MySQL 被 Sun 收购，出价 10 亿美元</li>
-<li>2009年，Oracle 公司收购 Sun，将 MySQL 纳入囊中</li>
-<li>2010年12月，发布 5.5 正式版本，InnoDB 改为默认存储引擎</li>
-<li>2013年2月，发布 5.6 正式版本</li>
-<li>2015年10月，发布 5.7 正式版本</li>
-<li>2018年5月，发布 8.0 正式版本</li>
-</ul>
-<h3 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h3><p><strong>优点</strong></p>
-<ul>
-<li>免费</li>
-<li>开源（源码、社区工具丰富）</li>
-<li>简单（部署简单、门槛低、上手快）</li>
-</ul>
-<p><strong>缺点</strong></p>
-<ul>
-<li>优化器对复杂 SQL 支持不好</li>
-<li>大规模集群方案不成熟，主要指中间件</li>
-<li>备份和恢复方案还是比较复杂，需要依赖外部组件</li>
-<li>缺少分库分表解决方案</li>
-</ul>
-<h3 id="行业应用"><a href="#行业应用" class="headerlink" title="行业应用"></a>行业应用</h3><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-08-12-132400.png" alt></p>
-<h3 id="主流分支"><a href="#主流分支" class="headerlink" title="主流分支"></a>主流分支</h3><ul>
-<li><a href="https://www.mysql.com/" target="_blank" rel="noopener">MySQL</a></li>
-<li><a href="https://www.percona.com/" target="_blank" rel="noopener">Percona</a></li>
-<li><a href="https://mariadb.org/" target="_blank" rel="noopener">MariaDB</a></li>
-</ul>
-<h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><ul>
-<li><p><strong>数据库</strong>：就是一个存储结构化数据的仓库。物理操作系统文件或其他形式文件类型的集合，通常来说存在与文件系统之上。</p>
-</li>
-<li><p><strong>关系型数据库</strong>：是创建在<strong>关系模型</strong>基础上的数据库，典型代表有：MySQL、Oracle、Microsoft SQL Server、PostgreSQL 等。</p>
-</li>
-<li><p><strong>非关系型数据库（NoSQL）</strong>：对不同于传统的关系数据库的数据库管理系统的统称。与关系数据库最大的不同点是不使用SQL作为查询语言。 典型代表有：Redis、MongoDB 等。</p>
-</li>
-<li><p><strong>实例</strong>：MySQL 数据库由后台线程以及一个共享内存区组成。数据库实例才是真正用于操作数据库文件的。MySQL 数据库实例在系统上的表现就是一个进程。</p>
-</li>
-<li><p><strong>库</strong>：本质是一个文件夹。</p>
-</li>
-<li><p><strong>表</strong>：本质就是一个文件。</p>
-</li>
-<li><p><strong>记录</strong>：相当于文件中的一行。</p>
-</li>
-<li><p><strong>存储引擎</strong>：可以理解成文件系统，存储引擎的对象就是表。</p>
-</li>
-<li><p><strong>OLAP</strong>：On-Line Transaction Processing，联机事务处理。</p>
-</li>
-<li><p><strong>OLTP</strong>：On-Line Analytical Processing，联机分析处理。</p>
-</li>
-<li><p><strong>DML</strong>：数据操作语言，主要是用来对数据进行一些操作，如 SELECT、UPDATE、INSERT、DELETE 等。</p>
-</li>
-<li><p><strong>DDL</strong>：数据定义语言，主要是用在定义或改变表的结构，如 CTEATE、ALTER、DROP、TRUNCATE 等。</p>
-</li>
-</ul>
-<h2 id="学习资料"><a href="#学习资料" class="headerlink" title="学习资料"></a>学习资料</h2><ul>
-<li><a href="https://db-engines.com/en/ranking" target="_blank" rel="noopener">DB-Engines</a></li>
-<li><a href="http://mysql.taobao.org/monthly/" target="_blank" rel="noopener">数据库内核月报</a></li>
-<li><a href="https://juejin.im/book/6844733769996304392" target="_blank" rel="noopener">MySQL 是怎样运行的：从根儿上理解 MySQL</a></li>
-<li><a href="https://time.geekbang.org/column/intro/100020801" target="_blank" rel="noopener">MySQL实战45讲</a></li>
-<li><a href="https://book.douban.com/subject/3354490/" target="_blank" rel="noopener">《MySQL 必知必会》</a></li>
-<li><a href="https://book.douban.com/subject/24708143/" target="_blank" rel="noopener">《MySQL技术内幕 · InnoDB 存储引擎》</a></li>
-<li><a href="https://book.douban.com/subject/23008813/" target="_blank" rel="noopener">《高性能MySQL》</a></li>
-</ul>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2760,7 +2712,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">171</span>
+                    <span class="site-state-item-count">172</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
