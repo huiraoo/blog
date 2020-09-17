@@ -1642,7 +1642,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/blog/2019/12/09/mysql-tuning-flow/" class="post-title-link" itemprop="url">MySQL · 逻辑架构 · 一条 SQL 是如何执行的？</a>
+                <a href="/blog/2019/12/09/mysql-tuning-flow/" class="post-title-link" itemprop="url">MySQL · 一条 SQL 查询是如何执行的？</a>
               
             
           </h1>
@@ -1684,7 +1684,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2020-09-16 18:04:16" itemprop="dateModified" datetime="2020-09-16T18:04:16+08:00">2020-09-16</time>
+                <time title="修改时间：2020-09-17 11:08:42" itemprop="dateModified" datetime="2020-09-17T11:08:42+08:00">2020-09-17</time>
               
             
           </span>
@@ -1738,7 +1738,7 @@
       
         
           
-            <h2 id="执行过程"><a href="#执行过程" class="headerlink" title="执行过程"></a>执行过程</h2><p>大体来说，MySQL 可以分为 Server 层和存储引擎层两部分：</p>
+            <h2 id="SQL-查询的执行过程"><a href="#SQL-查询的执行过程" class="headerlink" title="SQL 查询的执行过程"></a>SQL 查询的执行过程</h2><p>大体来说，MySQL 可以分为 Server 层和存储引擎层两部分：</p>
 <ul>
 <li><strong>Server 层</strong>：包括连接器、查询缓存、分析器、优化器、执行器等，涵盖 MySQL 的大多数核心服务功能。<ul>
 <li><strong>连接器</strong>：跟客户端建立连接、获取权限、维持和管理连接，建议使用长连接。</li>
@@ -1751,6 +1751,33 @@
 <li><strong>存储引擎层</strong>：与数据库文件打交道，负责数据的存储和读取。</li>
 </ul>
 <p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-12-09-144000.png" alt></p>
+<h2 id="SQL-更新执行过程"><a href="#SQL-更新执行过程" class="headerlink" title="SQL 更新执行过程"></a>SQL 更新执行过程</h2><p>与查询流程不一样的是，更新流程还涉及两个重要的日志模块：<code>redo log</code>（重做日志）和 <code>binlog</code>（归档日志）。</p>
+<p><strong>背景</strong>：MySQL 有个问题，如果每一次的更新操作都需要写进磁盘，然后磁盘也要找到对应的那条记录，然后再更新，整个过程 IO 成本、查找成本都很高。为了解决这个问题，MySQL 的设计者就用了 Write-Ahead Logging 思想（它的关键点就是先写日志，再写磁盘）来提升更新效率。</p>
+<h3 id="redo-log"><a href="#redo-log" class="headerlink" title="redo log"></a>redo log</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">1.0</span>G Sep <span class="number">17</span> <span class="number">07</span>:<span class="number">20</span> ib_logfile0</span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">1.0</span>G Sep <span class="number">17</span> <span class="number">07</span>:<span class="number">15</span> ib_logfile1</span><br></pre></td></tr></table></figure>
+
+<p><strong>说明</strong>：记录数据页做了什么改动，而不是这个页更新之后的状态。</p>
+<p><strong>作用</strong>：有了 <code>redo log</code>，InnoDB 就可以保证即使数据库发生异常重启，之前提交的记录都不会丢失，这个能力称为 <code>crash-safe</code>（崩溃恢复）。</p>
+<p><strong>原理</strong>：InnoDB 的 <code>redo log</code> 是固定大小的，每个文件的大小是 1GB，从头开始写，写到末尾就又回到开头循环写。<code>write pos</code> 是当前记录的位置，<code>checkpoint</code> 是当前要擦除的位置，如果 <code>write pos</code> 追上 <code>checkpoint</code>，表示满了，这时候不能再执行新的更新，得停下来先擦掉一些记录，把 <code>checkpoint</code> 推进一下。</p>
+<p><strong>参数</strong>：<code>innodb_flush_log_at_trx_commit</code> 这个参数设置成 1 的时候，表示每次事务的 <code>redo log</code> 都直接持久化到磁盘。这个参数建议设置成 1，这样可以保证 MySQL 异常重启之后数据不丢失。</p>
+<h3 id="binlog"><a href="#binlog" class="headerlink" title="binlog"></a>binlog</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">1.1</span>G Sep <span class="number">11</span> <span class="number">07</span>:<span class="number">17</span> mysql-bin.<span class="number">000098</span></span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">1.1</span>G Sep <span class="number">15</span> <span class="number">07</span>:<span class="number">17</span> mysql-bin.<span class="number">000099</span></span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql <span class="number">515</span>M Sep <span class="number">17</span> <span class="number">07</span>:<span class="number">20</span> mysql-bin.<span class="number">000100</span></span><br><span class="line">-rw-r----- <span class="number">1</span> mysql mysql   <span class="number">87</span> Sep <span class="number">15</span> <span class="number">07</span>:<span class="number">17</span> mysql-bin.index</span><br></pre></td></tr></table></figure>
+
+<p>上面介绍的 <code>redo log</code> 是 InnoDB 引擎特有的日志，而 Server 层也有自己的日志，称为 <code>binlog</code>（归档日志）。</p>
+<p><strong>说明</strong>：<code>binlog</code> 有两种模式，<code>statement</code> 格式的话是记 sql 语句， <code>row</code> 格式会记录行的内容，记两条，更新前和更新后都有。</p>
+<p><strong>作用</strong>：<code>binlog</code> 会记录所有的逻辑操作，并且是采用“追加写”的形式，用于备份恢复。</p>
+<p><strong>参数</strong>：<code>sync_binlog</code> 这个参数设置成 1 的时候，表示每次事务的 <code>binlog</code> 都持久化到磁盘。这个参数也建议设置成 1，这样可以保证 MySQL 异常重启之后 <code>binlog</code> 不丢失。</p>
+<p><strong>区别</strong>：</p>
+<ul>
+<li><code>redo log</code> 是 InnoDB 引擎特有的；<code>binlog</code> 是 MySQL 的 Server 层实现的，所有引擎都可以使用。</li>
+<li><code>redo log</code> 是物理日志，记录的是“在某个数据页上做了什么修改”；<code>binlog</code> 是逻辑日志，记录的是这个语句的原始逻辑，比如“给 ID=2 这一行的 c 字段加 1 ”。</li>
+<li><code>redo log</code> 是循环写的，空间固定会用完；<code>binlog</code> 是可以追加写入的。“追加写”是指 <code>binlog</code> 文件写到一定大小后会切换到下一个，并不会覆盖以前的日志。</li>
+</ul>
+<h3 id="update-语句执行流程"><a href="#update-语句执行流程" class="headerlink" title="update 语句执行流程"></a>update 语句执行流程</h3><ul>
+<li>执行器先找引擎取 ID=2 这一行。ID 是主键，引擎直接用树搜索找到这一行。如果 ID=2 这一行所在的数据页本来就在内存中，就直接返回给执行器；否则，需要先从磁盘读入内存，然后再返回。</li>
+<li>执行器拿到引擎给的行数据，把这个值加上 1，比如原来是 N，现在就是 N+1，得到新的一行数据，再调用引擎接口写入这行新数据。</li>
+<li>引擎将这行新数据更新到内存中，同时将这个更新操作记录到 <code>redo log</code> 里面，此时 <code>redo log</code> 处于 <code>prepare</code> 状态。然后告知执行器执行完成了，随时可以提交事务。</li>
+<li>执行器生成这个操作的 <code>binlog</code>，并把 <code>binlog</code> 写入磁盘。执行器调用引擎的提交事务接口，引擎把刚刚写入的 <code>redo log</code> 改成提交 <code>commit</code> 状态，更新完成。</li>
+</ul>
+<p>将 <code>redo log</code> 的写入拆成了两个步骤：<code>prepare</code> 和 <code>commit</code>，这就是 <strong>“两阶段提交”</strong>。简单说，<code>redo log</code> 和 <code>binlog</code> 都可以用于表示事务的提交状态，而两阶段提交就是让这两个数据状态保持逻辑上的一致。</p>
 
           
         
