@@ -945,7 +945,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2020-04-19 09:59:51" itemprop="dateModified" datetime="2020-04-19T09:59:51+08:00">2020-04-19</time>
+                <time title="修改时间：2020-09-24 12:06:56" itemprop="dateModified" datetime="2020-09-24T12:06:56+08:00">2020-09-24</time>
               
             
           </span>
@@ -1016,13 +1016,20 @@
 <li>增量备份：是指在上次完全备份的基础上，对于更改的数据进行备份。</li>
 <li>日志备份：是指对二进制日志的备份，通过它可以完成 point-in-time 的恢复工作。</li>
 </ul>
-<h2 id="冷备"><a href="#冷备" class="headerlink" title="冷备"></a>冷备</h2><p><strong>备份内容</strong>：共享表空间文件 <code>.frm</code>、独立表空间文件 <code>.ibd</code>、重做日志文件、配置文件 <code>my.cnf</code>。</p>
+<h2 id="自建-MySQL"><a href="#自建-MySQL" class="headerlink" title="自建 MySQL"></a>自建 MySQL</h2><h3 id="备份"><a href="#备份" class="headerlink" title="备份"></a>备份</h3><h4 id="物理备份"><a href="#物理备份" class="headerlink" title="物理备份"></a>物理备份</h4><h4 id="逻辑备份"><a href="#逻辑备份" class="headerlink" title="逻辑备份"></a>逻辑备份</h4><h3 id="恢复"><a href="#恢复" class="headerlink" title="恢复"></a>恢复</h3><h2 id="阿里云-RDS"><a href="#阿里云-RDS" class="headerlink" title="阿里云 RDS"></a>阿里云 RDS</h2><h3 id="备份-1"><a href="#备份-1" class="headerlink" title="备份"></a>备份</h3><p>全量备份（数据）</p>
+<p>增量备份（日志）</p>
+<h3 id="恢复-1"><a href="#恢复-1" class="headerlink" title="恢复"></a>恢复</h3><p>单库单表恢复</p>
+<p>整实例恢复</p>
+<p>恢复到原实例</p>
+<p>恢复到新实例</p>
+<p>恢复到本地自建数据库</p>
+<h2 id="备份-2"><a href="#备份-2" class="headerlink" title="备份"></a>备份</h2><h3 id="物理备份-1"><a href="#物理备份-1" class="headerlink" title="物理备份"></a>物理备份</h3><p><strong>备份内容</strong>：共享表空间文件 <code>.frm</code>、独立表空间文件 <code>.ibd</code>、重做日志文件、配置文件 <code>my.cnf</code>。</p>
 <p><strong>优缺点</strong>：</p>
 <ul>
 <li>优点：备份恢复简单、速度快。</li>
 <li>缺点：备份的文件通常比逻辑文件大很多，且需要停机，不适于用于生产环境。</li>
 </ul>
-<h2 id="逻辑备份"><a href="#逻辑备份" class="headerlink" title="逻辑备份"></a>逻辑备份</h2><h3 id="mysqldump"><a href="#mysqldump" class="headerlink" title="mysqldump"></a>mysqldump</h3><p><strong>语法</strong></p>
+<h3 id="逻辑备份-1"><a href="#逻辑备份-1" class="headerlink" title="逻辑备份"></a>逻辑备份</h3><h4 id="mysqldump"><a href="#mysqldump" class="headerlink" title="mysqldump"></a>mysqldump</h4><p><strong>语法</strong></p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Usage: mysqldump [OPTIONS] database [tables] &gt; [backupfile.sql]</span><br><span class="line">       mysqldump [OPTIONS] --databases [OPTIONS] DB1 [DB2 DB3...] &gt; [backupfile.sql]</span><br><span class="line">       mysqldump [OPTIONS] --all-databases [OPTIONS] &gt; [backupfile.sql]</span><br></pre></td></tr></table></figure>
 
 <p><strong>参数</strong></p>
@@ -1062,47 +1069,84 @@
 <blockquote>
 <p>注意：默认是会备份视图。</p>
 </blockquote>
-<h3 id="select…into-outfile"><a href="#select…into-outfile" class="headerlink" title="select…into outfile"></a>select…into outfile</h3><p><strong>作用</strong>：也是一种逻辑备份的方法，更准确的说是导出一张表中的数据。</p>
-<p><strong>语法</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">select [column1],[column2]...</span><br><span class="line">into outfile <span class="string">'file_name'</span></span><br><span class="line">from table where...</span><br><span class="line"></span><br><span class="line">FIELDS TERMINATED BY 用来对字段值之间进行分割，</span><br><span class="line">FIELDS [OPTIONALLY] ENCLOSED BY 用来对字段值进行包裹</span><br><span class="line">FIELDS  LINES TERMINATED BY  用来对每行结束指定换行符</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>注意：file_name 文件所在路径权限必须是 mysql:mysql。</p>
-</blockquote>
-<p><strong>实践</strong>：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">// departments表数据</span><br><span class="line">mysql&gt; select * from departments;</span><br><span class="line">+---------+--------------------+</span><br><span class="line">| dept_no | dept_name          |</span><br><span class="line">+---------+--------------------+</span><br><span class="line">| d009    | Customer Service   |</span><br><span class="line">| d005    | Development        |</span><br><span class="line">| d002    | Finance            |</span><br><span class="line">| d003    | Human Resources    |</span><br><span class="line">| d001    | Marketing          |</span><br><span class="line">| d004    | Production         |</span><br><span class="line">| d006    | Quality Management |</span><br><span class="line">| d008    | Research           |</span><br><span class="line">| d007    | Sales              |</span><br><span class="line">+---------+--------------------+</span><br><span class="line"></span><br><span class="line">// 导出为文件</span><br><span class="line">select * from departments into outfile <span class="string">'/data/mysql/department.sql'</span>;</span><br><span class="line"></span><br><span class="line">// 查看导出数据</span><br><span class="line">[root@db mysql]<span class="comment"># cat department.sql </span></span><br><span class="line">d009	Customer Service</span><br><span class="line">d005	Development</span><br><span class="line">d002	Finance</span><br><span class="line">d003	Human Resources</span><br><span class="line">d001	Marketing</span><br><span class="line">d004	Production</span><br><span class="line">d006	Quality Management</span><br><span class="line">d008	Research</span><br><span class="line">d007	Sales</span><br></pre></td></tr></table></figure>
-
-<p><strong>注意</strong>：使用该命令导出文件可能会报错：”The MySQL server is running with the –secure-file-priv option so it cannot execute this statement “，原因是 secure_file_priv 为 NULL，需要设置目录。</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; SHOW VARIABLES LIKE <span class="string">"secure_file_priv"</span>;</span><br><span class="line">+------------------+--------------+</span><br><span class="line">| Variable_name    | Value        |</span><br><span class="line">+------------------+--------------+</span><br><span class="line">| secure_file_priv | /<span class="keyword">data</span>/mysql/ |</span><br><span class="line">+------------------+--------------+</span><br></pre></td></tr></table></figure>
-
-<h3 id="逻辑备份恢复"><a href="#逻辑备份恢复" class="headerlink" title="逻辑备份恢复"></a>逻辑备份恢复</h3><p>有三种方式：</p>
-<ul>
-<li>mysql</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -p<span class="string">'xx'</span> &lt; backup.sql</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>source</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; source /<span class="keyword">data</span>/mysql/backup.sql</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>load data infile</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select * from departments;</span><br><span class="line">Empty set (<span class="number">0.00</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; load <span class="keyword">data</span> infile <span class="string">'/data/mysql/department.sql'</span> into table departments;</span><br><span class="line">Query OK, <span class="number">9</span> rows affected (<span class="number">0.01</span> sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; select * from departments;</span><br><span class="line">+---------+--------------------+</span><br><span class="line">| dept_no | dept_name          |</span><br><span class="line">+---------+--------------------+</span><br><span class="line">| d009    | Customer Service   |</span><br><span class="line">| d005    | Development        |</span><br><span class="line">| d002    | Finance            |</span><br><span class="line">| d003    | Human Resources    |</span><br><span class="line">| d001    | Marketing          |</span><br><span class="line">| d004    | Production         |</span><br><span class="line">| d006    | Quality Management |</span><br><span class="line">| d008    | Research           |</span><br><span class="line">| d007    | Sales              |</span><br><span class="line">+---------+--------------------+</span><br></pre></td></tr></table></figure>
-
-<h2 id="二进制日志备份与恢复"><a href="#二进制日志备份与恢复" class="headerlink" title="二进制日志备份与恢复"></a>二进制日志备份与恢复</h2><p><strong>作用</strong>：二进制日志非常关键，用户可以通过它完成 point-in-time 的恢复工作。对于 InnoDB 存储引擎，推荐的二进制日志的服务器配置应该是：</p>
+<h2 id="恢复-2"><a href="#恢复-2" class="headerlink" title="恢复"></a>恢复</h2><h3 id="二进制日志备份与恢复"><a href="#二进制日志备份与恢复" class="headerlink" title="二进制日志备份与恢复"></a>二进制日志备份与恢复</h3><p><strong>作用</strong>：二进制日志非常关键，用户可以通过它完成 point-in-time 的恢复工作。对于 InnoDB 存储引擎，推荐的二进制日志的服务器配置应该是：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">[mysqld]</span></span><br><span class="line"><span class="string">log-bin</span> <span class="string">=</span> <span class="string">mysql-bin</span></span><br><span class="line"><span class="string">sync_binlog</span> <span class="string">=</span> <span class="number">1</span></span><br><span class="line"><span class="string">innodb_support_xa</span> <span class="string">=</span> <span class="number">1</span></span><br></pre></td></tr></table></figure>
 
-<p><strong>备份</strong>：在备份二进制日志之前，可以通过 FLUSH LOGS 命令生成一个新的二进制日志文件，然后后备份之前的二进制日志。</p>
+<p><strong>备份</strong>：在备份二进制日志之前，可以通过 Flush Logs 命令生成一个新的二进制日志文件，然后后备份之前的二进制日志。</p>
 <p><strong>恢复</strong>：二进制日志的恢复主要通过工具 <a href="https://huiraoo.github.io/blog/2019/11/07/mysql-tool-mysqlbinlog/">mysqlbinlog</a> 实现。例如：</p>
 <figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// 恢复单个文件</span><br><span class="line">mysqlbinlog mysql-bin.<span class="number">000001</span> | mysql -uroot -p test </span><br><span class="line"></span><br><span class="line">// 恢复多个文件</span><br><span class="line">mysqlbinlog mysql-bin.[<span class="number">0</span>-<span class="number">10</span>]* | mysql -uroot -p test</span><br><span class="line"></span><br><span class="line">// 也可以先导出sql文件，再使用source导入，好处是可以对导出的文件进行修改</span><br><span class="line">mysqlbinlog mysql-bin.<span class="number">000001</span> &gt; /tmp/backup.sql</span><br><span class="line">mysql -uroot -p -e <span class="string">"source /tmp/backup.sql"</span></span><br><span class="line"></span><br><span class="line">// 也可以通过--start-position和--stop-position指定某个位置进行恢复</span><br><span class="line">// 也可以通过--start-datetime和--stop-datetime指定某个时间点进行恢复</span><br></pre></td></tr></table></figure>
 
-<h2 id="热备"><a href="#热备" class="headerlink" title="热备"></a>热备</h2><p><a href="https://huiraoo.github.io/blog/2019/06/18/mysql-xtrabackup/">XtraBackup</a></p>
-<h2 id="快照备份"><a href="#快照备份" class="headerlink" title="快照备份"></a>快照备份</h2><p>MySQL 数据库本身并不支持快照功能，因此快照备份是指通过文件系统支持的快照功能对数据库进行备份。备份的前提是将所有数据库文件放在同一个文件分区中，然后对该分区进行快照操作。支持快照功能的文件系统和设备包括 GUN/Linux 的逻辑管理器 LVM。</p>
+<h3 id="热备"><a href="#热备" class="headerlink" title="热备"></a>热备</h3><p><a href="https://huiraoo.github.io/blog/2019/06/18/mysql-xtrabackup/">XtraBackup</a></p>
+<h3 id="快照备份"><a href="#快照备份" class="headerlink" title="快照备份"></a>快照备份</h3><p>MySQL 数据库本身并不支持快照功能，因此快照备份是指通过文件系统支持的快照功能对数据库进行备份。备份的前提是将所有数据库文件放在同一个文件分区中，然后对该分区进行快照操作。支持快照功能的文件系统和设备包括 GUN/Linux 的逻辑管理器 LVM。</p>
 <p>LVM 是 Linux 系统下对磁盘分区进行管理的一种机制，LVM 在硬盘和分区之上建立一个逻辑层，来提高磁盘分区管理的灵活性。LVM 使用了写时复制（Copy-on-write）技术来创建快照，当创建一个快照时，仅复制原始卷中数据的元数据（meta data），并不会有数据的物理操作，因此快照的创建过程非常快。</p>
 <p>使用 LVM 快照备份 InnoDB 存储引擎表非常简单，只要把与 InnoDB 存储引擎相关的文件如共享表空间、独立表空间、重做日志文件等放在同一个逻辑卷中，然后对这个逻辑卷做快照备份即可。在对 InnoDB 存储引擎文件做快照时，数据库无须关闭，即可以进行在线备份。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>任何时候都需要做好远程异地备份，也就是容灾的防范。</p>
+<h3 id="全量备份"><a href="#全量备份" class="headerlink" title="全量备份"></a>全量备份</h3><h3 id="增量备份"><a href="#增量备份" class="headerlink" title="增量备份"></a>增量备份</h3><h3 id="备份策略"><a href="#备份策略" class="headerlink" title="备份策略"></a>备份策略</h3><table>
+<thead>
+<tr>
+<th>参数</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>备份周期</strong></td>
+<td>建议一周至少需要备份两次（例如：周一、三、五 / 二、四、六）</td>
+</tr>
+<tr>
+<td><strong>备份时间</strong></td>
+<td>建议设置为业务低峰期时间</td>
+</tr>
+<tr>
+<td><strong>保留时间</strong></td>
+<td>建议保留 30 天，超过保留天数的备份会被自动删除</td>
+</tr>
+<tr>
+<td><strong>日志备份</strong></td>
+<td>建议打开，关闭日志备份会导致所有日志被清除，并且无法使用<strong>按时间点恢复</strong>数据的功能</td>
+</tr>
+<tr>
+<td><strong>日志备份保留</strong></td>
+<td>日志备份文件保留的天数，默认为 7 天</td>
+</tr>
+<tr>
+<td><strong>单库单表</strong></td>
+<td>开通后会修改备份格式以支持该功能，默认为开启，无法关闭</td>
+</tr>
+<tr>
+<td><strong>实例释放后备份文件是否保留</strong></td>
+<td>为防止忘记续费、误操作等情况导致实例数据丢失，建议选择<strong>保留最后一个</strong>或<strong>全部保留</strong>，保留不收取费用，可以在<strong>已删除实例备份</strong>页面下载备份文件，并恢复到本地数据库</td>
+</tr>
+</tbody></table>
+<h2 id="恢复-3"><a href="#恢复-3" class="headerlink" title="恢复"></a>恢复</h2><h3 id="恢复方案概览"><a href="#恢复方案概览" class="headerlink" title="恢复方案概览"></a>恢复方案概览</h3><p>RDS 提供了多种数据恢复方案，可以将数据恢复至新实例、原实例或自建数据库。</p>
+<table>
+<thead>
+<tr>
+<th>适用场景</th>
+<th>方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td></td>
+<td><a href="https://help.aliyun.com/document_detail/103175.html#concept-ocr-swk-ngb" target="_blank" rel="noopener">MySQL 单库单表恢复</a></td>
+</tr>
+<tr>
+<td></td>
+<td><a href="https://help.aliyun.com/document_detail/96147.html#concept-vrh-qp4-ydb" target="_blank" rel="noopener">MySQL 实例恢复</a></td>
+</tr>
+<tr>
+<td></td>
+<td>MySQL 备份文件恢复到自建数据库</td>
+</tr>
+</tbody></table>
+<h3 id="单库单表恢复"><a href="#单库单表恢复" class="headerlink" title="单库单表恢复"></a>单库单表恢复</h3><p>RDS MySQL 支持单库和单表的数据恢复，可以通过备份指定恢复误删的数据库或表，快速恢复 MySQL 的数据。</p>
+<p>注意事项：</p>
+<ul>
+<li>恢复到原实例过程中会进行主备切换，RDS 服务可能会出现闪断，请确保您的应用有自动重连机制；恢复到新实例不会进行主备切换。</li>
+<li>超出免费备份空间额度的部分将会产生额外费用，请合理设计备份周期，以满足业务需求的同时，兼顾备份空间的合理利用。</li>
+<li>如果无法确定所有涉及的表，则需要进行实例级别的恢复。</li>
+<li>每次最多选择 50 个库或者表。</li>
+<li>实例内的表低于 50000 张才可以使用单库单表恢复功能，超过 50000 张表时无法使用。</li>
+</ul>
+<h3 id="实例恢复"><a href="#实例恢复" class="headerlink" title="实例恢复"></a>实例恢复</h3><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>任何时候都需要做好远程异地备份，也就是容灾的防范。</p>
 
           
         
@@ -3247,7 +3291,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>
