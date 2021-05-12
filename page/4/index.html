@@ -352,6 +352,317 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/12/13/mysql-migration-to-cloud/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/12/13/mysql-migration-to-cloud/" class="post-title-link" itemprop="url">MySQL · 售后服务数据库迁移上云</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-12-13 10:36:02" itemprop="dateCreated datePublished" datetime="2019-12-13T10:36:02+08:00">2019-12-13</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2020-01-03 10:40:16" itemprop="dateModified" datetime="2020-01-03T10:40:16+08:00">2020-01-03</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><table>
+<thead>
+<tr>
+<th>项目信息</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>项目名称</td>
+<td>售后服务微信公众号</td>
+</tr>
+<tr>
+<td>机房位置</td>
+<td>北京亦庄 / 卓朗机房</td>
+</tr>
+<tr>
+<td>本地数据库</td>
+<td>10.199.96.188</td>
+</tr>
+<tr>
+<td>数据量</td>
+<td>140 GB</td>
+</tr>
+<tr>
+<td>版本</td>
+<td>MySQL 5.5</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>阿里云 ECS</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>主机</td>
+<td>47.95.110.25</td>
+</tr>
+<tr>
+<td>自建 MySQL</td>
+<td>MySQL 5.5</td>
+</tr>
+<tr>
+<td>用户名</td>
+<td>root</td>
+</tr>
+<tr>
+<td>密码</td>
+<td>HkdV*Q4mVavjYRSg</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>阿里云 RDS</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>实例</td>
+<td>rm-2zeh0aso72hr897it.mysql.rds.aliyuncs.com:3306</td>
+</tr>
+<tr>
+<td>版本</td>
+<td>MySQL 5.6</td>
+</tr>
+<tr>
+<td>用户名</td>
+<td>haierfw</td>
+</tr>
+<tr>
+<td>密码</td>
+<td>**</td>
+</tr>
+</tbody></table>
+<h2 id="迁移方案"><a href="#迁移方案" class="headerlink" title="迁移方案"></a>迁移方案</h2><p>本地 IDC 数据库   -&gt;   ECS 自建数据库  -&gt;  阿里云 RDS</p>
+<h2 id="操作"><a href="#操作" class="headerlink" title="操作"></a>操作</h2><table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>耗时</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>全备</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td>传输</td>
+<td>3 h 30 min</td>
+</tr>
+<tr>
+<td>增备</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td>恢复</td>
+<td>30 min</td>
+</tr>
+<tr>
+<td>DTS 迁移</td>
+<td>2 h 30 min</td>
+</tr>
+</tbody></table>
+<h2 id="实施"><a href="#实施" class="headerlink" title="实施"></a>实施</h2><ul>
+<li><strong>全量备份</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">innobackupex --defaults-file=/etc/my.cnf --user=sre --password=<span class="string">'xx'</span> --no-timestamp /<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>传输</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp -r /<span class="keyword">data</span>/backup/* root@<span class="number">47.95</span>.<span class="number">110.25</span>:/<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>全量恢复</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mysqladmin -uroot -p<span class="string">'xx'</span> shutdown</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --apply-log /<span class="keyword">data</span>/backup</span><br><span class="line">mv mysql mysql_bak</span><br><span class="line">mkdir mysql</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --copy-back /<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>增量备份</strong></li>
+</ul>
+<p>在进行增量备份时，首先要进行一次全量备份，第一次增量备份是基于全备的，之后的增量备份是基于上一次的增量备份，以此类推。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">innobackupex --defaults-file=/etc/my.cnf --user=sre --password=<span class="string">'xx'</span> --incremental /<span class="keyword">data</span>/incremental --incremental-basedir=/<span class="keyword">data</span>/backup --parallel=<span class="number">2</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>增量恢复</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">innobackupex --defaults-file=/etc/my.cnf --apply-log --redo-only /<span class="keyword">data</span>/backup</span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --apply-log /<span class="keyword">data</span>/backup --incremental-dir=/<span class="keyword">data</span>/incremental/<span class="number">2019</span>-<span class="number">12</span>-<span class="number">16</span>_15-<span class="number">33</span>-<span class="number">48</span></span><br><span class="line">innobackupex --defaults-file=/etc/my.cnf --copy-back /<span class="keyword">data</span>/backup</span><br><span class="line">chown -R mysql:mysql mysql</span><br><span class="line">/usr/local/mysql/bin/mysqld_safe --defaults-file=/etc/my.cnf --user=mysql &gt;/dev/null &amp;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>配置复制</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 获取Master binlog位置</span></span><br><span class="line">$ cat xtrabackup_binlog_info</span><br><span class="line">mysql-binlog.<span class="number">000297</span>	<span class="number">900834433</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置复制</span></span><br><span class="line">CHANGE MASTER TO </span><br><span class="line">MASTER_HOST=<span class="string">'x.x.x.x'</span>,</span><br><span class="line">MASTER_USER=<span class="string">'repl'</span>,</span><br><span class="line">MASTER_PASSWORD=<span class="string">'Changeme_123'</span>,</span><br><span class="line">MASTER_PORT=<span class="number">3306</span>,</span><br><span class="line">MASTER_LOG_FILE=<span class="string">'mysql-bin.000297'</span>, </span><br><span class="line">MASTER_LOG_POS=<span class="number">900834433</span>,</span><br><span class="line">MASTER_CONNECT_RETRY=<span class="number">10</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动同步</span></span><br><span class="line">mysql&gt; start slave;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li><strong>传输</strong></li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp -r /<span class="keyword">data</span>/backup/* root@<span class="number">47.95</span>.<span class="number">110.25</span>:/<span class="keyword">data</span>/backup</span><br></pre></td></tr></table></figure>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/12/10/mysql-tool-mysqldump/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2685,194 +2996,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/12/04/linux-glibc/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/12/04/linux-glibc/" class="post-title-link" itemprop="url">Linux · 升级 glibc</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-12-04 09:23:18" itemprop="dateCreated datePublished" datetime="2019-12-04T09:23:18+08:00">2019-12-04</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-12-06 09:22:34" itemprop="dateModified" datetime="2019-12-06T09:22:34+08:00">2019-12-06</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="报错信息"><a href="#报错信息" class="headerlink" title="报错信息"></a>报错信息</h2><p>安装软件经常会遇到如下报错：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/lib64/libc.so.<span class="number">6</span>: version `GLIBC_2.<span class="number">14</span><span class="string">' not found</span></span><br></pre></td></tr></table></figure>
-
-<p>出现这种报错的原因是，使用高版本的命令安装了软件，但是本机还是使用的是低版本的依赖库：</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">$ strings /lib64/libc.so.<span class="number">6</span> | grep GLIBC</span><br><span class="line">GLIBC_2.<span class="number">2.5</span></span><br><span class="line">GLIBC_2.<span class="number">2.6</span></span><br><span class="line">GLIBC_2.<span class="number">3</span></span><br><span class="line">GLIBC_2.<span class="number">3.2</span></span><br><span class="line">GLIBC_2.<span class="number">3.3</span></span><br><span class="line">GLIBC_2.<span class="number">3.4</span></span><br><span class="line">GLIBC_2.<span class="number">4</span></span><br><span class="line">GLIBC_2.<span class="number">5</span></span><br><span class="line">GLIBC_2.<span class="number">6</span></span><br><span class="line">GLIBC_2.<span class="number">7</span></span><br><span class="line">GLIBC_2.<span class="number">8</span></span><br><span class="line">GLIBC_2.<span class="number">9</span></span><br><span class="line">GLIBC_2.<span class="number">10</span></span><br><span class="line">GLIBC_2.<span class="number">11</span></span><br><span class="line">GLIBC_2.<span class="number">12</span></span><br><span class="line">GLIBC_PRIVATE</span><br></pre></td></tr></table></figure>
-
-<h2 id="解决方法"><a href="#解决方法" class="headerlink" title="解决方法"></a>解决方法</h2><ul>
-<li>将 CentOS 6 升级到 <code>glibc 2.15</code> 版本</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">wget https://ftp.gnu.org/gnu/glibc/glibc-<span class="number">2.15</span>.tar.gz</span><br><span class="line">tar -zxvf glibc-<span class="number">2.15</span>.tar.gz</span><br><span class="line">cd glibc-<span class="number">2.15</span></span><br><span class="line">mkdir build</span><br><span class="line">cd build</span><br><span class="line">../configure --prefix=/usr --disable-profile --enable-add-ons --with-headers=/usr/include --with-binutils=/usr/bin</span><br><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>验证是否成功</li>
-</ul>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">$ strings /lib64/libc.so.<span class="number">6</span> | grep GLIBC</span><br><span class="line">GLIBC_2.<span class="number">2.5</span></span><br><span class="line">GLIBC_2.<span class="number">2.6</span></span><br><span class="line">GLIBC_2.<span class="number">3</span></span><br><span class="line">GLIBC_2.<span class="number">3.2</span></span><br><span class="line">GLIBC_2.<span class="number">3.3</span></span><br><span class="line">GLIBC_2.<span class="number">3.4</span></span><br><span class="line">GLIBC_2.<span class="number">4</span></span><br><span class="line">GLIBC_2.<span class="number">5</span></span><br><span class="line">GLIBC_2.<span class="number">6</span></span><br><span class="line">GLIBC_2.<span class="number">7</span></span><br><span class="line">GLIBC_2.<span class="number">8</span></span><br><span class="line">GLIBC_2.<span class="number">9</span></span><br><span class="line">GLIBC_2.<span class="number">10</span></span><br><span class="line">GLIBC_2.<span class="number">11</span></span><br><span class="line">GLIBC_2.<span class="number">12</span></span><br><span class="line">GLIBC_2.<span class="number">13</span></span><br><span class="line">GLIBC_2.<span class="number">14</span></span><br><span class="line">GLIBC_2.<span class="number">15</span></span><br><span class="line">GLIBC_PRIVATE</span><br></pre></td></tr></table></figure>
-
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2921,7 +3044,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">172</span>
+                    <span class="site-state-item-count">173</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

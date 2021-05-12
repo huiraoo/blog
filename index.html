@@ -352,6 +352,207 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2021/05/12/db-operation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2021/05/12/db-operation/" class="post-title-link" itemprop="url">数据库自治运维，不是DBA你也可以！</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2021-05-12 11:09:15 / 修改时间：12:00:46" itemprop="dateCreated datePublished" datetime="2021-05-12T11:09:15+08:00">2021-05-12</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/数据库/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2021-05-12-112030.jpg" alt></p>
+<h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><h4 id="业务快速迭代，数据库故障频发"><a href="#业务快速迭代，数据库故障频发" class="headerlink" title="业务快速迭代，数据库故障频发"></a>业务快速迭代，数据库故障频发</h4><p>数据库是所有企业业务的基座，企业内的研发、测试、运营、运维等等人员每天都需要对数据库进行操作或者查询，但是使用数据库的人员对数据库的了解程度参差不齐，所以数据库的稳定性不断受到如下问题的挑战：</p>
+<ul>
+<li>业务发布，产生了大量慢SQL；</li>
+<li>业务大促，容量预估不足；</li>
+<li>表结构或者索引设计错误；</li>
+<li>未经Review的SQL或者表被发布到线上；</li>
+</ul>
+<h4 id="缺少专业-DBA，问题排查靠-“猜”"><a href="#缺少专业-DBA，问题排查靠-“猜”" class="headerlink" title="缺少专业 DBA，问题排查靠 “猜”"></a>缺少专业 DBA，问题排查靠 “猜”</h4><p>数据库的问题排查和性能优化一直都是数据库领域的专业问题，但是即使最专业的DBA在面对一些问题的时候，也往往耗费了很长时间，但是仍然无法定位到根因，主要的难点有三个：</p>
+<ul>
+<li>获取信息难，问题诊断和性能优化都需要依赖于大量的系统数据，甚至是长期的历史数据，只有基于完备的信息才能给出准确的解法；</li>
+<li>分析信息难，需要多年的经验才能给出准确的解法，也需要多样的场景才能覆盖比较全面的问题类型。经验与场景，一不好传承，二变化较快，三他人理解不易；</li>
+<li>优化手段难，找出问题了，知道怎么办了，也并不意味着就能马上解决问题，甚至有些解法是要深入到数据库引擎层代码优化，这可不是一朝一夕就能做好。</li>
+</ul>
+<h4 id="管理成本高"><a href="#管理成本高" class="headerlink" title="管理成本高"></a>管理成本高</h4><p>随着云计算的普及，企业可以更为便捷的根据不同的业务类型，使用不同的数据库，或者将数据库部署在不同的环境中，多环境和多种数据库的管理的挑战也随之而来：</p>
+<ul>
+<li>精通多种数据库的专业DBA是稀缺人才，招聘难；</li>
+<li>管理部署在多种环境的多种数据库的难度大；</li>
+<li>管理经验沉淀和传承的难度大。</li>
+</ul>
+<h4 id="安全风险大"><a href="#安全风险大" class="headerlink" title="安全风险大"></a>安全风险大</h4><p>随着数据价值的提升，企业的数据面临着越来越多的内部或者外部的攻击，数据泄漏、数据丢失等问题层出不穷。全球重大数据泄漏事件几乎每月都有发生，小型泄漏事件更是不胜枚举。</p>
+<ul>
+<li>未授权或者不可预期或者错误的数据库访问和使用</li>
+<li>数据泄漏；</li>
+<li>数据损坏；</li>
+<li>黑客攻击；</li>
+<li>软硬件 bug，导致数据异常；</li>
+<li>误操作导致数据丢失。</li>
+</ul>
+<h2 id="我们的解决方案"><a href="#我们的解决方案" class="headerlink" title="我们的解决方案"></a>我们的解决方案</h2><p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2021-05-12-115923.jpg" alt></p>
+<ul>
+<li>降低数据库运维的门槛：开发无需 DBA 背景，也可以使用平台直接解决数据库问题。</li>
+<li>统一管理：云上云下的所有数据库，实现统一监控、统一告警。</li>
+<li>支持多种数据库：MySQL/MariaDB、Redis、MongoDB、PostgreSQL</li>
+<li>支持多环境的数据库：支持阿里云云数据库、本地IDC自建数据库，ECS自建数据库。</li>
+</ul>
+<h2 id="典型使用场景"><a href="#典型使用场景" class="headerlink" title="典型使用场景"></a>典型使用场景</h2><p>故障快速诊断分析</p>
+<p>性能监控及告警</p>
+<p>慢日志抓取及优化</p>
+<p>死锁</p>
+<p>资源评估</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2020/08/20/blog-service/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1871,7 +2072,7 @@
           <h1 class="post-title" itemprop="name headline">
                 
                 
-                <a href="/blog/2020/07/14/go-learning/" class="post-title-link" itemprop="url">Go学习笔记</a>
+                <a href="/blog/2020/07/14/go-learning/" class="post-title-link" itemprop="url">Go 学习笔记</a>
               
             
           </h1>
@@ -1913,7 +2114,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2021-03-24 10:37:20" itemprop="dateModified" datetime="2021-03-24T10:37:20+08:00">2021-03-24</time>
+                <time title="修改时间：2021-03-24 10:46:00" itemprop="dateModified" datetime="2021-03-24T10:46:00+08:00">2021-03-24</time>
               
             
           </span>
@@ -2705,276 +2906,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2020/04/20/mysql-transaction/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2020/04/20/mysql-transaction/" class="post-title-link" itemprop="url">MySQL · 事务</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2020-04-20 11:05:09" itemprop="dateCreated datePublished" datetime="2020-04-20T11:05:09+08:00">2020-04-20</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2020-09-17 13:57:11" itemprop="dateModified" datetime="2020-09-17T13:57:11+08:00">2020-09-17</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/MySQL/" itemprop="url" rel="index"><span itemprop="name">MySQL</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="场景"><a href="#场景" class="headerlink" title="场景"></a>场景</h2><p>一组sql（增删改）要么都执行，要么都不执行。</p>
-<p>场景：A 有 10000 元，B 有 10000 元，A 向 B 转账 500，是两条更新</p>
-<p>update bill set 余额 = 余额 - 500 where A;</p>
-<p>update bill set 余额 = 余额 + 500 where B;</p>
-<p>这两条数据必须要么都执行，要么都不执行，如果执行了一半，发生问题，那么执行过的 sql 要回滚。</p>
-<h2 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h2><p><strong>定义</strong>：事务就是要保证一组数据库操作，要么全部成功，要么全部失败。</p>
-<p><strong>特性</strong>：A (Atomicity) 原子性、C (Consistency) 一致性、I (Isolation) 隔离性、D (Durability) 持久性。</p>
-<p><strong>作用</strong>：事务会把数据库从一种一致状态转换为另一种一致状态，用以保证数据的完整性。</p>
-<h2 id="事务特性"><a href="#事务特性" class="headerlink" title="事务特性"></a>事务特性</h2><p>在 MySQL 中，事务支持是在引擎层实现的，只有 InnoDB 存储引擎才支持事务，完全符合 ACID 特性：</p>
-<ul>
-<li><strong>原子性（Atomicity）</strong>：是指整个数据库事务是不可分割的工作单位。只有使事务中所有的数据库操作都执行成功，才算整个事务成功。事务在执行过程中发生错误，会被回滚（Rollback）到事务开始前的状态，就像这个事务从来没有执行过一样，通常使用 undo log 来实现。</li>
-<li><strong>一致性（Consistency</strong>）：是指事务将数据库从一种状态转变为下一种一致的状态。如果事务中某个动作失败了，系统可以自动撤销事务，返回初始化的状态，通常使用 undo log 来实现。</li>
-<li><strong>隔离性（Isolation）</strong>：数据库允许多个并发事务同时对其数据进行读写和修改的能力，隔离性可以防止多个事务并发执行时由于交叉执行而导致数据的不一致，通常使用锁和 MVCC 机制来实现。</li>
-<li><strong>持久性（durability）</strong>：事务一旦提交，其结果将是永久性的。即使发生宕机等故障，数据库也能将数据恢复m，通常使用 redo log 来实现。</li>
-</ul>
-<h2 id="事务隔离级别"><a href="#事务隔离级别" class="headerlink" title="事务隔离级别"></a>事务隔离级别</h2><p>当数据库上有多个事务同时执行的时候，就可能出现脏读（dirty read）、不可重复读（non-repeatable read）、幻读（phantom read）的问题，为了解决这些问题，就有了“隔离级别”的概念。还需要清楚的是，隔离得越严实，效率就会越低。</p>
-<ul>
-<li><strong>Read uncommitted（读未提交）</strong>：一个事务还没提交时，它做的变更就能被别的事务看到。</li>
-<li><strong>Read committed（读提交）</strong>：一个事务提交之后，它做的变更才会被其他事务看到。</li>
-<li><strong>Repeatable read（可重复读）</strong>：一个事务在执行期间看到的数据前后必须是一致的。当然在可重复读隔离级别下，未提交变更对其他事务也是不可见的。</li>
-<li><strong>Serializable（串行化）</strong>：一个事务尚未提交，别人就别想操作。</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>隔离级别</th>
-<th>脏读</th>
-<th>不可重复读</th>
-<th>幻读</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Read uncommitted（未提交读）</td>
-<td>√</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Read committed（提交读）</td>
-<td>×</td>
-<td>√</td>
-<td>√</td>
-</tr>
-<tr>
-<td><strong>Repeatable read</strong>（可重复读）</td>
-<td>×</td>
-<td>×</td>
-<td>√</td>
-</tr>
-<tr>
-<td>Serializable（串行化）</td>
-<td>×</td>
-<td>×</td>
-<td>×</td>
-</tr>
-</tbody></table>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like &apos;transaction_isolation&apos;;</span><br><span class="line">+-----------------------+-----------------+</span><br><span class="line">| Variable_name         | Value           |</span><br><span class="line">+-----------------------+-----------------+</span><br><span class="line">| transaction_isolation | REPEATABLE-READ |</span><br><span class="line">+-----------------------+-----------------+</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://static001.geekbang.org/resource/image/7d/f8/7dea45932a6b722eb069d2264d0066f8.png" alt="img"></p>
-<h2 id="事务实现原理"><a href="#事务实现原理" class="headerlink" title="事务实现原理"></a>事务实现原理</h2><p>事务的隔离性是由锁来实现的。原子性、一致性、持久性是通过数据库的 redo log 和 undo log 来完成。redo log 称为重做日志，用来保证事务的原子性和持久性，undo log 用来保证事务的一致性。</p>
-<p>redo 和 undo 的作用都可以视为一种恢复操作，redo 恢复提交事务修改的页操作，而 undo 回滚行记录到某个特定版本。因此两者记录的内容不同，redo 通常是物理日志，记录的是页的物理修改操作。undo 是逻辑日志，根据每行记录进行记录。 </p>
-<h3 id="redo-log"><a href="#redo-log" class="headerlink" title="redo log"></a>redo log</h3><p><strong>介绍</strong>：其由两部分组成：一是内存中重做日志缓冲（redo log buffer），在内存中是易失的；二是重做日志文件（redo log file），在磁盘中是持久的，当事务提交之后会把所有修改信息都会存到该日志中。</p>
-<p><strong>用途</strong>：redo log 重做日志用来实现事务的持久性，即事务 ACID 中的 D。</p>
-<p><strong>场景</strong>：MySQL 为了提升性能不会把每次的修改都实时同步到磁盘，而是会先存到 Boffer Pool（缓冲池）里头，把这个当作缓存来用，然后使用后台线程去做缓冲池和磁盘之间的同步。如果还没来的及同步的时候宕机或断电了怎么办？这样会导致丢部分已提交事务的修改信息！所以引入了 redo log 来记录已成功提交事务的修改信息，并且会把 redo log 持久化到磁盘，系统重启之后在读取 redo log 恢复最新数据。</p>
-<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">// 原始bank表</span><br><span class="line">mysql&gt; select * from bank;</span><br><span class="line">+----+----------+---------+</span><br><span class="line">| id | name     | balance |</span><br><span class="line">+----+----------+---------+</span><br><span class="line">|  <span class="number">1</span> | zhangsan |    <span class="number">1000</span> |</span><br><span class="line">+----+----------+---------+</span><br><span class="line"></span><br><span class="line">// 原始finance表</span><br><span class="line">mysql&gt; select * from finance;</span><br><span class="line">+----+----------+--------+</span><br><span class="line">| id | name     | amount |</span><br><span class="line">+----+----------+--------+</span><br><span class="line">|  <span class="number">1</span> | zhangsan |      <span class="number">0</span> |</span><br><span class="line">+----+----------+--------+</span><br><span class="line"></span><br><span class="line">start transaction;</span><br><span class="line">select balance from bank where name=<span class="string">"zhangsan"</span>;</span><br><span class="line"></span><br><span class="line">// 生成重做日志 balance=<span class="number">600</span></span><br><span class="line">update bank set balance = balance - <span class="number">400</span>; </span><br><span class="line"></span><br><span class="line">// 生成重做日志 amount=<span class="number">400</span></span><br><span class="line">update finance set amount = amount + <span class="number">400</span>;</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-20-182000.png" alt></p>
-<h3 id="undo-log"><a href="#undo-log" class="headerlink" title="undo log"></a>undo log</h3><p><strong>介绍</strong>：undo log 叫做回滚日志，用于记录数据被修改前的信息。</p>
-<p><strong>用途</strong>：假如由于系统错误或者 rollback 操作而回滚的话可以根据 undo log 信息来进行回滚到没被修改前的状态，实现事务的一致性，即事务 ACID 中的 C。</p>
-<p><strong>场景</strong>：每次写入数据或者修改数据之前都会把修改前的信息记录到 undo log。</p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-21-093000.png" alt></p>
-<h3 id="锁"><a href="#锁" class="headerlink" title="锁"></a>锁</h3><p><strong>用途</strong>：锁用来实现事务的隔离性，即事务 ACID 中的 I。</p>
-<p><strong>场景</strong>：当有多个请求来读取表中的数据时可以不采取任何操作，但是多个请求里有读请求，又有修改请求时，必须有一种措施来进行并发控制，不然很有可能会造成不一致。解决上述问题很简单，只需用两种锁的组合来对读写请求进行控制即可。</p>
-<ul>
-<li>共享锁 (shared lock)，又叫做 “读锁”：读锁是可以共享的，或者说多个读请求可以共享一把锁读数据，不会造成阻塞。</li>
-<li>排他锁 (exclusive lock)，又叫做 “写锁”： 写锁会排斥其他所有获取锁的请求，一直阻塞，直到写入完成释放锁。</li>
-</ul>
-<h3 id="MVCC"><a href="#MVCC" class="headerlink" title="MVCC"></a>MVCC</h3><p><strong>介绍</strong>：MVCC (Multi Version Concurrency Control) 叫做多版本并发控制。一般情况下，事务性储存引擎不是只使用表锁，行锁处理数据，而是结合了 MVCC 机制，以处理更多的并发问题。</p>
-<p><strong>用途</strong>：读不加锁，读写不冲突，在读多写少的 OLTP 应用中，读写不冲突是非常重要的，极大的增加了系统的并发性能。</p>
-<p><strong>实现方法</strong>：InnoDB 的 MVCC ，是通过在每行记录的后面保存两个隐藏的列来实现的，这两个列， 一个保存了行的创建时间，一个保存了行的过期时间， 当然存储的并不是实际的时间值，而是系统版本号（可以理解为事务 ID），每开始一个新的事务，系统版本号就会自动递增。</p>
-<p><img src="https://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2020-04-21-101600.png" alt></p>
-<h2 id="事务控制"><a href="#事务控制" class="headerlink" title="事务控制"></a>事务控制</h2><p>事务控制：</p>
-<ul>
-<li><strong>BEGIN</strong>：开始一个事务</li>
-<li><strong>ROLLBACK</strong>：事务回滚</li>
-<li><strong>COMMIT</strong>：事务提交</li>
-</ul>
-<p>事务提交模式：</p>
-<ul>
-<li><strong>SET AUTOCOMMIT=0</strong>：禁止自动提交</li>
-<li><strong>SET AUTOCOMMIT=1</strong>：开启自动提交</li>
-</ul>
-<p>对于事务操作的统计：</p>
-<p><strong>TPS</strong>：Transaction Per Second，每秒事务处理数。计算方法：(com_commit + com_rollback) / time，计算的前提是所有事务必须是显式提交的。</p>
-<blockquote>
-<p>需要注意的是，DDL 语句是隐式提交的 SQL 语句，如 TRUNCATE TABLE，就不会统计在内，也不能被回滚。</p>
-</blockquote>
-<h2 id="分布式事务"><a href="#分布式事务" class="headerlink" title="分布式事务"></a>分布式事务</h2><p><strong>分布式事务（Distributed Transactions）</strong>：通常是一个在分布式环境下运行的扁平事务，因此需要根据数据所在位置访问网络中的不同节点。对于分布式事务，其同样需要满足 ACID 特性，要么都发生，要么都失效。在使用分布式事务时，InnoDB 存储引擎的事务隔离级别必须设置为 Serializable。</p>
-
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -3023,7 +2954,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">172</span>
+                    <span class="site-state-item-count">173</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

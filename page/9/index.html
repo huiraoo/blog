@@ -352,6 +352,203 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/25/linux-disk/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Hui Rao">
+      <meta itemprop="description" content="最好的成长是分享">
+      <meta itemprop="image" content="/blog/images/logo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Rao's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/blog/2019/10/25/linux-disk/" class="post-title-link" itemprop="url">Linux 磁盘相关知识</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-25 22:17:51" itemprop="dateCreated datePublished" datetime="2019-10-25T22:17:51+08:00">2019-10-25</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-15 16:22:37" itemprop="dateModified" datetime="2019-11-15T16:22:37+08:00">2019-11-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="磁盘类型"><a href="#磁盘类型" class="headerlink" title="磁盘类型"></a>磁盘类型</h2><p><strong>按照材质分类</strong>：</p>
+<ul>
+<li><strong>HDD（Hard Disk Driver）</strong>：传统硬盘，即机械硬盘</li>
+<li><strong>SSD（Solid State Disk）</strong>：固态硬盘，是一种主要以闪存作为永久性存储器的计算机存储设备。</li>
+</ul>
+<p><strong>按照硬盘接口分类</strong>：硬盘接口是指硬盘与主板之间的连接方式</p>
+<ul>
+<li><strong>SATA</strong>：串形高技术配置接口</li>
+<li><strong>SAS</strong>：串形小型计算机系统接口</li>
+<li><strong>SAS</strong> 接口的硬盘比 <strong>SATA</strong> 接口的硬盘传输速度要快很多，并且性能也高很多</li>
+</ul>
+<p><strong>磁盘类型</strong>：使用 <code>lsblk</code> 命令进行判断</p>
+<ul>
+<li><code>-d</code> ，表示显示设备名称</li>
+<li><code>-o</code> ，表示仅显示特定的列</li>
+<li><code>ROTA</code> 是 <code>1</code> 的表示可以旋转，磁盘类型是 <code>HDD</code>。</li>
+<li><code>ROTA</code> 是 <code>0</code> 的表示不可以旋转，就有可能是 <code>SSD</code>。</li>
+</ul>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ lsblk -d -o name,rota</span><br><span class="line">NAME ROTA</span><br><span class="line">fd0     <span class="number">1</span></span><br><span class="line">sda     <span class="number">1</span></span><br><span class="line">sdb     <span class="number">1</span></span><br><span class="line">sr0     <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="磁盘性能"><a href="#磁盘性能" class="headerlink" title="磁盘性能"></a>磁盘性能</h2><p><strong>硬盘性能指标</strong>：IOPS (Input / Output Per Second) 即每秒的输入输出量（读写次数），是衡量磁盘性能的主要指标之一。</p>
+<p>使用 <code>dd</code> 测试硬盘吞吐量：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ dd <span class="keyword">if</span>=/dev/zero of=/dev/sda bs=<span class="number">4</span>k count=<span class="number">3000</span> oflag=direct</span><br><span class="line">记录了<span class="number">3000</span>+<span class="number">0</span> 的读入</span><br><span class="line">记录了<span class="number">3000</span>+<span class="number">0</span> 的写出</span><br><span class="line"><span class="number">12288000</span>字节(<span class="number">12</span> MB)已复制，<span class="number">0.0791091</span> 秒，<span class="number">155</span> MB/秒</span><br></pre></td></tr></table></figure>
+
+<p><strong>总结</strong>：<code>SSD</code> 的随机 <code>IO</code> 读写能力是 <code>SATA</code> 和 <code>SAS</code> 机械硬盘的一千多倍，顺序读写能力基本和 <code>SSD</code> 保持同样的数量级。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/25/mysql-config-expire-logs-days/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2258,321 +2455,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://huiraoo.github.io/blog/blog/2019/10/24/python-io/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Hui Rao">
-      <meta itemprop="description" content="最好的成长是分享">
-      <meta itemprop="image" content="/blog/images/logo.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Rao's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/blog/2019/10/24/python-io/" class="post-title-link" itemprop="url">Python · 输入与输出</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-10-24 09:29:56" itemprop="dateCreated datePublished" datetime="2019-10-24T09:29:56+08:00">2019-10-24</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-10-28 14:05:36" itemprop="dateModified" datetime="2019-10-28T14:05:36+08:00">2019-10-28</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/blog/categories/Python/" itemprop="url" rel="index"><span itemprop="name">Python</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="文件"><a href="#文件" class="headerlink" title="文件"></a>文件</h2><p>实际开发中经常遇到对数据进行持久化操作的场景，而实现数据持久化最直接简单的方式就是将数据保存到文件中。Python 实现文件的读写操作其实非常简单，通过内置的 <code>open</code> 函数，可以指定文件名、操作模式、编码信息等来获得操作文件的对象，然后就可以对文件进行读写操作了。</p>
-<table>
-<thead>
-<tr>
-<th>对象方法</th>
-<th>具体含义</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>read</code></td>
-<td>读取</td>
-</tr>
-<tr>
-<td><code>readline</code></td>
-<td>读取文件每一行</td>
-</tr>
-<tr>
-<td><code>write</code></td>
-<td>写入</td>
-</tr>
-<tr>
-<td><code>close</code></td>
-<td>关闭文件</td>
-</tr>
-</tbody></table>
-<table>
-<thead>
-<tr>
-<th>操作模式</th>
-<th>具体含义</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>&#39;r&#39;</code></td>
-<td>读取 （默认）</td>
-</tr>
-<tr>
-<td><code>&#39;w&#39;</code></td>
-<td>写入（会先截断之前的内容）</td>
-</tr>
-<tr>
-<td><code>&#39;x&#39;</code></td>
-<td>写入，如果文件已经存在会产生异常</td>
-</tr>
-<tr>
-<td><code>&#39;a&#39;</code></td>
-<td>追加，将内容写入到已有文件的末尾</td>
-</tr>
-<tr>
-<td><code>&#39;b&#39;</code></td>
-<td>二进制模式</td>
-</tr>
-<tr>
-<td><code>&#39;t&#39;</code></td>
-<td>文本模式（默认）</td>
-</tr>
-<tr>
-<td><code>&#39;+&#39;</code></td>
-<td>更新（既可以读又可以写）</td>
-</tr>
-</tbody></table>
-<p><img src="http://bolg-picture.oss-cn-qingdao.aliyuncs.com/blog/2019-10-26-101106.png" alt></p>
-<p><strong>示例</strong>：<code>io_using_file.py</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">poem = <span class="string">'''\</span></span><br><span class="line"><span class="string">Programming is fun</span></span><br><span class="line"><span class="string">When the work is done</span></span><br><span class="line"><span class="string">if you wanna make your work also fun:</span></span><br><span class="line"><span class="string">    use Python!</span></span><br><span class="line"><span class="string">'''</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 打开文件以编辑（writing）</span></span><br><span class="line">f = open(<span class="string">'poem.txt'</span>, <span class="string">'w'</span>)</span><br><span class="line"><span class="comment"># 向文件中编写文本</span></span><br><span class="line">f.write(poem)</span><br><span class="line"><span class="comment"># 关闭文件</span></span><br><span class="line">f.close()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果没有特别指定，将假定启用默认的阅读（read）模式</span></span><br><span class="line">f = open(<span class="string">'poem.txt'</span>)</span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    line = f.readline()</span><br><span class="line">    <span class="comment"># 零长度指示 EOF</span></span><br><span class="line">    <span class="keyword">if</span> len(line) == <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    <span class="comment"># 每行的末尾都已经有了换行符，因为它是从一个文件中进行读取的</span></span><br><span class="line">    print(line, end=<span class="string">''</span>)</span><br><span class="line">    </span><br><span class="line"><span class="comment"># 关闭文件</span></span><br><span class="line">f.close()</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line">$ python3 io_using_file.py</span><br><span class="line">Programming <span class="keyword">is</span> fun</span><br><span class="line">When the work <span class="keyword">is</span> done</span><br><span class="line"><span class="keyword">if</span> you wanna make your work also fun:</span><br><span class="line">    use Python!</span><br></pre></td></tr></table></figure>
-
-<h3 id="读写文本文件"><a href="#读写文本文件" class="headerlink" title="读写文本文件"></a>读写文本文件</h3><ul>
-<li>使用 <code>open</code> 函数打开文件</li>
-<li>使用 <code>encoding</code> 参数指定编码</li>
-<li>使用 <code>with</code> 语句来自动调用 <code>close()</code> 方法</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># encoding=utf-8</span></span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="comment"># 一次性读取整个文件内容</span></span><br><span class="line">    <span class="keyword">with</span> open(<span class="string">'致橡树.txt'</span>, <span class="string">'r'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> f:</span><br><span class="line">        print(f.read())</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 通过for-in循环逐行读取</span></span><br><span class="line">    <span class="keyword">with</span> open(<span class="string">'致橡树.txt'</span>, mode=<span class="string">'r'</span>) <span class="keyword">as</span> f:</span><br><span class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> f:</span><br><span class="line">            print(line, end=<span class="string">''</span>)</span><br><span class="line">            time.sleep(<span class="number">0.5</span>)</span><br><span class="line">    print()</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 读取文件按行读取到列表中</span></span><br><span class="line">    <span class="keyword">with</span> open(<span class="string">'致橡树.txt'</span>) <span class="keyword">as</span> f:</span><br><span class="line">        lines = f.readlines()</span><br><span class="line">    print(lines)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
-
-<h3 id="读写二进制文件"><a href="#读写二进制文件" class="headerlink" title="读写二进制文件"></a>读写二进制文件</h3><ul>
-<li>使用 <code>rb</code> 读取二进制图片</li>
-<li>使用 <code>wb</code> 写入二进制图片</li>
-</ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">with</span> open(<span class="string">'python.jpg'</span>, <span class="string">'rb'</span>) <span class="keyword">as</span> fs1:</span><br><span class="line">            data = fs1.read()</span><br><span class="line">            print(type(data))  <span class="comment"># &lt;class 'bytes'&gt;</span></span><br><span class="line">        <span class="keyword">with</span> open(<span class="string">'python_bak.jpg'</span>, <span class="string">'wb'</span>) <span class="keyword">as</span> fs2:</span><br><span class="line">            fs2.write(data)</span><br><span class="line">    <span class="keyword">except</span> FileNotFoundError <span class="keyword">as</span> e:</span><br><span class="line">        print(<span class="string">'指定的文件无法打开.'</span>)</span><br><span class="line">    <span class="keyword">except</span> IOError <span class="keyword">as</span> e:</span><br><span class="line">        print(<span class="string">'读写文件时出现错误.'</span>)</span><br><span class="line">    print(<span class="string">'程序执行结束.'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
-
-<h3 id="读写-JSON-文件"><a href="#读写-JSON-文件" class="headerlink" title="读写 JSON 文件"></a>读写 JSON 文件</h3><ul>
-<li><strong>序列化</strong>：把变量从内存中变成可存储或传输的过程称之为序列化。</li>
-<li><strong>反序列化</strong>：把变量从序列化的对象重新读到内存里称之为反序列化。</li>
-<li><strong><code>json</code> 库</strong>：可以实现 Python 对象和 <code>JSON</code> 格式的序列化和反序列化。</li>
-<li><strong><code>pickle</code> 库</strong>：使用特有的序列化协议来序列化数据。</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th>json 库方法</th>
-<th>具体含义</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><code>dump</code></td>
-<td>将 Python 对象按照 <code>JSON</code> 格式序列化到文件中</td>
-</tr>
-<tr>
-<td><code>dumps</code></td>
-<td>将 Python 对象处理成 <code>JSON</code> 格式的字符串</td>
-</tr>
-<tr>
-<td><code>load</code></td>
-<td>将文件中的 <code>JSON</code> 数据反序列化成对象</td>
-</tr>
-<tr>
-<td><code>loads</code></td>
-<td>将字符串的内容反序列化成 Python 对象</td>
-</tr>
-</tbody></table>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> json</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    mydict = &#123;</span><br><span class="line">        <span class="string">'name'</span>: <span class="string">'狄仁杰'</span>,</span><br><span class="line">        <span class="string">'age'</span>: <span class="number">38</span>,</span><br><span class="line">        <span class="string">'qq'</span>: <span class="number">957658</span>,</span><br><span class="line">        <span class="string">'friends'</span>: [<span class="string">'王大锤'</span>, <span class="string">'李元芳'</span>],</span><br><span class="line">        <span class="string">'cars'</span>: [</span><br><span class="line">            &#123;<span class="string">'brand'</span>: <span class="string">'BYD'</span>, <span class="string">'max_speed'</span>: <span class="number">180</span>&#125;,</span><br><span class="line">            &#123;<span class="string">'brand'</span>: <span class="string">'Audi'</span>, <span class="string">'max_speed'</span>: <span class="number">280</span>&#125;,</span><br><span class="line">            &#123;<span class="string">'brand'</span>: <span class="string">'Benz'</span>, <span class="string">'max_speed'</span>: <span class="number">320</span>&#125;</span><br><span class="line">        ]</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">with</span> open(<span class="string">'data.json'</span>, <span class="string">'w'</span>, encoding=<span class="string">'utf-8'</span>) <span class="keyword">as</span> fs:</span><br><span class="line">            json.dump(mydict, fs)</span><br><span class="line">    <span class="keyword">except</span> IOError <span class="keyword">as</span> e:</span><br><span class="line">        print(e)</span><br><span class="line">    print(<span class="string">'保存数据完成!'</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
-
-<table>
-<thead>
-<tr>
-<th align="left">JSON 类型</th>
-<th align="left">Python 类型</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">{}</td>
-<td align="left"><code>dict</code></td>
-</tr>
-<tr>
-<td align="left">[]</td>
-<td align="left"><code>list</code></td>
-</tr>
-<tr>
-<td align="left">“string”</td>
-<td align="left"><code>str</code></td>
-</tr>
-<tr>
-<td align="left">1234.56</td>
-<td align="left"><code>int</code> 或 <code>float</code></td>
-</tr>
-<tr>
-<td align="left">true/false</td>
-<td align="left"><code>True</code> / <code>False</code></td>
-</tr>
-<tr>
-<td align="left">null</td>
-<td align="left"><code>None</code></td>
-</tr>
-</tbody></table>
-<p><strong>示例</strong>：<code>io_pickle.py</code></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pickle</span><br><span class="line"></span><br><span class="line"><span class="comment"># 我们存储相关对象的文件的名称</span></span><br><span class="line">shoplistfile = <span class="string">'shoplist.data'</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 需要购买的物品清单</span></span><br><span class="line">shoplist = [<span class="string">'apple'</span>, <span class="string">'mango'</span>, <span class="string">'carrot'</span>]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 准备写入文件</span></span><br><span class="line">f = open(shoplistfile, <span class="string">'wb'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 转储对象至文件</span></span><br><span class="line">pickle.dump(shoplist, f)</span><br><span class="line">f.close()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 清除 shoplist 变量</span></span><br><span class="line"><span class="keyword">del</span> shoplist</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重新打开存储文件</span></span><br><span class="line">f = open(shoplistfile, <span class="string">'rb'</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 从文件中载入对象</span></span><br><span class="line">storedlist = pickle.load(f)</span><br><span class="line">print(storedlist)</span><br><span class="line"></span><br><span class="line">输出：</span><br><span class="line">$ python io_pickle.py</span><br><span class="line">[<span class="string">'apple'</span>, <span class="string">'mango'</span>, <span class="string">'carrot'</span>]</span><br></pre></td></tr></table></figure>
-          
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2621,7 +2503,7 @@
                 
                   <a href="/blog/archives/">
                 
-                    <span class="site-state-item-count">172</span>
+                    <span class="site-state-item-count">173</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
